@@ -10,7 +10,7 @@ The only official places to find my mods are here, Nexus Mods, and ModDrop. Whil
 
 ## Current Mods
 
-[Player Co-ordinates HUD and Logger](https://www.nexusmods.com/stardewvalley/mods/7969) — A small mod that logs your character/cursor co-ordinates to assist with modding.
-[Give Me My Cursor Back!](https://www.nexusmods.com/stardewvalley/mods/9976) — A tiny mod that ensures your cursor is visible when over the Stardew Valley window when it isn't in focus.
-[Dialogue Tester](https://www.nexusmods.com/stardewvalley/mods/9887) — A mod to quickly test how dialogue will display in-game.
-[Better Crystalariums](https://www.nexusmods.com/stardewvalley/mods/10907) — A mod that will prevent you from accidentally inserting a new mineral into your crystalariums.
+[Player Co-ordinates HUD and Logger](https://www.nexusmods.com/stardewvalley/mods/7969) — A small mod that logs your character/cursor co-ordinates to assist with modding.  
+[Give Me My Cursor Back!](https://www.nexusmods.com/stardewvalley/mods/9976) — A tiny mod that ensures your cursor is visible when over the Stardew Valley window when it isn't in focus.  
+[Dialogue Tester](https://www.nexusmods.com/stardewvalley/mods/9887) — A mod to quickly test how dialogue will display in-game.  
+[Better Crystalariums](https://www.nexusmods.com/stardewvalley/mods/10907) — A mod that will prevent you from accidentally inserting a new mineral into your crystalariums.  
