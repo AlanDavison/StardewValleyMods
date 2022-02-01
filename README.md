@@ -14,3 +14,7 @@ The only official places to find my mods are here, Nexus Mods, and ModDrop. Whil
 [Give Me My Cursor Back!](https://www.nexusmods.com/stardewvalley/mods/9976) — A tiny mod that ensures your cursor is visible when over the Stardew Valley window when it isn't in focus.  
 [Dialogue Tester](https://www.nexusmods.com/stardewvalley/mods/9887) — A mod to quickly test how dialogue will display in-game.  
 [Better Crystalariums](https://www.nexusmods.com/stardewvalley/mods/10907) — A mod that will prevent you from accidentally inserting a new mineral into your crystalariums.  
+
+## Contributing
+
+Feel free to contribute ideas, code, translations, anything your heart desires. I intend to keep everything fairly lax, so don't worry about being too formal, or too informal.
