@@ -60,7 +60,7 @@ namespace BetterCrystalariums
 
 			if (heldObject != null)
 			{
-
+				// Then, if the object in the crystalarium doesn't match what the playe's holding, we display our warning, and stop the replacement.
 				if (!heldObject.Name.Equals(dropInItem.Name))
 				{
 					Game1.showRedMessage($"{_helper.Translation.Get("bettercrystalariums.wrong-mineral")}");
