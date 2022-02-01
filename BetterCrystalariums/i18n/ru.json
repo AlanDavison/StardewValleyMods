@@ -1,0 +1,6 @@
+{
+    "bettercrystalariums.wrong-mineral": "Разбейте машину, чтобы добавить новый минерал.",
+    "bettercrystalariums.no-gmcm": "Похоже, у пользователя не установлен GMCM. Это не проблема.",
+    "bettercrystalariums.debug-setting-title": "Режим отладки",
+    "bettercrystalariums.debug-setting-description": "Включайте это только в том случае, если я попросил вас об этом или если вы хотите разобраться в проблеме самостоятельно. Это активирует дополнительную регистрацию."
+  }
