@@ -3,6 +3,7 @@ using GenericModConfigMenu;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Minigames;
 
 namespace GiveMeMyCursorBack
@@ -72,9 +73,10 @@ namespace GiveMeMyCursorBack
 
 			_tickCounter = 0;
 
-			if (Game1.isFestival()) // If the player *is* in a festival, we want to simply invert Game1.displayHUD, because the HUD is disabled during festivals.
+			// If the player *is* in a festival, an event is active, or is donating items to the museum, we want to simply invert Game1.displayHUD, because the HUD is disabled during festivals.
+			if (Game1.isFestival() || Game1.eventUp || Game1.activeClickableMenu is MuseumMenu) 
 				Game1.options.hardwareCursor = (!Game1.game1.IsActive || Game1.displayHUD);
-			else           
+			else
 				Game1.options.hardwareCursor = (!Game1.game1.IsActive || !Game1.displayHUD);
 		}
 	}
