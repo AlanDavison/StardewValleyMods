@@ -11,7 +11,6 @@ using StardewValley;
 
 namespace PlayerCoordinates
 {
-    /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
         private Texture2D _coordinateBox;
