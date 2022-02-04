@@ -5,11 +5,13 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterCrystalariums", "BetterCrystalariums\BetterCrystalariums.csproj", "{21FB831F-FE78-49C2-8021-F1DAA2412F6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueTester", "DialogueTester\DialogueTester.csproj", "{F364508B-0872-49EB-8138-1F3823FE8615}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogueTester", "DialogueTester\DialogueTester.csproj", "{F364508B-0872-49EB-8138-1F3823FE8615}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiveMeMyCursorBack", "GiveMeMyCursorBack\GiveMeMyCursorBack.csproj", "{696FE4A5-8016-4124-9B2D-88345AA6DD4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GiveMeMyCursorBack", "GiveMeMyCursorBack\GiveMeMyCursorBack.csproj", "{696FE4A5-8016-4124-9B2D-88345AA6DD4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayerCoordinates", "PlayerCoordinates\PlayerCoordinates.csproj", "{22032773-4558-4FFB-AA77-A12E3C91BB7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefaultWindowSize", "DefaultWindowSize\DefaultWindowSize.csproj", "{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{22032773-4558-4FFB-AA77-A12E3C91BB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22032773-4558-4FFB-AA77-A12E3C91BB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22032773-4558-4FFB-AA77-A12E3C91BB7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
