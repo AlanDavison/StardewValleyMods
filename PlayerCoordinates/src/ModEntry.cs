@@ -32,7 +32,7 @@ namespace PlayerCoordinates
         {
             helper.Events.GameLoop.GameLaunched += GameLaunched;
             helper.Events.Display.RenderedHud += DrawCoordinates;
-            helper.Events.Display.RenderedWorld += UpdateCurrentMap;
+            helper.Events.Display.RenderedWorld += UpdateCurrentMap; // Wow. This is wildly unnecessarily. I don't need to do this every time the world is RENDERED. TOOD: Stop being dumb, and change this.
             helper.Events.Input.ButtonPressed += ButtonPressed;
             helper.Events.Input.ButtonReleased += ButtonReleased;
             helper.Events.Display.WindowResized += WindowResized;
