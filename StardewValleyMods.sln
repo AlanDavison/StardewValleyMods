@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GiveMeMyCursorBack", "GiveM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayerCoordinates", "PlayerCoordinates\PlayerCoordinates.csproj", "{22032773-4558-4FFB-AA77-A12E3C91BB7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefaultWindowSize", "DefaultWindowSize\DefaultWindowSize.csproj", "{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DefaultWindowSize", "DefaultWindowSize\DefaultWindowSize.csproj", "{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StickyCursor", "StickyCursor\StickyCursor.csproj", "{4C29DC77-652C-4148-87FD-3F376019EADF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C29DC77-652C-4148-87FD-3F376019EADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C29DC77-652C-4148-87FD-3F376019EADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C29DC77-652C-4148-87FD-3F376019EADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C29DC77-652C-4148-87FD-3F376019EADF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
