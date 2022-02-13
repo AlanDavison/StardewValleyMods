@@ -1,11 +1,11 @@
-﻿using BetterCrystalariums.Utilities;
-using StardewModdingAPI;
-using StardewValley;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BetterCrystalariums.Utilities;
+using StardewModdingAPI;
+using StardewValley;
 
 namespace BetterCrystalariums
 {
@@ -42,7 +42,7 @@ namespace BetterCrystalariums
 					_logger.Log($"\t\tCategory of object in machine \t\t{objectInMachine.Category}");
 					_logger.Log($"{Environment.NewLine}");
 				}
-				
+
 			}
 
 			// Firstly, if the item the player is holding isn't a mineral, we don't want to do anything.

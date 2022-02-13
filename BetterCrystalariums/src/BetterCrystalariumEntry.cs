@@ -1,10 +1,10 @@
-﻿using BetterCrystalariums.Utilities;
+﻿using System;
 using BetterCrystalariums.Helpers;
+using BetterCrystalariums.Utilities;
 using HarmonyLib;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using System;
 
 namespace BetterCrystalariums
 {
@@ -17,7 +17,7 @@ namespace BetterCrystalariums
 		private ModConfig _config;
 
 		public override void Entry(IModHelper helper)
-		{			
+		{
 			_helper = helper;
 			_monitor = Monitor;
 			_logger = new Logger(_monitor);

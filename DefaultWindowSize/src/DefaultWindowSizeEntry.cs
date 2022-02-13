@@ -1,8 +1,8 @@
-﻿using StardewModdingAPI;
-using StardewModdingAPI.Events;
-using System;
-using DefaultWindowSize.Utilities;
+﻿using System;
 using DefaultWindowSize.Helpers;
+using DefaultWindowSize.Utilities;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 
 namespace DefaultWindowSize
@@ -88,7 +88,7 @@ namespace DefaultWindowSize
 
 			configMenuApi.Register(ModManifest,
 				() => _config = new ModConfig(),
-				() => Helper.WriteConfig(_config));			
+				() => Helper.WriteConfig(_config));
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
@@ -99,7 +99,7 @@ namespace DefaultWindowSize
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () =>
-					"This setting will determine whether or not the resolution you specify here will be set on game launch.");			
+					"This setting will determine whether or not the resolution you specify here will be set on game launch.");
 
 			configMenuApi.AddTextOption(
 				mod: ModManifest,

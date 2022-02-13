@@ -17,7 +17,7 @@ namespace DefaultWindowSize
 
 		// TODO: Consider refactoring this to be outside of the Resolution class?
 		private void ParseResolution(string resolution)
-		{ 
+		{
 			// We want to split our (potential) resolution string into two strings, and from there, parse to int.
 			string pattern = @"(\d+).*?(\d+)";
 			Regex regex = new Regex(pattern);
