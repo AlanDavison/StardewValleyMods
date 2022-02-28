@@ -13,7 +13,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayerCoordinates", "Player
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DefaultWindowSize", "DefaultWindowSize\DefaultWindowSize.csproj", "{4183A8C4-29C8-4E04-BC21-E0CDCAC6909B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StickyCursor", "StickyCursor\StickyCursor.csproj", "{4C29DC77-652C-4148-87FD-3F376019EADF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StickyCursor", "StickyCursor\StickyCursor.csproj", "{4C29DC77-652C-4148-87FD-3F376019EADF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StardewRituals", "StardewRituals\StardewRituals.csproj", "{8D42C1AC-3020-4F12-9087-3E5A2F1B575B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{62C07841-533F-41EA-B18C-8F5BF7BD2CE2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterBuilding", "BetterBuilding\BetterBuilding.csproj", "{62962075-ACD4-4B15-AE27-452EF2D8220A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealTunnels", "RealTunnels\RealTunnels.csproj", "{AE17A847-B4FB-4B2E-B6B2-5FE6E030693C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +56,18 @@ Global
 		{4C29DC77-652C-4148-87FD-3F376019EADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C29DC77-652C-4148-87FD-3F376019EADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C29DC77-652C-4148-87FD-3F376019EADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D42C1AC-3020-4F12-9087-3E5A2F1B575B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D42C1AC-3020-4F12-9087-3E5A2F1B575B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D42C1AC-3020-4F12-9087-3E5A2F1B575B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D42C1AC-3020-4F12-9087-3E5A2F1B575B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62962075-ACD4-4B15-AE27-452EF2D8220A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62962075-ACD4-4B15-AE27-452EF2D8220A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62962075-ACD4-4B15-AE27-452EF2D8220A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62962075-ACD4-4B15-AE27-452EF2D8220A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE17A847-B4FB-4B2E-B6B2-5FE6E030693C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE17A847-B4FB-4B2E-B6B2-5FE6E030693C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE17A847-B4FB-4B2E-B6B2-5FE6E030693C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE17A847-B4FB-4B2E-B6B2-5FE6E030693C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
