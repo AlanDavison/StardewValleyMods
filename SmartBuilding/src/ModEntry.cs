@@ -15,8 +15,9 @@ using StardewValley.TerrainFeatures;
 using Object = StardewValley.Object;
 
 /* 
-TODO: Cancel and return items on changing screens, OR make it possible to confirm the build on a screen different to the one the player is on. 
 TODO: Comment this more heavily.
+TODO: Implement correct spacing restrictions for fruit trees, etc. Should be relatively simple with a change to our adjacent tile detection method.
+TODO: Split things into separate classes where it would make things neater.
 */
 
 namespace SmartBuilding
@@ -87,6 +88,18 @@ namespace SmartBuilding
 			/// </summary>
 			CrabPot,
 			/// <summary>
+			/// Since seeds need very special treatment, this is important.
+			/// </summary>
+			Seed,
+			/// <summary>
+			/// Fertilizers also require special treatment.
+			/// </summary>
+			Fertilizer,
+			/// <summary>
+			/// Tree fertilizers also require special treatment.
+			/// </summary>
+			TreeFertilizer,
+			/// <summary>
 			/// A generic placeable object.
 			/// </summary>
 			Generic
@@ -116,7 +129,7 @@ namespace SmartBuilding
 			_buildingHud = _helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
 			
 			Harmony harmony = new Harmony(ModManifest.UniqueID);
-
+			
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
 				prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(Patches.ObjectPatches.PlacementAction_Prefix)));
@@ -287,6 +300,46 @@ namespace SmartBuilding
 					return isFloorPlaceable;
 				case ItemType.Chest:
 					return !i.Name.Equals("Junimo Chest"); // This is very hackish. TODO: Move this Junimo Chest blocking logic further up the chain.
+				case ItemType.Fertilizer:
+					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
+					{
+						// We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
+						if (Game1.currentLocation.terrainFeatures[v] is HoeDirt)
+						{
+							// If it is, we want to grab the HoeDirt, and check for the possibility of planting.
+							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[v];
+							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y, true);
+						}
+					}
+
+					return false;
+				case ItemType.TreeFertilizer:
+					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
+					{
+						// If there's a TerrainFeature here, we check if it's a tree.
+						if (Game1.currentLocation.terrainFeatures[v] is Tree)
+						{
+							// It is a tree, so now we check to see if the tree is fertilised.
+							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[v];
+							
+							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it, so we return false.
+							if (tree.fertilized)
+								return false;
+							else
+								return true;
+						}
+					}
+
+					return false;
+				case ItemType.Seed:
+					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
+					{
+						HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[v];
+
+						return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y);
+					}
+
+					return false;
 				case ItemType.Fence:
 				case ItemType.Generic:
 					return Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v);
@@ -313,6 +366,13 @@ namespace SmartBuilding
 				return ItemType.GrassStarter;
 			else if (itemName.Equals("Crab Pot"))
 				return ItemType.CrabPot;
+			else if (item.Type == "Seeds")
+				return ItemType.Seed;
+			else if (item.Name.Equals("Tree Fertilizer"))
+				return ItemType.TreeFertilizer;
+			else if (item.Category == -19)
+				return ItemType.Fertilizer;
+			
 
 			return ItemType.Generic;
 		}
@@ -457,6 +517,15 @@ namespace SmartBuilding
 
 		private void ButtonPressed(object sender, ButtonPressedEventArgs e)
 		{
+			if (e.Button == SButton.X)
+			{
+				Vector2 tile = Game1.currentCursorTile;
+				Tree hd = (Tree)Game1.currentLocation.terrainFeatures[tile];
+				Object item = (Object)Game1.player.CurrentItem;
+				hd.fertilize(Game1.currentLocation);
+				//hd.plant(item.ParentSheetIndex, (int)tile.X, (int)tile.Y, Game1.player, true, Game1.currentLocation);
+			}
+			
 			// If a menu is up, we don't want any of our controls to do anything.
 			if (Game1.activeClickableMenu != null)
 				return;
@@ -474,11 +543,14 @@ namespace SmartBuilding
 
 			if (_config.HoldToDraw.JustPressed())
 			{
-				_currentlyDrawing = true;
-				ObjectPatches.CurrentlyDrawing = _currentlyDrawing;
+				if (_buildingMode)
+				{
+					_currentlyDrawing = true;
+					ObjectPatches.CurrentlyDrawing = _currentlyDrawing;
 
-				int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
-				AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
+					int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
+					AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
+				}
 			}
 
 			if (_config.HoldToErase.JustPressed())
@@ -626,11 +698,73 @@ namespace SmartBuilding
 						itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 					}
 				}
-				else if (itemInfo.itemType == ItemType.Generic)
-				{ // We're dealing with a generic placeable.
-					itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
+				else if (itemInfo.itemType == ItemType.Seed)
+				{
+					// Here, we're dealing with a seed, so we need very special logic for this.
+					// Item.placementAction for seeds is broken, unless the player is currently
+					// holding the specific seed being planted.
 
-					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
+					bool successfullyPlaced = false;
+
+					if (Game1.currentLocation.terrainFeatures.ContainsKey(targetTile))
+					{
+						if (Game1.currentLocation.terrainFeatures[targetTile] is HoeDirt)
+						{
+							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[targetTile];
+
+							if (hd.canPlantThisSeedHere(itemToPlace.ParentSheetIndex, (int)item.Key.X, (int)item.Key.Y))
+							{
+								successfullyPlaced = hd.plant(itemToPlace.ParentSheetIndex, (int)item.Key.X, (int)item.Key.Y, Game1.player, false, Game1.currentLocation);
+							}
+						}
+					}
+
+					if (!successfullyPlaced)
+						RefundItem(item.Value.item);
+				}
+				else if (itemInfo.itemType == ItemType.Fertilizer)
+				{
+					if (Game1.currentLocation.terrainFeatures.ContainsKey(targetTile))
+					{
+						// We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
+						if (Game1.currentLocation.terrainFeatures[targetTile] is HoeDirt)
+						{
+							// If it is, we want to grab the HoeDirt, check if it's already got a fertiliser, and fertilise if not.
+							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[targetTile];
+							
+							// 0 here means no fertilizer.
+							if (hd.fertilizer == 0)
+							{
+								hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
+							}
+						}
+					}
+					
+				}
+				else if (itemInfo.itemType == ItemType.TreeFertilizer)
+				{
+					if (Game1.currentLocation.terrainFeatures.ContainsKey(targetTile))
+					{
+						// If there's a TerrainFeature here, we check if it's a tree.
+						if (Game1.currentLocation.terrainFeatures[targetTile] is Tree)
+						{
+							// It is a tree, so now we check to see if the tree is fertilised.
+							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[targetTile];
+							
+							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it, so we return false.
+							if (tree.fertilized)
+								return;
+							else
+								tree.fertilize(Game1.currentLocation);
+						}
+					}
+				}
+				else 
+				{ // We're dealing with a generic placeable.
+					bool successfullyPlaced = itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
+
+					// if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
+					if (successfullyPlaced)
 						_monitor.Log($"Item {item.Value.item.Name} placed successfully.");
 					else
 						RefundItem(item.Value.item);
