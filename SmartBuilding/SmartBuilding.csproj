@@ -8,18 +8,19 @@
 	</PropertyGroup>
 
 	<!-- ModBuildConfig settings. -->
-	<Import Project="..\Build\Latest.targets" />
-	
+	<Import Project="..\Build\Latest.targets"/>
+
 	<ItemGroup>
-	  <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
+		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0"/>
 	</ItemGroup>
-	
+
 	<PropertyGroup>
 		<EnableHarmony>true</EnableHarmony>
+		<IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
-	  <Folder Include="assets" />
+		<Folder Include="assets"/>
 	</ItemGroup>
 
 </Project>
