@@ -517,14 +517,9 @@ namespace SmartBuilding
 
 		private void ButtonPressed(object sender, ButtonPressedEventArgs e)
 		{
-			if (e.Button == SButton.X)
-			{
-				Vector2 tile = Game1.currentCursorTile;
-				Tree hd = (Tree)Game1.currentLocation.terrainFeatures[tile];
-				Object item = (Object)Game1.player.CurrentItem;
-				hd.fertilize(Game1.currentLocation);
-				//hd.plant(item.ParentSheetIndex, (int)tile.X, (int)tile.Y, Game1.player, true, Game1.currentLocation);
-			}
+			// If the world isn't ready, we definitely don't want to do anything.
+			if (!Context.IsWorldReady)
+				return;
 			
 			// If a menu is up, we don't want any of our controls to do anything.
 			if (Game1.activeClickableMenu != null)
