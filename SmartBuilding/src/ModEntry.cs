@@ -33,8 +33,6 @@ namespace SmartBuilding
 		private Vector2 _currentTile = Vector2.Zero;
 		private Vector2 _hudPosition; 
 		private Texture2D _buildingHud;
-		private bool _currentlyPlacingPoints;
-		private bool _drawingLine;
 		private bool _currentlyDrawing = false;
 		private bool _currentlyErasing = false;
 		private bool _buildingMode = false;
@@ -403,7 +401,7 @@ namespace SmartBuilding
 							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[v];
 							
 							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it, so we return false.
-							if (tree.fertilized)
+							if (tree.fertilized.Value)
 								return false;
 							else
 								return true;
@@ -469,7 +467,7 @@ namespace SmartBuilding
 			int itemSheetId;
 			ItemType itemType = IdentifyItemType(item);
 
-			if (item.bigCraftable)
+			if (item.bigCraftable.Value)
 			{
 				itemSpriteSheet = Game1.bigCraftableSpriteSheet;
 			}
@@ -812,7 +810,7 @@ namespace SmartBuilding
 							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[targetTile];
 							
 							// 0 here means no fertilizer.
-							if (hd.fertilizer == 0)
+							if (hd.fertilizer.Value == 0)
 							{
 								hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
 							}
@@ -831,7 +829,7 @@ namespace SmartBuilding
 							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[targetTile];
 							
 							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it, so we return false.
-							if (tree.fertilized)
+							if (tree.fertilized.Value)
 								return;
 							else
 								tree.fertilize(Game1.currentLocation);
