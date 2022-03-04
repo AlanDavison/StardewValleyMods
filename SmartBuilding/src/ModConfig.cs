@@ -12,5 +12,8 @@ namespace SmartBuilding
 		public KeybindList HoldToErase = KeybindList.Parse("LeftShift");
 		public KeybindList ConfirmBuild = KeybindList.Parse("MouseLeft");
 		public bool CrabPotsInAnyWaterTile = false;
+		public bool EnablePlantingCrops = false;
+		public bool EnableCropFertilizers = false;
+		public bool EnableTreeFertilizers = false;
 	}
 }

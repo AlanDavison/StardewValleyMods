@@ -171,6 +171,16 @@ namespace SmartBuilding
 				() => _config = new ModConfig(),
 				() => Helper.WriteConfig(_config));
 			
+			configMenuApi.AddSectionTitle(
+				mod: ModManifest,
+				text: () => "Keybinds"
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually."
+				);
+
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Engage build mode",
@@ -194,6 +204,11 @@ namespace SmartBuilding
 				name: () => "Confirm build",
 				getValue: () => _config.ConfirmBuild,
 				setValue: value => _config.ConfirmBuild = value);
+			
+			configMenuApi.AddSectionTitle(
+				mod: ModManifest,
+				text: () => "The Slightly Cheaty Zone"
+				);
 			
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
@@ -358,6 +373,10 @@ namespace SmartBuilding
 				case ItemType.Chest:
 					return !i.Name.Equals("Junimo Chest"); // This is very hackish. TODO: Move this Junimo Chest blocking logic further up the chain.
 				case ItemType.Fertilizer:
+					// If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
+					if (!_config.EnableCropFertilizers)
+						return false;
+					
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
 					{
 						// We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
@@ -371,6 +390,10 @@ namespace SmartBuilding
 
 					return false;
 				case ItemType.TreeFertilizer:
+					// If the setting to enable tree fertilizers is off, return false to ensure they can't be added to the queue.
+					if (!_config.EnableTreeFertilizers)
+						return false;
+					
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
 					{
 						// If there's a TerrainFeature here, we check if it's a tree.
@@ -389,6 +412,10 @@ namespace SmartBuilding
 
 					return false;
 				case ItemType.Seed:
+					// If the setting to enable crops is off, return false to ensure they can't be added to the queue.
+					if (!_config.EnablePlantingCrops)
+						return false;
+
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
 					{
 						HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[v];
