@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AssemblyName>$(ProjectName)</AssemblyName>
 		<RootNamespace>$(ProjectName)</RootNamespace>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<TargetFramework>net5.0</TargetFramework>
 	</PropertyGroup>
 
