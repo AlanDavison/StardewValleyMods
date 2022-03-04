@@ -201,6 +201,64 @@ namespace SmartBuilding
 				getValue: () => _config.CrabPotsInAnyWaterTile,
 				setValue: b => _config.CrabPotsInAnyWaterTile = b
 				);
+			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Allow planting crops",
+				getValue: () => _config.EnablePlantingCrops,
+				setValue: b => _config.EnablePlantingCrops = b
+				);
+			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Allow fertilizing crops",
+				getValue: () => _config.EnableCropFertilizers,
+				setValue: b => _config.EnableCropFertilizers = b
+			);
+			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Allow fertilizing trees",
+				getValue: () => _config.EnableTreeFertilizers,
+				setValue: b => _config.EnableTreeFertilizers = b
+			);
+			
+			configMenuApi.AddPageLink(
+				mod: ModManifest,
+				pageId: "JsonGuide",
+				text: () => "(Click me!) A short guide on adding mouse bindings."
+				);
+			
+			configMenuApi.AddPage(
+				mod: ModManifest,
+				pageId: "JsonGuide",
+				pageTitle: () => "Mouse Key Bindings"
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "From: https://stardewvalleywiki.com/Modding:Player_Guide/Key_Bindings#Multi-key_bindings"
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "Mods using SMAPI 3.9+ features can support multi-key bindings. That lets you combine multiple button codes into a combo keybind, and list alternate keybinds. For example, \"LeftShoulder, LeftControl + S\" will apply if LeftShoulder is pressed, or if both LeftControl and S are pressed."
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "Some things to keep in mind:"
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "The order doesn't matter, so \"LeftControl + S\" and \"S + LeftControl\" are equivalent."
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "SMAPI doesn't prevent mods from using overlapping hotkeys. For example, if one mod uses \"S\" and the other mod uses \"LeftControl + S\", pressing LeftControl and S will activate both."
+			);
 		}
 
 		private void RenderedHud(object? sender, RenderedHudEventArgs e)
