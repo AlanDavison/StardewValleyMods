@@ -153,20 +153,20 @@ namespace SmartBuilding
 		
 		private void GameLaunched(object sender, GameLaunchedEventArgs e)
 		{
-			try
-			{
-				RegisterWithGmcm();
-			}
-			catch (Exception ex)
-			{
-				_logger.Log("User didn't have GMCM installed. This is not an error.");
-			}
+			RegisterWithGmcm();
 		}
 
 		private void RegisterWithGmcm()
 		{
 			GenericModConfigMenuApi configMenuApi =
 				Helper.ModRegistry.GetApi<GenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+
+			if (configMenuApi == null)
+			{
+				_logger.Log("The user doesn't have GMCM installed. This is not an error.", LogLevel.Info);
+
+				return;
+			}
 
 			configMenuApi.Register(ModManifest,
 				() => _config = new ModConfig(),
