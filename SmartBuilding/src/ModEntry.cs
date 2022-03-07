@@ -17,6 +17,7 @@ using Object = StardewValley.Object;
 TODO: Comment this more heavily.
 TODO: Implement correct spacing restrictions for fruit trees, etc. Should be relatively simple with a change to our adjacent tile detection method.
 TODO: Split things into separate classes where it would make things neater.
+TODO: Lots of minor optimisations. Move ItemType detection prior to CanBePlacedHere called.
 */
 
 namespace SmartBuilding
@@ -28,10 +29,10 @@ namespace SmartBuilding
 		private static IMonitor _monitor;
 		private static Logger _logger;
 		private static ModConfig _config;
-		
+
 		private Dictionary<Vector2, ItemInfo> _tilesSelected = new Dictionary<Vector2, ItemInfo>();
 		private Vector2 _currentTile = Vector2.Zero;
-		private Vector2 _hudPosition; 
+		private Vector2 _hudPosition;
 		private Texture2D _buildingHud;
 		private bool _currentlyDrawing = false;
 		private bool _currentlyErasing = false;
@@ -97,6 +98,10 @@ namespace SmartBuilding
 			/// </summary>
 			TreeFertilizer,
 			/// <summary>
+			/// Tappers need slightly special logic.
+			/// </summary>
+			Tapper,
+			/// <summary>
 			/// A generic placeable object.
 			/// </summary>
 			Generic
@@ -124,9 +129,9 @@ namespace SmartBuilding
 			_config = _helper.ReadConfig<ModConfig>();
 			_hudPosition = new Vector2(50, 0);
 			_buildingHud = _helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
-			
+
 			Harmony harmony = new Harmony(ModManifest.UniqueID);
-			
+
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
 				prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(Patches.ObjectPatches.PlacementAction_Prefix)));
@@ -138,16 +143,17 @@ namespace SmartBuilding
 			_helper.Events.Input.CursorMoved += CursorMoved;
 			_helper.Events.Display.RenderedWorld += RenderedWorld;
 			_helper.Events.Display.RenderedHud += RenderedHud;
-			
+
 			// If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
-			_helper.Events.Player.Warped += (sender, args) => { 
+			_helper.Events.Player.Warped += (sender, args) =>
+			{
 				ClearPaintedTiles();
 				_buildingMode = false;
 				_currentlyDrawing = false;
 				ObjectPatches.CurrentlyDrawing = false;
 			};
 		}
-		
+
 		private void GameLaunched(object sender, GameLaunchedEventArgs e)
 		{
 			RegisterWithGmcm();
@@ -168,67 +174,67 @@ namespace SmartBuilding
 			configMenuApi.Register(ModManifest,
 				() => _config = new ModConfig(),
 				() => Helper.WriteConfig(_config));
-			
+
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
 				text: () => "Keybinds"
 			);
-			
+
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () => "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually."
-				);
+			);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Engage build mode",
 				getValue: () => _config.EngageBuildMode,
 				setValue: value => _config.EngageBuildMode = value);
-			
+
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Hold to draw",
 				getValue: () => _config.HoldToDraw,
 				setValue: value => _config.HoldToDraw = value);
-			
+
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Hold to erase",
 				getValue: () => _config.HoldToErase,
 				setValue: value => _config.HoldToErase = value);
-			
+
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Confirm build",
 				getValue: () => _config.ConfirmBuild,
 				setValue: value => _config.ConfirmBuild = value);
-			
+
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
 				text: () => "The Slightly Cheaty Zone"
-				);
-			
+			);
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Place crab pots in any water tile",
 				getValue: () => _config.CrabPotsInAnyWaterTile,
 				setValue: b => _config.CrabPotsInAnyWaterTile = b
-				);
-			
+			);
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow planting crops",
 				getValue: () => _config.EnablePlantingCrops,
 				setValue: b => _config.EnablePlantingCrops = b
-				);
-			
+			);
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow fertilizing crops",
 				getValue: () => _config.EnableCropFertilizers,
 				setValue: b => _config.EnableCropFertilizers = b
 			);
-			
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow fertilizing trees",
@@ -236,38 +242,45 @@ namespace SmartBuilding
 				setValue: b => _config.EnableTreeFertilizers = b
 			);
 			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Allow tree tappers",
+				getValue: () => _config.EnableTreeTappers,
+				setValue: b => _config.EnableTreeTappers = b
+			);
+
 			configMenuApi.AddPageLink(
 				mod: ModManifest,
 				pageId: "JsonGuide",
 				text: () => "(Click me!) A short guide on adding mouse bindings."
-				);
-			
+			);
+
 			configMenuApi.AddPage(
 				mod: ModManifest,
 				pageId: "JsonGuide",
 				pageTitle: () => "Mouse Key Bindings"
 			);
-			
+
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () => "From: https://stardewvalleywiki.com/Modding:Player_Guide/Key_Bindings#Multi-key_bindings"
 			);
-			
+
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () => "Mods using SMAPI 3.9+ features can support multi-key bindings. That lets you combine multiple button codes into a combo keybind, and list alternate keybinds. For example, \"LeftShoulder, LeftControl + S\" will apply if LeftShoulder is pressed, or if both LeftControl and S are pressed."
 			);
-			
+
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () => "Some things to keep in mind:"
 			);
-			
+
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () => "The order doesn't matter, so \"LeftControl + S\" and \"S + LeftControl\" are equivalent."
 			);
-			
+
 			configMenuApi.AddParagraph(
 				mod: ModManifest,
 				text: () => "SMAPI doesn't prevent mods from using overlapping hotkeys. For example, if one mod uses \"S\" and the other mod uses \"LeftControl + S\", pressing LeftControl and S will activate both."
@@ -283,7 +296,7 @@ namespace SmartBuilding
 				_hudPosition = new Vector2(
 					(windowWidth / 2) - (_itemBarWidth / 2) - _buildingHud.Width * 4,
 					0);
-				
+
 				e.SpriteBatch.Draw(
 					texture: _buildingHud,
 					position: _hudPosition,
@@ -303,7 +316,7 @@ namespace SmartBuilding
 			// If the player is holding down the draw keybind, we want to call AddTile to see if we can
 			// add the selected item to the tile under the cursor.
 			if (_currentlyDrawing)
-			{ 
+			{
 				int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
 
 				AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
@@ -340,33 +353,35 @@ namespace SmartBuilding
 		/// <returns></returns>
 		private bool CanBePlacedHere(Vector2 v, Item i)
 		{
+			// TODO: Ensure all logic in here flows the same way. Some things are slightly different because of being written at different times.
 			ItemType itemType = IdentifyItemType((Object)i);
-			
+			GameLocation here = Game1.currentLocation;
+
 			// TODO: Add logic to allow for placing floors underneath fences.
 			switch (itemType)
 			{
 				case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
-					return CrabPot.IsValidCrabPotLocationTile(Game1.currentLocation, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
+					return CrabPot.IsValidCrabPotLocationTile(here, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
 				case ItemType.GrassStarter: // We want to fall through here.
 				case ItemType.Floor:
 					// In this case, we need to know whether there's a TerrainFeature in the tile.
 					// isTileLocationTotallyClearAndPlaceable ignores TerrainFeatures, it seems.
 					bool isFloorPlaceable = false;
 
-					isFloorPlaceable = !Game1.currentLocation.terrainFeatures.ContainsKey(v);
+					isFloorPlaceable = !here.terrainFeatures.ContainsKey(v);
 
-					if (!Game1.currentLocation.isTileLocationTotallyClearAndPlaceable(v))
+					if (!here.isTileLocationTotallyClearAndPlaceable(v))
 					{
-						if (Game1.currentLocation.Objects.ContainsKey(v))
+						if (here.Objects.ContainsKey(v))
 						{
-							if (Game1.currentLocation.Objects[v].Name.Contains("Fence") ||
-								Game1.currentLocation.Objects[v].Name.Contains("Wall"))
+							if (here.Objects[v].Name.Contains("Fence") ||
+								here.Objects[v].Name.Contains("Wall"))
 								return true;
 						}
 
 						return false;
 					}
-					
+
 					return isFloorPlaceable;
 				case ItemType.Chest:
 					return !i.Name.Equals("Junimo Chest"); // This is very hackish. TODO: Move this Junimo Chest blocking logic further up the chain.
@@ -374,14 +389,14 @@ namespace SmartBuilding
 					// If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
 					if (!_config.EnableCropFertilizers)
 						return false;
-					
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
+
+					if (here.terrainFeatures.ContainsKey(v))
 					{
 						// We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
-						if (Game1.currentLocation.terrainFeatures[v] is HoeDirt)
+						if (here.terrainFeatures[v] is HoeDirt)
 						{
 							// If it is, we want to grab the HoeDirt, and check for the possibility of planting.
-							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[v];
+							HoeDirt hd = (HoeDirt)here.terrainFeatures[v];
 							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y, true);
 						}
 					}
@@ -391,15 +406,15 @@ namespace SmartBuilding
 					// If the setting to enable tree fertilizers is off, return false to ensure they can't be added to the queue.
 					if (!_config.EnableTreeFertilizers)
 						return false;
-					
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
+
+					if (here.terrainFeatures.ContainsKey(v))
 					{
 						// If there's a TerrainFeature here, we check if it's a tree.
-						if (Game1.currentLocation.terrainFeatures[v] is Tree)
+						if (here.terrainFeatures[v] is Tree)
 						{
 							// It is a tree, so now we check to see if the tree is fertilised.
-							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[v];
-							
+							Tree tree = (Tree)here.terrainFeatures[v];
+
 							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it, so we return false.
 							if (tree.fertilized.Value)
 								return false;
@@ -414,11 +429,40 @@ namespace SmartBuilding
 					if (!_config.EnablePlantingCrops)
 						return false;
 
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
+					if (here.terrainFeatures.ContainsKey(v))
 					{
-						HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[v];
+						if (here.terrainFeatures[v] is HoeDirt)
+						{
+							HoeDirt hd = (HoeDirt)here.terrainFeatures[v];
 
-						return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y);
+							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y);
+						}
+					}
+
+					return false;
+				case ItemType.Tapper:
+					// If the setting to enable tree tappers is off, we return false here to ensure nothing further happens.
+					if (!_config.EnableTreeTappers)
+						return false;
+
+					if (here.terrainFeatures.ContainsKey(v))
+					{
+						if (here.terrainFeatures[v] is Tree)
+						{
+							Tree tree = (Tree)here.terrainFeatures[v];
+
+							// If the tree isn't tapped, we confirm that a tapper can be placed here.
+							if (!tree.tapped)
+							{
+								if (tree.growthStage >= 5)
+								{
+									// If the tree is fully grown, we *can* place a tapper.
+									return true;
+								}
+
+								return false;
+							}
+						}
 					}
 
 					return false;
@@ -454,7 +498,8 @@ namespace SmartBuilding
 				return ItemType.TreeFertilizer;
 			else if (item.Category == -19)
 				return ItemType.Fertilizer;
-			
+			else if (item.Name.Equals("Tapper") || item.Name.Equals("Heavy Tapper"))
+				return ItemType.Tapper;
 
 			return ItemType.Generic;
 		}
@@ -491,19 +536,19 @@ namespace SmartBuilding
 		private void AddTile(Item item, Vector2 v, int itemInventoryIndex)
 		{
 			// We're not in building mode, so we do nothing.
-			if (!_buildingMode) 
+			if (!_buildingMode)
 				return;
-			
+
 			// If the player isn't holding an item, we do nothing.
-			if (Game1.player.CurrentItem == null) 
+			if (Game1.player.CurrentItem == null)
 				return;
 
 			// If the item isn't placeable, we do nothing.
-			if (!item.isPlaceable()) 
+			if (!item.isPlaceable())
 				return;
 
 			// If the item cannot be placed here according to our own rules, we do nothing. This is to allow for slightly custom placement logic.
-			if (!CanBePlacedHere(v, item)) 
+			if (!CanBePlacedHere(v, item))
 				return;
 
 			ItemInfo itemInfo = GetItemInfo((Object)item, itemInventoryIndex);
@@ -513,10 +558,10 @@ namespace SmartBuilding
 			{
 				//Next, we want to check if the item is flooring intended to be placed on a tile that already has a TerrainFeature.
 				if (itemInfo.itemType == ItemType.Floor)
-				{ 
+				{
 					// We're dealing with a floor, so we need to check if the target tile has a terrain feature on it.
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
-					{ 
+					{
 						// The tile has a terrain feature on it, so we want to simply return. Otherwise, we can fall through and continue as normal.
 						return;
 					}
@@ -532,10 +577,10 @@ namespace SmartBuilding
 			// Although crab pots are the only currently tested object that
 			// go in water, I do want to modularise this later.
 			// TODO: Modularise for not only crab pots.
-			
+
 			if (_config.CrabPotsInAnyWaterTile)
 				return true;
-			
+
 			List<Vector2> directions = new List<Vector2>()
 			{
 				v + new Vector2(-1, 0), // Left
@@ -592,7 +637,7 @@ namespace SmartBuilding
 			{
 				RefundItem(t.Value.item);
 			}
-			
+
 			// And, finally, clear it.
 			_tilesSelected.Clear();
 		}
@@ -602,11 +647,11 @@ namespace SmartBuilding
 			// If the world isn't ready, we definitely don't want to do anything.
 			if (!Context.IsWorldReady)
 				return;
-			
+
 			// If a menu is up, we don't want any of our controls to do anything.
 			if (Game1.activeClickableMenu != null)
 				return;
-			
+
 			// This is not a hold situation, so we want JustPressed here.
 			if (_config.EngageBuildMode.JustPressed())
 			{
@@ -633,7 +678,7 @@ namespace SmartBuilding
 			if (_config.HoldToErase.JustPressed())
 			{
 				_currentlyErasing = true;
-				
+
 				Vector2 v = Game1.currentCursorTile;
 				Vector2 flaggedForRemoval = new Vector2();
 
@@ -671,11 +716,12 @@ namespace SmartBuilding
 			Object itemToPlace = (Object)item.Value.item;
 			Vector2 targetTile = item.Key;
 			ItemInfo itemInfo = item.Value;
+			GameLocation here = Game1.currentLocation;
 
 			if (itemToPlace != null && CanBePlacedHere(targetTile, itemInfo.item))
 			{ // The item can be placed here.
 				if (itemInfo.itemType == ItemType.Floor)
-				{ 
+				{
 					// We're specifically dealing with a floor/path.
 
 					int? floorType = GetFlooringType(itemToPlace.Name);
@@ -710,11 +756,11 @@ namespace SmartBuilding
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.Chest)
-				{ 
+				{
 					// We're dealing with a chest.
 					int? chestType = GetChestType(itemToPlace.Name);
 					Chest chest;
-					
+
 					if (chestType.HasValue)
 					{
 						chest = new Chest(true, chestType.Value);
@@ -722,7 +768,7 @@ namespace SmartBuilding
 					else
 					{ // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
 						RefundItem(itemToPlace);
-					
+
 						return;
 					}
 
@@ -734,7 +780,7 @@ namespace SmartBuilding
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.Fence)
-				{ 
+				{
 					// We're dealing with a fence.
 
 					itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
@@ -747,7 +793,7 @@ namespace SmartBuilding
 				else if (itemInfo.itemType == ItemType.GrassStarter)
 				{
 					Grass grassStarter = new Grass(1, 4);
-					
+
 					// At this point, we *need* there to be no TerrainFeature present.
 					if (!Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
 						Game1.currentLocation.terrainFeatures.Add(item.Key, grassStarter);
@@ -761,7 +807,7 @@ namespace SmartBuilding
 
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
 					{
-						
+
 					}
 					else
 						RefundItem(item.Value.item);
@@ -808,7 +854,7 @@ namespace SmartBuilding
 						{
 							// If it is, we want to grab the HoeDirt, check if it's already got a fertiliser, and fertilise if not.
 							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[targetTile];
-							
+
 							// 0 here means no fertilizer.
 							if (hd.fertilizer.Value == 0)
 							{
@@ -816,7 +862,7 @@ namespace SmartBuilding
 							}
 						}
 					}
-					
+
 				}
 				else if (itemInfo.itemType == ItemType.TreeFertilizer)
 				{
@@ -827,16 +873,33 @@ namespace SmartBuilding
 						{
 							// It is a tree, so now we check to see if the tree is fertilised.
 							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[targetTile];
-							
-							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it, so we return false.
-							if (tree.fertilized.Value)
-								return;
-							else
+
+							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it.
+							if (!tree.fertilized.Value)
 								tree.fertilize(Game1.currentLocation);
 						}
 					}
 				}
-				else 
+				else if (itemInfo.itemType == ItemType.Tapper)
+				{
+					if (here.terrainFeatures.ContainsKey(targetTile))
+					{
+						if (here.terrainFeatures[targetTile] is Tree)
+						{
+							Tree tree = (Tree)here.terrainFeatures[targetTile];
+
+							if (!tree.tapped.Value)
+							{
+								if (!itemToPlace.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player))
+								{
+									// If the placement action didn't succeed, we refund the item.
+									RefundItem(itemToPlace);
+								}
+							}
+						}
+					}
+				}
+				else
 				{ // We're dealing with a generic placeable.
 					bool successfullyPlaced = itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 

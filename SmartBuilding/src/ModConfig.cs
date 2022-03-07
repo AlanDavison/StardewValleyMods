@@ -15,5 +15,7 @@ namespace SmartBuilding
 		public bool EnablePlantingCrops = false;
 		public bool EnableCropFertilizers = false;
 		public bool EnableTreeFertilizers = false;
+		public bool EnableTreeTappers = false;
+		public bool EnableDebugMode = true;
 	}
 }
