@@ -362,7 +362,14 @@ namespace SmartBuilding
 			{
 				case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
 					return CrabPot.IsValidCrabPotLocationTile(here, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
-				case ItemType.GrassStarter: // We want to fall through here.
+				case ItemType.GrassStarter:
+
+					// If there's a terrain feature here, we can't possibly place a grass starter.
+					if (here.terrainFeatures.ContainsKey(v))
+						return false;
+					else
+						return true;
+
 				case ItemType.Floor:
 					// In this case, we need to know whether there's a TerrainFeature in the tile.
 					// isTileLocationTotallyClearAndPlaceable ignores TerrainFeatures, it seems.
