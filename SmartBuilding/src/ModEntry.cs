@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +11,8 @@ using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
+using StardewValley.Minigames;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using Object = StardewValley.Object;
@@ -34,9 +38,11 @@ namespace SmartBuilding
 		private Vector2 _currentTile = Vector2.Zero;
 		private Vector2 _hudPosition;
 		private Texture2D _buildingHud;
+		private Texture2D _itemBox;
 		private bool _currentlyDrawing = false;
 		private bool _currentlyErasing = false;
 		private bool _buildingMode = false;
+		private bool _toolbarFlipped = false;
 		private int _itemBarWidth = 800; // This is the default.
 
 		/// <summary>
@@ -129,7 +135,10 @@ namespace SmartBuilding
 			_config = _helper.ReadConfig<ModConfig>();
 			_hudPosition = new Vector2(50, 0);
 			_buildingHud = _helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
-
+			 _itemBox = _helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
+			
+			//_itemBox = _helper.Content.Load<Texture2D>("LooseSprites/Cursors", ContentSource.GameContent);
+			
 			Harmony harmony = new Harmony(ModManifest.UniqueID);
 
 			harmony.Patch(
@@ -208,6 +217,13 @@ namespace SmartBuilding
 				name: () => "Confirm build",
 				getValue: () => _config.ConfirmBuild,
 				setValue: value => _config.ConfirmBuild = value);
+			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Show Build Queue",
+				getValue: () => _config.ShowBuildQueue,
+				setValue: value => _config.ShowBuildQueue = value
+				);
 
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
@@ -287,12 +303,14 @@ namespace SmartBuilding
 			);
 		}
 
+		// TODO: Actually comment things in this method.
 		private void RenderedHud(object? sender, RenderedHudEventArgs e)
 		{
 			if (_buildingMode)
 			{ // There's absolutely no need to run this while we're not in building mode.
 				int windowWidth = Game1.game1.Window.ClientBounds.Width;
 
+				// TODO: Use the newer logic I have to get the toolbar position for this.
 				_hudPosition = new Vector2(
 					(windowWidth / 2) - (_itemBarWidth / 2) - _buildingHud.Width * 4,
 					0);
@@ -308,7 +326,106 @@ namespace SmartBuilding
 					effects: SpriteEffects.None,
 					layerDepth: 1f
 				);
+
+				if (_config.ShowBuildQueue)
+				{
+					Dictionary<Item, int> itemAmounts = new Dictionary<Item, int>();
+					
+					foreach (var item in _tilesSelected.Values.GroupBy(x => x))
+					{
+						itemAmounts.Add(item.Key.item, item.Count());
+					}
+
+					float screenWidth, screenHeight;
+					screenWidth = Game1.viewport.Width * Game1.options.zoomLevel;
+					screenHeight = Game1.viewport.Height * Game1.options.zoomLevel;
+					Vector2 startingPoint = new Vector2();
+					
+					#region Shameless decompile copy
+					
+					Point playerGlobalPosition = Game1.player.GetBoundingBox().Center;
+					Vector2 playerLocalVector = Game1.GlobalToLocal(globalPosition: new Vector2(playerGlobalPosition.X, playerGlobalPosition.Y), viewport: Game1.viewport);
+					bool toolbarAtTop = ((playerLocalVector.Y > (float)(Game1.viewport.Height / 2 + 64)) ? true : false);
+					
+					#endregion
+
+					
+					if (toolbarAtTop)
+					{
+						startingPoint = new Vector2(screenWidth / 2 - 398, 130);
+					}
+					else
+						startingPoint = new Vector2(screenWidth / 2 - 398, screenHeight - 230);
+
+					foreach (var item in itemAmounts)
+					{
+						e.SpriteBatch.Draw(
+							texture: _itemBox,
+							position: startingPoint,
+							sourceRectangle: new Rectangle(0, 128, 24, 24),
+							color: Color.White,
+							rotation: 0f,
+							origin: Vector2.Zero,
+							scale: Game1.pixelZoom,
+							effects: SpriteEffects.None,
+							layerDepth: 1f
+						);
+						
+						// e.SpriteBatch.Draw(
+						// 	texture: _itemBox,
+						// 	position: startingPoint,
+						// 	sourceRectangle: new Rectangle(293, 360, 36, 24),
+						// 	color: Color.White,
+						// 	rotation: 0f,
+						// 	origin: Vector2.Zero,
+						// 	scale: Game1.pixelZoom,
+						// 	effects: SpriteEffects.None,
+						// 	layerDepth: 1f
+						// );
+						
+						item.Key.drawInMenu(
+							e.SpriteBatch,
+							startingPoint + new Vector2(17, 16),
+							0.75f, 1f, 4f, StackDrawType.Hide);
+
+						// Utility.drawTextWithShadow(
+						// 	b: e.SpriteBatch,
+						// 	text: item.Value.ToString(),
+						// 	font: Game1.smallFont,
+						// 	position: startingPoint + new Vector2(4, 24 * Game1.pixelZoom),
+						// 	color: Color.White
+						// 	);
+						
+						DrawStringWithShadow(
+							spriteBatch: e.SpriteBatch,
+							font: Game1.smallFont,
+							text: item.Value.ToString(),
+							position: startingPoint + new Vector2(10, 14) * Game1.pixelZoom,
+							textColour: Color.White,
+							shadowColour: Color.Black
+							);
+
+						startingPoint += new Vector2(24 * Game1.pixelZoom + 4, 0);
+					}
+				}
 			}
+		}
+
+		private void DrawStringWithShadow(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, Color textColour, Color shadowColour)
+		{
+			spriteBatch.DrawString(
+				spriteFont: font,
+				text: text,
+				position: position + new Vector2(2, 2),
+				shadowColour
+				);
+						
+			spriteBatch.DrawString(
+				spriteFont: font,
+				text: text,
+				position: position,
+				textColour
+				);
 		}
 
 		private void CursorMoved(object sender, CursorMovedEventArgs e)
@@ -642,7 +759,7 @@ namespace SmartBuilding
 			// To clear the painted tiles, we want to iterate through our Dictionary, and refund every item contained therein.
 			foreach (var t in _tilesSelected)
 			{
-				RefundItem(t.Value.item);
+				RefundItem(t.Value.item, "User left build mode. Refunding items.", LogLevel.Trace, false);
 			}
 
 			// And, finally, clear it.
@@ -757,7 +874,6 @@ namespace SmartBuilding
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
 					{
 						Flooring flooring = (Flooring)Game1.currentLocation.terrainFeatures[item.Key];
-						_monitor.Log($"Floor type {flooring.whichFloor} placed successfully.");
 					}
 					else
 						RefundItem(item.Value.item);
@@ -782,7 +898,9 @@ namespace SmartBuilding
 					bool placed = chest.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
 					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
-						_monitor.Log($"Item {item.Value.item.Name} placed successfully.");
+					{
+						
+					}
 					else
 						RefundItem(item.Value.item);
 				}
@@ -793,7 +911,9 @@ namespace SmartBuilding
 					itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
 					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
-						_monitor.Log($"Item {item.Value.item.Name} placed successfully.");
+					{
+						
+					}
 					else
 						RefundItem(item.Value.item);
 				}
@@ -912,11 +1032,12 @@ namespace SmartBuilding
 
 					// if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
 					if (successfullyPlaced)
-						_monitor.Log($"Item {item.Value.item.Name} placed successfully.");
+					{
+						
+					}
 					else
 						RefundItem(item.Value.item);
 				}
-
 			}
 			else
 			{
@@ -924,10 +1045,12 @@ namespace SmartBuilding
 			}
 		}
 
-		private void RefundItem(Item item, string reason = "Something went wrong")
+		private void RefundItem(Item item, string reason = "Something went wrong", LogLevel logLevel = LogLevel.Error, bool shouldLog = false)
 		{
 			Game1.player.addItemToInventoryBool(item.getOne(), false);
-			_monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", LogLevel.Error);
+			
+			if (shouldLog)
+				_monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", logLevel);
 		}
 
 		private int? GetFlooringType(string itemName)
