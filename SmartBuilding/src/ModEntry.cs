@@ -514,6 +514,11 @@ namespace SmartBuilding
 					if (!_config.EnableCropFertilizers)
 						return false;
 
+					// If there's a fence, etc., here, we don't want to place fertiliser.
+					// It is technically valid, but there's no reason someone would want to.
+					if (here.Objects.ContainsKey(v))
+						return false;
+
 					if (here.terrainFeatures.ContainsKey(v))
 					{
 						// We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
@@ -521,6 +526,20 @@ namespace SmartBuilding
 						{
 							// If it is, we want to grab the HoeDirt, and check for the possibility of planting.
 							HoeDirt hd = (HoeDirt)here.terrainFeatures[v];
+
+							if (hd.crop != null)
+							{
+								// If the HoeDirt has a crop, we want to grab it and check for growth phase and fertilization status.
+								Crop cropToCheck = hd.crop;
+
+								if (cropToCheck.currentPhase.Value != 0)
+								{
+									// If the crop's current phase is not zero, we return false.
+
+									return false;
+								}
+							}
+							
 							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y, true);
 						}
 					}
@@ -985,7 +1004,36 @@ namespace SmartBuilding
 							// 0 here means no fertilizer.
 							if (hd.fertilizer.Value == 0)
 							{
-								hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
+								// Next, we want to check if there's already a crop here.
+								if (hd.crop != null)
+								{
+									Crop cropToCheck = hd.crop;
+
+									if (cropToCheck.currentPhase.Value == 0)
+									{
+										// If the current crop phase is zero, we can plant the fertilizer here.
+										
+										hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
+									}
+								}
+								else
+								{
+									// If there is no crop here, we can plant the fertilizer with reckless abandon.
+									
+									hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
+								}
+							}
+							else
+							{
+								// If there is already a fertilizer here, we want to refund the item.
+								RefundItem(itemToPlace, "There was already fertilizer placed here", LogLevel.Warn);
+							}
+							
+							// Now, we want to run the final check to see if the fertilization was successful.
+							if (hd.fertilizer.Value == 0)
+							{
+								// If there's still no fertilizer here, we need to refund the item.
+								RefundItem(itemToPlace, "There was either fertilizer already here, or the crop is too grown to accept fertilizer", LogLevel.Warn);
 							}
 						}
 					}
