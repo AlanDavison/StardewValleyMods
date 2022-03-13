@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -14,6 +15,7 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Minigames;
 using StardewValley.Objects;
+using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
 using Object = StardewValley.Object;
 
@@ -22,6 +24,8 @@ TODO: Comment this more heavily.
 TODO: Implement correct spacing restrictions for fruit trees, etc. Should be relatively simple with a change to our adjacent tile detection method.
 TODO: Split things into separate classes where it would make things neater.
 TODO: Lots of minor optimisations. Move ItemType detection prior to CanBePlacedHere called.
+
+TODO: (Big) Consolidate all "can be placed logic". Right now, there's a lot of duplication, and it's making maintenance increasingly awkward.
 */
 
 namespace SmartBuilding
@@ -135,10 +139,10 @@ namespace SmartBuilding
 			_config = _helper.ReadConfig<ModConfig>();
 			_hudPosition = new Vector2(50, 0);
 			_buildingHud = _helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
-			 _itemBox = _helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
-			
+			_itemBox = _helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
+
 			//_itemBox = _helper.Content.Load<Texture2D>("LooseSprites/Cursors", ContentSource.GameContent);
-			
+
 			Harmony harmony = new Harmony(ModManifest.UniqueID);
 
 			harmony.Patch(
@@ -217,13 +221,37 @@ namespace SmartBuilding
 				name: () => "Confirm build",
 				getValue: () => _config.ConfirmBuild,
 				setValue: value => _config.ConfirmBuild = value);
-			
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Show Build Queue",
 				getValue: () => _config.ShowBuildQueue,
 				setValue: value => _config.ShowBuildQueue = value
-				);
+			);
+
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Less restrictive floor placement",
+				tooltip: () => "Allows you to place floors essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+				getValue: () => _config.LessRestrictiveFloorPlacement,
+				setValue: value => _config.LessRestrictiveFloorPlacement = value
+			);
+
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Replaceable floors",
+				tooltip: () => "Allows you to replace an existing floor/path with another. Note that you will not get the existing floor back (yet).",
+				getValue: () => _config.EnableReplacingFloors,
+				setValue: value => _config.EnableReplacingFloors = value
+			);
+
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Replaceable fences",
+				tooltip: () => "Allows you to replace an existing fence with another. Note that you will not get the existing fence back.",
+				getValue: () => _config.EnableReplacingFences,
+				setValue: value => _config.EnableReplacingFences = value
+			);
 
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
@@ -257,7 +285,7 @@ namespace SmartBuilding
 				getValue: () => _config.EnableTreeFertilizers,
 				setValue: b => _config.EnableTreeFertilizers = b
 			);
-			
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow tree tappers",
@@ -330,26 +358,26 @@ namespace SmartBuilding
 				if (_config.ShowBuildQueue)
 				{
 					Dictionary<Item, int> itemAmounts = new Dictionary<Item, int>();
-					
+
 					foreach (var item in _tilesSelected.Values.GroupBy(x => x))
 					{
 						itemAmounts.Add(item.Key.item, item.Count());
 					}
 
 					float screenWidth, screenHeight;
-					screenWidth = Game1.viewport.Width * Game1.options.zoomLevel;
-					screenHeight = Game1.viewport.Height * Game1.options.zoomLevel;
+					screenWidth = Game1.uiViewport.Width * Game1.options.zoomLevel;
+					screenHeight = Game1.uiViewport.Height * Game1.options.zoomLevel;
 					Vector2 startingPoint = new Vector2();
-					
+
 					#region Shameless decompile copy
-					
+
 					Point playerGlobalPosition = Game1.player.GetBoundingBox().Center;
 					Vector2 playerLocalVector = Game1.GlobalToLocal(globalPosition: new Vector2(playerGlobalPosition.X, playerGlobalPosition.Y), viewport: Game1.viewport);
 					bool toolbarAtTop = ((playerLocalVector.Y > (float)(Game1.viewport.Height / 2 + 64)) ? true : false);
-					
+
 					#endregion
 
-					
+
 					if (toolbarAtTop)
 					{
 						startingPoint = new Vector2(screenWidth / 2 - 398, 130);
@@ -370,32 +398,12 @@ namespace SmartBuilding
 							effects: SpriteEffects.None,
 							layerDepth: 1f
 						);
-						
-						// e.SpriteBatch.Draw(
-						// 	texture: _itemBox,
-						// 	position: startingPoint,
-						// 	sourceRectangle: new Rectangle(293, 360, 36, 24),
-						// 	color: Color.White,
-						// 	rotation: 0f,
-						// 	origin: Vector2.Zero,
-						// 	scale: Game1.pixelZoom,
-						// 	effects: SpriteEffects.None,
-						// 	layerDepth: 1f
-						// );
-						
+
 						item.Key.drawInMenu(
 							e.SpriteBatch,
 							startingPoint + new Vector2(17, 16),
 							0.75f, 1f, 4f, StackDrawType.Hide);
 
-						// Utility.drawTextWithShadow(
-						// 	b: e.SpriteBatch,
-						// 	text: item.Value.ToString(),
-						// 	font: Game1.smallFont,
-						// 	position: startingPoint + new Vector2(4, 24 * Game1.pixelZoom),
-						// 	color: Color.White
-						// 	);
-						
 						DrawStringWithShadow(
 							spriteBatch: e.SpriteBatch,
 							font: Game1.smallFont,
@@ -403,7 +411,7 @@ namespace SmartBuilding
 							position: startingPoint + new Vector2(10, 14) * Game1.pixelZoom,
 							textColour: Color.White,
 							shadowColour: Color.Black
-							);
+						);
 
 						startingPoint += new Vector2(24 * Game1.pixelZoom + 4, 0);
 					}
@@ -418,14 +426,14 @@ namespace SmartBuilding
 				text: text,
 				position: position + new Vector2(2, 2),
 				shadowColour
-				);
-						
+			);
+
 			spriteBatch.DrawString(
 				spriteFont: font,
 				text: text,
 				position: position,
 				textColour
-				);
+			);
 		}
 
 		private void CursorMoved(object sender, CursorMovedEventArgs e)
@@ -474,7 +482,6 @@ namespace SmartBuilding
 			ItemType itemType = IdentifyItemType((Object)i);
 			GameLocation here = Game1.currentLocation;
 
-			// TODO: Add logic to allow for placing floors underneath fences.
 			switch (itemType)
 			{
 				case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
@@ -486,27 +493,40 @@ namespace SmartBuilding
 						return false;
 					else
 						return true;
-
 				case ItemType.Floor:
 					// In this case, we need to know whether there's a TerrainFeature in the tile.
-					// isTileLocationTotallyClearAndPlaceable ignores TerrainFeatures, it seems.
-					bool isFloorPlaceable = false;
-
-					isFloorPlaceable = !here.terrainFeatures.ContainsKey(v);
-
-					if (!here.isTileLocationTotallyClearAndPlaceable(v))
+					if (here.terrainFeatures.ContainsKey(v))
 					{
-						if (here.Objects.ContainsKey(v))
+						// At this point, we know there's a terrain feature here, so we grab a reference to it.
+						TerrainFeature tf = Game1.currentLocation.terrainFeatures[v];
+
+						if (tf != null && tf is Flooring)
 						{
-							if (here.Objects[v].Name.Contains("Fence") ||
-								here.Objects[v].Name.Contains("Wall"))
+							// If the setting to replace floors with floors is enabled, we return true.
+							if (_config.EnableReplacingFloors)
 								return true;
+							else
+								return false;
 						}
 
 						return false;
 					}
+					else if (here.objects.ContainsKey(v))
+					{
+						// We know an object exists here now, so we grab it.
+						Object o = here.objects[v];
 
-					return isFloorPlaceable;
+						// TODO: Make this less hardcoded in future.
+						if (o.Name.Contains("Fence"))
+						{
+							// This is a fence, so we return true.
+
+							return true;
+						}
+					}
+					
+					// At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
+					return _config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
 				case ItemType.Chest:
 					return !i.Name.Equals("Junimo Chest"); // This is very hackish. TODO: Move this Junimo Chest blocking logic further up the chain.
 				case ItemType.Fertilizer:
@@ -539,7 +559,7 @@ namespace SmartBuilding
 									return false;
 								}
 							}
-							
+
 							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y, true);
 						}
 					}
@@ -610,6 +630,48 @@ namespace SmartBuilding
 
 					return false;
 				case ItemType.Fence:
+					// We want to deal with fences specifically in order to handle fence replacements.
+					if (here.objects.ContainsKey(v))
+					{
+						// We know there's an object at these coordinates, so we grab a reference.
+						Object o = here.objects[v];
+
+						if (o != null)
+						{
+							// We try to identify what kind of object is placed here.
+							ItemType oType = IdentifyItemType(o);
+
+							if (oType == ItemType.Fence)
+							{
+								// We're dealing with a fence, so we next want to return true if the setting permits it.
+
+								if (_config.EnableReplacingFences)
+									return true;
+								else
+									return false;
+							}
+						}
+					}
+					else if (here.terrainFeatures.ContainsKey(v))
+					{
+						// There's a terrain feature here, so we want to check if it's a HoeDirt with a crop.
+						TerrainFeature feature = here.terrainFeatures[v];
+
+						if (feature != null && feature is HoeDirt)
+						{
+							if ((feature as HoeDirt).crop != null)
+							{
+								// There's a crop here, so we return false.
+
+								return false;
+							}
+
+							// At this point, we know it's a HoeDirt, but has no crop, so we can return true.
+							return true;
+						}
+					}
+
+					goto case ItemType.Generic;
 				case ItemType.Generic:
 					return Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v);
 			}
@@ -676,6 +738,8 @@ namespace SmartBuilding
 			};
 		}
 
+		// TODO: FIX EVERYTHING OTHER THAN FUCKING FLOORS, YOU DAFT SHIT. YOU BROKE THEM DOING THIS.
+
 		private void AddTile(Item item, Vector2 v, int itemInventoryIndex)
 		{
 			// We're not in building mode, so we do nothing.
@@ -699,19 +763,12 @@ namespace SmartBuilding
 			// We only want to add the tile if the Dictionary doesn't already contain it. 
 			if (!_tilesSelected.ContainsKey(v))
 			{
-				//Next, we want to check if the item is flooring intended to be placed on a tile that already has a TerrainFeature.
-				if (itemInfo.itemType == ItemType.Floor)
+				// We then want to check if the item can even be placed in this spot.
+				if (CanBePlacedHere(v, item))
 				{
-					// We're dealing with a floor, so we need to check if the target tile has a terrain feature on it.
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(v))
-					{
-						// The tile has a terrain feature on it, so we want to simply return. Otherwise, we can fall through and continue as normal.
-						return;
-					}
+					_tilesSelected.Add(v, itemInfo);
+					Game1.player.reduceActiveItemByOne();
 				}
-
-				_tilesSelected.Add(v, itemInfo);
-				Game1.player.reduceActiveItemByOne();
 			}
 		}
 
@@ -874,7 +931,7 @@ namespace SmartBuilding
 						floor = new Flooring(floorType.Value);
 					else
 					{ // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
-						RefundItem(itemToPlace);
+						RefundItem(itemToPlace, "Couldn't figure out the type of floor. This may be a modded floor/path we don't understand", LogLevel.Error, true);
 
 						return;
 					}
@@ -884,10 +941,26 @@ namespace SmartBuilding
 						Game1.currentLocation.terrainFeatures.Add(item.Key, floor);
 					else
 					{
-						RefundItem(item.Value.item, "There was already a TerrainFeature present. Maybe you hoed the ground before confirming the build");
+						// At this point, we know there's a terrain feature here.
+						if (_config.EnableReplacingFloors)
+						{
+							TerrainFeature tf = here.terrainFeatures[targetTile];
 
-						// We now want to jump straight out of this method, because this will flow through to the below if, and bad things will happen.
-						return;
+							if (tf != null && tf is Flooring)
+							{
+								// At this point, we know it's Flooring, so we remove the existing terrain feature, and add our new one.
+								here.terrainFeatures.Remove(targetTile);
+								Game1.currentLocation.terrainFeatures.Add(item.Key, floor);
+							}
+							else
+							{
+								// At this point, there IS a terrain feature here, but it isn't flooring, so we want to refund the item, and return.
+								RefundItem(item.Value.item, "There was already a TerrainFeature present. Maybe you hoed the ground before confirming the build");
+
+								// We now want to jump straight out of this method, because this will flow through to the below if, and bad things will happen.
+								return;
+							}
+						}
 					}
 
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
@@ -918,7 +991,7 @@ namespace SmartBuilding
 
 					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
 					{
-						
+
 					}
 					else
 						RefundItem(item.Value.item);
@@ -927,11 +1000,40 @@ namespace SmartBuilding
 				{
 					// We're dealing with a fence.
 
+					// We want to check to see if the target tile contains an object.
+					if (here.objects.ContainsKey(targetTile))
+					{
+						Object o = here.objects[targetTile];
+
+						if (o != null)
+						{
+							// We try to identify what kind of object is placed here.
+							ItemType oType = IdentifyItemType(o);
+
+							if (oType == ItemType.Fence)
+							{
+								if (_config.EnableReplacingFences)
+								{
+									// We have a fence, so we want to remove it before placing our new one.
+									here.objects.Remove(targetTile);
+								}
+
+								// TODO: In future, figure a way to refund the fence on the ground if it's near full health.
+							}
+							else
+							{
+								// If it isn't a fence, we want to refund the item, and return to avoid placing the fence.
+								RefundItem(item.Value.item);
+								return;
+							}
+						}
+					}
+
 					itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
 					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
 					{
-						
+
 					}
 					else
 						RefundItem(item.Value.item);
@@ -1012,14 +1114,14 @@ namespace SmartBuilding
 									if (cropToCheck.currentPhase.Value == 0)
 									{
 										// If the current crop phase is zero, we can plant the fertilizer here.
-										
+
 										hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
 									}
 								}
 								else
 								{
 									// If there is no crop here, we can plant the fertilizer with reckless abandon.
-									
+
 									hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
 								}
 							}
@@ -1028,7 +1130,7 @@ namespace SmartBuilding
 								// If there is already a fertilizer here, we want to refund the item.
 								RefundItem(itemToPlace, "There was already fertilizer placed here", LogLevel.Warn);
 							}
-							
+
 							// Now, we want to run the final check to see if the fertilization was successful.
 							if (hd.fertilizer.Value == 0)
 							{
@@ -1081,7 +1183,7 @@ namespace SmartBuilding
 					// if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
 					if (successfullyPlaced)
 					{
-						
+
 					}
 					else
 						RefundItem(item.Value.item);
@@ -1096,7 +1198,7 @@ namespace SmartBuilding
 		private void RefundItem(Item item, string reason = "Something went wrong", LogLevel logLevel = LogLevel.Error, bool shouldLog = false)
 		{
 			Game1.player.addItemToInventoryBool(item.getOne(), false);
-			
+
 			if (shouldLog)
 				_monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", logLevel);
 		}
