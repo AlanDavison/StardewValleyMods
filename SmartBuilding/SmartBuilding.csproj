@@ -3,15 +3,15 @@
 	<PropertyGroup>
 		<AssemblyName>$(ProjectName)</AssemblyName>
 		<RootNamespace>$(ProjectName)</RootNamespace>
-		<Version>1.0.7</Version>
+		<Version>1.0.8</Version>
 		<TargetFramework>net5.0</TargetFramework>
 	</PropertyGroup>
 
 	<!-- ModBuildConfig settings. -->
-	<Import Project="..\Build\Latest.targets"/>
+	<Import Project="..\Build\Latest.targets" />
 
 	<ItemGroup>
-		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0"/>
+		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
 	</ItemGroup>
 
 	<PropertyGroup>
@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="assets"/>
+		<Folder Include="assets" />
 	</ItemGroup>
 
 </Project>
