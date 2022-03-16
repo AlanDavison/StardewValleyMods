@@ -12,7 +12,10 @@ namespace SmartBuilding
 		public KeybindList HoldToDraw = KeybindList.Parse("MouseRight");
 		public KeybindList HoldToErase = KeybindList.Parse("LeftShift");
 		public KeybindList ConfirmBuild = KeybindList.Parse("MouseLeft");
+		public KeybindList PickUpObject = KeybindList.Parse("Delete");
+		public KeybindList PickUpFloor = KeybindList.Parse("End");
 		public bool ShowBuildQueue = true;
+		public bool CanDestroyChests = false;
 		public bool CrabPotsInAnyWaterTile = false;
 		public bool EnableReplacingFences = false;
 		public bool EnableReplacingFloors = false;

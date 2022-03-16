@@ -6,6 +6,7 @@ using System.Net.Mime;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using SmartBuilding.Helpers;
 using SmartBuilding.Patches;
 using SmartBuilding.Utilities;
@@ -17,6 +18,7 @@ using StardewValley.Minigames;
 using StardewValley.Objects;
 using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using Object = StardewValley.Object;
 
 /* 
@@ -26,6 +28,8 @@ TODO: Split things into separate classes where it would make things neater.
 TODO: Lots of minor optimisations. Move ItemType detection prior to CanBePlacedHere called.
 
 TODO: (Big) Consolidate all "can be placed logic". Right now, there's a lot of duplication, and it's making maintenance increasingly awkward.
+
+RELEASE THE NEW CHANGES TODAY, ALAN.
 */
 
 namespace SmartBuilding
@@ -68,6 +72,18 @@ namespace SmartBuilding
 			public ItemType itemType;
 			public int sheetId;
 			public int inventoryIndex;
+		}
+
+		private enum TileFeature
+		{
+			/// <summary>
+			/// A <see cref="StardewValley.Object"/>.
+			/// </summary>
+			Object,
+			/// <summary>
+			/// A <see cref="StardewValley.TerrainFeature"/>.
+			/// </summary>
+			TerrainFeature,
 		}
 
 		/// <summary>
@@ -221,12 +237,32 @@ namespace SmartBuilding
 				name: () => "Confirm build",
 				getValue: () => _config.ConfirmBuild,
 				setValue: value => _config.ConfirmBuild = value);
+			
+			configMenuApi.AddKeybindList(
+				mod: ModManifest,
+				name: () => "Pick up object",
+				getValue: () => _config.PickUpObject,
+				setValue: value => _config.PickUpObject = value);
+			
+			configMenuApi.AddKeybindList(
+				mod: ModManifest,
+				name: () => "Pick up floor",
+				getValue: () => _config.PickUpFloor,
+				setValue: value => _config.PickUpFloor = value);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
-				name: () => "Show Build Queue",
+				name: () => "Show build queue",
 				getValue: () => _config.ShowBuildQueue,
 				setValue: value => _config.ShowBuildQueue = value
+			);
+			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Can pick up chests",
+				tooltip: () => "WARNING: This will drop all contained items on the ground.",
+				getValue: () => _config.CanDestroyChests,
+				setValue: value => _config.CanDestroyChests = value
 			);
 
 			configMenuApi.AddBoolOption(
@@ -528,7 +564,7 @@ namespace SmartBuilding
 					// At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
 					return _config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
 				case ItemType.Chest:
-					return !i.Name.Equals("Junimo Chest"); // This is very hackish. TODO: Move this Junimo Chest blocking logic further up the chain.
+					goto case ItemType.Generic;
 				case ItemType.Fertilizer:
 					// If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
 					if (!_config.EnableCropFertilizers)
@@ -689,7 +725,7 @@ namespace SmartBuilding
 			// special treatment at all, and assist us in determining whether it's a TerrainFeature, or an Object.
 			if (itemName.Contains("Floor") || itemName.Contains("Path"))
 				return ItemType.Floor;
-			else if (itemName.Contains("Chest") && !itemName.Contains("Junimo"))
+			else if (itemName.Contains("Chest") || item is Chest)
 				return ItemType.Chest;
 			else if (itemName.Contains("Fence"))
 				return ItemType.Fence;
@@ -697,7 +733,7 @@ namespace SmartBuilding
 				return ItemType.GrassStarter;
 			else if (itemName.Equals("Crab Pot"))
 				return ItemType.CrabPot;
-			else if (item.Type == "Seeds")
+			else if (item.Type == "Seeds" || item.Category == -74)
 				return ItemType.Seed;
 			else if (item.Name.Equals("Tree Fertilizer"))
 				return ItemType.TreeFertilizer;
@@ -842,6 +878,162 @@ namespace SmartBuilding
 			_tilesSelected.Clear();
 		}
 
+		// TODO: Modularise this method more. Right now, it just works. It is not well structured for future maintenance.
+		private void DemolishOnTile(Vector2 tile, TileFeature feature)
+		{
+			GameLocation here = Game1.currentLocation;
+			Vector2 playerTile = Game1.player.getTileLocation();
+			Item itemToDestroy;
+			ItemType type;
+
+			// We're working with an Object in this specific instance.
+			if (feature == TileFeature.Object)
+			{
+				if (here.objects.ContainsKey(tile))
+				{
+					// We have an object in this tile, so we want to try to figure out what it is.
+
+					Object o = here.objects[tile];
+					itemToDestroy = Utility.fuzzyItemSearch(o.Name);
+
+					type = IdentifyItemType((Object)itemToDestroy);
+					
+					// Chests need special handling because they can store items.
+					if (type == ItemType.Chest)
+					{
+						// We're double checking at this point for safety. I want to be extra careful with chests.
+						if (here.objects.ContainsKey(tile))
+						{
+							// This is fairly fragile, but it's fine with vanilla chests, at least.
+							Chest chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
+							
+							(o as Chest).destroyAndDropContents(tile * 64, here);
+							Game1.player.addItemByMenuIfNecessary(chest.getOne());
+							here.objects.Remove(tile);
+						}
+					}
+					else if (o is Chest)
+					{
+						// We're double checking at this point for safety. I want to be extra careful with chests.
+						if (here.objects.ContainsKey(tile))
+						{
+							// This is fairly fragile, but it's fine with vanilla chests, at least.
+							Chest chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
+							
+							(o as Chest).destroyAndDropContents(tile * 64, here);
+							Game1.player.addItemByMenuIfNecessary(chest.getOne());
+							here.objects.Remove(tile);
+						}
+					}
+					else if (type == ItemType.Fence)
+					{
+						// We need special handling for fences, since we don't want to pick them up if their health has deteriorated too much.
+						Fence fenceToRemove = (Fence)o;
+
+						fenceToRemove.performRemoveAction(tile * 64, here);
+						here.objects.Remove(tile);
+						
+						// And, if the fence had enough health remaining, we refund it.
+						if (fenceToRemove.maxHealth.Value - fenceToRemove.health.Value < 0.5f)
+							Game1.player.addItemByMenuIfNecessary(fenceToRemove.getOne());
+					}
+					else
+					{
+						o.performRemoveAction(tile * 64, here);
+						Game1.player.addItemByMenuIfNecessary(o.getOne());
+						here.objects.Remove(tile);
+					}
+				}
+			}
+
+			// We're working with a TerrainFeature.
+			if (feature == TileFeature.TerrainFeature)
+			{
+				if (here.terrainFeatures.ContainsKey(tile))
+				{
+					TerrainFeature tf = here.terrainFeatures[tile];
+					
+					// We only really want to be handling flooring when removing TerrainFeatures.
+					if (tf is Flooring)
+					{
+						Flooring floor = (Flooring)tf;
+
+						int? floorType = floor.whichFloor.Value;
+						string? floorName = GetFlooringNameFromId(floorType.Value);
+						Object finalFloor;
+
+						if (floorType.HasValue)
+						{
+							floorName = GetFlooringNameFromId(floorType.Value);
+							finalFloor = (Object)Utility.fuzzyItemSearch(floorName, 1);
+						}
+						else
+						{
+							finalFloor = null;
+						}
+
+						if (finalFloor != null)
+							Game1.player.addItemByMenuIfNecessary(finalFloor);
+						// Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
+
+						here.terrainFeatures.Remove(tile);
+					}
+				}
+			}
+
+			// if (here.objects.ContainsKey(tile))
+			// {
+			// 	// There's an object placed here.
+			// 	Object o = here.objects[tile];
+			// 	Vector2 playerPosition = Game1.player.getTileLocation();
+			// 	// Tool pick = new Pickaxe();
+			// 	// pick.UpgradeLevel = 4;
+			//
+			// 	if (o is Chest)
+			// 	{
+			// 		(o as Chest).destroyAndDropContents(tile * 64, here);
+			// 		Game1.createItemDebris(o, playerTile * 64, 1, here);
+			// 		here.objects.Remove(tile);
+			// 	}
+			// 	else
+			// 	{
+			// 		o.performRemoveAction(tile * 64, here);
+			// 		Game1.createItemDebris(o.getOne(), playerTile * 64, 1, here);
+			// 		here.objects.Remove(tile);
+			// 	}
+			// }
+			//
+			// if (here.terrainFeatures.ContainsKey(tile))
+			// {
+			// 	TerrainFeature tf = here.terrainFeatures[tile];
+			//
+			// 	if (tf is Flooring)
+			// 	{
+			// 		Flooring floor = (Flooring)tf;
+			//
+			// 		int? floorType = floor.whichFloor.Value;
+			// 		string? floorName = GetFlooringNameFromId(floorType.Value);
+			// 		Object finalFloor;
+			//
+			// 		if (floorType.HasValue)
+			// 		{
+			// 			floorName = GetFlooringNameFromId(floorType.Value);
+			// 			finalFloor = (Object)Utility.fuzzyItemSearch(floorName, 1);
+			// 		}
+			// 		else
+			// 		{
+			// 			finalFloor = null;
+			// 		}
+			//
+			// 		if (finalFloor != null)
+			// 			Game1.player.addItemByMenuIfNecessary(finalFloor);
+			// 			// Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
+			//
+			// 		here.terrainFeatures.Remove(tile);
+			// 	}
+			// }
+		}
+
 		private void ButtonPressed(object sender, ButtonPressedEventArgs e)
 		{
 			// If the world isn't ready, we definitely don't want to do anything.
@@ -852,6 +1044,20 @@ namespace SmartBuilding
 			if (Game1.activeClickableMenu != null)
 				return;
 
+			// If the object demolish button was pressed...
+			if (_config.PickUpObject.JustPressed())
+			{
+				if (_buildingMode)
+					DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
+			}
+			
+			// If the TerrainFeature demolish button was pressed...
+			if (_config.PickUpFloor.JustPressed())
+			{
+				if (_buildingMode)
+					DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
+			}
+			
 			// This is not a hold situation, so we want JustPressed here.
 			if (_config.EngageBuildMode.JustPressed())
 			{
@@ -924,7 +1130,7 @@ namespace SmartBuilding
 				{
 					// We're specifically dealing with a floor/path.
 
-					int? floorType = GetFlooringType(itemToPlace.Name);
+					int? floorType = GetFlooringIdFromName(itemToPlace.Name);
 					Flooring floor;
 
 					if (floorType.HasValue)
@@ -949,7 +1155,7 @@ namespace SmartBuilding
 							if (tf != null && tf is Flooring)
 							{
 								// At this point, we know it's Flooring, so we remove the existing terrain feature, and add our new one.
-								here.terrainFeatures.Remove(targetTile);
+								DemolishOnTile(targetTile, TileFeature.TerrainFeature);
 								Game1.currentLocation.terrainFeatures.Add(item.Key, floor);
 							}
 							else
@@ -965,7 +1171,7 @@ namespace SmartBuilding
 
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
 					{
-						Flooring flooring = (Flooring)Game1.currentLocation.terrainFeatures[item.Key];
+						// Flooring flooring = (Flooring)Game1.currentLocation.terrainFeatures[item.Key];
 					}
 					else
 						RefundItem(item.Value.item);
@@ -979,6 +1185,8 @@ namespace SmartBuilding
 					if (chestType.HasValue)
 					{
 						chest = new Chest(true, chestType.Value);
+						
+						// If  this is a Junimo Chest, we need to set a special flag.
 					}
 					else
 					{ // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
@@ -989,12 +1197,9 @@ namespace SmartBuilding
 
 					bool placed = chest.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
-					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
-					{
-
-					}
-					else
-						RefundItem(item.Value.item);
+					// Apparently, chests placed in the world are hardcoded with the name "Chest".
+					if (!Game1.currentLocation.objects.ContainsKey(item.Key) || !Game1.currentLocation.objects[item.Key].Name.Equals("Chest"))
+						RefundItem(itemToPlace);
 				}
 				else if (itemInfo.itemType == ItemType.Fence)
 				{
@@ -1015,15 +1220,13 @@ namespace SmartBuilding
 								if (_config.EnableReplacingFences)
 								{
 									// We have a fence, so we want to remove it before placing our new one.
-									here.objects.Remove(targetTile);
+									DemolishOnTile(targetTile, TileFeature.Object);
 								}
-
-								// TODO: In future, figure a way to refund the fence on the ground if it's near full health.
 							}
 							else
 							{
 								// If it isn't a fence, we want to refund the item, and return to avoid placing the fence.
-								RefundItem(item.Value.item);
+								RefundItem(item.Value.item, "There was something in this place. Did something get placed before you committed the build?");
 								return;
 							}
 						}
@@ -1031,11 +1234,7 @@ namespace SmartBuilding
 
 					itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
-					if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
-					{
-
-					}
-					else
+					if (!Game1.currentLocation.objects.ContainsKey(item.Key) && !Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.GrassStarter)
@@ -1197,13 +1396,13 @@ namespace SmartBuilding
 
 		private void RefundItem(Item item, string reason = "Something went wrong", LogLevel logLevel = LogLevel.Error, bool shouldLog = false)
 		{
-			Game1.player.addItemToInventoryBool(item.getOne(), false);
+			Game1.player.addItemByMenuIfNecessary(item.getOne());
 
 			if (shouldLog)
 				_monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", logLevel);
 		}
 
-		private int? GetFlooringType(string itemName)
+		private int? GetFlooringIdFromName(string itemName)
 		{
 			// TODO: Investigate whether or not there's a less terrible way to do this.
 			switch (itemName)
@@ -1239,6 +1438,42 @@ namespace SmartBuilding
 			}
 		}
 
+		private string? GetFlooringNameFromId(int id)
+		{
+			// TODO: Investigate whether or not there's a less terrible way to do this.
+			switch (id)
+			{
+				case 0:
+					return "Wood Floor"; // Correct.
+				case 11:
+					return "Rustic Plank Floor"; // Correct.
+				case 4:
+					return "Straw Floor"; // Correct
+				case 2:
+					return "Weathered Floor"; // Correct.
+				case 3:
+					return "Crystal Floor"; // Correct.
+				case 1:
+					return "Stone Floor"; // Correct.
+				case 12:
+					return "Stone Walkway Floor"; // Correct.
+				case 10:
+					return "Brick Floor"; // Correct
+				case 6:
+					return "Wood Path"; // Correct.
+				case 5:
+					return "Gravel Path"; // Correct.
+				case 8:
+					return "Cobblestone Path"; // Correct.
+				case 9:
+					return "Stepping Stone Path"; // Correct.
+				case 7:
+					return "Crystal Path"; // Correct.
+				default:
+					return null;
+			}
+		}
+
 		private int? GetChestType(string itemName)
 		{
 			// TODO: Investigate whether or not there's a less terrible way to do this.
@@ -1248,6 +1483,8 @@ namespace SmartBuilding
 					return 130;
 				case "Stone Chest":
 					return 232;
+				case "Junimo Chest":
+					return 256;
 				default:
 					return null;
 			}
