@@ -733,7 +733,7 @@ namespace SmartBuilding
 				return ItemType.GrassStarter;
 			else if (itemName.Equals("Crab Pot"))
 				return ItemType.CrabPot;
-			else if (item.Type == "Seeds" || item.Category == -74)
+			else if (item.Type == "Seeds" || item.Category == -74 && !item.Name.Contains("Sapling"))
 				return ItemType.Seed;
 			else if (item.Name.Equals("Tree Fertilizer"))
 				return ItemType.TreeFertilizer;
