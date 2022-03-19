@@ -128,6 +128,10 @@ namespace SmartBuilding
 			/// </summary>
 			Tapper,
 			/// <summary>
+			/// Stardew Valley Furniture. This is so we can apply special placement logic.
+			/// </summary>
+			Furniture,
+			/// <summary>
 			/// A generic placeable object.
 			/// </summary>
 			Generic
@@ -237,13 +241,13 @@ namespace SmartBuilding
 				name: () => "Confirm build",
 				getValue: () => _config.ConfirmBuild,
 				setValue: value => _config.ConfirmBuild = value);
-			
+
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Pick up object",
 				getValue: () => _config.PickUpObject,
 				setValue: value => _config.PickUpObject = value);
-			
+
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Pick up floor",
@@ -256,7 +260,7 @@ namespace SmartBuilding
 				getValue: () => _config.ShowBuildQueue,
 				setValue: value => _config.ShowBuildQueue = value
 			);
-			
+
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Can pick up chests",
@@ -560,7 +564,7 @@ namespace SmartBuilding
 							return true;
 						}
 					}
-					
+
 					// At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
 					return _config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
 				case ItemType.Chest:
@@ -708,6 +712,10 @@ namespace SmartBuilding
 					}
 
 					goto case ItemType.Generic;
+				case ItemType.Furniture:
+					return true;
+
+					break;
 				case ItemType.Generic:
 					return Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v);
 			}
@@ -741,6 +749,8 @@ namespace SmartBuilding
 				return ItemType.Fertilizer;
 			else if (item.Name.Equals("Tapper") || item.Name.Equals("Heavy Tapper"))
 				return ItemType.Tapper;
+			else if (item.Category == 0)
+				return ItemType.Furniture;
 
 			return ItemType.Generic;
 		}
@@ -897,7 +907,7 @@ namespace SmartBuilding
 					itemToDestroy = Utility.fuzzyItemSearch(o.Name);
 
 					type = IdentifyItemType((Object)itemToDestroy);
-					
+
 					// Chests need special handling because they can store items.
 					if (type == ItemType.Chest)
 					{
@@ -906,7 +916,7 @@ namespace SmartBuilding
 						{
 							// This is fairly fragile, but it's fine with vanilla chests, at least.
 							Chest chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
-							
+
 							(o as Chest).destroyAndDropContents(tile * 64, here);
 							Game1.player.addItemByMenuIfNecessary(chest.getOne());
 							here.objects.Remove(tile);
@@ -919,7 +929,7 @@ namespace SmartBuilding
 						{
 							// This is fairly fragile, but it's fine with vanilla chests, at least.
 							Chest chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
-							
+
 							(o as Chest).destroyAndDropContents(tile * 64, here);
 							Game1.player.addItemByMenuIfNecessary(chest.getOne());
 							here.objects.Remove(tile);
@@ -932,7 +942,7 @@ namespace SmartBuilding
 
 						fenceToRemove.performRemoveAction(tile * 64, here);
 						here.objects.Remove(tile);
-						
+
 						// And, if the fence had enough health remaining, we refund it.
 						if (fenceToRemove.maxHealth.Value - fenceToRemove.health.Value < 0.5f)
 							Game1.player.addItemByMenuIfNecessary(fenceToRemove.getOne());
@@ -943,6 +953,14 @@ namespace SmartBuilding
 						Game1.player.addItemByMenuIfNecessary(o.getOne());
 						here.objects.Remove(tile);
 					}
+					// TODO: Temporary return!
+					return;
+				}
+
+				foreach (Furniture f in here.furniture)
+				{
+					_logger.Log($"{f.boundingBox.ToString()}");
+					_logger.Log($"Mouse: {Game1.getMousePosition().ToString()}");
 				}
 			}
 
@@ -952,7 +970,7 @@ namespace SmartBuilding
 				if (here.terrainFeatures.ContainsKey(tile))
 				{
 					TerrainFeature tf = here.terrainFeatures[tile];
-					
+
 					// We only really want to be handling flooring when removing TerrainFeatures.
 					if (tf is Flooring)
 					{
@@ -1050,14 +1068,14 @@ namespace SmartBuilding
 				if (_buildingMode)
 					DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
 			}
-			
+
 			// If the TerrainFeature demolish button was pressed...
 			if (_config.PickUpFloor.JustPressed())
 			{
 				if (_buildingMode)
 					DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
 			}
-			
+
 			// This is not a hold situation, so we want JustPressed here.
 			if (_config.EngageBuildMode.JustPressed())
 			{
@@ -1185,7 +1203,7 @@ namespace SmartBuilding
 					if (chestType.HasValue)
 					{
 						chest = new Chest(true, chestType.Value);
-						
+
 						// If  this is a Junimo Chest, we need to set a special flag.
 					}
 					else
@@ -1374,6 +1392,20 @@ namespace SmartBuilding
 							}
 						}
 					}
+				}
+				else if (itemInfo.itemType == ItemType.Furniture)
+				{
+					if (itemToPlace is BedFurniture)
+					{
+						BedFurniture bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
+						here.furniture.Add(bed);
+					}
+
+					// if (itemToPlace is not StorageFurniture)
+					// {
+					// 	Furniture furnitureToPlace = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
+					// 	here.furniture.Add(furnitureToPlace);
+					// }
 				}
 				else
 				{ // We're dealing with a generic placeable.
