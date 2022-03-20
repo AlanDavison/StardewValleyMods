@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Xml;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,7 @@ using SmartBuilding.Patches;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Minigames;
@@ -63,15 +65,9 @@ namespace SmartBuilding
 			/// </summary>
 			public Item item;
 			/// <summary>
-			/// The correct spritesheet for the image.
-			/// </summary>
-			public Texture2D spriteSheet;
-			/// <summary>
 			/// The basic type of item that it is, determined by <see cref="ModEntry.IdentifyItemType"/>
 			/// </summary>
 			public ItemType itemType;
-			public int sheetId;
-			public int inventoryIndex;
 		}
 
 		private enum TileFeature
@@ -81,13 +77,17 @@ namespace SmartBuilding
 			/// </summary>
 			Object,
 			/// <summary>
-			/// A <see cref="StardewValley.TerrainFeature"/>.
+			/// A <see cref="StardewValley.TerrainFeatures.TerrainFeature"/>.
 			/// </summary>
 			TerrainFeature,
+			/// <summary>
+			/// A <see cref="StardewValley.Objects.Furniture"/>
+			/// </summary>
+			Furniture
 		}
 
 		/// <summary>
-		/// The type of item to be placed.
+		/// We have slightly different placement logic for each of these, so we need a way to identify them.
 		/// </summary>
 		private enum ItemType
 		{
@@ -96,7 +96,7 @@ namespace SmartBuilding
 			/// </summary>
 			Fence,
 			/// <summary>
-			/// A Stardew Valley floor. A TerrainFeature.
+			/// A Stardew Valley floor, which is a TerrainFeature.
 			/// </summary>
 			Floor,
 			/// <summary>
@@ -130,7 +130,23 @@ namespace SmartBuilding
 			/// <summary>
 			/// Stardew Valley Furniture. This is so we can apply special placement logic.
 			/// </summary>
-			Furniture,
+			GenericFurniture,
+			/// <summary>
+			/// We need to use the constructor for this.
+			/// </summary>
+			BedFurniture,
+			/// <summary>
+			/// We need to use the constructor for this.
+			/// </summary>
+			StorageFurniture,
+			/// <summary>
+			/// We need to use the constructor for this.
+			/// </summary>
+			FishTankFurniture,
+			/// <summary>
+			/// We need to use the constructor for this.
+			/// </summary>
+			TVFurniture,
 			/// <summary>
 			/// A generic placeable object.
 			/// </summary>
@@ -161,20 +177,26 @@ namespace SmartBuilding
 			_buildingHud = _helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
 			_itemBox = _helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
 
-			//_itemBox = _helper.Content.Load<Texture2D>("LooseSprites/Cursors", ContentSource.GameContent);
-
 			Harmony harmony = new Harmony(ModManifest.UniqueID);
 
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
 				prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(Patches.ObjectPatches.PlacementAction_Prefix)));
 
-			// TODO: Consider refactoring input events to simply use ButtonsChanged, since we're using KeybindLists and not SButtons.
+
+			// This is where we'll register with GMCM.
 			_helper.Events.GameLoop.GameLaunched += GameLaunched;
-			_helper.Events.Input.ButtonPressed += ButtonPressed;
-			_helper.Events.Input.ButtonReleased += ButtonReleased;
+
+			_helper.Events.Input.ButtonsChanged += OnInput;
+
+			// We use this in order to allow for holding and drawing/erasing. The downside is that AddTile gets called twice on the first click.
+			// However, the only other way to do this would be to register to UpdateTicked, which would be far more wasteful, potentially.
 			_helper.Events.Input.CursorMoved += CursorMoved;
+
+			// This is used to have the queued builds draw themselves in the world.
 			_helper.Events.Display.RenderedWorld += RenderedWorld;
+
+			// This is a huge mess, and is used to draw the building mode HUD, and build queue if enabled.
 			_helper.Events.Display.RenderedHud += RenderedHud;
 
 			// If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
@@ -185,6 +207,93 @@ namespace SmartBuilding
 				_currentlyDrawing = false;
 				ObjectPatches.CurrentlyDrawing = false;
 			};
+		}
+
+		/// <summary>
+		/// SMAPI's <see cref="IInputEvents.ButtonsChanged"> event.
+		/// </summary>
+		private void OnInput(object? sender, ButtonsChangedEventArgs e)
+		{
+			// If the world isn't ready, we definitely don't want to do anything.
+			if (!Context.IsWorldReady)
+				return;
+
+			// If a menu is up, we don't want any of our controls to do anything.
+			if (Game1.activeClickableMenu != null)
+				return;
+
+			// If the player presses to engage build mode, we flip the bool.
+			if (_config.EngageBuildMode.JustPressed())
+			{
+				_buildingMode = !_buildingMode;
+
+				if (!_buildingMode) // If this is now false, we want to clear the tiles list, and refund everything.
+				{
+					ClearPaintedTiles();
+				}
+			}
+
+			// If the player is holding down 
+			if (_config.HoldToDraw.IsDown())
+			{
+				if (_buildingMode)
+				{
+					_currentlyDrawing = true;
+					ObjectPatches.CurrentlyDrawing = _currentlyDrawing;
+
+					int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
+					AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
+				}
+			}
+			else
+			{
+				_currentlyDrawing = false;
+				ObjectPatches.CurrentlyDrawing = false;
+			}
+
+			if (_config.HoldToErase.IsDown())
+			{
+				if (_buildingMode)
+				{
+					_currentlyErasing = true;
+
+					EraseTile(Game1.currentCursorTile);
+				}
+			}
+			else
+			{
+				_currentlyErasing = false;
+			}
+
+			if (_config.ConfirmBuild.JustPressed())
+			{
+				// The build has been confirmed, so we iterate through our Dictionary, and pass each tile into PlaceObject.
+				foreach (KeyValuePair<Vector2, ItemInfo> v in _tilesSelected)
+				{
+					PlaceObject(v);
+				}
+
+				// Then, we clear the list, because building is done, and all errors are handled internally.
+				_tilesSelected.Clear();
+			}
+
+			if (_config.PickUpObject.JustPressed())
+			{
+				if (_buildingMode)
+					DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
+			}
+
+			if (_config.PickUpFloor.JustPressed())
+			{
+				if (_buildingMode)
+					DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
+			}
+
+			if (_config.PickUpFurniture.JustPressed())
+			{
+				if (_buildingMode)
+					DemolishOnTile(Game1.currentCursorTile, TileFeature.Furniture);
+			}
 		}
 
 		private void GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -253,6 +362,12 @@ namespace SmartBuilding
 				name: () => "Pick up floor",
 				getValue: () => _config.PickUpFloor,
 				setValue: value => _config.PickUpFloor = value);
+			
+			configMenuApi.AddKeybindList(
+				mod: ModManifest,
+				name: () => "Pick up furniture",
+				getValue: () => _config.PickUpFurniture,
+				setValue: value => _config.PickUpFurniture = value);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
@@ -271,10 +386,26 @@ namespace SmartBuilding
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
-				name: () => "Less restrictive floor placement",
+				name: () => "More lax floor placement",
 				tooltip: () => "Allows you to place floors essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
 				getValue: () => _config.LessRestrictiveFloorPlacement,
 				setValue: value => _config.LessRestrictiveFloorPlacement = value
+			);
+
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "More lax furniture placement",
+				tooltip: () => "Allows you to place furniture essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+				getValue: () => _config.LessRestrictiveFurniturePlacement,
+				setValue: value => _config.LessRestrictiveFurniturePlacement = value
+			);
+
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "More lax bed placement",
+				tooltip: () => "Allows you to place beds essentially anywhere, allowing you to sleep in places you shouldn't be able to sleep in. BE CAREFUL WITH THIS.",
+				getValue: () => _config.LessRestrictiveBedPlacement,
+				setValue: value => _config.LessRestrictiveBedPlacement = value
 			);
 
 			configMenuApi.AddBoolOption(
@@ -331,6 +462,24 @@ namespace SmartBuilding
 				name: () => "Allow tree tappers",
 				getValue: () => _config.EnableTreeTappers,
 				setValue: b => _config.EnableTreeTappers = b
+			);
+			
+			configMenuApi.AddSectionTitle(
+				mod: ModManifest,
+				text: () => "THIS NEXT OPTION IS POTENTIALLY DANGEROUS."
+			);
+			
+			configMenuApi.AddParagraph(
+				mod: ModManifest,
+				text: () => "You shouldn't, but you might lose items inside your dressers/other storage furniture. If you do, please let me know."
+				);
+			
+			configMenuApi.AddBoolOption(
+				mod: ModManifest,
+				name: () => "Enable placing storage furniture",
+				tooltip: () => "WARNING: PLACING STORAGE FURNITURE WITH SMART BUILDING IS RISKY. Your items should transfer over just fine, but it's your risk to take.",
+				getValue: () => _config.EnablePlacingStorageFurniture,
+				setValue: value => _config.EnablePlacingStorageFurniture = value
 			);
 
 			configMenuApi.AddPageLink(
@@ -478,6 +627,14 @@ namespace SmartBuilding
 
 		private void CursorMoved(object sender, CursorMovedEventArgs e)
 		{
+			// If the world isn't ready, we definitely don't want to do anything.
+			if (!Context.IsWorldReady)
+				return;
+
+			// If a menu is up, we don't want any of our controls to do anything.
+			if (Game1.activeClickableMenu != null)
+				return;
+
 			// If the player is holding down the draw keybind, we want to call AddTile to see if we can
 			// add the selected item to the tile under the cursor.
 			if (_currentlyDrawing)
@@ -491,23 +648,36 @@ namespace SmartBuilding
 			// under the cursor, and refund the item where applicable.
 			if (_currentlyErasing)
 			{
-				Vector2 v = Game1.currentCursorTile;
-				Vector2 flaggedForRemoval = new Vector2();
-
-				foreach (var item in _tilesSelected)
-				{
-					if (item.Key == v)
-					{ // If we're over a tile in _tilesSelected, remove it and refund the item to the player.
-						Game1.player.addItemToInventoryBool(item.Value.item.getOne(), false);
-						_monitor.Log($"Refunding {item.Value.item.Name} back into player's inventory.");
-
-						// And flag it for removal from the queue, since we can't remove from within the foreach.
-						flaggedForRemoval = v;
-					}
-				}
-
-				_tilesSelected.Remove(flaggedForRemoval);
+				EraseTile(Game1.currentCursorTile);
 			}
+		}
+
+		private void EraseTile(Vector2 tile)
+		{
+			Vector2 flaggedForRemoval = new Vector2();
+
+			foreach (var item in _tilesSelected)
+			{
+				if (item.Key == tile)
+				{
+					// If we're over a tile in _tilesSelected, remove it and refund the item to the player.
+					Game1.player.addItemToInventoryBool(item.Value.item.getOne(), false);
+					_monitor.Log($"Refunding {item.Value.item.Name} back into player's inventory.");
+
+					// And flag it for removal from the queue, since we can't remove from within the foreach.
+					flaggedForRemoval = tile;
+				}
+			}
+
+			_tilesSelected.Remove(flaggedForRemoval);
+		}
+
+		private bool IsTypeOfObject(Object o, ItemType type)
+		{
+			// We try to identify what kind of object we've been passed.
+			ItemType oType = IdentifyItemType(o);
+
+			return oType == type;
 		}
 
 		/// <summary>
@@ -518,7 +688,6 @@ namespace SmartBuilding
 		/// <returns></returns>
 		private bool CanBePlacedHere(Vector2 v, Item i)
 		{
-			// TODO: Ensure all logic in here flows the same way. Some things are slightly different because of being written at different times.
 			ItemType itemType = IdentifyItemType((Object)i);
 			GameLocation here = Game1.currentLocation;
 
@@ -527,12 +696,8 @@ namespace SmartBuilding
 				case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
 					return CrabPot.IsValidCrabPotLocationTile(here, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
 				case ItemType.GrassStarter:
-
 					// If there's a terrain feature here, we can't possibly place a grass starter.
-					if (here.terrainFeatures.ContainsKey(v))
-						return false;
-					else
-						return true;
+					return !here.terrainFeatures.ContainsKey(v);
 				case ItemType.Floor:
 					// In this case, we need to know whether there's a TerrainFeature in the tile.
 					if (here.terrainFeatures.ContainsKey(v))
@@ -540,13 +705,12 @@ namespace SmartBuilding
 						// At this point, we know there's a terrain feature here, so we grab a reference to it.
 						TerrainFeature tf = Game1.currentLocation.terrainFeatures[v];
 
+						// Then we check to see if it is, indeed, Flooring.
 						if (tf != null && tf is Flooring)
 						{
-							// If the setting to replace floors with floors is enabled, we return true.
+							// If it is, and if the setting to replace floors with floors is enabled, we return true.
 							if (_config.EnableReplacingFloors)
 								return true;
-							else
-								return false;
 						}
 
 						return false;
@@ -555,9 +719,13 @@ namespace SmartBuilding
 					{
 						// We know an object exists here now, so we grab it.
 						Object o = here.objects[v];
+						ItemType type;
+						Item itemToDestroy;
 
-						// TODO: Make this less hardcoded in future.
-						if (o.Name.Contains("Fence"))
+						itemToDestroy = Utility.fuzzyItemSearch(o.Name);
+						type = IdentifyItemType((Object)itemToDestroy);
+
+						if (type == ItemType.Fence)
 						{
 							// This is a fence, so we return true.
 
@@ -574,7 +742,7 @@ namespace SmartBuilding
 					if (!_config.EnableCropFertilizers)
 						return false;
 
-					// If there's a fence, etc., here, we don't want to place fertiliser.
+					// If there's an object present, we don't want to place any fertilizer.
 					// It is technically valid, but there's no reason someone would want to.
 					if (here.Objects.ContainsKey(v))
 						return false;
@@ -600,6 +768,7 @@ namespace SmartBuilding
 								}
 							}
 
+							// At this point, we fall to vanilla logic to determine placement validity.
 							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y, true);
 						}
 					}
@@ -610,9 +779,10 @@ namespace SmartBuilding
 					if (!_config.EnableTreeFertilizers)
 						return false;
 
+					// First, we determine if there's a TerrainFeature here.
 					if (here.terrainFeatures.ContainsKey(v))
 					{
-						// If there's a TerrainFeature here, we check if it's a tree.
+						// Then we check if it's a tree.
 						if (here.terrainFeatures[v] is Tree)
 						{
 							// It is a tree, so now we check to see if the tree is fertilised.
@@ -632,10 +802,18 @@ namespace SmartBuilding
 					if (!_config.EnablePlantingCrops)
 						return false;
 
+					// If there's an object present, we don't want to place a seed.
+					// It is technically valid, but there's no reason someone would want to.
+					if (here.Objects.ContainsKey(v))
+						return false;
+
+					// First, we check for a TerrainFeature.
 					if (here.terrainFeatures.ContainsKey(v))
 					{
+						// Then, we check to see if it's HoeDirt.
 						if (here.terrainFeatures[v] is HoeDirt)
 						{
+							// If it is, we grab a reference to the HoeDirt to use its canPlantThisSeedHere method.
 							HoeDirt hd = (HoeDirt)here.terrainFeatures[v];
 
 							return hd.canPlantThisSeedHere(i.ParentSheetIndex, (int)v.X, (int)v.Y);
@@ -648,22 +826,20 @@ namespace SmartBuilding
 					if (!_config.EnableTreeTappers)
 						return false;
 
+					// First, we need to check if there's a TerrainFeature here.
 					if (here.terrainFeatures.ContainsKey(v))
 					{
+						// If there is, we check to see if it's a tree.
 						if (here.terrainFeatures[v] is Tree)
 						{
+							// If it is, we grab a reference to the tree to check its details.
 							Tree tree = (Tree)here.terrainFeatures[v];
 
 							// If the tree isn't tapped, we confirm that a tapper can be placed here.
 							if (!tree.tapped)
 							{
-								if (tree.growthStage >= 5)
-								{
-									// If the tree is fully grown, we *can* place a tapper.
-									return true;
-								}
-
-								return false;
+								// If the tree is fully grown, we *can* place a tapper.
+								return tree.growthStage >= 5;
 							}
 						}
 					}
@@ -676,21 +852,8 @@ namespace SmartBuilding
 						// We know there's an object at these coordinates, so we grab a reference.
 						Object o = here.objects[v];
 
-						if (o != null)
-						{
-							// We try to identify what kind of object is placed here.
-							ItemType oType = IdentifyItemType(o);
-
-							if (oType == ItemType.Fence)
-							{
-								// We're dealing with a fence, so we next want to return true if the setting permits it.
-
-								if (_config.EnableReplacingFences)
-									return true;
-								else
-									return false;
-							}
-						}
+						// Then we return true if this is both a fence, and replacing fences is enabled.
+						return IsTypeOfObject(o, ItemType.Fence) && _config.EnableReplacingFences;
 					}
 					else if (here.terrainFeatures.ContainsKey(v))
 					{
@@ -702,7 +865,6 @@ namespace SmartBuilding
 							if ((feature as HoeDirt).crop != null)
 							{
 								// There's a crop here, so we return false.
-
 								return false;
 							}
 
@@ -712,8 +874,43 @@ namespace SmartBuilding
 					}
 
 					goto case ItemType.Generic;
-				case ItemType.Furniture:
-					return true;
+				case ItemType.FishTankFurniture:
+					// TODO: Until I figure out how to successfully transplant fish, I'm hard blocking these.
+					return false;
+					
+					// if (_config.LessRestrictiveFurniturePlacement)
+					// 	return true;
+					// else
+					// 	return (i as FishTankFurniture).canBePlacedHere(here, v);
+				case ItemType.StorageFurniture:
+					// Since FishTankFurniture will sneak through here:
+					if (i is FishTankFurniture)
+						return false;
+
+					// If the setting for allowing storage furniture is off, we get the hell out.
+					if (!_config.EnablePlacingStorageFurniture)
+						return false;
+					
+					if (_config.LessRestrictiveFurniturePlacement)
+						return true;
+					else
+						return (i as StorageFurniture).canBePlacedHere(here, v);
+				case ItemType.TVFurniture:
+					if (_config.LessRestrictiveFurniturePlacement)
+						return true;
+					else
+						return (i as TV).canBePlacedHere(here, v);
+				case ItemType.BedFurniture:
+					if (_config.LessRestrictiveBedPlacement)
+						return true;
+					else
+						return (i as BedFurniture).canBePlacedHere(here, v);
+				case ItemType.GenericFurniture:
+					// In this place, we play fast and loose, and return true.
+					if (_config.LessRestrictiveFurniturePlacement)
+						return true;
+					else
+						return (i as Furniture).canBePlacedHere(here, v);
 
 					break;
 				case ItemType.Generic:
@@ -731,7 +928,17 @@ namespace SmartBuilding
 
 			// The whole point of this is to determine whether the object being placed requires
 			// special treatment at all, and assist us in determining whether it's a TerrainFeature, or an Object.
-			if (itemName.Contains("Floor") || itemName.Contains("Path"))
+			if (item is FishTankFurniture)
+				return ItemType.FishTankFurniture;
+			else if (item is StorageFurniture)
+				return ItemType.StorageFurniture;
+			else if (item is BedFurniture)
+				return ItemType.BedFurniture;
+			else if (item is TV)
+				return ItemType.TVFurniture;
+			else if (item is Furniture)
+				return ItemType.GenericFurniture;
+			else if (itemName.Contains("Floor") || itemName.Contains("Path") && item.Category == -24)
 				return ItemType.Floor;
 			else if (itemName.Contains("Chest") || item is Chest)
 				return ItemType.Chest;
@@ -741,7 +948,7 @@ namespace SmartBuilding
 				return ItemType.GrassStarter;
 			else if (itemName.Equals("Crab Pot"))
 				return ItemType.CrabPot;
-			else if (item.Type == "Seeds" || item.Category == -74 && !item.Name.Contains("Sapling"))
+			else if (item.Type == "Seeds" || item.Category == -74 && !(item.Name.Contains("Sapling") || !item.Name.Equals("Acorn") || !item.Name.Equals("Maple Seed") || !item.Name.Equals("Pine Cone") || !item.Name.Equals("Mahogany Seed")))
 				return ItemType.Seed;
 			else if (item.Name.Equals("Tree Fertilizer"))
 				return ItemType.TreeFertilizer;
@@ -749,13 +956,11 @@ namespace SmartBuilding
 				return ItemType.Fertilizer;
 			else if (item.Name.Equals("Tapper") || item.Name.Equals("Heavy Tapper"))
 				return ItemType.Tapper;
-			else if (item.Category == 0)
-				return ItemType.Furniture;
 
 			return ItemType.Generic;
 		}
 
-		private ItemInfo GetItemInfo(Object item, int itemInventoryIndex)
+		private ItemInfo GetItemInfo(Object item)
 		{
 			// Here, we pull the correct sprite sheet out of the Item, based upon whether
 			// it's a BigCraftable or not.
@@ -777,14 +982,9 @@ namespace SmartBuilding
 			return new ItemInfo()
 			{
 				item = item,
-				spriteSheet = itemSpriteSheet,
-				sheetId = itemSheetId,
-				inventoryIndex = itemInventoryIndex,
 				itemType = itemType
 			};
 		}
-
-		// TODO: FIX EVERYTHING OTHER THAN FUCKING FLOORS, YOU DAFT SHIT. YOU BROKE THEM DOING THIS.
 
 		private void AddTile(Item item, Vector2 v, int itemInventoryIndex)
 		{
@@ -804,7 +1004,7 @@ namespace SmartBuilding
 			if (!CanBePlacedHere(v, item))
 				return;
 
-			ItemInfo itemInfo = GetItemInfo((Object)item, itemInventoryIndex);
+			ItemInfo itemInfo = GetItemInfo((Object)item);
 
 			// We only want to add the tile if the Dictionary doesn't already contain it. 
 			if (!_tilesSelected.ContainsKey(v))
@@ -859,20 +1059,6 @@ namespace SmartBuilding
 						Game1.viewport,
 						item.Key * Game1.tileSize),
 					1f, 1f, 4f, StackDrawType.Hide);
-			}
-		}
-
-		private void ButtonReleased(object sender, ButtonReleasedEventArgs e)
-		{
-			if (_config.HoldToDraw.GetState() == SButtonState.Released)
-			{
-				_currentlyDrawing = false;
-				ObjectPatches.CurrentlyDrawing = false;
-			}
-
-			if (_config.HoldToErase.GetState() == SButtonState.Released)
-			{
-				_currentlyErasing = false;
 			}
 		}
 
@@ -999,6 +1185,26 @@ namespace SmartBuilding
 				}
 			}
 
+			if (feature == TileFeature.Furniture)
+			{
+				Furniture furnitureToGrab = null;
+				
+				foreach (Furniture f in here.furniture)
+				{
+					if (f.boundingBox.Value.Intersects(new Rectangle((int)tile.X * 64, (int)tile.Y * 64, 1, 1)))
+					{
+						furnitureToGrab = f;
+					}
+				}
+
+				if (furnitureToGrab != null)
+				{
+					_logger.Log($"Trying to grab {furnitureToGrab.Name}");
+					Game1.player.addItemToInventory(furnitureToGrab);
+					here.furniture.Remove(furnitureToGrab);
+				}
+			}
+			
 			// if (here.objects.ContainsKey(tile))
 			// {
 			// 	// There's an object placed here.
@@ -1052,89 +1258,6 @@ namespace SmartBuilding
 			// }
 		}
 
-		private void ButtonPressed(object sender, ButtonPressedEventArgs e)
-		{
-			// If the world isn't ready, we definitely don't want to do anything.
-			if (!Context.IsWorldReady)
-				return;
-
-			// If a menu is up, we don't want any of our controls to do anything.
-			if (Game1.activeClickableMenu != null)
-				return;
-
-			// If the object demolish button was pressed...
-			if (_config.PickUpObject.JustPressed())
-			{
-				if (_buildingMode)
-					DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
-			}
-
-			// If the TerrainFeature demolish button was pressed...
-			if (_config.PickUpFloor.JustPressed())
-			{
-				if (_buildingMode)
-					DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
-			}
-
-			// This is not a hold situation, so we want JustPressed here.
-			if (_config.EngageBuildMode.JustPressed())
-			{
-				_buildingMode = !_buildingMode;
-
-				if (!_buildingMode) // If this is now false, we want to clear the tiles list, and refund everything.
-				{
-					ClearPaintedTiles();
-				}
-			}
-
-			if (_config.HoldToDraw.JustPressed())
-			{
-				if (_buildingMode)
-				{
-					_currentlyDrawing = true;
-					ObjectPatches.CurrentlyDrawing = _currentlyDrawing;
-
-					int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
-					AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
-				}
-			}
-
-			if (_config.HoldToErase.JustPressed())
-			{
-				_currentlyErasing = true;
-
-				Vector2 v = Game1.currentCursorTile;
-				Vector2 flaggedForRemoval = new Vector2();
-
-				foreach (var item in _tilesSelected)
-				{
-					if (item.Key == v)
-					{ // If we're over a tile in _tilesSelected, remove it and refund the item to the player.
-						Game1.player.addItemToInventoryBool(item.Value.item.getOne(), false);
-						_monitor.Log($"Refunding {item.Value.item.Name} back into player's inventory.");
-
-						// And flag it for removal from the queue, since we can't remove from within the foreach.
-						flaggedForRemoval = v;
-					}
-				}
-
-				_tilesSelected.Remove(flaggedForRemoval);
-			}
-
-			if (_config.ConfirmBuild.JustPressed())
-			{
-				// The build has been confirmed, so we iterate through our Dictionary, and pass each tile into PlaceObject.
-				foreach (KeyValuePair<Vector2, ItemInfo> v in _tilesSelected)
-				{
-					PlaceObject(v);
-				}
-
-				// Then, we clear the list, because building is done.
-				_tilesSelected.Clear();
-			}
-		}
-
-		// TODO for this method: Refactor detecting placement success to use the bool returned from the placement method.
 		private void PlaceObject(KeyValuePair<Vector2, ItemInfo> item)
 		{
 			Object itemToPlace = (Object)item.Value.item;
@@ -1154,15 +1277,16 @@ namespace SmartBuilding
 					if (floorType.HasValue)
 						floor = new Flooring(floorType.Value);
 					else
-					{ // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
+					{
+						// At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
 						RefundItem(itemToPlace, "Couldn't figure out the type of floor. This may be a modded floor/path we don't understand", LogLevel.Error, true);
 
 						return;
 					}
 
 					// At this point, we *need* there to be no TerrainFeature present.
-					if (!Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
-						Game1.currentLocation.terrainFeatures.Add(item.Key, floor);
+					if (!here.terrainFeatures.ContainsKey(targetTile))
+						here.terrainFeatures.Add(targetTile, floor);
 					else
 					{
 						// At this point, we know there's a terrain feature here.
@@ -1174,7 +1298,7 @@ namespace SmartBuilding
 							{
 								// At this point, we know it's Flooring, so we remove the existing terrain feature, and add our new one.
 								DemolishOnTile(targetTile, TileFeature.TerrainFeature);
-								Game1.currentLocation.terrainFeatures.Add(item.Key, floor);
+								here.terrainFeatures.Add(targetTile, floor);
 							}
 							else
 							{
@@ -1187,11 +1311,8 @@ namespace SmartBuilding
 						}
 					}
 
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
-					{
-						// Flooring flooring = (Flooring)Game1.currentLocation.terrainFeatures[item.Key];
-					}
-					else
+					// By this point, we'll have returned false if this could be anything but our freshly placed floor.
+					if (!(here.terrainFeatures.ContainsKey(item.Key) && here.terrainFeatures[item.Key] is Flooring))
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.Chest)
@@ -1203,8 +1324,6 @@ namespace SmartBuilding
 					if (chestType.HasValue)
 					{
 						chest = new Chest(true, chestType.Value);
-
-						// If  this is a Junimo Chest, we need to set a special flag.
 					}
 					else
 					{ // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
@@ -1213,16 +1332,18 @@ namespace SmartBuilding
 						return;
 					}
 
-					bool placed = chest.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
+					// We do our second placement possibility check, just in case something was placed in the meantime.
+					if (CanBePlacedHere(targetTile, itemToPlace))
+					{
+						bool placed = chest.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
 
-					// Apparently, chests placed in the world are hardcoded with the name "Chest".
-					if (!Game1.currentLocation.objects.ContainsKey(item.Key) || !Game1.currentLocation.objects[item.Key].Name.Equals("Chest"))
-						RefundItem(itemToPlace);
+						// Apparently, chests placed in the world are hardcoded with the name "Chest".
+						if (!here.objects.ContainsKey(targetTile) || !here.objects[targetTile].Name.Equals("Chest"))
+							RefundItem(itemToPlace);
+					}
 				}
 				else if (itemInfo.itemType == ItemType.Fence)
 				{
-					// We're dealing with a fence.
-
 					// We want to check to see if the target tile contains an object.
 					if (here.objects.ContainsKey(targetTile))
 					{
@@ -1231,9 +1352,7 @@ namespace SmartBuilding
 						if (o != null)
 						{
 							// We try to identify what kind of object is placed here.
-							ItemType oType = IdentifyItemType(o);
-
-							if (oType == ItemType.Fence)
+							if (IsTypeOfObject(o, ItemType.Fence))
 							{
 								if (_config.EnableReplacingFences)
 								{
@@ -1250,9 +1369,7 @@ namespace SmartBuilding
 						}
 					}
 
-					itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
-
-					if (!Game1.currentLocation.objects.ContainsKey(item.Key) && !Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
+					if (!itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player))
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.GrassStarter)
@@ -1260,67 +1377,68 @@ namespace SmartBuilding
 					Grass grassStarter = new Grass(1, 4);
 
 					// At this point, we *need* there to be no TerrainFeature present.
-					if (!Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
-						Game1.currentLocation.terrainFeatures.Add(item.Key, grassStarter);
+					if (!here.terrainFeatures.ContainsKey(targetTile))
+						here.terrainFeatures.Add(targetTile, grassStarter);
 					else
 					{
 						RefundItem(item.Value.item, "There was already a TerrainFeature present. Maybe you hoed the ground before confirming the build");
 
-						// We now want to jump straight out of this method, because this will flow through to the below if, and bad things will happen.
+						// We now want to jump straight out of this method, because this will flow through to the below if, and bad things may happen.
 						return;
 					}
 
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(item.Key))
-					{
-
-					}
-					else
+					if (!(here.terrainFeatures.ContainsKey(item.Key) && here.terrainFeatures[targetTile] is Grass))
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.CrabPot)
 				{
-					CrabPot pot = new CrabPot(item.Key);
+					CrabPot pot = new CrabPot(targetTile);
 
-					if (CanBePlacedHere(item.Key, itemToPlace))
+					if (CanBePlacedHere(targetTile, itemToPlace))
 					{
-						itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
+						itemToPlace.placementAction(Game1.currentLocation, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
 					}
 				}
 				else if (itemInfo.itemType == ItemType.Seed)
 				{
 					// Here, we're dealing with a seed, so we need very special logic for this.
-					// Item.placementAction for seeds is broken, unless the player is currently
+					// Item.placementAction for seeds is semi-broken, unless the player is currently
 					// holding the specific seed being planted.
 
 					bool successfullyPlaced = false;
 
+					// First, we check for a TerrainFeature.
 					if (Game1.currentLocation.terrainFeatures.ContainsKey(targetTile))
 					{
+						// Then, we check to see if it's a HoeDirt.
 						if (Game1.currentLocation.terrainFeatures[targetTile] is HoeDirt)
 						{
+							// If it is, we grab a reference to it.
 							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[targetTile];
 
-							if (hd.canPlantThisSeedHere(itemToPlace.ParentSheetIndex, (int)item.Key.X, (int)item.Key.Y))
+							// We check to see if it can be planted, and act appropriately.
+							if (hd.canPlantThisSeedHere(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y))
 							{
-								successfullyPlaced = hd.plant(itemToPlace.ParentSheetIndex, (int)item.Key.X, (int)item.Key.Y, Game1.player, false, Game1.currentLocation);
+								successfullyPlaced = hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, false, Game1.currentLocation);
 							}
 						}
 					}
 
+					// If the planting failed, we refund the seed.
 					if (!successfullyPlaced)
 						RefundItem(item.Value.item);
 				}
 				else if (itemInfo.itemType == ItemType.Fertilizer)
 				{
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(targetTile))
+					if (here.terrainFeatures.ContainsKey(targetTile))
 					{
 						// We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
-						if (Game1.currentLocation.terrainFeatures[targetTile] is HoeDirt)
+						if (here.terrainFeatures[targetTile] is HoeDirt)
 						{
 							// If it is, we want to grab the HoeDirt, check if it's already got a fertiliser, and fertilise if not.
-							HoeDirt hd = (HoeDirt)Game1.currentLocation.terrainFeatures[targetTile];
+							HoeDirt hd = (HoeDirt)here.terrainFeatures[targetTile];
 
-							// 0 here means no fertilizer.
+							// 0 here means no fertilizer. TODO: Known change in 1.6.
 							if (hd.fertilizer.Value == 0)
 							{
 								// Next, we want to check if there's already a crop here.
@@ -1338,7 +1456,6 @@ namespace SmartBuilding
 								else
 								{
 									// If there is no crop here, we can plant the fertilizer with reckless abandon.
-
 									hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y, Game1.player, true, Game1.currentLocation);
 								}
 							}
@@ -1360,26 +1477,28 @@ namespace SmartBuilding
 				}
 				else if (itemInfo.itemType == ItemType.TreeFertilizer)
 				{
-					if (Game1.currentLocation.terrainFeatures.ContainsKey(targetTile))
+					if (here.terrainFeatures.ContainsKey(targetTile))
 					{
 						// If there's a TerrainFeature here, we check if it's a tree.
-						if (Game1.currentLocation.terrainFeatures[targetTile] is Tree)
+						if (here.terrainFeatures[targetTile] is Tree)
 						{
 							// It is a tree, so now we check to see if the tree is fertilised.
-							Tree tree = (Tree)Game1.currentLocation.terrainFeatures[targetTile];
+							Tree tree = (Tree)here.terrainFeatures[targetTile];
 
 							// If it's already fertilised, there's no need for us to want to place tree fertiliser on it.
 							if (!tree.fertilized.Value)
-								tree.fertilize(Game1.currentLocation);
+								tree.fertilize(here);
 						}
 					}
 				}
 				else if (itemInfo.itemType == ItemType.Tapper)
 				{
-					if (here.terrainFeatures.ContainsKey(targetTile))
+					if (CanBePlacedHere(targetTile, itemToPlace))
 					{
+						// If there's a TerrainFeature here, we need to know if it's a tree.
 						if (here.terrainFeatures[targetTile] is Tree)
 						{
+							// If it is, we grab a reference, and check for a tapper on it already.
 							Tree tree = (Tree)here.terrainFeatures[targetTile];
 
 							if (!tree.tapped.Value)
@@ -1393,19 +1512,114 @@ namespace SmartBuilding
 						}
 					}
 				}
-				else if (itemInfo.itemType == ItemType.Furniture)
+				else if (itemInfo.itemType == ItemType.FishTankFurniture)
 				{
-					if (itemToPlace is BedFurniture)
+					// TODO: This cannot be reached, because placement of fish tanks is blocked for now.
+					// // We're dealing with a fish tank. This has dangerous consequences.
+					// if (_config.LessRestrictiveFurniturePlacement)
+					// {
+					// 	FishTankFurniture tank = new FishTankFurniture(itemToPlace.ParentSheetIndex, targetTile);
+					//
+					// 	foreach (var fish in (itemToPlace as FishTankFurniture).tankFish)
+					// 	{
+					// 		tank.tankFish.Add(fish);
+					// 	}
+					//
+					// 	foreach (var fish in tank.tankFish)
+					// 	{
+					// 		fish.ConstrainToTank();
+					// 	}
+					// 	
+					// 	here.furniture.Add(tank);
+					// }
+					// else
+					// {
+					// 	(itemToPlace as FishTankFurniture).placementAction(here, (int)targetTile.X, (int)targetTile.Y, Game1.player);
+					// }
+				}
+				else if (itemInfo.itemType == ItemType.StorageFurniture)
+				{
+					if (_config.EnablePlacingStorageFurniture)
 					{
-						BedFurniture bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
+						bool placedSuccessfully = false;
+						
+						// We need to create a new instance of StorageFurniture.
+						StorageFurniture storage = new StorageFurniture(itemToPlace.ParentSheetIndex, targetTile);
+
+						// Then, we iterate through all of the items in the existing StorageFurniture, and add them to the new one.
+						foreach (var itemInStorage in (itemToPlace as StorageFurniture).heldItems)
+						{
+							_logger.Log($"Adding item {itemInStorage.Name} with ParentSheetId {itemInStorage.ParentSheetIndex} to newly created storage.");
+							storage.AddItem(itemInStorage);
+						}
+						
+						// If we have less restrictive furniture placement enabled, we simply try to place it. Otherwise, we use the vanilla placementAction.
+						if (_config.LessRestrictiveFurniturePlacement)
+							here.furniture.Add(storage as StorageFurniture);
+						else 
+							placedSuccessfully = storage.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+						
+						// Here, we check to see if the placement was successful. If not, we refund the item.
+						if (!here.furniture.Contains(storage) && !placedSuccessfully)
+							RefundItem(storage);
+					}
+					else
+						RefundItem(itemToPlace, "The (potentially dangerous) setting to enable storage furniture was disabled.", LogLevel.Info, true);
+				}
+				else if (itemInfo.itemType == ItemType.TVFurniture)
+				{
+					bool placedSuccessfully = false;
+					TV tv = null;
+					
+					// We need to determine which we we're placing this TV based upon the furniture placement restriction option.
+					if (_config.LessRestrictiveFurniturePlacement)
+					{
+						tv = new TV(itemToPlace.ParentSheetIndex, targetTile);
+						here.furniture.Add(tv);
+					}
+					else
+						placedSuccessfully = (itemToPlace as TV).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+
+					// If both of these are false, the furniture was not successfully placed, so we need to refund the item.
+					if (tv != null && !here.furniture.Contains(tv as TV) && !placedSuccessfully)
+						RefundItem(itemToPlace, "The TV wasn't placed successfully. No details available.");
+				}
+				else if (itemInfo.itemType == ItemType.BedFurniture)
+				{
+					bool placedSuccessfully = false;
+					BedFurniture bed = null;
+					
+					// We decide exactly how we're placing the furniture based upon the less restrictive setting.
+					if (_config.LessRestrictiveBedPlacement)
+					{
+						bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
 						here.furniture.Add(bed);
 					}
-
-					// if (itemToPlace is not StorageFurniture)
-					// {
-					// 	Furniture furnitureToPlace = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
-					// 	here.furniture.Add(furnitureToPlace);
-					// }
+					else
+						placedSuccessfully = (itemToPlace as BedFurniture).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+					
+					// If both of these are false, the furniture was not successfully placed, so we need to refund the item.
+					if (bed != null && !here.furniture.Contains(bed as BedFurniture) && !placedSuccessfully)
+						RefundItem(itemToPlace, "The TV wasn't placed successfully. No details available.");
+					
+				}
+				else if (itemInfo.itemType == ItemType.GenericFurniture)
+				{
+					bool placedSuccessfully = false;
+					Furniture furniture = null;
+					
+					// Determine exactly how we're placing this furniture.
+					if (_config.LessRestrictiveFurniturePlacement)
+					{
+						furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
+						here.furniture.Add(furniture);
+					}
+					else
+						placedSuccessfully = (itemToPlace as Furniture).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+					
+					// If both of these are false, the furniture was not successfully placed, so we need to refund the item.
+					if (furniture != null && !here.furniture.Contains(furniture as Furniture) && !placedSuccessfully)
+						RefundItem(itemToPlace, "The TV wasn't placed successfully. No details available.");
 				}
 				else
 				{ // We're dealing with a generic placeable.
