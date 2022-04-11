@@ -31,33 +31,35 @@ namespace SmartBuilding
 	public class ModEntry : Mod, IAssetLoader
 	{
 		// SMAPI gubbins.
-		private static IModHelper _helper;
-		private static IMonitor _monitor;
-		private static Logger _logger;
-		private static ModConfig _config;
+		private static IModHelper helper = null!;
+		private static IMonitor monitor = null!;
+		private static Logger logger = null!;
+		private static ModConfig config = null!;
 
-		private Dictionary<Vector2, ItemInfo> _tilesSelected = new Dictionary<Vector2, ItemInfo>();
-		private Vector2 _currentTile = Vector2.Zero;
-		private Vector2 _hudPosition;
-		private Texture2D _buildingHud;
-		private Texture2D _itemBox;
-		private bool _toolbarFlipped = false;
-		private int _itemBarWidth = 800; // This is the default.
+		private Dictionary<Vector2, ItemInfo> tilesSelected = new Dictionary<Vector2, ItemInfo>();
+		private Vector2 currentTile = Vector2.Zero;
+		private Vector2 hudPosition;
+		private Texture2D buildingHud = null!;
+		private Texture2D itemBox = null!;
+		private int itemBarWidth = 800; // This is the default.
 
-		private bool _currentlyDrawing = false;
-		private bool _currentlyErasing = false;
-		private bool _currentlyPlacing = false;
-		private bool _buildingMode = false;
+		private bool currentlyDrawing = false;
+		private bool currentlyErasing = false;
+		private bool currentlyPlacing = false;
+		private bool buildingMode = false;
+        
+        // Debug stuff to make my life less painful when going through my pre-release checklist.
+        private ConsoleCommand command = null!;
 
 		private bool BuildingMode
 		{
-			get { return _buildingMode; }
+			get { return buildingMode; }
 			set
 			{
-				_buildingMode = value;
+				buildingMode = value;
 				HarmonyPatches.Patches.CurrentlyInBuildMode = value;
 				
-				if (!_buildingMode) // If this is now false, we want to clear the tiles list, and refund everything.
+				if (!buildingMode) // If this is now false, we want to clear the tiles list, and refund everything.
 				{
 					ClearPaintedTiles();
 				}
@@ -66,30 +68,30 @@ namespace SmartBuilding
 
 		private bool CurrentlyDrawing
 		{
-			get { return _currentlyDrawing; }
+			get { return currentlyDrawing; }
 			set
 			{
-				_currentlyDrawing = value;
+				currentlyDrawing = value;
 				HarmonyPatches.Patches.CurrentlyDrawing = value;
 			}
 		}
 
 		private bool CurrentlyErasing
 		{
-			get { return _currentlyErasing; }
+			get { return currentlyErasing; }
 			set
 			{
-				_currentlyErasing = value;
+				currentlyErasing = value;
 				HarmonyPatches.Patches.CurrentlyErasing = value;
 			}
 		}
 
 		private bool CurrentlyPlacing
 		{
-			get { return _currentlyPlacing; }
+			get { return currentlyPlacing; }
 			set
 			{
-				_currentlyPlacing = value;
+				currentlyPlacing = value;
 				HarmonyPatches.Patches.CurrentlyPlacing = value;
 			}
 		}
@@ -110,13 +112,14 @@ namespace SmartBuilding
 
 		public override void Entry(IModHelper helper)
 		{
-			_helper = helper;
-			_monitor = Monitor;
-			_logger = new Logger(_monitor);
-			_config = _helper.ReadConfig<ModConfig>();
-			_hudPosition = new Vector2(50, 0);
-			_buildingHud = _helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
-			_itemBox = _helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
+			ModEntry.helper = helper;
+			monitor = Monitor;
+			logger = new Logger(monitor);
+			config = ModEntry.helper.ReadConfig<ModConfig>();
+			hudPosition = new Vector2(50, 0);
+			buildingHud = ModEntry.helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
+			itemBox = ModEntry.helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
+            command = new ConsoleCommand(logger);
 
 			Harmony harmony = new Harmony(ModManifest.UniqueID);
 
@@ -137,36 +140,34 @@ namespace SmartBuilding
 				original: AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.checkForAction)),
 				prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.StorageFurniture_DoAction_Prefix)));
 
-
 			// This is where we'll register with GMCM.
-			_helper.Events.GameLoop.GameLaunched += GameLaunched;
+			ModEntry.helper.Events.GameLoop.GameLaunched += GameLaunched;
 
-			_helper.Events.Input.ButtonsChanged += OnInput;
-
-			// We use this in order to allow for holding and drawing/erasing. The downside is that AddTile gets called twice on the first click.
-			// However, the only other way to do this would be to register to UpdateTicked, which would be far more wasteful, potentially.
-			_helper.Events.Input.CursorMoved += CursorMoved;
+            // This is fired whenever input is changed, so we check for input here.
+			ModEntry.helper.Events.Input.ButtonsChanged += OnInput;
 
 			// This is used to have the queued builds draw themselves in the world.
-			_helper.Events.Display.RenderedWorld += RenderedWorld;
+			ModEntry.helper.Events.Display.RenderedWorld += RenderedWorld;
 
 			// This is a huge mess, and is used to draw the building mode HUD, and build queue if enabled.
-			_helper.Events.Display.RenderedHud += RenderedHud;
+			ModEntry.helper.Events.Display.RenderedHud += RenderedHud;
 
 			// If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
-			_helper.Events.Player.Warped += (sender, args) =>
+			ModEntry.helper.Events.Player.Warped += (sender, args) =>
 			{
 				ClearPaintedTiles();
-				_buildingMode = false;
-				_currentlyDrawing = false;
+				buildingMode = false;
+				currentlyDrawing = false;
 				HarmonyPatches.Patches.CurrentlyInBuildMode = false;
 				HarmonyPatches.Patches.CurrentlyDrawing = false;
 				HarmonyPatches.Patches.CurrentlyErasing = false;
 				HarmonyPatches.Patches.CurrentlyPlacing = false;
 			};
-		}
 
-		/// <summary>
+            ModEntry.helper.ConsoleCommands.Add("sb_test", "If you need to read this, it is not for you. Here be dragons.", command.DebugCommand);
+        }
+
+        /// <summary>
 		/// SMAPI's <see cref="IInputEvents.ButtonsChanged"> event.
 		/// </summary>
 		private void OnInput(object? sender, ButtonsChangedEventArgs e)
@@ -179,9 +180,9 @@ namespace SmartBuilding
 			if (Game1.activeClickableMenu != null)
 				return;
 			
-			if (_config.EnableDebugControls)
+			if (config.EnableDebugControls)
 			{
-				if (_config.IdentifyItem.JustPressed())
+				if (config.IdentifyItem.JustPressed())
 				{
 					// We now want to identify the currently held item.
 					Farmer player = Game1.player;
@@ -193,22 +194,22 @@ namespace SmartBuilding
 							ItemType type = IdentifyItemType((SObject)player.CurrentItem);
 							Item item = player.CurrentItem;
 
-							_logger.Log($"Item name: {item.Name}");
-							_logger.Log($"\t{item.Name}");
-							_logger.Log($"ParentSheetIndex:");
-							_logger.Log($"\t{item.ParentSheetIndex}");
-							_logger.Log($"Stardew Valley category:");
-							_logger.Log($"\t{item.Category}");
-							_logger.Log($"Stardew Valley type: ");
-							_logger.Log($"\t{(item as SObject).Type}");
-							_logger.Log($"Identified item as type: ");
-							_logger.Log($"\t{type}.");
-							_logger.Log("");
+							logger.Log($"Item name: {item.Name}");
+							logger.Log($"\t{item.Name}");
+							logger.Log($"ParentSheetIndex:");
+							logger.Log($"\t{item.ParentSheetIndex}");
+							logger.Log($"Stardew Valley category:");
+							logger.Log($"\t{item.Category}");
+							logger.Log($"Stardew Valley type: ");
+							logger.Log($"\t{(item as SObject).Type}");
+							logger.Log($"Identified item as type: ");
+							logger.Log($"\t{type}.");
+							logger.Log("");
 						}
 					}
 				}
 
-				if (_config.IdentifyProducer.JustPressed())
+				if (config.IdentifyProducer.JustPressed())
 				{
 					// We're trying to identify the type of producer under the cursor.
 					GameLocation here = Game1.currentLocation;
@@ -219,22 +220,22 @@ namespace SmartBuilding
 						SObject producer = here.objects[targetTile];
 						ProducerType type = IdentifyProducer(producer);
 
-						_logger.Log($"Identified producer {producer.Name} as {type}.");
+						logger.Log($"Identified producer {producer.Name} as {type}.");
 					}
 				}
 			}
 
 			// If the player presses to engage build mode, we flip the bool.
-			if (_config.EngageBuildMode.JustPressed())
+			if (config.EngageBuildMode.JustPressed())
 			{
 				// The BuildingMode property takes care of clearing the build queue.
 				BuildingMode = !BuildingMode;
 			}
 
 			// If the player is drawing placeables in the world. 
-			if (_config.HoldToDraw.IsDown())
+			if (config.HoldToDraw.IsDown())
 			{
-				if (_buildingMode)
+				if (buildingMode)
 				{
 					// We set our CurrentlyDrawing property to true, which will update the value in our patch.
 					CurrentlyDrawing = true;
@@ -249,9 +250,9 @@ namespace SmartBuilding
 				CurrentlyDrawing = false;
 			}
 
-			if (_config.HoldToErase.IsDown())
+			if (config.HoldToErase.IsDown())
 			{
-				if (_buildingMode)
+				if (buildingMode)
 				{
 					// We update this to set both our mod state, and patch bool.
 					CurrentlyErasing = true;
@@ -265,12 +266,12 @@ namespace SmartBuilding
 				CurrentlyErasing = false;
 			}
 
-			if (_config.HoldToInsert.IsDown())
+			if (config.HoldToInsert.IsDown())
 			{
-				if (_buildingMode)
+				if (buildingMode)
 				{
 					// We're in building mode, but we also want to ensure the setting to enable this is on.
-					if (_config.EnableInsertingItemsIntoMachines)
+					if (config.EnableInsertingItemsIntoMachines)
 					{
 						// If it is, we proceed to flag that we're placing items.
 						CurrentlyPlacing = true;
@@ -284,33 +285,33 @@ namespace SmartBuilding
 				CurrentlyPlacing = false;
 			}
 
-			if (_config.ConfirmBuild.JustPressed())
+			if (config.ConfirmBuild.JustPressed())
 			{
 				// The build has been confirmed, so we iterate through our Dictionary, and pass each tile into PlaceObject.
-				foreach (KeyValuePair<Vector2, ItemInfo> v in _tilesSelected)
+				foreach (KeyValuePair<Vector2, ItemInfo> v in tilesSelected)
 				{
 					PlaceObject(v);
 				}
 
 				// Then, we clear the list, because building is done, and all errors are handled internally.
-				_tilesSelected.Clear();
+				tilesSelected.Clear();
 			}
 
-			if (_config.PickUpObject.JustPressed())
+			if (config.PickUpObject.IsDown())
 			{
-				if (_buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with an SObject.
+				if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with an SObject.
 					DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
 			}
 
-			if (_config.PickUpFloor.JustPressed())
+			if (config.PickUpFloor.IsDown())
 			{
-				if (_buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with TerrainFeature.
+				if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with TerrainFeature.
 					DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
 			}
 
-			if (_config.PickUpFurniture.JustPressed())
+			if (config.PickUpFurniture.IsDown())
 			{
-				if (_buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with Furniture.
+				if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with Furniture.
 					DemolishOnTile(Game1.currentCursorTile, TileFeature.Furniture);
 			}
 		}
@@ -322,19 +323,19 @@ namespace SmartBuilding
 
 		private void RegisterWithGmcm()
 		{
-			GenericModConfigMenuApi configMenuApi =
-				Helper.ModRegistry.GetApi<GenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			IGenericModConfigMenuApi configMenuApi =
+				Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
 
 			if (configMenuApi == null)
 			{
-				_logger.Log("The user doesn't have GMCM installed. This is not an error.", LogLevel.Info);
+				logger.Log("The user doesn't have GMCM installed. This is not an error.", LogLevel.Info);
 
 				return;
 			}
 
 			configMenuApi.Register(ModManifest,
-				() => _config = new ModConfig(),
-				() => Helper.WriteConfig(_config));
+				() => config = new ModConfig(),
+				() => Helper.WriteConfig(config));
 
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
@@ -349,50 +350,50 @@ namespace SmartBuilding
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Engage build mode",
-				getValue: () => _config.EngageBuildMode,
-				setValue: value => _config.EngageBuildMode = value);
+				getValue: () => config.EngageBuildMode,
+				setValue: value => config.EngageBuildMode = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Hold to draw",
-				getValue: () => _config.HoldToDraw,
-				setValue: value => _config.HoldToDraw = value);
+				getValue: () => config.HoldToDraw,
+				setValue: value => config.HoldToDraw = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Hold to erase",
-				getValue: () => _config.HoldToErase,
-				setValue: value => _config.HoldToErase = value);
+				getValue: () => config.HoldToErase,
+				setValue: value => config.HoldToErase = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Hold to insert item",
-				getValue: () => _config.HoldToInsert,
-				setValue: value => _config.HoldToInsert = value);
+				getValue: () => config.HoldToInsert,
+				setValue: value => config.HoldToInsert = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Confirm build",
-				getValue: () => _config.ConfirmBuild,
-				setValue: value => _config.ConfirmBuild = value);
+				getValue: () => config.ConfirmBuild,
+				setValue: value => config.ConfirmBuild = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Pick up object",
-				getValue: () => _config.PickUpObject,
-				setValue: value => _config.PickUpObject = value);
+				getValue: () => config.PickUpObject,
+				setValue: value => config.PickUpObject = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Pick up floor",
-				getValue: () => _config.PickUpFloor,
-				setValue: value => _config.PickUpFloor = value);
+				getValue: () => config.PickUpFloor,
+				setValue: value => config.PickUpFloor = value);
 
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Pick up furniture",
-				getValue: () => _config.PickUpFurniture,
-				setValue: value => _config.PickUpFurniture = value);
+				getValue: () => config.PickUpFurniture,
+				setValue: value => config.PickUpFurniture = value);
 
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
@@ -402,56 +403,56 @@ namespace SmartBuilding
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Show build queue",
-				getValue: () => _config.ShowBuildQueue,
-				setValue: value => _config.ShowBuildQueue = value
+				getValue: () => config.ShowBuildQueue,
+				setValue: value => config.ShowBuildQueue = value
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Can pick up chests",
 				tooltip: () => "WARNING: This will drop all contained items on the ground.",
-				getValue: () => _config.CanDestroyChests,
-				setValue: value => _config.CanDestroyChests = value
+				getValue: () => config.CanDestroyChests,
+				setValue: value => config.CanDestroyChests = value
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "More lax floor placement",
 				tooltip: () => "Allows you to place floors essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
-				getValue: () => _config.LessRestrictiveFloorPlacement,
-				setValue: value => _config.LessRestrictiveFloorPlacement = value
+				getValue: () => config.LessRestrictiveFloorPlacement,
+				setValue: value => config.LessRestrictiveFloorPlacement = value
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "More lax furniture placement",
 				tooltip: () => "Allows you to place furniture essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
-				getValue: () => _config.LessRestrictiveFurniturePlacement,
-				setValue: value => _config.LessRestrictiveFurniturePlacement = value
+				getValue: () => config.LessRestrictiveFurniturePlacement,
+				setValue: value => config.LessRestrictiveFurniturePlacement = value
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "More lax bed placement",
 				tooltip: () => "Allows you to place beds essentially anywhere, allowing you to sleep in places you shouldn't be able to sleep in. BE CAREFUL WITH THIS.",
-				getValue: () => _config.LessRestrictiveBedPlacement,
-				setValue: value => _config.LessRestrictiveBedPlacement = value
+				getValue: () => config.LessRestrictiveBedPlacement,
+				setValue: value => config.LessRestrictiveBedPlacement = value
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Replaceable floors",
 				tooltip: () => "Allows you to replace an existing floor/path with another. Note that you will not get the existing floor back (yet).",
-				getValue: () => _config.EnableReplacingFloors,
-				setValue: value => _config.EnableReplacingFloors = value
+				getValue: () => config.EnableReplacingFloors,
+				setValue: value => config.EnableReplacingFloors = value
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Replaceable fences",
 				tooltip: () => "Allows you to replace an existing fence with another. Note that you will not get the existing fence back.",
-				getValue: () => _config.EnableReplacingFences,
-				setValue: value => _config.EnableReplacingFences = value
+				getValue: () => config.EnableReplacingFences,
+				setValue: value => config.EnableReplacingFences = value
 			);
 
 			configMenuApi.AddSectionTitle(
@@ -462,68 +463,75 @@ namespace SmartBuilding
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Place crab pots in any water tile",
-				getValue: () => _config.CrabPotsInAnyWaterTile,
-				setValue: b => _config.CrabPotsInAnyWaterTile = b
+				getValue: () => config.CrabPotsInAnyWaterTile,
+				setValue: b => config.CrabPotsInAnyWaterTile = b
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow planting crops",
-				getValue: () => _config.EnablePlantingCrops,
-				setValue: b => _config.EnablePlantingCrops = b
+				getValue: () => config.EnablePlantingCrops,
+				setValue: b => config.EnablePlantingCrops = b
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow fertilizing crops",
-				getValue: () => _config.EnableCropFertilizers,
-				setValue: b => _config.EnableCropFertilizers = b
+				getValue: () => config.EnableCropFertilizers,
+				setValue: b => config.EnableCropFertilizers = b
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow fertilizing trees",
-				getValue: () => _config.EnableTreeFertilizers,
-				setValue: b => _config.EnableTreeFertilizers = b
+				getValue: () => config.EnableTreeFertilizers,
+				setValue: b => config.EnableTreeFertilizers = b
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Allow tree tappers",
-				getValue: () => _config.EnableTreeTappers,
-				setValue: b => _config.EnableTreeTappers = b
+				getValue: () => config.EnableTreeTappers,
+				setValue: b => config.EnableTreeTappers = b
 			);
 
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Enable placing items into machines",
-				getValue: () => _config.EnableInsertingItemsIntoMachines,
-				setValue: b => _config.EnableInsertingItemsIntoMachines = b
+				getValue: () => config.EnableInsertingItemsIntoMachines,
+				setValue: b => config.EnableInsertingItemsIntoMachines = b
 			);
 			
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
 				text: () => "Debug"
 			);
+            
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable debug command",
+                getValue: () => config.EnableDebugCommand,
+                setValue: b => config.EnableDebugCommand = b
+            );
 			
 			configMenuApi.AddBoolOption(
 				mod: ModManifest,
 				name: () => "Enable debug keybinds",
-				getValue: () => _config.EnableDebugControls,
-				setValue: b => _config.EnableDebugControls = b
+				getValue: () => config.EnableDebugControls,
+				setValue: b => config.EnableDebugControls = b
 			);
 			
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Identify producer to console",
-				getValue: () => _config.IdentifyProducer,
-				setValue: value => _config.IdentifyProducer = value);
+				getValue: () => config.IdentifyProducer,
+				setValue: value => config.IdentifyProducer = value);
 			
 			configMenuApi.AddKeybindList(
 				mod: ModManifest,
 				name: () => "Identify held item to console",
-				getValue: () => _config.IdentifyItem,
-				setValue: value => _config.IdentifyItem = value);
+				getValue: () => config.IdentifyItem,
+				setValue: value => config.IdentifyItem = value);
 
 			configMenuApi.AddSectionTitle(
 				mod: ModManifest,
@@ -539,8 +547,8 @@ namespace SmartBuilding
 				mod: ModManifest,
 				name: () => "Enable placing storage furniture",
 				tooltip: () => "WARNING: PLACING STORAGE FURNITURE WITH SMART BUILDING IS RISKY. Your items should transfer over just fine, but it's your risk to take.",
-				getValue: () => _config.EnablePlacingStorageFurniture,
-				setValue: value => _config.EnablePlacingStorageFurniture = value
+				getValue: () => config.EnablePlacingStorageFurniture,
+				setValue: value => config.EnablePlacingStorageFurniture = value
 			);
 
 			configMenuApi.AddPageLink(
@@ -584,19 +592,19 @@ namespace SmartBuilding
 		// TODO: Actually comment things in this method.
 		private void RenderedHud(object? sender, RenderedHudEventArgs e)
 		{
-			if (_buildingMode)
+			if (buildingMode)
 			{ // There's absolutely no need to run this while we're not in building mode.
 				int windowWidth = Game1.game1.Window.ClientBounds.Width;
 
 				// TODO: Use the newer logic I have to get the toolbar position for this.
-				_hudPosition = new Vector2(
-					(windowWidth / 2) - (_itemBarWidth / 2) - _buildingHud.Width * 4,
+				hudPosition = new Vector2(
+					(windowWidth / 2) - (itemBarWidth / 2) - buildingHud.Width * 4,
 					0);
 
 				e.SpriteBatch.Draw(
-					texture: _buildingHud,
-					position: _hudPosition,
-					sourceRectangle: _buildingHud.Bounds,
+					texture: buildingHud,
+					position: hudPosition,
+					sourceRectangle: buildingHud.Bounds,
 					color: Color.White,
 					rotation: 0f,
 					origin: Vector2.Zero,
@@ -605,18 +613,19 @@ namespace SmartBuilding
 					layerDepth: 1f
 				);
 
-				if (_config.ShowBuildQueue)
+				if (config.ShowBuildQueue)
 				{
 					Dictionary<Item, int> itemAmounts = new Dictionary<Item, int>();
 
-					foreach (var item in _tilesSelected.Values.GroupBy(x => x))
+					foreach (var item in tilesSelected.Values.GroupBy(x => x))
 					{
 						itemAmounts.Add(item.Key.Item, item.Count());
 					}
 
 					float screenWidth, screenHeight;
-					screenWidth = Game1.uiViewport.Width * Game1.options.zoomLevel;
-					screenHeight = Game1.uiViewport.Height * Game1.options.zoomLevel;
+					
+					screenWidth = Game1.uiViewport.Width;
+					screenHeight = Game1.uiViewport.Height;
 					Vector2 startingPoint = new Vector2();
 
 					#region Shameless decompile copy
@@ -638,7 +647,7 @@ namespace SmartBuilding
 					foreach (var item in itemAmounts)
 					{
 						e.SpriteBatch.Draw(
-							texture: _itemBox,
+							texture: itemBox,
 							position: startingPoint,
 							sourceRectangle: new Rectangle(0, 128, 24, 24),
 							color: Color.White,
@@ -686,51 +695,24 @@ namespace SmartBuilding
 			);
 		}
 
-		private void CursorMoved(object? sender, CursorMovedEventArgs e)
-		{
-			// If the world isn't ready, we definitely don't want to do anything.
-			if (!Context.IsWorldReady)
-				return;
-
-			// If a menu is up, we don't want any of our controls to do anything.
-			if (Game1.activeClickableMenu != null)
-				return;
-
-			// If the player is holding down the draw keybind, we want to call AddTile to see if we can
-			// add the selected item to the tile under the cursor.
-			if (_currentlyDrawing)
-			{
-				int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
-
-				AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
-			}
-
-			// If the player is holding the erase keybind, we want to see if we can remove a registered tile
-			// under the cursor, and refund the item where applicable.
-			if (_currentlyErasing)
-			{
-				EraseTile(Game1.currentCursorTile);
-			}
-		}
-
 		private void EraseTile(Vector2 tile)
 		{
 			Vector2 flaggedForRemoval = new Vector2();
 
-			foreach (var item in _tilesSelected)
+			foreach (var item in tilesSelected)
 			{
 				if (item.Key == tile)
 				{
 					// If we're over a tile in _tilesSelected, remove it and refund the item to the player.
 					Game1.player.addItemToInventoryBool(item.Value.Item.getOne(), false);
-					_monitor.Log($"Refunding {item.Value.Item.Name} back into player's inventory.");
+					monitor.Log($"Refunding {item.Value.Item.Name} back into player's inventory.");
 
 					// And flag it for removal from the queue, since we can't remove from within the foreach.
 					flaggedForRemoval = tile;
 				}
 			}
 
-			_tilesSelected.Remove(flaggedForRemoval);
+			tilesSelected.Remove(flaggedForRemoval);
 		}
 
 		private bool IsTypeOfObject(SObject o, ItemType type)
@@ -891,7 +873,7 @@ namespace SmartBuilding
 						if (tf != null && tf is Flooring)
 						{
 							// If it is, and if the setting to replace floors with floors is enabled, we return true.
-							if (_config.EnableReplacingFloors)
+							if (config.EnableReplacingFloors)
 								return true;
 						}
 
@@ -916,12 +898,12 @@ namespace SmartBuilding
 					}
 
 					// At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
-					return _config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
+					return config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
 				case ItemType.Chest:
 					goto case ItemType.Generic;
 				case ItemType.Fertilizer:
 					// If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
-					if (!_config.EnableCropFertilizers)
+					if (!config.EnableCropFertilizers)
 						return false;
 
 					// If there's an object present, we don't want to place any fertilizer.
@@ -958,7 +940,7 @@ namespace SmartBuilding
 					return false;
 				case ItemType.TreeFertilizer:
 					// If the setting to enable tree fertilizers is off, return false to ensure they can't be added to the queue.
-					if (!_config.EnableTreeFertilizers)
+					if (!config.EnableTreeFertilizers)
 						return false;
 
 					// First, we determine if there's a TerrainFeature here.
@@ -981,7 +963,7 @@ namespace SmartBuilding
 					return false;
 				case ItemType.Seed:
 					// If the setting to enable crops is off, return false to ensure they can't be added to the queue.
-					if (!_config.EnablePlantingCrops)
+					if (!config.EnablePlantingCrops)
 						return false;
 
 					// If there's an object present, we don't want to place a seed.
@@ -1005,7 +987,7 @@ namespace SmartBuilding
 					return false;
 				case ItemType.Tapper:
 					// If the setting to enable tree tappers is off, we return false here to ensure nothing further happens.
-					if (!_config.EnableTreeTappers)
+					if (!config.EnableTreeTappers)
 						return false;
 
 					// First, we need to check if there's a TerrainFeature here.
@@ -1035,7 +1017,7 @@ namespace SmartBuilding
 						SObject o = here.objects[v];
 
 						// Then we return true if this is both a fence, and replacing fences is enabled.
-						return IsTypeOfObject(o, ItemType.Fence) && _config.EnableReplacingFences;
+						return IsTypeOfObject(o, ItemType.Fence) && config.EnableReplacingFences;
 					}
 					else if (here.terrainFeatures.ContainsKey(v))
 					{
@@ -1065,26 +1047,26 @@ namespace SmartBuilding
 						return false;
 
 					// If the setting for allowing storage furniture is off, we get the hell out.
-					if (!_config.EnablePlacingStorageFurniture)
+					if (!config.EnablePlacingStorageFurniture)
 						return false;
 
-					if (_config.LessRestrictiveFurniturePlacement)
+					if (config.LessRestrictiveFurniturePlacement)
 						return true;
 					else
 						return (i as StorageFurniture).canBePlacedHere(here, v);
-				case ItemType.TVFurniture:
-					if (_config.LessRestrictiveFurniturePlacement)
+				case ItemType.TvFurniture:
+					if (config.LessRestrictiveFurniturePlacement)
 						return true;
 					else
 						return (i as TV).canBePlacedHere(here, v);
 				case ItemType.BedFurniture:
-					if (_config.LessRestrictiveBedPlacement)
+					if (config.LessRestrictiveBedPlacement)
 						return true;
 					else
 						return (i as BedFurniture).canBePlacedHere(here, v);
 				case ItemType.GenericFurniture:
 					// In this place, we play fast and loose, and return true.
-					if (_config.LessRestrictiveFurniturePlacement)
+					if (config.LessRestrictiveFurniturePlacement)
 						return true;
 					else
 						return (i as Furniture).canBePlacedHere(here, v);
@@ -1112,7 +1094,7 @@ namespace SmartBuilding
 			else if (item is BedFurniture)
 				return ItemType.BedFurniture;
 			else if (item is TV)
-				return ItemType.TVFurniture;
+				return ItemType.TvFurniture;
 			else if (item is Furniture)
 				return ItemType.GenericFurniture;
 			else if (itemName.Contains("Floor") || itemName.Contains("Path") && item.Category == -24)
@@ -1154,7 +1136,7 @@ namespace SmartBuilding
 		private void AddItem(Item item, Vector2 v)
 		{
 			// If we're not in building mode, we do nothing.
-			if (!_buildingMode)
+			if (!buildingMode)
 				return;
 
 			// If the player isn't holding an item, we do nothing.
@@ -1168,7 +1150,7 @@ namespace SmartBuilding
 		private void AddTile(Item item, Vector2 v, int itemInventoryIndex)
 		{
 			// If we're not in building mode, we do nothing.
-			if (!_buildingMode)
+			if (!buildingMode)
 				return;
 
 			// If the player isn't holding an item, we do nothing.
@@ -1186,12 +1168,12 @@ namespace SmartBuilding
 			ItemInfo itemInfo = GetItemInfo((SObject)item);
 
 			// We only want to add the tile if the Dictionary doesn't already contain it. 
-			if (!_tilesSelected.ContainsKey(v))
+			if (!tilesSelected.ContainsKey(v))
 			{
 				// We then want to check if the item can even be placed in this spot.
 				if (CanBePlacedHere(v, item))
 				{
-					_tilesSelected.Add(v, itemInfo);
+					tilesSelected.Add(v, itemInfo);
 					Game1.player.reduceActiveItemByOne();
 				}
 			}
@@ -1203,7 +1185,7 @@ namespace SmartBuilding
 			// go in water, I do want to modularise this later.
 			// TODO: Modularise for not only crab pots.
 
-			if (_config.CrabPotsInAnyWaterTile)
+			if (config.CrabPotsInAnyWaterTile)
 				return true;
 
 			List<Vector2> directions = new List<Vector2>()
@@ -1229,7 +1211,7 @@ namespace SmartBuilding
 
 		private void RenderedWorld(object? sender, RenderedWorldEventArgs e)
 		{
-			foreach (KeyValuePair<Vector2, ItemInfo> item in _tilesSelected)
+			foreach (KeyValuePair<Vector2, ItemInfo> item in tilesSelected)
 			{
 				// Here, we simply have the Item draw itself in the world.
 				item.Value.Item.drawInMenu
@@ -1244,13 +1226,13 @@ namespace SmartBuilding
 		private void ClearPaintedTiles()
 		{
 			// To clear the painted tiles, we want to iterate through our Dictionary, and refund every item contained therein.
-			foreach (var t in _tilesSelected)
+			foreach (var t in tilesSelected)
 			{
 				RefundItem(t.Value.Item, "User left build mode. Refunding items.", LogLevel.Trace, false);
 			}
 
 			// And, finally, clear it.
-			_tilesSelected.Clear();
+			tilesSelected.Clear();
 		}
 
 		// TODO: Modularise this method more. Right now, it just works. It is not well structured for future maintenance.
@@ -1279,7 +1261,7 @@ namespace SmartBuilding
 						if (here.objects.ContainsKey(tile))
 						{
 							// If the setting to disable chest pickup is enabled, we pick up the chest. If not, we do nothing.
-							if (_config.CanDestroyChests)
+							if (config.CanDestroyChests)
 							{
 								// This is fairly fragile, but it's fine with vanilla chests, at least.
 								Chest chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
@@ -1296,7 +1278,7 @@ namespace SmartBuilding
 						if (here.objects.ContainsKey(tile))
 						{
 							// If the setting to disable chest pickup is enabled, we pick up the chest. If not, we do nothing.
-							if (_config.CanDestroyChests)
+							if (config.CanDestroyChests)
 							{
 								// This is fairly fragile, but it's fine with vanilla chests, at least.
 								Chest chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
@@ -1327,14 +1309,22 @@ namespace SmartBuilding
 
 							return;
 						}
+                        
+                        // Now we need to figure out whether the object has a heldItem within it.
+                        if (o.heldObject != null)
+                        {
+                            // There's an item inside here, so we need to determine whether to refund the item, or discard it if it's a chest.
+                            if (o.heldObject.Value is Chest)
+                            {
+                                // It's a chest, so we want to force it to drop all of its items.
+                                if ((o.heldObject.Value as Chest).items.Count > 0)
+                                {
+                                    (o.heldObject.Value as Chest).destroyAndDropContents(tile * 64, here);
+                                }
+                            }
+                        }
 
-						if (o.heldObject.Value != null)
-						{
-							// If the object's heldObject is not null, that means it has an item in it, so we also need to grab that.
-							Game1.player.addItemByMenuIfNecessary(o.heldObject);
-						}
-
-						o.performRemoveAction(tile * 64, here);
+                        o.performRemoveAction(tile * 64, here);
 						Game1.player.addItemByMenuIfNecessary(o.getOne());
 
 						here.objects.Remove(tile);
@@ -1393,7 +1383,7 @@ namespace SmartBuilding
 
 				if (furnitureToGrab != null)
 				{
-					_logger.Log($"Trying to grab {furnitureToGrab.Name}");
+					logger.Log($"Trying to grab {furnitureToGrab.Name}");
 					Game1.player.addItemToInventory(furnitureToGrab);
 					here.furniture.Remove(furnitureToGrab);
 				}
@@ -1440,7 +1430,7 @@ namespace SmartBuilding
 					else
 					{
 						// At this point, we know there's a terrain feature here.
-						if (_config.EnableReplacingFloors)
+						if (config.EnableReplacingFloors)
 						{
 							TerrainFeature tf = here.terrainFeatures[targetTile];
 
@@ -1504,7 +1494,7 @@ namespace SmartBuilding
 							// We try to identify what kind of object is placed here.
 							if (IsTypeOfObject(o, ItemType.Fence))
 							{
-								if (_config.EnableReplacingFences)
+								if (config.EnableReplacingFences)
 								{
 									// We have a fence, so we want to remove it before placing our new one.
 									DemolishOnTile(targetTile, TileFeature.Object);
@@ -1689,7 +1679,7 @@ namespace SmartBuilding
 				}
 				else if (itemInfo.ItemType == ItemType.StorageFurniture)
 				{
-					if (_config.EnablePlacingStorageFurniture)
+					if (config.EnablePlacingStorageFurniture)
 					{
 						bool placedSuccessfully = false;
 
@@ -1699,12 +1689,12 @@ namespace SmartBuilding
 						// Then, we iterate through all of the items in the existing StorageFurniture, and add them to the new one.
 						foreach (var itemInStorage in (itemToPlace as StorageFurniture).heldItems)
 						{
-							_logger.Log($"Adding item {itemInStorage.Name} with ParentSheetId {itemInStorage.ParentSheetIndex} to newly created storage.");
+							logger.Log($"Adding item {itemInStorage.Name} with ParentSheetId {itemInStorage.ParentSheetIndex} to newly created storage.");
 							storage.AddItem(itemInStorage);
 						}
 
 						// If we have less restrictive furniture placement enabled, we simply try to place it. Otherwise, we use the vanilla placementAction.
-						if (_config.LessRestrictiveFurniturePlacement)
+						if (config.LessRestrictiveFurniturePlacement)
 							here.furniture.Add(storage as StorageFurniture);
 						else
 							placedSuccessfully = storage.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
@@ -1716,13 +1706,13 @@ namespace SmartBuilding
 					else
 						RefundItem(itemToPlace, "The (potentially dangerous) setting to enable storage furniture was disabled.", LogLevel.Info, true);
 				}
-				else if (itemInfo.ItemType == ItemType.TVFurniture)
+				else if (itemInfo.ItemType == ItemType.TvFurniture)
 				{
 					bool placedSuccessfully = false;
 					TV tv = null;
 
 					// We need to determine which we we're placing this TV based upon the furniture placement restriction option.
-					if (_config.LessRestrictiveFurniturePlacement)
+					if (config.LessRestrictiveFurniturePlacement)
 					{
 						tv = new TV(itemToPlace.ParentSheetIndex, targetTile);
 						here.furniture.Add(tv);
@@ -1742,7 +1732,7 @@ namespace SmartBuilding
 					BedFurniture bed = null;
 
 					// We decide exactly how we're placing the furniture based upon the less restrictive setting.
-					if (_config.LessRestrictiveBedPlacement)
+					if (config.LessRestrictiveBedPlacement)
 					{
 						bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
 						here.furniture.Add(bed);
@@ -1761,7 +1751,7 @@ namespace SmartBuilding
 					Furniture furniture = null;
 
 					// Determine exactly how we're placing this furniture.
-					if (_config.LessRestrictiveFurniturePlacement)
+					if (config.LessRestrictiveFurniturePlacement)
 					{
 						furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
 						here.furniture.Add(furniture);
@@ -1797,7 +1787,7 @@ namespace SmartBuilding
 			Game1.player.addItemByMenuIfNecessary(item.getOne());
 
 			if (shouldLog)
-				_monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", logLevel);
+				monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", logLevel);
 		}
 
 		private int? GetFlooringIdFromName(string itemName)
