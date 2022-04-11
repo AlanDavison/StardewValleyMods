@@ -1,0 +1,11 @@
+{
+  "Name": "[JA] Stardew Teleporter Network Items",
+  "Author": "DecidedlyHuman",
+  "Version": "1.0.0",
+  "Description": "Gives you teleporters you can place down around the world.",
+  "UniqueID": "DecidedlyHuman.StardewTeleporterNetworkItems",
+  "UpdateKeys": [],
+  "ContentPackFor": {
+    "UniqueID": "spacechase0.JsonAssets"
+  }
+}
