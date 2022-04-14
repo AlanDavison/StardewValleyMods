@@ -1,6 +1,9 @@
-﻿using SmartBuilding.Utilities;
+﻿using Microsoft.Xna.Framework.Graphics;
+using SmartBuilding.UI;
+using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewValley;
+using xTile.Dimensions;
 
 namespace SmartBuilding
 {
@@ -8,17 +11,32 @@ namespace SmartBuilding
     {
         private Logger logger;
         private bool commandRunOnce = false;
+        private Texture2D texture;
 
-        public ConsoleCommand(Logger logger)
+        public ConsoleCommand(Logger logger, Texture2D texture)
         {
             this.logger = logger;
+            this.texture = texture;
+        }
+
+        /// <summary>
+        /// Both arguments are ignored.
+        /// </summary>
+        /// <param name="command">Ignored.</param>
+        /// <param name="args">Ignored.</param>
+        public void BindingUI(string command, string[] args)
+        {
+            Rectangle viewport = Game1.uiViewport;
+            BindingUi binding = new BindingUi(viewport.X, viewport.Y, viewport.Width, viewport.Height, texture, true);
+
+            Game1.activeClickableMenu = binding;
         }
 
         public void DebugCommand(string command, string[] args)
         {
             if (!commandRunOnce)
             {
-                logger.Log("THIS IS YOUR ONE AND ONLY WARNING. This command is purely for testing, will wipe your player inventory, the farm, " +
+                logger.Log("THIS IS YOUR ONE AND ONLY WARNING. This command is purely for testing, may wipe your player inventory, the farm, " +
                             "spawn buildings on the farm, and perform other acts of chaos. After this warning, you will be able to use " +
                             "the command.", LogLevel.Alert);
                 commandRunOnce = true;
