@@ -1,0 +1,12 @@
+{
+	"Name": "[SMAPI] Sleep Anywhere",
+	"Author": "DecidedlyHuman",
+	"Version": "1.0.0-dev",
+	"Description": "Allows you to sleep anywhere in the world with a sleeping bag.",
+	"UniqueID": "DecidedlyHuman.SleepAnywhere",
+	"EntryDll": "SleepAnywhere.dll",
+	"MinimumApiVersion": "3.0.0",
+	"UpdateKeys": [
+		"Nexus:00000"
+	]
+}
