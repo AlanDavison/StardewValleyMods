@@ -1,0 +1,52 @@
+{
+  // Generic Mod Config Menu
+  // key binds section
+  "config.key-binds": "Keybinds",
+  "config.paragraph1": "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually.",
+  "config.engage-build-mode": "Engage build mode",
+  "config.hold-to-draw": "Hold to draw",
+  "config.hold-to-erase": "Hold to erase",
+  "config.hold-to-insert": "Hold to insert item",
+  "config.confirm-build": "Confirm build",
+  "config.pick-up-object": "Pick up object",
+  "config.pick-up-floor": "Pick up floor",
+  "config.pick-up-furniture": "Pick up furniture",
+
+  // option toggles section
+  "config.optional-toggles": "Optional Toggles",
+  "config.show-build-queue": "Show build queue",
+  "config.can-destory-chests": "Can pick up chests",
+  "config.can-destory-chests.tooltip": "WARNING: This will drop all contained items on the ground.",
+  "config.less-restrictive-floor-placement": "More lax floor placement",
+  "config.less-restrictive-floor-placement.tooltip": "Allows you to place floors essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+  "config.less-restrictive-furniture-placement": "More lax furniture placement",
+  "config.less-restrictive-furniture-placement.tooltip": "Allows you to place furniture essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+  "config.less-restrictive-bed-placement": "More lax bed placement",
+  "config.less-restrictive-bed-placement.tooltip": "Allows you to place beds essentially anywhere, allowing you to sleep in places you shouldn't be able to sleep in. BE CAREFUL WITH THIS.",
+  "config.enable-replacing-floors": "Replaceable floors",
+  "config.enable-replacing-floors.tooltip": "Allows you to replace an existing floor/path with another. Note that you will not get the existing floor back (yet).",
+  "config.enable-replacing-fences": "Replaceable fences",
+  "config.enable-replacing-fences.tooltip": "Allows you to replace an existing fence with another. Note that you will not get the existing fence back.",
+
+  // The Slightly Cheaty Zone section
+  "config.the-slightly-cheaty-zone": "The Slightly Cheaty Zone",
+  "config.crab-pots-in-any-water-tile": "Place crab pots in any water tile",
+  "config.enable-planting-crops": "Allow planting crops",
+  "config.enable-fertilizing-crops": "Allow fertilizing crops",
+  "config.enable-fertilizing-trees": "Allow fertilizing trees",
+  "config.enable-tree-tappers": "Allow tree tappers",
+  "config.enable-items-into-machines": "Enable placing items into machines",
+
+  // debug section
+  "config.debug": "Debug",
+  "config.enable-debug-command": "Enable debug command",
+  "config.enable-debug-controls": "Enable debug keybinds",
+  "config.identify-producer": "Identify producer to console",
+  "config.identify-item": "Identify held item to console",
+
+  // dangerous option section
+  "config.dangerous-option": "THIS NEXT OPTION IS POTENTIALLY DANGEROUS.",
+  "config.paragraph2": "You shouldn't, but you might lose items inside your dressers/other storage furniture. If you do, please let me know.",
+  "config.enable-placing-storage-furniture": "Enable placing storage furniture",
+  "config.enable-placing-storage-furniture.tooltip": "WARNING: PLACING STORAGE FURNITURE WITH SMART BUILDING IS RISKY. Your items should transfer over just fine, but it's your risk to take."
+}

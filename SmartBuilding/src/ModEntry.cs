@@ -111,6 +111,7 @@ namespace SmartBuilding
 
         public override void Entry(IModHelper helper)
         {
+            I18n.Init(helper.Translation);
             ModEntry.helper = helper;
             monitor = Monitor;
             logger = new Logger(monitor);
@@ -341,214 +342,214 @@ namespace SmartBuilding
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Keybinds"
+                text: I18n.Config_KeyBinds
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually."
+                text: I18n.Config_Paragraph1
             );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Engage build mode",
+                name: I18n.Config_EngageBuildMode,
                 getValue: () => config.EngageBuildMode,
                 setValue: value => config.EngageBuildMode = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Hold to draw",
+                name: I18n.Config_HoldToDraw,
                 getValue: () => config.HoldToDraw,
                 setValue: value => config.HoldToDraw = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Hold to erase",
+                name: I18n.Config_HoldToErase,
                 getValue: () => config.HoldToErase,
                 setValue: value => config.HoldToErase = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Hold to insert item",
+                name: I18n.Config_HoldToInsert,
                 getValue: () => config.HoldToInsert,
                 setValue: value => config.HoldToInsert = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Confirm build",
+                name: I18n.Config_ConfirmBuild,
                 getValue: () => config.ConfirmBuild,
                 setValue: value => config.ConfirmBuild = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Pick up object",
+                name: I18n.Config_PickUpObject,
                 getValue: () => config.PickUpObject,
                 setValue: value => config.PickUpObject = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Pick up floor",
+                name: I18n.Config_PickUpFloor,
                 getValue: () => config.PickUpFloor,
                 setValue: value => config.PickUpFloor = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Pick up furniture",
+                name: I18n.Config_PickUpFurniture,
                 getValue: () => config.PickUpFurniture,
                 setValue: value => config.PickUpFurniture = value);
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Optional Toggles"
+                text: I18n.Config_OptionalToggles
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show build queue",
+                name: I18n.Config_ShowBuildQueue,
                 getValue: () => config.ShowBuildQueue,
                 setValue: value => config.ShowBuildQueue = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Can pick up chests",
-                tooltip: () => "WARNING: This will drop all contained items on the ground.",
+                name: I18n.Config_CanDestoryChests,
+                tooltip: I18n.Config_CanDestoryChests_Tooltip,
                 getValue: () => config.CanDestroyChests,
                 setValue: value => config.CanDestroyChests = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "More lax floor placement",
-                tooltip: () => "Allows you to place floors essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+                name: I18n.Config_LessRestrictiveFloorPlacement,
+                tooltip: I18n.Config_LessRestrictiveFloorPlacement_Tooltip,
                 getValue: () => config.LessRestrictiveFloorPlacement,
                 setValue: value => config.LessRestrictiveFloorPlacement = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "More lax furniture placement",
-                tooltip: () => "Allows you to place furniture essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+                name: I18n.Config_LessRestrictiveFurniturePlacement,
+                tooltip: I18n.Config_LessRestrictiveFurniturePlacement_Tooltip,
                 getValue: () => config.LessRestrictiveFurniturePlacement,
                 setValue: value => config.LessRestrictiveFurniturePlacement = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "More lax bed placement",
-                tooltip: () => "Allows you to place beds essentially anywhere, allowing you to sleep in places you shouldn't be able to sleep in. BE CAREFUL WITH THIS.",
+                name: I18n.Config_LessRestrictiveBedPlacement,
+                tooltip: I18n.Config_LessRestrictiveBedPlacement_Tooltip,
                 getValue: () => config.LessRestrictiveBedPlacement,
                 setValue: value => config.LessRestrictiveBedPlacement = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Replaceable floors",
-                tooltip: () => "Allows you to replace an existing floor/path with another. Note that you will not get the existing floor back (yet).",
+                name: I18n.Config_EnableReplacingFloors,
+                tooltip: I18n.Config_EnableReplacingFloors_Tooltip,
                 getValue: () => config.EnableReplacingFloors,
                 setValue: value => config.EnableReplacingFloors = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Replaceable fences",
-                tooltip: () => "Allows you to replace an existing fence with another. Note that you will not get the existing fence back.",
+                name: I18n.Config_EnableReplacingFences,
+                tooltip: I18n.Config_EnableReplacingFences_Tooltip,
                 getValue: () => config.EnableReplacingFences,
                 setValue: value => config.EnableReplacingFences = value
             );
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "The Slightly Cheaty Zone"
+                text: I18n.Config_TheSlightlyCheatyZone
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Place crab pots in any water tile",
+                name: I18n.Config_CrabPotsInAnyWaterTile,
                 getValue: () => config.CrabPotsInAnyWaterTile,
                 setValue: b => config.CrabPotsInAnyWaterTile = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow planting crops",
+                name: I18n.Config_EnablePlantingCrops,
                 getValue: () => config.EnablePlantingCrops,
                 setValue: b => config.EnablePlantingCrops = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow fertilizing crops",
+                name: I18n.Config_EnableFertilizingCrops,
                 getValue: () => config.EnableCropFertilizers,
                 setValue: b => config.EnableCropFertilizers = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow fertilizing trees",
+                name: I18n.Config_EnableFertilizingTrees,
                 getValue: () => config.EnableTreeFertilizers,
                 setValue: b => config.EnableTreeFertilizers = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow tree tappers",
+                name: I18n.Config_EnableTreeTappers,
                 getValue: () => config.EnableTreeTappers,
                 setValue: b => config.EnableTreeTappers = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable placing items into machines",
+                name: I18n.Config_EnableItemsIntoMachines,
                 getValue: () => config.EnableInsertingItemsIntoMachines,
                 setValue: b => config.EnableInsertingItemsIntoMachines = b
             );
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Debug"
+                text: I18n.Config_Debug
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable debug command",
+                name: I18n.Config_EnableDebugCommand,
                 getValue: () => config.EnableDebugCommand,
                 setValue: b => config.EnableDebugCommand = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable debug keybinds",
+                name: I18n.Config_EnableDebugControls,
                 getValue: () => config.EnableDebugControls,
                 setValue: b => config.EnableDebugControls = b
             );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Identify producer to console",
+                name: I18n.Config_IdentifyProducer,
                 getValue: () => config.IdentifyProducer,
                 setValue: value => config.IdentifyProducer = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Identify held item to console",
+                name: I18n.Config_IdentifyItem,
                 getValue: () => config.IdentifyItem,
                 setValue: value => config.IdentifyItem = value);
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "THIS NEXT OPTION IS POTENTIALLY DANGEROUS."
+                text: I18n.Config_DangerousOption
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "You shouldn't, but you might lose items inside your dressers/other storage furniture. If you do, please let me know."
+                text: I18n.Config_Paragraph2
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable placing storage furniture",
-                tooltip: () => "WARNING: PLACING STORAGE FURNITURE WITH SMART BUILDING IS RISKY. Your items should transfer over just fine, but it's your risk to take.",
+                name: I18n.Config_EnablePlacingStorageFurniture,
+                tooltip: I18n.Config_EnablePlacingStorageFurniture_Tooltip,
                 getValue: () => config.EnablePlacingStorageFurniture,
                 setValue: value => config.EnablePlacingStorageFurniture = value
             );
