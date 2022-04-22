@@ -1,0 +1,52 @@
+{
+  // Generic Mod Config Menu
+  // key binds section
+  "config.key-binds": "键位",
+  "config.paragraph1": "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually.",
+  "config.engage-build-mode": "进入建造模式",
+  "config.hold-to-draw": "画",
+  "config.hold-to-erase": "擦除",
+  "config.hold-to-insert": "将物品放入机器",
+  "config.confirm-build": "确认建造",
+  "config.pick-up-object": "捡起物体",
+  "config.pick-up-floor": "捡起地板",
+  "config.pick-up-furniture": "捡起家具",
+
+  // option toggles section
+  "config.optional-toggles": "可选特性",
+  "config.show-build-queue": "显示建造队列",
+  "config.can-destory-chests": "是否捡起箱子",
+  "config.can-destory-chests.tooltip": "警告：这会使箱子里的物品散落一地。",
+  "config.less-restrictive-floor-placement": "无限制放置地板",
+  "config.less-restrictive-floor-placement.tooltip": "允许基本上在任何地方放置地板，包括不能触及的地皮。请慎选！",
+  "config.less-restrictive-furniture-placement": "无限制放置家具",
+  "config.less-restrictive-furniture-placement.tooltip": "允许基本上在任何地方放置家具，包括不能触及的地皮。请慎选！",
+  "config.less-restrictive-bed-placement": "无限制放置床",
+  "config.less-restrictive-bed-placement.tooltip": "允许基本上在任何地方放置床，包括不能触及的地皮。请慎选！",
+  "config.enable-replacing-floors": "地板可替换",
+  "config.enable-replacing-floors.tooltip": "允许将现有的地板（小径）替换为另一种。目前无法回收替换掉的地板。",
+  "config.enable-replacing-fences": "围栏可替换",
+  "config.enable-replacing-fences.tooltip": "允许将现有的围栏替换为另一种。目前无法回收替换掉的围栏。",
+
+  // The Slightly Cheaty Zone section
+  "config.the-slightly-cheaty-zone": "可能破坏游戏平衡的选项",
+  "config.crab-pots-in-any-water-tile": "蟹笼能放置在任何水方格中",
+  "config.enable-planting-crops": "允许种植作物",
+  "config.enable-fertilizing-crops": "允许给作物施肥",
+  "config.enable-fertilizing-trees": "允许给树施肥",
+  "config.enable-tree-tappers": "允许挂树液采集器",
+  "config.enable-items-into-machines": "允许将物品放入机器",
+
+  // debug section
+  "config.debug": "调试",
+  "config.enable-debug-command": "启用调试命令",
+  "config.enable-debug-controls": "启用调试键位",
+  "config.identify-producer": "识别机器并打印到控制台",
+  "config.identify-item": "识别物品并打印到控制台",
+
+  // dangerous option section
+  "config.dangerous-option": "危险选项",
+  "config.paragraph2": "启用此项后，贮物家具（如梳妆台）内的物品如有缺失，请联系作者。",
+  "config.enable-placing-storage-furniture": "允许放置贮物家具",
+  "config.enable-placing-storage-furniture.tooltip": "警告：此项有风险，家具内物品可能会消失，请慎重！"
+}
