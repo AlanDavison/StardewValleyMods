@@ -2,7 +2,7 @@
   // Generic Mod Config Menu
   // key binds section
   "config.key-binds": "键位",
-  "config.paragraph1": "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually.",
+  "config.paragraph1": "配置菜单当前不支持鼠标的键位绑定，因此要绑定鼠标键位，请手动编辑config.json文件。",
   "config.engage-build-mode": "进入建造模式",
   "config.hold-to-draw": "画",
   "config.hold-to-erase": "擦除",
