@@ -23,21 +23,6 @@ namespace SmartBuilding.Utilities
             this.Log(logMessage, logPrefix, logLevel);
         }
 
-        public void Trace(string logMessage)
-        {
-            this.Log(logMessage, logPrefix, LogLevel.Warn);
-        }
-
-        public void Warn(string logMessage)
-        {
-            this.Log(logMessage, logPrefix, LogLevel.Warn);
-        }
-
-        public void Error(string logMessage)
-        {
-            this.Log(logMessage, logPrefix, LogLevel.Error);
-        }
-
         public void Exception(Exception e)
         {
             monitor.Log($"{logPrefix} Exception: {e.Message}", LogLevel.Error);

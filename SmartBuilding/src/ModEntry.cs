@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SmartBuilding.HarmonyPatches;
 using SmartBuilding.Helpers;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
-using StardewValley.Menus;
 using StardewValley.Objects;
-using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
 using SObject = StardewValley.Object;
 
@@ -111,6 +105,7 @@ namespace SmartBuilding
 
         public override void Entry(IModHelper helper)
         {
+            I18n.Init(helper.Translation);
             ModEntry.helper = helper;
             monitor = Monitor;
             logger = new Logger(monitor);
@@ -163,7 +158,7 @@ namespace SmartBuilding
                 HarmonyPatches.Patches.CurrentlyPlacing = false;
             };
 
-            ModEntry.helper.ConsoleCommands.Add("sb_test", "If you need to read this, it is not for you. Here be dragons.", command.DebugCommand);
+            ModEntry.helper.ConsoleCommands.Add("sb_test", I18n.SmartBuilding_Commands_Debug_SbTest(), command.DebugCommand);
 #if !DEBUG
             ModEntry.helper.ConsoleCommands.Add("sb_binding_ui", "This will open up Smart Building's binding UI.", command.BindingUI);
 #endif
@@ -196,15 +191,15 @@ namespace SmartBuilding
                             ItemType type = IdentifyItemType((SObject)player.CurrentItem);
                             Item item = player.CurrentItem;
 
-                            logger.Log($"Item name: {item.Name}");
+                            logger.Log($"{I18n.SmartBuilding_Message_ItemName()}");
                             logger.Log($"\t{item.Name}");
-                            logger.Log($"ParentSheetIndex:");
+                            logger.Log($"{I18n.SmartBuilding_Message_ItemParentSheetIndex()}");
                             logger.Log($"\t{item.ParentSheetIndex}");
-                            logger.Log($"Stardew Valley category:");
+                            logger.Log($"{I18n.SmartBuilding_Message_ItemCategory()}");
                             logger.Log($"\t{item.Category}");
-                            logger.Log($"Stardew Valley type: ");
+                            logger.Log($"{I18n.SmartBuilding_Message_ItemType()}");
                             logger.Log($"\t{(item as SObject).Type}");
-                            logger.Log($"Identified item as type: ");
+                            logger.Log($"{I18n.SmartBuilding_Message_ItemSmartBuildingType()}");
                             logger.Log($"\t{type}.");
                             logger.Log("");
                         }
@@ -223,6 +218,8 @@ namespace SmartBuilding
                         ProducerType type = IdentifyProducer(producer);
 
                         logger.Log($"Identified producer {producer.Name} as {type}.");
+                        logger.Log($"{I18n.SmartBuilding_Message_ProducerBeingIdentified()} {producer.Name}");
+                        logger.Log($"{I18n.SmartBuilding_Message_IdentifiedProducerType()}: {type}");
                     }
                 }
             }
@@ -330,7 +327,7 @@ namespace SmartBuilding
 
             if (configMenuApi == null)
             {
-                logger.Log("The user doesn't have GMCM installed. This is not an error.", LogLevel.Info);
+                logger.Log(I18n.SmartBuilding_Warning_GmcmNotInstalled(), LogLevel.Info);
 
                 return;
             }
@@ -341,214 +338,232 @@ namespace SmartBuilding
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Keybinds"
+                text: () => I18n.SmartBuilding_Settings_Keybinds_Title()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "GMCM currently doesn't support adding mouse keybinds in its config menus. In the meantime, refer to the second page for advice on editing the config.json file to add them manually."
+                text: () => I18n.SmartBuilding_Settings_Keybinds_Paragraph_GmcmWarning()
             );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Engage build mode",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_EnterBuildMode(),
                 getValue: () => config.EngageBuildMode,
                 setValue: value => config.EngageBuildMode = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Hold to draw",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDraw(),
                 getValue: () => config.HoldToDraw,
                 setValue: value => config.HoldToDraw = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Hold to erase",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToErase(),
                 getValue: () => config.HoldToErase,
                 setValue: value => config.HoldToErase = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Hold to insert item",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToInsert(),
                 getValue: () => config.HoldToInsert,
                 setValue: value => config.HoldToInsert = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Confirm build",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_ConfirmBuild(),
                 getValue: () => config.ConfirmBuild,
                 setValue: value => config.ConfirmBuild = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Pick up object",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_PickUpObject(),
                 getValue: () => config.PickUpObject,
                 setValue: value => config.PickUpObject = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Pick up floor",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_PickUpFloor(),
                 getValue: () => config.PickUpFloor,
                 setValue: value => config.PickUpFloor = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Pick up furniture",
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_PickUpFurniture(),
                 getValue: () => config.PickUpFurniture,
                 setValue: value => config.PickUpFurniture = value);
 
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Optional Toggles"
+                text: () => I18n.SmartBuilding_Settings_OptionalToggles_Title()
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show build queue",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_ShowBuildQueue(),
                 getValue: () => config.ShowBuildQueue,
                 setValue: value => config.ShowBuildQueue = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Can pick up chests",
-                tooltip: () => "WARNING: This will drop all contained items on the ground.",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_CanDestroyChests(),
+                tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_CanDestroyChests_Tooltip(),
                 getValue: () => config.CanDestroyChests,
                 setValue: value => config.CanDestroyChests = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "More lax floor placement",
-                tooltip: () => "Allows you to place floors essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxFloorPlacement(),
+                tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxFloorPlacement_Tooltip(),
                 getValue: () => config.LessRestrictiveFloorPlacement,
                 setValue: value => config.LessRestrictiveFloorPlacement = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "More lax furniture placement",
-                tooltip: () => "Allows you to place furniture essentially anywhere, including UNREACHABLE AREAS. BE CAREFUL WITH THIS.",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxFurniturePlacement(),
+                tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxFurniturePlacement_Tooltip(),
                 getValue: () => config.LessRestrictiveFurniturePlacement,
                 setValue: value => config.LessRestrictiveFurniturePlacement = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "More lax bed placement",
-                tooltip: () => "Allows you to place beds essentially anywhere, allowing you to sleep in places you shouldn't be able to sleep in. BE CAREFUL WITH THIS.",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxBedPlacement(),
+                tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxBedPlacement_Tooltip(),
                 getValue: () => config.LessRestrictiveBedPlacement,
                 setValue: value => config.LessRestrictiveBedPlacement = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Replaceable floors",
-                tooltip: () => "Allows you to replace an existing floor/path with another. Note that you will not get the existing floor back (yet).",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_EnableReplacingFloors(),
                 getValue: () => config.EnableReplacingFloors,
                 setValue: value => config.EnableReplacingFloors = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Replaceable fences",
-                tooltip: () => "Allows you to replace an existing fence with another. Note that you will not get the existing fence back.",
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_EnableReplacingFences(),
                 getValue: () => config.EnableReplacingFences,
                 setValue: value => config.EnableReplacingFences = value
             );
 
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "The Slightly Cheaty Zone"
+                text: () => I18n.SmartBuilding_Settings_CheatyOptions_Title()
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Place crab pots in any water tile",
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_CrabPotsInAnyWaterTile(),
                 getValue: () => config.CrabPotsInAnyWaterTile,
                 setValue: b => config.CrabPotsInAnyWaterTile = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow planting crops",
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnablePlantingCrops(),
                 getValue: () => config.EnablePlantingCrops,
                 setValue: b => config.EnablePlantingCrops = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow fertilizing crops",
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableCropFertilisers(),
                 getValue: () => config.EnableCropFertilizers,
                 setValue: b => config.EnableCropFertilizers = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow fertilizing trees",
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeFertilisers(),
                 getValue: () => config.EnableTreeFertilizers,
                 setValue: b => config.EnableTreeFertilizers = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow tree tappers",
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeTappers(),
                 getValue: () => config.EnableTreeTappers,
                 setValue: b => config.EnableTreeTappers = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable placing items into machines",
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableInsertingItemsIntoMachines(),
                 getValue: () => config.EnableInsertingItemsIntoMachines,
                 setValue: b => config.EnableInsertingItemsIntoMachines = b
             );
 
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Debug"
+                text: () => I18n.SmartBuilding_Settings_Debug_Title()
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable debug command",
+                name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugCommand(),
                 getValue: () => config.EnableDebugCommand,
                 setValue: b => config.EnableDebugCommand = b
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable debug keybinds",
+                name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugKeybinds(),
                 getValue: () => config.EnableDebugControls,
                 setValue: b => config.EnableDebugControls = b
             );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Identify producer to console",
+                name: () => I18n.SmartBuilding_Settings_Debug_IdentifyProducerToConsole(),
                 getValue: () => config.IdentifyProducer,
                 setValue: value => config.IdentifyProducer = value);
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Identify held item to console",
+                name: () => I18n.SmartBuilding_Settings_Debug_IdentifyHeldItemToConsole(),
                 getValue: () => config.IdentifyItem,
                 setValue: value => config.IdentifyItem = value);
 
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "THIS NEXT OPTION IS POTENTIALLY DANGEROUS."
+                text: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_Title()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "You shouldn't, but you might lose items inside your dressers/other storage furniture. If you do, please let me know."
+                text: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_Paragraph()
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable placing storage furniture",
-                tooltip: () => "WARNING: PLACING STORAGE FURNITURE WITH SMART BUILDING IS RISKY. Your items should transfer over just fine, but it's your risk to take.",
+                name: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_EnablePlacingStorageFurniture(),
+                tooltip: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_EnablePlacingStorageFurniture_Tooltip(),
                 getValue: () => config.EnablePlacingStorageFurniture,
                 setValue: value => config.EnablePlacingStorageFurniture = value
             );
@@ -556,38 +571,38 @@ namespace SmartBuilding
             configMenuApi.AddPageLink(
                 mod: ModManifest,
                 pageId: "JsonGuide",
-                text: () => "(Click me!) A short guide on adding mouse bindings."
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_PageLink()
             );
 
             configMenuApi.AddPage(
                 mod: ModManifest,
                 pageId: "JsonGuide",
-                pageTitle: () => "Mouse Key Bindings"
+                pageTitle: () => I18n.SmartBuilding_Settings_JsonGuide_PageTitle()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "From: https://stardewvalleywiki.com/Modding:Player_Guide/Key_Bindings#Multi-key_bindings"
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide1()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "Mods using SMAPI 3.9+ features can support multi-key bindings. That lets you combine multiple button codes into a combo keybind, and list alternate keybinds. For example, \"LeftShoulder, LeftControl + S\" will apply if LeftShoulder is pressed, or if both LeftControl and S are pressed."
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide2()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "Some things to keep in mind:"
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide3()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "The order doesn't matter, so \"LeftControl + S\" and \"S + LeftControl\" are equivalent."
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide4()
             );
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
-                text: () => "SMAPI doesn't prevent mods from using overlapping hotkeys. For example, if one mod uses \"S\" and the other mod uses \"LeftControl + S\", pressing LeftControl and S will activate both."
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide5()
             );
         }
 
@@ -707,7 +722,7 @@ namespace SmartBuilding
                 {
                     // If we're over a tile in _tilesSelected, remove it and refund the item to the player.
                     Game1.player.addItemToInventoryBool(item.Value.Item.getOne(), false);
-                    monitor.Log($"Refunding {item.Value.Item.Name} back into player's inventory.");
+                    monitor.Log($"{item.Value.Item.Name} {I18n.SmartBuilding_Info_RefundedIntoPlayerInventory()}");
 
                     // And flag it for removal from the queue, since we can't remove from within the foreach.
                     flaggedForRemoval = tile;
@@ -1230,7 +1245,7 @@ namespace SmartBuilding
             // To clear the painted tiles, we want to iterate through our Dictionary, and refund every item contained therein.
             foreach (var t in tilesSelected)
             {
-                RefundItem(t.Value.Item, "User left build mode. Refunding items.", LogLevel.Trace, false);
+                RefundItem(t.Value.Item, I18n.SmartBuilding_Info_BuildCancelled(), LogLevel.Trace, false);
             }
 
             // And, finally, clear it.
@@ -1408,7 +1423,7 @@ namespace SmartBuilding
                         return;
                     
                     // Otherwise, we can continue.
-                    logger.Log($"Trying to grab {furnitureToGrab.Name}");
+                    logger.Log($"{I18n.SmartBuikding_Message_TryingToGrab()} {furnitureToGrab.Name}");
                     Game1.player.addItemToInventory(furnitureToGrab);
                     here.furniture.Remove(furnitureToGrab);
                 }
@@ -1444,7 +1459,7 @@ namespace SmartBuilding
                     else
                     {
                         // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
-                        RefundItem(itemToPlace, "Couldn't figure out the type of floor. This may be a modded floor/path we don't understand", LogLevel.Error, true);
+                        RefundItem(itemToPlace, I18n.SmartBuilding_Error_TerrainFeature_Flooring_CouldNotIdentifyFloorType(), LogLevel.Error, true);
 
                         return;
                     }
@@ -1468,7 +1483,7 @@ namespace SmartBuilding
                             else
                             {
                                 // At this point, there IS a terrain feature here, but it isn't flooring, so we want to refund the item, and return.
-                                RefundItem(item.Value.Item, "There was already a TerrainFeature present. Maybe you hoed the ground before confirming the build");
+                                RefundItem(item.Value.Item, I18n.SmartBuilding_Error_TerrainFeature_Generic_AlreadyPresent(), LogLevel.Error);
 
                                 // We now want to jump straight out of this method, because this will flow through to the below if, and bad things will happen.
                                 return;
@@ -1478,7 +1493,7 @@ namespace SmartBuilding
 
                     // By this point, we'll have returned false if this could be anything but our freshly placed floor.
                     if (!(here.terrainFeatures.ContainsKey(item.Key) && here.terrainFeatures[item.Key] is Flooring))
-                        RefundItem(item.Value.Item);
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_TerrainFeature_Generic_UnknownError(), LogLevel.Error);
                 }
                 else if (itemInfo.ItemType == ItemType.Chest)
                 {
@@ -1492,7 +1507,7 @@ namespace SmartBuilding
                     }
                     else
                     { // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
-                        RefundItem(itemToPlace, "Couldn't recognise this item as a chest. This may be a bug", LogLevel.Error, true);
+                        RefundItem(itemToPlace, I18n.SmartBuilding_Error_Chest_CouldNotIdentifyChest(), LogLevel.Error, true);
 
                         return;
                     }
@@ -1504,7 +1519,7 @@ namespace SmartBuilding
 
                         // Apparently, chests placed in the world are hardcoded with the name "Chest".
                         if (!here.objects.ContainsKey(targetTile) || !here.objects[targetTile].Name.Equals("Chest"))
-                            RefundItem(itemToPlace);
+                            RefundItem(itemToPlace, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
                     }
                 }
                 else if (itemInfo.ItemType == ItemType.Fence)
@@ -1528,14 +1543,14 @@ namespace SmartBuilding
                             else
                             {
                                 // If it isn't a fence, we want to refund the item, and return to avoid placing the fence.
-                                RefundItem(item.Value.Item, "There was something in this place. Did something get placed before you committed the build?");
+                                RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
                                 return;
                             }
                         }
                     }
 
                     if (!itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player))
-                        RefundItem(item.Value.Item);
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
                 }
                 else if (itemInfo.ItemType == ItemType.GrassStarter)
                 {
@@ -1546,14 +1561,14 @@ namespace SmartBuilding
                         here.terrainFeatures.Add(targetTile, grassStarter);
                     else
                     {
-                        RefundItem(item.Value.Item, "There was already a TerrainFeature present. Maybe you hoed the ground before confirming the build");
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_TerrainFeature_Generic_AlreadyPresent(), LogLevel.Error);
 
                         // We now want to jump straight out of this method, because this will flow through to the below if, and bad things may happen.
                         return;
                     }
 
                     if (!(here.terrainFeatures.ContainsKey(item.Key) && here.terrainFeatures[targetTile] is Grass))
-                        RefundItem(item.Value.Item);
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_TerrainFeature_Generic_AlreadyPresent(), LogLevel.Error);
                 }
                 else if (itemInfo.ItemType == ItemType.CrabPot)
                 {
@@ -1591,7 +1606,7 @@ namespace SmartBuilding
 
                     // If the planting failed, we refund the seed.
                     if (!successfullyPlaced)
-                        RefundItem(item.Value.Item);
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Seeds_PlacementFailed(), LogLevel.Error);
                 }
                 else if (itemInfo.ItemType == ItemType.Fertilizer)
                 {
@@ -1627,14 +1642,14 @@ namespace SmartBuilding
                             else
                             {
                                 // If there is already a fertilizer here, we want to refund the item.
-                                RefundItem(itemToPlace, "There was already fertilizer placed here", LogLevel.Warn);
+                                RefundItem(itemToPlace, I18n.SmartBuilding_Error_Fertiliser_AlreadyFertilised(), LogLevel.Warn);
                             }
 
                             // Now, we want to run the final check to see if the fertilization was successful.
                             if (hd.fertilizer.Value == 0)
                             {
                                 // If there's still no fertilizer here, we need to refund the item.
-                                RefundItem(itemToPlace, "There was either fertilizer already here, or the crop is too grown to accept fertilizer", LogLevel.Warn);
+                                RefundItem(itemToPlace, I18n.SmartBuilding_Error_Fertiliser_IneligibleForFertilisation(), LogLevel.Warn);
                             }
                         }
                     }
@@ -1671,7 +1686,7 @@ namespace SmartBuilding
                                 if (!itemToPlace.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player))
                                 {
                                     // If the placement action didn't succeed, we refund the item.
-                                    RefundItem(itemToPlace);
+                                    RefundItem(itemToPlace, I18n.SmartBuilding_Error_TreeTapper_PlacementFailed(), LogLevel.Error);
                                 }
                             }
                         }
@@ -1711,12 +1726,21 @@ namespace SmartBuilding
                         // We need to create a new instance of StorageFurniture.
                         StorageFurniture storage = new StorageFurniture(itemToPlace.ParentSheetIndex, targetTile);
 
+                        // A quick bool to avoid an unnecessary log to console later.
+                        bool anyItemsAdded = false;
+                        
                         // Then, we iterate through all of the items in the existing StorageFurniture, and add them to the new one.
                         foreach (var itemInStorage in (itemToPlace as StorageFurniture).heldItems)
                         {
-                            logger.Log($"Adding item {itemInStorage.Name} with ParentSheetId {itemInStorage.ParentSheetIndex} to newly created storage.");
+                            logger.Log($"{I18n.SmartBuilding_Message_StorageFurniture_AddingItem()} {itemInStorage.Name} ({itemInStorage.ParentSheetIndex}).", LogLevel.Info);
                             storage.AddItem(itemInStorage);
+
+                            anyItemsAdded = true;
                         }
+                        
+                        // If any items were added, inform the user of the purpose of logging them.
+                        if (anyItemsAdded)
+                            logger.Log(I18n.SmartBuilding_Message_StorageFurniture_RetrievalTip(), LogLevel.Info);
 
                         // If we have less restrictive furniture placement enabled, we simply try to place it. Otherwise, we use the vanilla placementAction.
                         if (config.LessRestrictiveFurniturePlacement)
@@ -1726,10 +1750,10 @@ namespace SmartBuilding
 
                         // Here, we check to see if the placement was successful. If not, we refund the item.
                         if (!here.furniture.Contains(storage) && !placedSuccessfully)
-                            RefundItem(storage);
+                            RefundItem(storage, I18n.SmartBuilding_Error_StorageFurniture_PlacementFailed(), LogLevel.Info);
                     }
                     else
-                        RefundItem(itemToPlace, "The (potentially dangerous) setting to enable storage furniture was disabled.", LogLevel.Info, true);
+                        RefundItem(itemToPlace, I18n.SmartBuilding_Error_StorageFurniture_SettingIsOff(), LogLevel.Info, true);
                 }
                 else if (itemInfo.ItemType == ItemType.TvFurniture)
                 {
@@ -1749,7 +1773,7 @@ namespace SmartBuilding
 
                     // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
                     if (tv != null && !here.furniture.Contains(tv as TV) && !placedSuccessfully)
-                        RefundItem(itemToPlace, "The TV wasn't placed successfully. No details available.");
+                        RefundItem(itemToPlace, I18n.SmartBuilding_Error_TvFurniture_PlacementFailed(), LogLevel.Error);
                 }
                 else if (itemInfo.ItemType == ItemType.BedFurniture)
                 {
@@ -1767,7 +1791,7 @@ namespace SmartBuilding
 
                     // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
                     if (bed != null && !here.furniture.Contains(bed as BedFurniture) && !placedSuccessfully)
-                        RefundItem(itemToPlace, "The TV wasn't placed successfully. No details available.");
+                        RefundItem(itemToPlace, I18n.SmartBuilding_Error_BedFurniture_PlacementFailed(), LogLevel.Error);
 
                 }
                 else if (itemInfo.ItemType == ItemType.GenericFurniture)
@@ -1786,19 +1810,15 @@ namespace SmartBuilding
 
                     // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
                     if (furniture != null && !here.furniture.Contains(furniture as Furniture) && !placedSuccessfully)
-                        RefundItem(itemToPlace, "The TV wasn't placed successfully. No details available.");
+                        RefundItem(itemToPlace, I18n.SmartBuilding_Error_Furniture_PlacementFailed(), LogLevel.Error);
                 }
                 else
                 { // We're dealing with a generic placeable.
                     bool successfullyPlaced = itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
                     // if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
-                    if (successfullyPlaced)
-                    {
-
-                    }
-                    else
-                        RefundItem(item.Value.Item);
+                    if (!successfullyPlaced)
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
                 }
             }
             else
@@ -1807,12 +1827,19 @@ namespace SmartBuilding
             }
         }
 
-        private void RefundItem(Item item, string reason = "Something went wrong", LogLevel logLevel = LogLevel.Error, bool shouldLog = false)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item">The item to be refuneded to the player's inventory.</param>
+        /// <param name="reason">The reason for the refund. This could be an error, or simply the player cancelling the build.</param>
+        /// <param name="logLevel">The <see cref="StardewModdingAPI.LogLevel"/> to log with.</param>
+        /// <param name="shouldLog">Whether or not to log. This is overridden by <see cref="StardewModdingAPI.LogLevel.Alert"/>, <see cref="StardewModdingAPI.LogLevel.Error"/>, and <see cref="StardewModdingAPI.LogLevel.Warn"/>.</param>
+        private void RefundItem(Item item, string reason = "Something went wrong", LogLevel logLevel = LogLevel.Trace, bool shouldLog = false)
         {
             Game1.player.addItemByMenuIfNecessary(item.getOne());
 
-            if (shouldLog)
-                monitor.Log($"{reason}. Refunding {item.Name} back into player's inventory.", logLevel);
+            if (shouldLog || logLevel == LogLevel.Debug || logLevel == LogLevel.Error || logLevel == LogLevel.Warn || logLevel == LogLevel.Alert)
+                monitor.Log($"{reason}. {I18n.SmartBuilding_Error_Refunding_RefundingItemToPlayerInventory()} {item.Name}", logLevel);
         }
 
         private int? GetFlooringIdFromName(string itemName)
