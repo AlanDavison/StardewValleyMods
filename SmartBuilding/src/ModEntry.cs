@@ -44,6 +44,8 @@ namespace SmartBuilding
         // Debug stuff to make my life less painful when going through my pre-release checklist.
         private ConsoleCommand command = null!;
 
+        private IMoreFertilizersAPI? moreFertilizersAPI;
+
         private bool BuildingMode
         {
             get { return buildingMode; }
@@ -318,6 +320,8 @@ namespace SmartBuilding
         private void GameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             RegisterWithGmcm();
+
+            this.moreFertilizersAPI = this.Helper.ModRegistry.GetApi<IMoreFertilizersAPI>("atravita.MoreFertilizers");
         }
 
         private void RegisterWithGmcm()
@@ -922,6 +926,10 @@ namespace SmartBuilding
                     // If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
                     if (!config.EnableCropFertilizers)
                         return false;
+
+                    // This is a More Fertilizers fertilizer, defer to More Fertilizer's placement logic.
+                    if (i is SObject obj && moreFertilizersAPI?.CanPlaceFertilizer(obj, here, v) == true)
+                        return true;
 
                     // If there's an object present, we don't want to place any fertilizer.
                     // It is technically valid, but there's no reason someone would want to.
@@ -1610,6 +1618,18 @@ namespace SmartBuilding
                 }
                 else if (itemInfo.ItemType == ItemType.Fertilizer)
                 {
+                    if (this.moreFertilizersAPI?.CanPlaceFertilizer(itemToPlace, here, targetTile) == true)
+                    {
+                        if(this.moreFertilizersAPI.TryPlaceFertilizer(itemToPlace, here, targetTile))
+                        {
+                            this.moreFertilizersAPI.AnimateFertilizer(itemToPlace, here, targetTile);
+                        }
+                        else
+                        {
+                            RefundItem(itemToPlace, $"This fertilizer position may have been invalid for {itemToPlace.Name} at {targetTile}", LogLevel.Debug);
+                        }
+                    }
+
                     if (here.terrainFeatures.ContainsKey(targetTile))
                     {
                         // We know there's a TerrainFeature here, so next we want to check if it's HoeDirt.
