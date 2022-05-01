@@ -18,6 +18,7 @@
 
 ### I18n Translations
 * Ensure no untranslated strings are present in the source
+* Ensure other languages (zh right now) function correctly
 
 ### Mod Integration
 * More Fertilizers — "morefertilisers"
