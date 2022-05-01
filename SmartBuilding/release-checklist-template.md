@@ -20,9 +20,10 @@
 * Ensure no untranslated strings are present in the source
 
 ### Mod Integration
-* More Fertilizers
+* More Fertilizers — "morefertilisers"
   * Ensure all non-HoeDirt fertilisers place correctly
   * Ensure no unforeseen consequences without More Fertilizers installed
+  * Ensure this doesn't interfere with vanilla/other fertilisers
 
 ### Known prior bugs. Ensure no regression — "regression"
 * Scaling issues
