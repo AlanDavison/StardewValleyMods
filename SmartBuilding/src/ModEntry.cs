@@ -44,6 +44,7 @@ namespace SmartBuilding
         // Debug stuff to make my life less painful when going through my pre-release checklist.
         private ConsoleCommand command = null!;
 
+        // Integration for atravita's More Fertilizers mod.
         private IMoreFertilizersAPI? moreFertilizersAPI;
 
         private bool BuildingMode
@@ -927,7 +928,7 @@ namespace SmartBuilding
                     if (!config.EnableCropFertilizers)
                         return false;
 
-                    // This is a More Fertilizers fertilizer, defer to More Fertilizer's placement logic.
+                    // If this is a More Fertilizers fertilizer, defer to More Fertilizer's placement logic.
                     if (i is SObject obj && moreFertilizersAPI?.CanPlaceFertilizer(obj, here, v) == true)
                         return true;
 
@@ -1618,15 +1619,19 @@ namespace SmartBuilding
                 }
                 else if (itemInfo.ItemType == ItemType.Fertilizer)
                 {
+                    // First, we get whether or not More Fertilizers can place this fertiliser.
                     if (this.moreFertilizersAPI?.CanPlaceFertilizer(itemToPlace, here, targetTile) == true)
                     {
-                        if(this.moreFertilizersAPI.TryPlaceFertilizer(itemToPlace, here, targetTile))
+                        // If it can, we try to place it.
+                        if (this.moreFertilizersAPI.TryPlaceFertilizer(itemToPlace, here, targetTile))
                         {
+                            // If the placement is successful, we do the fancy animation thing.
                             this.moreFertilizersAPI.AnimateFertilizer(itemToPlace, here, targetTile);
                         }
                         else
                         {
-                            RefundItem(itemToPlace, $"This fertilizer position may have been invalid for {itemToPlace.Name} at {targetTile}", LogLevel.Debug);
+                            // Otherwise, the fertiliser gets refunded.
+                            RefundItem(itemToPlace, $"{I18n.SmartBuilding_Integrations_MoreFertilizers_InvalidFertiliserPosition()}: {itemToPlace.Name} @ {targetTile}", LogLevel.Debug);
                         }
                     }
 
