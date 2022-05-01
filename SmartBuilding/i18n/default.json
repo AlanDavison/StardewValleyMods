@@ -91,5 +91,5 @@
   "smart-building.commands.debug.sb-test": "If you need to read this, it is not for you. Here be dragons.",
 
   // Mod integrations
-  "smart-building.integrations.more-fertilizers.invalid-fertiliser-position": ""
+  "smart-building.integrations.more-fertilizers.invalid-fertiliser-position": "This fertiliser position may have been invalid"
 }
