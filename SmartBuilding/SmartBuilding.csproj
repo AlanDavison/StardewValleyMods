@@ -3,7 +3,7 @@
 	<Import Project="..\Build\Latest.targets" />
 	
 	<PropertyGroup>
-		<Version>1.5.0</Version>
+		<Version>1.5.1</Version>
 		<TargetFramework>net5.0</TargetFramework>
 	</PropertyGroup>
 
