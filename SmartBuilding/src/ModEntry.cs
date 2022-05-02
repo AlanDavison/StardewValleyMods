@@ -426,6 +426,14 @@ namespace SmartBuilding
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalTogglesMoreLaxObjectPlacement(),
+                tooltip: () => I18n.SmartBuilding_Settings_OptionalTogglesMoreLaxObjectPlacement_Tooltip(),
+                getValue: () => config.LessRestrictiveObjectPlacement,
+                setValue: value => config.LessRestrictiveObjectPlacement = value
+            );
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxFloorPlacement(),
                 tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_MoreLaxFloorPlacement_Tooltip(),
                 getValue: () => config.LessRestrictiveFloorPlacement,
@@ -1097,6 +1105,26 @@ namespace SmartBuilding
                     else
                         return (i as Furniture).canBePlacedHere(here, v);
                 case ItemType.Generic:
+                    if (config.LessRestrictiveObjectPlacement)
+                    {
+                        // If the less restrictive object placement setting is enabled, we first want to check if vanilla logic dictates the obect be placeable.
+                        if (Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v))
+                        {
+                            // It dictates that it is, so we can simply return true.
+                            return true;
+                        } else
+                        {
+                            // Otherwise, we want to check for an object already present in this location.
+                            if (!here.Objects.ContainsKey(v))
+                            {
+                                // There is no object here, so we return true, as we should be able to place the object here.
+                                return true;
+                            }
+
+                            // We could just fall through to vanilla logic again at this point, but that would be vaguely pointless, so we just return false.
+                            return false;
+                        }
+                    }
                     return Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v);
             }
 
