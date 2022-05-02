@@ -193,7 +193,6 @@ Checklist
 
 
 ### Misc
-* Version bump
 
 ### Known prior bugs. Ensure no regression — "regression"
 
@@ -220,4 +219,42 @@ Checklist
 ### Modded objects — "modded"
 
 ### Item insertion — "insertion"
+### Item insertion (modded; PFM)
+
+## 1.5.0 — Added i18n support with Chinese translation (thanks to Becks723), and support for More Fertilizers.
+
+### Interaction blocking
+
+### Misc
+
+### I18n Translations
+
+### Mod Integration
+
+### Known prior bugs. Ensure no regression — "regression"
+
+### Object and producer identification — "identification"
+
+### Flooring — "flooring"
+
+### Furniture — "furniture"
+
+### TV Furniture — "tv"
+
+### Storage furniture — "storage"
+
+### Bed furniture — "bed"
+
+### Chests — "chests"
+
+### Trees — "trees"
+
+### Crops — "crops"
+
+### Fences — "fences"
+
+### Modded objects — "modded"
+
+### Item insertion — "insertion"
+ 
 ### Item insertion (modded; PFM)
