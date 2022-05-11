@@ -30,6 +30,7 @@
   "smart-building.settings.optional-toggles-more-lax-object-placement.tooltip": "Allows you to place objects (sprinklers, chests, etc.) where you shouldn't normally be able to. Functionality is not guaranteed!",
   "smart-building.settings.optional-toggles.enable-replacing-floors": "Replaceable floors",
   "smart-building.settings.optional-toggles.enable-replacing-fences": "Replaceable fences",
+  "smart-building.settings.optional-toggles.enable-replacing-fences.tooltip": "Also allows you to replace fences with gates, and vice-versa.",
 
   "smart-building.settings.cheaty-options.title": "The Slightly Cheaty Zone",
   "smart-building.settings.cheaty-options.crab-pots-in-any-water-tile": "Place crab pots in any water tile",

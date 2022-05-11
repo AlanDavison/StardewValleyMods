@@ -466,6 +466,7 @@ namespace SmartBuilding
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_OptionalToggles_EnableReplacingFences(),
+                tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_EnableReplacingFences_Tooltip(),
                 getValue: () => config.EnableReplacingFences,
                 setValue: value => config.EnableReplacingFences = value
             );
@@ -1156,6 +1157,8 @@ namespace SmartBuilding
             else if (itemName.Contains("Chest") || item is Chest)
                 return ItemType.Chest;
             else if (itemName.Contains("Fence"))
+                return ItemType.Fence;
+            else if (itemName.Equals("Gate") || item.ParentSheetIndex.Equals(325))
                 return ItemType.Fence;
             else if (itemName.Equals("Grass Starter"))
                 return ItemType.GrassStarter;

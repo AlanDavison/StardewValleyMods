@@ -6,7 +6,7 @@
     public enum ItemType
     {
         /// <summary>
-        /// A Stardew Valley Fence. This is a special case, so we need to be able to identify a fence specifically.
+        /// A Stardew Valley Fence, or gate. This is a special case, so we need to be able to identify fences and gates specifically.
         /// </summary>
         Fence,
 
