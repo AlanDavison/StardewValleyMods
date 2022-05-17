@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HarmonyLib;
@@ -11,6 +12,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Objects;
+using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
 using SObject = StardewValley.Object;
 
@@ -35,6 +37,13 @@ namespace SmartBuilding
         private Texture2D buildingHud = null!;
         private Texture2D itemBox = null!;
         private int itemBarWidth = 800; // This is the default.
+        
+        // Rectangle drawing.
+        private Vector2? startTile = null;
+        private Vector2? endTile = null;
+        private List<Vector2> rectTiles = new List<Vector2>();
+        
+        private Item rectangleItem;
 
         private bool currentlyDrawing = false;
         private bool currentlyErasing = false;
@@ -241,14 +250,54 @@ namespace SmartBuilding
                 {
                     // We set our CurrentlyDrawing property to true, which will update the value in our patch.
                     CurrentlyDrawing = true;
-
-                    int inventoryIndex = Game1.player.getIndexOfInventoryItem(Game1.player.CurrentItem);
-                    AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, inventoryIndex);
+                    
+                    AddTile(Game1.player.CurrentItem, Game1.currentCursorTile);
                 }
             }
             else
             {
                 // Otherwise, the key is up, meaning we want to indicate we're not currently drawing.
+                CurrentlyDrawing = false;
+            }
+            
+            if (config.HoldToDrawRectangle.IsDown())
+            {
+                // If we're holding our rectangle modifier, we do things a little differently.
+
+                if (buildingMode)
+                {
+                    CurrentlyDrawing = true;
+                    rectangleItem = Game1.player.CurrentItem;
+
+                    if (startTile == null)
+                    {
+                        // If the start tile hasn't yet been set, then we want to set that.
+                        startTile = Game1.currentCursorTile;
+                    }
+
+                    endTile = Game1.currentCursorTile;
+
+                    rectTiles = CalculateRectangle(startTile.Value, endTile.Value, rectangleItem);
+                }
+            }
+            else
+            {
+                // The rectangle drawing key was released, so we want to calculate the tiles within, and set CurrentlyDrawing to false.
+
+                if (startTile.HasValue && endTile.HasValue)
+                {
+                    List<Vector2> tiles = CalculateRectangle(startTile.Value, endTile.Value, rectangleItem);
+
+                    foreach (Vector2 tile in tiles)
+                    {
+                        AddTile(rectangleItem, tile);
+                    }
+
+                    startTile = null;
+                    endTile = null;
+                    rectTiles = null;
+                }
+
                 CurrentlyDrawing = false;
             }
 
@@ -316,6 +365,36 @@ namespace SmartBuilding
                 if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with Furniture.
                     DemolishOnTile(Game1.currentCursorTile, TileFeature.Furniture);
             }
+        }
+
+        private List<Vector2> CalculateRectangle(Vector2 cornerOne, Vector2 cornerTwo, Item item)
+        {
+            Vector2 topLeft;
+            Vector2 bottomRight;
+            List<Vector2> tiles = new List<Vector2>();
+            int itemsRemainingInStack = item.Stack;
+            
+            topLeft = new Vector2(MathF.Min(cornerOne.X, cornerTwo.X), MathF.Min(cornerOne.Y, cornerTwo.Y));
+            bottomRight = new Vector2(MathF.Max(cornerOne.X, cornerTwo.X), MathF.Max(cornerOne.Y, cornerTwo.Y));
+            
+            int rectWidth = (int)bottomRight.X - (int)topLeft.X + 1;
+            int rectHeight = (int)bottomRight.Y - (int)topLeft.Y + 1;
+            
+            logger.Log($"Working with a rectangle of height {rectHeight}, and width {rectWidth}");
+
+            for (int x = (int)topLeft.X; x < rectWidth + topLeft.X; x++)
+            {
+                for (int y = (int)topLeft.Y; y < rectHeight + topLeft.Y; y++)
+                {
+                    if (itemsRemainingInStack > 0)
+                    {
+                        tiles.Add(new Vector2(x, y));
+                        itemsRemainingInStack--;
+                    }
+                }
+            }
+
+            return tiles;
         }
 
         private void GameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -624,12 +703,13 @@ namespace SmartBuilding
         private void RenderedHud(object? sender, RenderedHudEventArgs e)
         {
             if (buildingMode)
-            { // There's absolutely no need to run this while we're not in building mode.
+            { 
+                // There's absolutely no need to run this while we're not in building mode.
                 int windowWidth = Game1.game1.Window.ClientBounds.Width;
 
                 // TODO: Use the newer logic I have to get the toolbar position for this.
                 hudPosition = new Vector2(
-                    (windowWidth / 2) - (itemBarWidth / 2) - buildingHud.Width * 4,
+                    windowWidth / 2 - itemBarWidth / 2 - buildingHud.Width * 4,
                     0);
 
                 e.SpriteBatch.Draw(
@@ -663,7 +743,7 @@ namespace SmartBuilding
 
                     Point playerGlobalPosition = Game1.player.GetBoundingBox().Center;
                     Vector2 playerLocalVector = Game1.GlobalToLocal(globalPosition: new Vector2(playerGlobalPosition.X, playerGlobalPosition.Y), viewport: Game1.viewport);
-                    bool toolbarAtTop = ((playerLocalVector.Y > (float)(Game1.viewport.Height / 2 + 64)) ? true : false);
+                    bool toolbarAtTop = playerLocalVector.Y > (float)(Game1.viewport.Height / 2 + 64) ? true : false;
 
                     #endregion
 
@@ -1204,7 +1284,7 @@ namespace SmartBuilding
             CanBeInsertedHere(v, item);
         }
 
-        private void AddTile(Item item, Vector2 v, int itemInventoryIndex)
+        private void AddTile(Item item, Vector2 v)
         {
             // If we're not in building mode, we do nothing.
             if (!buildingMode)
@@ -1277,6 +1357,20 @@ namespace SmartBuilding
                         Game1.viewport,
                         item.Key * Game1.tileSize),
                     1f, 1f, 4f, StackDrawType.Hide);
+            }
+
+            if (rectTiles != null)
+            {
+                foreach (Vector2 tile in rectTiles)
+                {
+                    // Here, we simply have the Item draw itself in the world.
+                    rectangleItem.drawInMenu
+                    (e.SpriteBatch,
+                        Game1.GlobalToLocal(
+                            Game1.viewport,
+                            tile * Game1.tileSize),
+                        1f, 1f, 4f, StackDrawType.Hide);
+                }
             }
         }
 
