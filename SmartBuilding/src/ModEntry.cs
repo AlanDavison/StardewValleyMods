@@ -56,6 +56,9 @@ namespace SmartBuilding
         // Integration for atravita's More Fertilizers mod.
         private IMoreFertilizersAPI? moreFertilizersAPI;
 
+        private int thisIsInvalid = "LOOK INTO THE BUG WITH WARPING AND THE RECTANGLE BEING WEIRD.";
+        private int thisIsInvalid = "ALSO LOOK UNTO WHY INTERACTION/PLACEMENT BLOCKING WHILE IN BUILD MODE ISN'T WORKING.";
+
         private bool BuildingMode
         {
             get { return buildingMode; }
@@ -232,6 +235,14 @@ namespace SmartBuilding
                         logger.Log($"Identified producer {producer.Name} as {type}.");
                         logger.Log($"{I18n.SmartBuilding_Message_ProducerBeingIdentified()} {producer.Name}");
                         logger.Log($"{I18n.SmartBuilding_Message_IdentifiedProducerType()}: {type}");
+                    }
+                    
+                    foreach (var thing in here.resourceClumps)
+                    {
+                        if (thing.tile.Equals(targetTile))
+                        {
+                                
+                        }
                     }
                 }
             }
@@ -963,11 +974,16 @@ namespace SmartBuilding
         /// <returns></returns>
         private bool CanBePlacedHere(Vector2 v, Item i)
         {
+            if (i is Tool)
+                return false;
+            
             ItemType itemType = IdentifyItemType((SObject)i);
             GameLocation here = Game1.currentLocation;
 
             switch (itemType)
             {
+                case ItemType.NotPlaceable:
+                    return false;
                 case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
                     return CrabPot.IsValidCrabPotLocationTile(here, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
                 case ItemType.GrassStarter:
@@ -1220,7 +1236,15 @@ namespace SmartBuilding
 
             // The whole point of this is to determine whether the object being placed requires
             // special treatment at all, and assist us in determining whether it's a TerrainFeature, or an SObject.
-            if (!item.isPlaceable())
+            if (item is Tool)
+                return ItemType.NotPlaceable;
+            else if (item.Category.Equals(-81)) // This is forage, so we want to treat it as a generic placeable.
+                return ItemType.Generic;
+            else if (item.Category.Equals(-7) || item.Category.Equals(-25)) // Food, because why not?
+                return ItemType.Generic;
+            else if (item.Category.Equals(-15) || item.Category.Equals(-16)) // Also resources, because why not?
+                return ItemType.Generic;
+            else if (!item.isPlaceable())
                 return ItemType.NotPlaceable;
             else if (item is FishTankFurniture)
                 return ItemType.FishTankFurniture;
@@ -1292,10 +1316,6 @@ namespace SmartBuilding
 
             // If the player isn't holding an item, we do nothing.
             if (Game1.player.CurrentItem == null)
-                return;
-
-            // If the item isn't placeable, we do nothing.
-            if (!item.isPlaceable())
                 return;
 
             // If the item cannot be placed here according to our own rules, we do nothing. This is to allow for slightly custom placement logic.
