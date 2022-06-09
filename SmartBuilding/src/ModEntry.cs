@@ -396,8 +396,11 @@ namespace SmartBuilding
                 {
                     if (itemsRemainingInStack > 0)
                     {
-                        tiles.Add(new Vector2(x, y));
-                        itemsRemainingInStack--;
+                        if (CanBePlacedHere(new Vector2(x, y), item))
+                        {
+                            tiles.Add(new Vector2(x, y));
+                            itemsRemainingInStack--;
+                        }
                     }
                 }
             }
