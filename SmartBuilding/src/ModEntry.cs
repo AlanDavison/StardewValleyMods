@@ -299,7 +299,7 @@ namespace SmartBuilding
 
                     startTile = null;
                     endTile = null;
-                    rectTiles = null;
+                    rectTiles.Clear();
                 }
 
                 CurrentlyDrawing = false;
