@@ -2070,7 +2070,7 @@ namespace SmartBuilding
             Game1.player.addItemByMenuIfNecessary(item.getOne());
 
             if (shouldLog || logLevel == LogLevel.Debug || logLevel == LogLevel.Error || logLevel == LogLevel.Warn || logLevel == LogLevel.Alert)
-                monitor.Log($"{reason}. {I18n.SmartBuilding_Error_Refunding_RefundingItemToPlayerInventory()} {item.Name}", logLevel);
+                monitor.Log($"{reason} {I18n.SmartBuilding_Error_Refunding_RefundingItemToPlayerInventory()} {item.Name}", logLevel);
         }
 
         private int? GetFlooringIdFromName(string itemName)
