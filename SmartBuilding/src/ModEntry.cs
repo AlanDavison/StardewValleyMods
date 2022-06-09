@@ -162,12 +162,11 @@ namespace SmartBuilding
                 buildingMode = false;
                 currentlyDrawing = false;
                 HarmonyPatches.Patches.CurrentlyInBuildMode = false;
-                HarmonyPatches.Patches.CurrentlyDrawing = false;
-                HarmonyPatches.Patches.CurrentlyErasing = false;
-                HarmonyPatches.Patches.CurrentlyPlacing = false;
+                HarmonyPatches.Patches.AllowPlacement = false;
             };
 
-            ModEntry.helper.ConsoleCommands.Add("sb_test", I18n.SmartBuilding_Commands_Debug_SbTest(), command.DebugCommand);
+            ModEntry.helper.ConsoleCommands.Add("sb_test", I18n.SmartBuilding_Commands_Debug_SbTest(), command.TestCommand);
+            ModEntry.helper.ConsoleCommands.Add("sb_identify_all_items", I18n.SmartBuilding_Commands_Debug_SbIdentifyItems(), command.IdentifyItemsCommand);
 #if !DEBUG
             ModEntry.helper.ConsoleCommands.Add("sb_binding_ui", "This will open up Smart Building's binding UI.", command.BindingUI);
 #endif
