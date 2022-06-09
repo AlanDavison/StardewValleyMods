@@ -14,6 +14,11 @@
         /// A Stardew Valley floor, which is a TerrainFeature.
         /// </summary>
         Floor,
+        
+        /// <summary>
+        /// This is a special case so that torches can be added to fences as in vanilla.
+        /// </summary>
+        Torch,
 
         /// <summary>
         /// A Stardew Valley chest. This needs somewhat special handling.
