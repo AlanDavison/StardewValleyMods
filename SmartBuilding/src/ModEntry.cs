@@ -991,6 +991,18 @@ namespace SmartBuilding
             {
                 case ItemType.NotPlaceable:
                     return false;
+                case ItemType.Torch:
+                    // We need to figure out whether there's a fence in the placement tile.
+                    if (here.objects.ContainsKey(v))
+                    {
+                        // We know there's an object at these coordinates, so we grab a reference.
+                        SObject o = here.objects[v];
+
+                        // Then we return true if it's a fence, because we want to place the torch on the fence.
+                        return IsTypeOfObject(o, ItemType.Fence);
+                    }
+                    else
+                        goto GenericPlaceable; // Please don't hate me too much. This is temporary until everything gets split out into separate methods eventually.
                 case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
                     return CrabPot.IsValidCrabPotLocationTile(here, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
                 case ItemType.GrassStarter:
