@@ -1249,7 +1249,7 @@ namespace SmartBuilding
             return false;
         }
 
-        private ItemType IdentifyItemType(SObject item)
+        public ItemType IdentifyItemType(SObject item) // Making this public for access from the command is awful. TODO: Split this off into its own class.
         {
             // TODO: Make this detection more robust. If possible, don't depend upon it at all.
             string itemName = item.Name;
