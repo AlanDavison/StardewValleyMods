@@ -2000,6 +2000,49 @@ namespace SmartBuilding
                     if (furniture != null && !here.furniture.Contains(furniture as Furniture) && !placedSuccessfully)
                         RefundItem(itemToPlace, I18n.SmartBuilding_Error_Furniture_PlacementFailed(), LogLevel.Error);
                 }
+                else if (itemInfo.ItemType == ItemType.Torch)
+                {
+                    // We need to figure out whether there's a fence in the placement tile.
+                    if (here.objects.ContainsKey(targetTile))
+                    {
+                        // We know there's an object at these coordinates, so we grab a reference.
+                        SObject o = here.objects[targetTile];
+
+                        if (IsTypeOfObject(o, ItemType.Fence))
+                        {
+                            // If the object in this tile is a fence, we add the torch to it.
+                            //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
+                            
+                            // We know it's a fence, but we also need to ensure it isn't already "holding" anything.
+                            if (o.heldObject != null)
+                            {
+                                // There's something in there, so we need to refund the torch.
+                                RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
+                            }
+                            
+                            o.performObjectDropInAction(itemToPlace, false, Game1.player);
+
+                            if (IdentifyItemType(o.heldObject) != ItemType.Torch)
+                            {
+                                // If the fence isn't "holding" a torch, there was a problem, so we should refund.
+                                RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
+                            }
+
+                            return;
+                        }
+                        else
+                        {
+                            // If it's not a fence, we want to refund the item.
+                            RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+                            
+                            return;
+                        }
+                    }
+                    
+                    // There is no object here, so we treat it like a generic placeable.
+                    if (!itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player))
+                        RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+                }
                 else
                 { // We're dealing with a generic placeable.
                     bool successfullyPlaced = itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
