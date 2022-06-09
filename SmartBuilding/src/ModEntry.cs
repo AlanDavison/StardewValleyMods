@@ -1221,6 +1221,7 @@ namespace SmartBuilding
                     else
                         return (i as Furniture).canBePlacedHere(here, v);
                 case ItemType.Generic:
+                    GenericPlaceable: // A goto, I know, gross, but... it works, and is fine for now, until I split out detection logic into methods. TODO.
                     if (config.LessRestrictiveObjectPlacement)
                     {
                         // If the less restrictive object placement setting is enabled, we first want to check if vanilla logic dictates the object be placeable.
