@@ -1419,6 +1419,9 @@ namespace SmartBuilding
 
             // And, finally, clear it.
             tilesSelected.Clear();
+            
+            // We also want to clear the rect tiles. No refunding necessary here, however, as items are only deducted when added to tilesSelected.
+            rectTiles.Clear();
         }
 
         // TODO: Modularise this method more. Right now, it just works. It is not well structured for future maintenance.
