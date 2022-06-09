@@ -980,6 +980,7 @@ namespace SmartBuilding
         /// <returns></returns>
         private bool CanBePlacedHere(Vector2 v, Item i)
         {
+            // If the item is a tool, we want to return.
             if (i is Tool)
                 return false;
             
@@ -1210,7 +1211,7 @@ namespace SmartBuilding
                 case ItemType.Generic:
                     if (config.LessRestrictiveObjectPlacement)
                     {
-                        // If the less restrictive object placement setting is enabled, we first want to check if vanilla logic dictates the obect be placeable.
+                        // If the less restrictive object placement setting is enabled, we first want to check if vanilla logic dictates the object be placeable.
                         if (Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v))
                         {
                             // It dictates that it is, so we can simply return true.
@@ -1240,8 +1241,7 @@ namespace SmartBuilding
             // TODO: Make this detection more robust. If possible, don't depend upon it at all.
             string itemName = item.Name;
 
-            // The whole point of this is to determine whether the object being placed requires
-            // special treatment at all, and assist us in determining whether it's a TerrainFeature, or an SObject.
+            // The whole point of this is to determine whether the object being placed requires special treatment.
             if (item is Tool)
                 return ItemType.NotPlaceable;
             else if (item.Category.Equals(-81)) // This is forage, so we want to treat it as a generic placeable.
