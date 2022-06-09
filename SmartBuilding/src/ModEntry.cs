@@ -56,9 +56,6 @@ namespace SmartBuilding
         // Integration for atravita's More Fertilizers mod.
         private IMoreFertilizersAPI? moreFertilizersAPI;
 
-        private int thisIsInvalid = "LOOK INTO THE BUG WITH WARPING AND THE RECTANGLE BEING WEIRD.";
-        private int thisIsInvalid = "ALSO LOOK UNTO WHY INTERACTION/PLACEMENT BLOCKING WHILE IN BUILD MODE ISN'T WORKING.";
-
         private bool BuildingMode
         {
             get { return buildingMode; }
@@ -80,7 +77,6 @@ namespace SmartBuilding
             set
             {
                 currentlyDrawing = value;
-                HarmonyPatches.Patches.CurrentlyDrawing = value;
             }
         }
 
@@ -90,7 +86,6 @@ namespace SmartBuilding
             set
             {
                 currentlyErasing = value;
-                HarmonyPatches.Patches.CurrentlyErasing = value;
             }
         }
 
@@ -100,7 +95,6 @@ namespace SmartBuilding
             set
             {
                 currentlyPlacing = value;
-                HarmonyPatches.Patches.CurrentlyPlacing = value;
             }
         }
 
