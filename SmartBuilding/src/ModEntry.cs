@@ -389,8 +389,6 @@ namespace SmartBuilding
             
             int rectWidth = (int)bottomRight.X - (int)topLeft.X + 1;
             int rectHeight = (int)bottomRight.Y - (int)topLeft.Y + 1;
-            
-            logger.Log($"Working with a rectangle of height {rectHeight}, and width {rectWidth}");
 
             for (int x = (int)topLeft.X; x < rectWidth + topLeft.X; x++)
             {
