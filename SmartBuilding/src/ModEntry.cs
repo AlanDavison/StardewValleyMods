@@ -122,7 +122,7 @@ namespace SmartBuilding
             hudPosition = new Vector2(50, 0);
             buildingHud = ModEntry.helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
             itemBox = ModEntry.helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
-            command = new ConsoleCommand(logger, buildingHud);
+            command = new ConsoleCommand(logger, buildingHud, this);
 
             Harmony harmony = new Harmony(ModManifest.UniqueID);
 
