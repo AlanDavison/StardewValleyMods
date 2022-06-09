@@ -345,7 +345,13 @@ namespace SmartBuilding
                 // The build has been confirmed, so we iterate through our Dictionary, and pass each tile into PlaceObject.
                 foreach (KeyValuePair<Vector2, ItemInfo> v in tilesSelected)
                 {
+                    // We want to allow placement for the duration of this method.
+                    HarmonyPatches.Patches.AllowPlacement = true;
+                    
                     PlaceObject(v);
+                    
+                    // And disallow it afterwards.
+                    HarmonyPatches.Patches.AllowPlacement = false;
                 }
 
                 // Then, we clear the list, because building is done, and all errors are handled internally.
