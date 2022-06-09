@@ -1257,12 +1257,8 @@ namespace SmartBuilding
             // The whole point of this is to determine whether the object being placed requires special treatment.
             if (item is Tool)
                 return ItemType.NotPlaceable;
-            else if (item.Category.Equals(-81)) // This is forage, so we want to treat it as a generic placeable.
-                return ItemType.Generic;
-            else if (item.Category.Equals(-7) || item.Category.Equals(-25)) // Food, because why not?
-                return ItemType.Generic;
-            else if (item.Category.Equals(-15) || item.Category.Equals(-16)) // Also resources, because why not?
-                return ItemType.Generic;
+            else if (item.Name.Equals("Torch") && item.Category.Equals(0) && item.Type.Equals("Crafting"))
+                return ItemType.Torch;
             else if (!item.isPlaceable())
                 return ItemType.NotPlaceable;
             else if (item is FishTankFurniture)
