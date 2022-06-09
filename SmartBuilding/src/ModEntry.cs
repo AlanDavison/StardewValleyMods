@@ -582,42 +582,42 @@ namespace SmartBuilding
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_CrabPotsInAnyWaterTile(),
                 getValue: () => config.CrabPotsInAnyWaterTile,
-                setValue: b => config.CrabPotsInAnyWaterTile = b
+                setValue: value => config.CrabPotsInAnyWaterTile = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnablePlantingCrops(),
                 getValue: () => config.EnablePlantingCrops,
-                setValue: b => config.EnablePlantingCrops = b
+                setValue: value => config.EnablePlantingCrops = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableCropFertilisers(),
                 getValue: () => config.EnableCropFertilizers,
-                setValue: b => config.EnableCropFertilizers = b
+                setValue: value => config.EnableCropFertilizers = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeFertilisers(),
                 getValue: () => config.EnableTreeFertilizers,
-                setValue: b => config.EnableTreeFertilizers = b
+                setValue: value => config.EnableTreeFertilizers = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeTappers(),
                 getValue: () => config.EnableTreeTappers,
-                setValue: b => config.EnableTreeTappers = b
+                setValue: value => config.EnableTreeTappers = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableInsertingItemsIntoMachines(),
                 getValue: () => config.EnableInsertingItemsIntoMachines,
-                setValue: b => config.EnableInsertingItemsIntoMachines = b
+                setValue: value => config.EnableInsertingItemsIntoMachines = value
             );
 
             configMenuApi.AddParagraph(
@@ -634,14 +634,14 @@ namespace SmartBuilding
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugCommand(),
                 getValue: () => config.EnableDebugCommand,
-                setValue: b => config.EnableDebugCommand = b
+                setValue: value => config.EnableDebugCommand = value
             );
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugKeybinds(),
                 getValue: () => config.EnableDebugControls,
-                setValue: b => config.EnableDebugControls = b
+                setValue: value => config.EnableDebugControls = value
             );
 
             configMenuApi.AddKeybindList(
