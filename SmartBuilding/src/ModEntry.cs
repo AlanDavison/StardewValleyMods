@@ -452,6 +452,13 @@ namespace SmartBuilding
                 name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDraw(),
                 getValue: () => config.HoldToDraw,
                 setValue: value => config.HoldToDraw = value);
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDrawRectangle(),
+                getValue: () => config.HoldToDrawRectangle,
+                setValue: value => config.HoldToDrawRectangle = value
+                );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
