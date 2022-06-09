@@ -201,3 +201,14 @@
 * Item insertion setting **on**
   * Insertion
   * Deduction of inserted items
+
+### Torches — "torches"
+* Placing normally
+* Placing on/in fences
+
+### Rectangle drawing — "rectangle"
+* Refunding correctly when cancelled
+* Deducting correct amount of items for drawing
+* Queue clearing correctly
+  * On screen transition
+  * On build mode being cancelled
