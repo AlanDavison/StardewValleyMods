@@ -131,6 +131,10 @@
   * Crazy placement
   * Functionality (lighting, etc.)
 
+### Furniture catalogue?
+* Does... do bad things? Expect more info to be added later!
+  * Actually seems fine. Leave this here for now just in case, though.
+
 ### Chests — "chests"
 * Chest removal setting **off**
   * Placement
