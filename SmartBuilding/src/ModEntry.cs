@@ -12,6 +12,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Objects;
+using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
 using SObject = StardewValley.Object;
 
@@ -381,7 +382,12 @@ namespace SmartBuilding
             Vector2 topLeft;
             Vector2 bottomRight;
             List<Vector2> tiles = new List<Vector2>();
-            int itemsRemainingInStack = item.Stack;
+            int itemsRemainingInStack = 0;
+
+            if (item != null)
+                itemsRemainingInStack = item.Stack;
+            else
+                itemsRemainingInStack = 0;
             
             topLeft = new Vector2(MathF.Min(cornerOne.X, cornerTwo.X), MathF.Min(cornerOne.Y, cornerTwo.Y));
             bottomRight = new Vector2(MathF.Max(cornerOne.X, cornerTwo.X), MathF.Max(cornerOne.Y, cornerTwo.Y));
@@ -999,10 +1005,20 @@ namespace SmartBuilding
                         SObject o = here.objects[v];
 
                         // Then we return true if it's a fence, because we want to place the torch on the fence.
-                        return IsTypeOfObject(o, ItemType.Fence);
+                        if (IsTypeOfObject(o, ItemType.Fence))
+                        {
+                            // It's a type of fence, but we also want to ensure that it isn't a gate.
+
+                            if (o.Name.Equals("Gate"))
+                                return false;
+                            
+                            return true;
+                        }
                     }
                     else
                         goto GenericPlaceable; // Please don't hate me too much. This is temporary until everything gets split out into separate methods eventually.
+
+                    break;
                 case ItemType.CrabPot: // We need to determine if the crab pot is being placed in an appropriate water tile.
                     return CrabPot.IsValidCrabPotLocationTile(here, (int)v.X, (int)v.Y) && HasAdjacentNonWaterTile(v);
                 case ItemType.GrassStarter:
@@ -1482,6 +1498,17 @@ namespace SmartBuilding
                     {
                         // We need special handling for fences, since we don't want to pick them up if their health has deteriorated too much.
                         Fence fenceToRemove = (Fence)o;
+                        
+                        // We also need to check to see if the fence has a torch on it so we can remove the light source.
+                        if (o.heldObject.Value != null)
+                        {
+                            // There's an item there, so we can relatively safely assume it's a torch.
+                            
+                            // We remove its light source from the location, and refund the torch.
+                            here.removeLightSource(o.heldObject.Value.lightSource.identifier);
+                            
+                            RefundItem(o.heldObject, "No error. Do not log.", LogLevel.Trace, false);
+                        }
 
                         fenceToRemove.performRemoveAction(tile * 64, here);
                         here.objects.Remove(tile);
@@ -2013,8 +2040,8 @@ namespace SmartBuilding
                             // If the object in this tile is a fence, we add the torch to it.
                             //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
                             
-                            // We know it's a fence, but we also need to ensure it isn't already "holding" anything.
-                            if (o.heldObject != null)
+                            // We know it's a fence by type, but we need to make sure it isn't a gate, and to ensure it isn't already "holding" anything.
+                            if (!o.Name.Equals("Gate") && o.heldObject != null)
                             {
                                 // There's something in there, so we need to refund the torch.
                                 RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
