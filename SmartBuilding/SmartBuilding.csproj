@@ -3,7 +3,7 @@
 	<Import Project="..\Build\SDV-1.5.6_SMAPI-3.14.0.targets" />
 	
 	<PropertyGroup>
-		<Version>1.6.1</Version>
+		<Version>1.7.0-ui-dev</Version>
 		<TargetFramework>net5.0</TargetFramework>
 	</PropertyGroup>
 

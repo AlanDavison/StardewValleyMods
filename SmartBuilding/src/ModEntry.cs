@@ -5,7 +5,9 @@ using System.Linq;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using SmartBuilding.Helpers;
+using SmartBuilding.UI;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -50,6 +52,8 @@ namespace SmartBuilding
         private bool currentlyPlacing = false;
         private bool buildingMode = false;
 
+        private ToolMenu toolMenuUi;
+
         // Debug stuff to make my life less painful when going through my pre-release checklist.
         private ConsoleCommand command = null!;
 
@@ -66,7 +70,24 @@ namespace SmartBuilding
 
                 if (!buildingMode) // If this is now false, we want to clear the tiles list, and refund everything.
                 {
+                    toolMenuUi.Enabled = false;
                     ClearPaintedTiles();
+                    
+                    // And, if the active clickable menu is our UI, we kill it.
+                    if (Game1.onScreenMenus.Contains(toolMenuUi))
+                        Game1.onScreenMenus.Remove(toolMenuUi);
+                }
+                else
+                {
+                    // If we're enabling building mode, we enable toolMenuUi, and set it as the active clickable menu.
+                    toolMenuUi = new ToolMenu(logger);
+                    toolMenuUi.Enabled = true;
+
+                    if (!Game1.onScreenMenus.Contains(toolMenuUi))
+                    {
+                        Game1.onScreenMenus.Add(toolMenuUi);
+                        //Game1.activeClickableMenu = toolMenuUi;
+                    }
                 }
             }
         }
@@ -123,6 +144,7 @@ namespace SmartBuilding
             buildingHud = ModEntry.helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
             itemBox = ModEntry.helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
             command = new ConsoleCommand(logger, buildingHud, this);
+            toolMenuUi = new ToolMenu(logger);
 
             Harmony harmony = new Harmony(ModManifest.UniqueID);
 
@@ -154,6 +176,8 @@ namespace SmartBuilding
 
             // This is a huge mess, and is used to draw the building mode HUD, and build queue if enabled.
             ModEntry.helper.Events.Display.RenderedHud += RenderedHud;
+            
+            ModEntry.helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
 
             // If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
             ModEntry.helper.Events.Player.Warped += (sender, args) =>
@@ -170,6 +194,25 @@ namespace SmartBuilding
 #if !DEBUG
             ModEntry.helper.ConsoleCommands.Add("sb_binding_ui", "This will open up Smart Building's binding UI.", command.BindingUI);
 #endif
+        }
+
+        private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
+        {
+            if (toolMenuUi != null)
+            {
+                if (toolMenuUi.Enabled)
+                {
+                    MouseState mouseState = Game1.input.GetMouseState();
+            
+                    // First, process our mouse released method.
+                    if (mouseState.LeftButton == ButtonState.Released && Game1.oldMouseState.LeftButton == ButtonState.Pressed)
+                        toolMenuUi.releaseLeftClick(mouseState.X, mouseState.Y);
+            
+                    // Then our left click held event.
+                    if (mouseState.LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Pressed)
+                        toolMenuUi.leftClickHeld(mouseState.X, mouseState.Y);
+                }
+            }
         }
 
         /// <summary>
