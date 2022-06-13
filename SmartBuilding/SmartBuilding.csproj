@@ -20,6 +20,11 @@
 
 	<ItemGroup>
 		<Folder Include="assets" />
+		<Folder Include="assets\Buttons" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="assets\Buttons\Draw Button.png" />
 	</ItemGroup>
 
 </Project>

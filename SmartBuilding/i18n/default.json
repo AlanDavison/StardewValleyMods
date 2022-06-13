@@ -2,6 +2,13 @@
   // Informational.
   "smart-building.info.build-cancelled": "User left build mode. Refunding items.",
   "smart-building.info.refunded-into-player-inventory": "refunded into player's inventory.",
+  
+  // Tool button tooltips
+  "smart-building.buttons.draw.tooltip": "Draw objects directly in the world.",
+  "smart-building.buttons.erase.tooltip": "Erase/pick up objects from the world.",
+  "smart-building.buttons.filled-rectangle.tooltip": "Draw a filled rectangle in the world.",
+  "smart-building.buttons.empty-rectangle.tooltip": "Draw en empty (edge only) rectangle in the world.",
+  "smart-building.buttons.marquee-select.tooltip": "Select objects/floor features in the world. CURRENTLY UNIMPLEMENTED.",
 
   // Settings menu text.
   "smart-building.settings.keybinds.title": "Keybinds",
@@ -15,7 +22,6 @@
   "smart-building.settings.keybinds.binds.pick-up-object": "Pick up object",
   "smart-building.settings.keybinds.binds.pick-up-floor": "Pick up floor",
   "smart-building.settings.keybinds.binds.pick-up-furniture": "Pick up furniture",
-
 
   "smart-building.settings.optional-toggles.title": "Optional Toggles",
   "smart-building.settings.optional-toggles.show-build-queue": "Show build queue",

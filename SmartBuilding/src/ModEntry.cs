@@ -25,7 +25,7 @@ TODO: Split things into separate classes where it would make things neater.
 
 namespace SmartBuilding
 {
-    public class ModEntry : Mod, IAssetLoader
+    public class ModEntry : Mod
     {
         // SMAPI gubbins.
         private static IModHelper helper = null!;
@@ -51,6 +51,9 @@ namespace SmartBuilding
         private bool currentlyErasing = false;
         private bool currentlyPlacing = false;
         private bool buildingMode = false;
+        
+        // UI gubbins
+        private Texture2D toolButtonsTexture;
 
         private ToolMenu toolMenuUi;
 
@@ -80,7 +83,7 @@ namespace SmartBuilding
                 else
                 {
                     // If we're enabling building mode, we enable toolMenuUi, and set it as the active clickable menu.
-                    toolMenuUi = new ToolMenu(logger);
+                    toolMenuUi = new ToolMenu(logger, toolButtonsTexture);
                     toolMenuUi.Enabled = true;
 
                     if (!Game1.onScreenMenus.Contains(toolMenuUi))
@@ -120,15 +123,14 @@ namespace SmartBuilding
         }
 
         #region Asset Loading Gubbins
-
-        public bool CanLoad<T>(IAssetInfo asset)
+        
+        private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
         {
-            return asset.AssetNameEquals("Mods/DecidedlyHuman/BuildingHUD");
-        }
-
-        public T Load<T>(IAssetInfo asset)
-        { // We can just return this, because this mod can load only a single asset.
-            return this.Helper.Content.Load<T>(Path.Combine("assets", "HUD.png"));
+            if (e.Name.IsEquivalentTo("Mods/SmartBuilding/BuildingHUD"))
+                e.LoadFromModFile<Texture2D>("assets/HUD.png", AssetLoadPriority.Medium);
+            
+            if (e.Name.IsEquivalentTo("Mods/SmartBuilding/ToolButtons"))
+                e.LoadFromModFile<Texture2D>("assets/Buttons.png", AssetLoadPriority.Medium);
         }
 
         #endregion
@@ -141,30 +143,7 @@ namespace SmartBuilding
             logger = new Logger(monitor);
             config = ModEntry.helper.ReadConfig<ModConfig>();
             hudPosition = new Vector2(50, 0);
-            buildingHud = ModEntry.helper.Content.Load<Texture2D>("Mods/DecidedlyHuman/BuildingHUD", ContentSource.GameContent);
-            itemBox = ModEntry.helper.Content.Load<Texture2D>("LooseSprites/tailoring", ContentSource.GameContent);
-            command = new ConsoleCommand(logger, buildingHud, this);
-            toolMenuUi = new ToolMenu(logger);
-
-            Harmony harmony = new Harmony(ModManifest.UniqueID);
-
-            // I'll need more patches to ensure you can't interact with chests, etc., while building. Should be simple. 
-            harmony.Patch(
-                original: AccessTools.Method(typeof(SObject), nameof(SObject.placementAction)),
-                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.PlacementAction_Prefix)));
-
-            harmony.Patch(
-                original: AccessTools.Method(typeof(Chest), nameof(Chest.checkForAction)),
-                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.Chest_CheckForAction_Prefix)));
-
-            harmony.Patch(
-                original: AccessTools.Method(typeof(FishPond), nameof(FishPond.doAction)),
-                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.FishPond_DoAction_Prefix)));
-
-            harmony.Patch(
-                original: AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.checkForAction)),
-                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.StorageFurniture_DoAction_Prefix)));
-
+            
             // This is where we'll register with GMCM.
             ModEntry.helper.Events.GameLoop.GameLaunched += GameLaunched;
 
@@ -188,9 +167,35 @@ namespace SmartBuilding
                 HarmonyPatches.Patches.CurrentlyInBuildMode = false;
                 HarmonyPatches.Patches.AllowPlacement = false;
             };
-
+            
+            // ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
+            
+            toolButtonsTexture = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "Buttons.png"));
+            buildingHud = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "HUD.png"));
+            itemBox = ModEntry.helper.GameContent.Load<Texture2D>("LooseSprites/tailoring");
+            command = new ConsoleCommand(logger, buildingHud, this);
             ModEntry.helper.ConsoleCommands.Add("sb_test", I18n.SmartBuilding_Commands_Debug_SbTest(), command.TestCommand);
             ModEntry.helper.ConsoleCommands.Add("sb_identify_all_items", I18n.SmartBuilding_Commands_Debug_SbIdentifyItems(), command.IdentifyItemsCommand);
+
+            Harmony harmony = new Harmony(ModManifest.UniqueID);
+
+            // I'll need more patches to ensure you can't interact with chests, etc., while building. Should be simple. 
+            harmony.Patch(
+                original: AccessTools.Method(typeof(SObject), nameof(SObject.placementAction)),
+                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.PlacementAction_Prefix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Chest), nameof(Chest.checkForAction)),
+                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.Chest_CheckForAction_Prefix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FishPond), nameof(FishPond.doAction)),
+                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.FishPond_DoAction_Prefix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.checkForAction)),
+                prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.StorageFurniture_DoAction_Prefix)));
+
 #if !DEBUG
             ModEntry.helper.ConsoleCommands.Add("sb_binding_ui", "This will open up Smart Building's binding UI.", command.BindingUI);
 #endif
@@ -204,13 +209,17 @@ namespace SmartBuilding
                 {
                     MouseState mouseState = Game1.input.GetMouseState();
             
-                    // First, process our mouse released method.
+                    // First, process our left click released method.
                     if (mouseState.LeftButton == ButtonState.Released && Game1.oldMouseState.LeftButton == ButtonState.Pressed)
                         toolMenuUi.releaseLeftClick(mouseState.X, mouseState.Y);
             
                     // Then our left click held event.
                     if (mouseState.LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Pressed)
                         toolMenuUi.leftClickHeld(mouseState.X, mouseState.Y);
+                    
+                    // And our custom right click held event.
+                    if (mouseState.RightButton == ButtonState.Pressed && Game1.oldMouseState.RightButton == ButtonState.Pressed)
+                        toolMenuUi.rightClickHeld(mouseState.X, mouseState.Y);
                 }
             }
         }
@@ -774,21 +783,21 @@ namespace SmartBuilding
                 int windowWidth = Game1.game1.Window.ClientBounds.Width;
 
                 // TODO: Use the newer logic I have to get the toolbar position for this.
-                hudPosition = new Vector2(
-                    windowWidth / 2 - itemBarWidth / 2 - buildingHud.Width * 4,
-                    0);
-
-                e.SpriteBatch.Draw(
-                    texture: buildingHud,
-                    position: hudPosition,
-                    sourceRectangle: buildingHud.Bounds,
-                    color: Color.White,
-                    rotation: 0f,
-                    origin: Vector2.Zero,
-                    scale: Game1.pixelZoom,
-                    effects: SpriteEffects.None,
-                    layerDepth: 1f
-                );
+                // hudPosition = new Vector2(
+                //     windowWidth / 2 - itemBarWidth / 2 - buildingHud.Width * 4,
+                //     0);
+                //
+                // e.SpriteBatch.Draw(
+                //     texture: buildingHud,
+                //     position: hudPosition,
+                //     sourceRectangle: buildingHud.Bounds,
+                //     color: Color.White,
+                //     rotation: 0f,
+                //     origin: Vector2.Zero,
+                //     scale: Game1.pixelZoom,
+                //     effects: SpriteEffects.None,
+                //     layerDepth: 1f
+                // );
 
                 if (config.ShowBuildQueue)
                 {
