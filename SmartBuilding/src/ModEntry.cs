@@ -14,7 +14,6 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Objects;
-using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
 using SObject = StardewValley.Object;
 
@@ -38,22 +37,23 @@ namespace SmartBuilding
         private Vector2 hudPosition;
         private Texture2D buildingHud = null!;
         private Texture2D itemBox = null!;
-        private int itemBarWidth = 800; // This is the default.
-        
+
         // Rectangle drawing.
         private Vector2? startTile = null;
         private Vector2? endTile = null;
         private List<Vector2> rectTiles = new List<Vector2>();
-        
+
         private Item rectangleItem;
 
         private bool currentlyDrawing = false;
         private bool currentlyErasing = false;
         private bool currentlyPlacing = false;
         private bool buildingMode = false;
-        
+
         // UI gubbins
         private Texture2D toolButtonsTexture;
+        private Texture2D windowSkin;
+        private ButtonActions buttonActions;
 
         private ToolMenu toolMenuUi;
 
@@ -73,17 +73,37 @@ namespace SmartBuilding
 
                 if (!buildingMode) // If this is now false, we want to clear the tiles list, and refund everything.
                 {
-                    toolMenuUi.Enabled = false;
+                    if (toolMenuUi != null)
+                        toolMenuUi.Enabled = false;
+
                     ClearPaintedTiles();
-                    
+
                     // And, if the active clickable menu is our UI, we kill it.
                     if (Game1.onScreenMenus.Contains(toolMenuUi))
                         Game1.onScreenMenus.Remove(toolMenuUi);
+
+                    // And set our active tool to none.
+                    ModState.ActiveTool = null;
                 }
                 else
                 {
+                    // First, we create our list of buttons. TODO: Maybe make this data-driven?
+                    List<ToolButton> toolButtons = new List<ToolButton>()
+                    {
+                        new ToolButton(ButtonId.Draw, ButtonType.Tool, buttonActions.DrawClicked, 1, I18n.SmartBuilding_Buttons_Draw_Tooltip(), toolButtonsTexture),
+                        new ToolButton(ButtonId.Erase, ButtonType.Tool, buttonActions.EraseClicked, 2, I18n.SmartBuilding_Buttons_Erase_Tooltip(), toolButtonsTexture),
+                        new ToolButton(ButtonId.FilledRectangle, ButtonType.Tool, buttonActions.FilledRectangleClicked, 3, I18n.SmartBuilding_Buttons_FilledRectangle_Tooltip(), toolButtonsTexture),
+                        //new ToolButton(ButtonId.Rectangle, ButtonType.Tool, 4, I18n.SmartBuilding_Buttons_EmptyRectangle_Tooltip(), toolButtonsTexture),
+                        new ToolButton(ButtonId.ObjectLayer, ButtonType.Layer, buttonActions.ObjectLayerClicked, 4, "Objects", toolButtonsTexture, TileFeature.Object), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.TerrainFeatureLayer, ButtonType.Layer, buttonActions.TerrainFeatureLayerClicked, 5, "Terrain Features", toolButtonsTexture, TileFeature.TerrainFeature), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.FurnitureLayer, ButtonType.Layer, buttonActions.FurnitureLayerClicked, 6, "Furniture", toolButtonsTexture, TileFeature.Furniture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.Insert, ButtonType.Tool, buttonActions.InsertClicked, 7, "Insert", toolButtonsTexture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.ConfirmBuild, ButtonType.Function, buttonActions.ConfirmBuildClicked, 8, "Confirm", toolButtonsTexture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.ClearBuild, ButtonType.Function, buttonActions.ClearBuildClicked, 9, "Clear", toolButtonsTexture), // Temporary. Make i18n key for this.
+                    };
+                    
                     // If we're enabling building mode, we enable toolMenuUi, and set it as the active clickable menu.
-                    toolMenuUi = new ToolMenu(logger, toolButtonsTexture);
+                    toolMenuUi = new ToolMenu(logger, toolButtonsTexture, windowSkin, toolButtons);
                     toolMenuUi.Enabled = true;
 
                     if (!Game1.onScreenMenus.Contains(toolMenuUi))
@@ -98,39 +118,33 @@ namespace SmartBuilding
         private bool CurrentlyDrawing
         {
             get { return currentlyDrawing; }
-            set
-            {
-                currentlyDrawing = value;
-            }
+            set { currentlyDrawing = value; }
         }
 
         private bool CurrentlyErasing
         {
             get { return currentlyErasing; }
-            set
-            {
-                currentlyErasing = value;
-            }
+            set { currentlyErasing = value; }
         }
 
         private bool CurrentlyPlacing
         {
             get { return currentlyPlacing; }
-            set
-            {
-                currentlyPlacing = value;
-            }
+            set { currentlyPlacing = value; }
         }
 
         #region Asset Loading Gubbins
-        
+
         private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
         {
             if (e.Name.IsEquivalentTo("Mods/SmartBuilding/BuildingHUD"))
                 e.LoadFromModFile<Texture2D>("assets/HUD.png", AssetLoadPriority.Medium);
-            
+
             if (e.Name.IsEquivalentTo("Mods/SmartBuilding/ToolButtons"))
                 e.LoadFromModFile<Texture2D>("assets/Buttons.png", AssetLoadPriority.Medium);
+            
+            if (e.Name.IsEquivalentTo("Mods/SmartBuilding/WindowSkin"))
+                e.LoadFromModFile<Texture2D>("assets/WindowSkin.png", AssetLoadPriority.Medium);
         }
 
         #endregion
@@ -143,7 +157,8 @@ namespace SmartBuilding
             logger = new Logger(monitor);
             config = ModEntry.helper.ReadConfig<ModConfig>();
             hudPosition = new Vector2(50, 0);
-            
+            buttonActions = new ButtonActions(this); // Ew, no. Fix this ugly nonsense later.
+
             // This is where we'll register with GMCM.
             ModEntry.helper.Events.GameLoop.GameLaunched += GameLaunched;
 
@@ -155,22 +170,23 @@ namespace SmartBuilding
 
             // This is a huge mess, and is used to draw the building mode HUD, and build queue if enabled.
             ModEntry.helper.Events.Display.RenderedHud += RenderedHud;
-            
+
             ModEntry.helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
 
             // If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
             ModEntry.helper.Events.Player.Warped += (sender, args) =>
             {
                 ClearPaintedTiles();
-                buildingMode = false;
+                BuildingMode = false;
                 currentlyDrawing = false;
                 HarmonyPatches.Patches.CurrentlyInBuildMode = false;
                 HarmonyPatches.Patches.AllowPlacement = false;
             };
-            
+
             // ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
-            
+
             toolButtonsTexture = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "Buttons.png"));
+            windowSkin = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "WindowSkin.png"));
             buildingHud = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "HUD.png"));
             itemBox = ModEntry.helper.GameContent.Load<Texture2D>("LooseSprites/tailoring");
             command = new ConsoleCommand(logger, buildingHud, this);
@@ -203,23 +219,25 @@ namespace SmartBuilding
 
         private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
         {
+            logger.Log($"Should clicks be blocked: {ModState.BlockMouseInteractions}");
+
             if (toolMenuUi != null)
             {
                 if (toolMenuUi.Enabled)
                 {
                     MouseState mouseState = Game1.input.GetMouseState();
-            
-                    // First, process our left click released method.
-                    if (mouseState.LeftButton == ButtonState.Released && Game1.oldMouseState.LeftButton == ButtonState.Pressed)
-                        toolMenuUi.releaseLeftClick(mouseState.X, mouseState.Y);
-            
-                    // Then our left click held event.
-                    if (mouseState.LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Pressed)
-                        toolMenuUi.leftClickHeld(mouseState.X, mouseState.Y);
-                    
-                    // And our custom right click held event.
-                    if (mouseState.RightButton == ButtonState.Pressed && Game1.oldMouseState.RightButton == ButtonState.Pressed)
-                        toolMenuUi.rightClickHeld(mouseState.X, mouseState.Y);
+                    int mouseX = mouseState.X;
+                    int mouseY = mouseState.Y;
+
+                    mouseX = (int)MathF.Round(mouseX / Game1.options.uiScale);
+                    mouseY = (int)MathF.Round(mouseY / Game1.options.uiScale);
+
+                    // We need to process our custom middle click held event.
+                    if (mouseState.MiddleButton == ButtonState.Pressed && Game1.oldMouseState.MiddleButton == ButtonState.Pressed)
+                        toolMenuUi.middleMouseHeld(mouseX, mouseY);
+                    // toolMenuUi.middleMouseHeld((int)MathF.Round(mouseState.X * Game1.options.uiScale), (int)MathF.Round(mouseState.X * Game1.options.uiScale));
+
+                    toolMenuUi.SetCursorHoverState(mouseX, mouseY);
                 }
             }
         }
@@ -281,14 +299,6 @@ namespace SmartBuilding
                         logger.Log($"{I18n.SmartBuilding_Message_ProducerBeingIdentified()} {producer.Name}");
                         logger.Log($"{I18n.SmartBuilding_Message_IdentifiedProducerType()}: {type}");
                     }
-                    
-                    foreach (var thing in here.resourceClumps)
-                    {
-                        if (thing.tile.Equals(targetTile))
-                        {
-                                
-                        }
-                    }
                 }
             }
 
@@ -304,10 +314,38 @@ namespace SmartBuilding
             {
                 if (buildingMode)
                 {
-                    // We set our CurrentlyDrawing property to true, which will update the value in our patch.
-                    CurrentlyDrawing = true;
-                    
-                    AddTile(Game1.player.CurrentItem, Game1.currentCursorTile);
+                    // We don't want to do anything here if we're hovering over the menu.
+                    if (!ModState.BlockMouseInteractions)
+                    {
+                        // First, we need to make sure there even is a tool active.
+                        if (ModState.ActiveTool.HasValue)
+                        {
+                            // There is, so we want to determine exactly which tool we're working with.
+
+                            switch (ModState.ActiveTool)
+                            {
+                                case ButtonId.Draw:
+                                    // We don't want to draw if the cursor is in the negative. TODO: Fix the negative cursor offset bug at some point.
+                                    if (Game1.currentCursorTile.X < 0 || Game1.currentCursorTile.Y < 0)
+                                        return;
+
+                                    AddTile(Game1.player.CurrentItem, Game1.currentCursorTile);
+                                    break;
+                                case ButtonId.Erase:
+                                    if (ModState.SelectedLayer.HasValue)
+                                    {
+                                        DemolishOnTile(Game1.currentCursorTile, ModState.SelectedLayer.Value);
+                                        EraseTile(Game1.currentCursorTile);
+                                    }
+                                    break;
+                                case ButtonId.FilledRectangle:
+                                    // I need to think of a way to do the filled rectangle without relying upon the key released thing.
+                                    break;
+                                case ButtonId.Insert:
+                                    break;
+                            }
+                        }
+                    }
                 }
             }
             else
@@ -315,7 +353,7 @@ namespace SmartBuilding
                 // Otherwise, the key is up, meaning we want to indicate we're not currently drawing.
                 CurrentlyDrawing = false;
             }
-            
+
             if (config.HoldToDrawRectangle.IsDown())
             {
                 // If we're holding our rectangle modifier, we do things a little differently.
@@ -357,76 +395,63 @@ namespace SmartBuilding
                 CurrentlyDrawing = false;
             }
 
-            if (config.HoldToErase.IsDown())
-            {
-                if (buildingMode)
-                {
-                    // We update this to set both our mod state, and patch bool.
-                    CurrentlyErasing = true;
+            // if (config.HoldToErase.IsDown())
+            // {
+            //     if (buildingMode)
+            //     {
+            //         // We update this to set both our mod state, and patch bool.
+            //         CurrentlyErasing = true;
+            //
+            //         EraseTile(Game1.currentCursorTile);
+            //     }
+            // }
+            // else
+            // {
+            //     // The key is no longer held, so we set this to false.
+            //     CurrentlyErasing = false;
+            // }
 
-                    EraseTile(Game1.currentCursorTile);
-                }
-            }
-            else
-            {
-                // The key is no longer held, so we set this to false.
-                CurrentlyErasing = false;
-            }
-
-            if (config.HoldToInsert.IsDown())
-            {
-                if (buildingMode)
-                {
-                    // We're in building mode, but we also want to ensure the setting to enable this is on.
-                    if (config.EnableInsertingItemsIntoMachines)
-                    {
-                        // If it is, we proceed to flag that we're placing items.
-                        CurrentlyPlacing = true;
-
-                        AddItem(Game1.player.CurrentItem, Game1.currentCursorTile);
-                    }
-                }
-            }
-            else
-            {
-                CurrentlyPlacing = false;
-            }
+            // if (config.HoldToInsert.IsDown())
+            // {
+            //     if (buildingMode)
+            //     {
+            //         // We're in building mode, but we also want to ensure the setting to enable this is on.
+            //         if (config.EnableInsertingItemsIntoMachines)
+            //         {
+            //             // If it is, we proceed to flag that we're placing items.
+            //             CurrentlyPlacing = true;
+            //
+            //             AddItem(Game1.player.CurrentItem, Game1.currentCursorTile);
+            //         }
+            //     }
+            // }
+            // else
+            // {
+            //     CurrentlyPlacing = false;
+            // }
 
             if (config.ConfirmBuild.JustPressed())
             {
-                // The build has been confirmed, so we iterate through our Dictionary, and pass each tile into PlaceObject.
-                foreach (KeyValuePair<Vector2, ItemInfo> v in tilesSelected)
-                {
-                    // We want to allow placement for the duration of this method.
-                    HarmonyPatches.Patches.AllowPlacement = true;
-                    
-                    PlaceObject(v);
-                    
-                    // And disallow it afterwards.
-                    HarmonyPatches.Patches.AllowPlacement = false;
-                }
-
-                // Then, we clear the list, because building is done, and all errors are handled internally.
-                tilesSelected.Clear();
+                ConfirmBuild();
             }
 
-            if (config.PickUpObject.IsDown())
-            {
-                if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with an SObject.
-                    DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
-            }
-
-            if (config.PickUpFloor.IsDown())
-            {
-                if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with TerrainFeature.
-                    DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
-            }
-
-            if (config.PickUpFurniture.IsDown())
-            {
-                if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with Furniture.
-                    DemolishOnTile(Game1.currentCursorTile, TileFeature.Furniture);
-            }
+            // if (config.PickUpObject.IsDown())
+            // {
+            //     if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with an SObject.
+            //         DemolishOnTile(Game1.currentCursorTile, TileFeature.Object);
+            // }
+            //
+            // if (config.PickUpFloor.IsDown())
+            // {
+            //     if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with TerrainFeature.
+            //         DemolishOnTile(Game1.currentCursorTile, TileFeature.TerrainFeature);
+            // }
+            //
+            // if (config.PickUpFurniture.IsDown())
+            // {
+            //     if (buildingMode) // If we're in building mode, we demolish the tile, indicating we're dealing with Furniture.
+            //         DemolishOnTile(Game1.currentCursorTile, TileFeature.Furniture);
+            // }
         }
 
         private List<Vector2> CalculateRectangle(Vector2 cornerOne, Vector2 cornerTwo, Item item)
@@ -440,10 +465,10 @@ namespace SmartBuilding
                 itemsRemainingInStack = item.Stack;
             else
                 itemsRemainingInStack = 0;
-            
+
             topLeft = new Vector2(MathF.Min(cornerOne.X, cornerTwo.X), MathF.Min(cornerOne.Y, cornerTwo.Y));
             bottomRight = new Vector2(MathF.Max(cornerOne.X, cornerTwo.X), MathF.Max(cornerOne.Y, cornerTwo.Y));
-            
+
             int rectWidth = (int)bottomRight.X - (int)topLeft.X + 1;
             int rectHeight = (int)bottomRight.Y - (int)topLeft.Y + 1;
 
@@ -509,13 +534,13 @@ namespace SmartBuilding
                 name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDraw(),
                 getValue: () => config.HoldToDraw,
                 setValue: value => config.HoldToDraw = value);
-            
+
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDrawRectangle(),
                 getValue: () => config.HoldToDrawRectangle,
                 setValue: value => config.HoldToDrawRectangle = value
-                );
+            );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
@@ -777,28 +802,9 @@ namespace SmartBuilding
         // TODO: Actually comment things in this method.
         private void RenderedHud(object? sender, RenderedHudEventArgs e)
         {
+            // There's absolutely no need to run this while we're not in building mode.
             if (buildingMode)
-            { 
-                // There's absolutely no need to run this while we're not in building mode.
-                int windowWidth = Game1.game1.Window.ClientBounds.Width;
-
-                // TODO: Use the newer logic I have to get the toolbar position for this.
-                // hudPosition = new Vector2(
-                //     windowWidth / 2 - itemBarWidth / 2 - buildingHud.Width * 4,
-                //     0);
-                //
-                // e.SpriteBatch.Draw(
-                //     texture: buildingHud,
-                //     position: hudPosition,
-                //     sourceRectangle: buildingHud.Bounds,
-                //     color: Color.White,
-                //     rotation: 0f,
-                //     origin: Vector2.Zero,
-                //     scale: Game1.pixelZoom,
-                //     effects: SpriteEffects.None,
-                //     layerDepth: 1f
-                // );
-
+            {
                 if (config.ShowBuildQueue)
                 {
                     Dictionary<Item, int> itemAmounts = new Dictionary<Item, int>();
@@ -1041,7 +1047,7 @@ namespace SmartBuilding
             // If the item is a tool, we want to return.
             if (i is Tool)
                 return false;
-            
+
             ItemType itemType = IdentifyItemType((SObject)i);
             GameLocation here = Game1.currentLocation;
 
@@ -1063,7 +1069,7 @@ namespace SmartBuilding
 
                             if (o.Name.Equals("Gate"))
                                 return false;
-                            
+
                             return true;
                         }
                     }
@@ -1290,6 +1296,7 @@ namespace SmartBuilding
                         return (i as Furniture).canBePlacedHere(here, v);
                 case ItemType.Generic:
                     GenericPlaceable: // A goto, I know, gross, but... it works, and is fine for now, until I split out detection logic into methods. TODO.
+
                     if (config.LessRestrictiveObjectPlacement)
                     {
                         // If the less restrictive object placement setting is enabled, we first want to check if vanilla logic dictates the object be placeable.
@@ -1297,7 +1304,8 @@ namespace SmartBuilding
                         {
                             // It dictates that it is, so we can simply return true.
                             return true;
-                        } else
+                        }
+                        else
                         {
                             // Otherwise, we want to check for an object already present in this location.
                             if (!here.Objects.ContainsKey(v))
@@ -1487,7 +1495,7 @@ namespace SmartBuilding
 
             // And, finally, clear it.
             tilesSelected.Clear();
-            
+
             // We also want to clear the rect tiles. No refunding necessary here, however, as items are only deducted when added to tilesSelected.
             rectTiles.Clear();
         }
@@ -1550,15 +1558,15 @@ namespace SmartBuilding
                     {
                         // We need special handling for fences, since we don't want to pick them up if their health has deteriorated too much.
                         Fence fenceToRemove = (Fence)o;
-                        
+
                         // We also need to check to see if the fence has a torch on it so we can remove the light source.
                         if (o.heldObject.Value != null)
                         {
                             // There's an item there, so we can relatively safely assume it's a torch.
-                            
+
                             // We remove its light source from the location, and refund the torch.
                             here.removeLightSource(o.heldObject.Value.lightSource.identifier);
-                            
+
                             RefundItem(o.heldObject, "No error. Do not log.", LogLevel.Trace, false);
                         }
 
@@ -1576,11 +1584,11 @@ namespace SmartBuilding
                         {
                             // We've confirmed there's a TerrainFeature here, so next we grab a reference to it if it is a tree.
                             if (here.terrainFeatures[tile] is Tree treeToUntap)
-                            { 
+                            {
                                 // After double checking there's a tree here, we grab a reference to it.
                                 treeToUntap.tapped.Value = false;
                             }
-                            
+
                             o.performRemoveAction(tile * 64, here);
                             Game1.player.addItemByMenuIfNecessary(o.getOne());
 
@@ -1672,7 +1680,7 @@ namespace SmartBuilding
                     // If it's a StorageFurniture, and the setting to allow working with it is false, do nothing.
                     if (furnitureToGrab is StorageFurniture && !config.EnablePlacingStorageFurniture)
                         return;
-                    
+
                     // Otherwise, we can continue.
                     logger.Log($"{I18n.SmartBuikding_Message_TryingToGrab()} {furnitureToGrab.Name}");
                     Game1.player.addItemToInventory(furnitureToGrab);
@@ -1995,7 +2003,7 @@ namespace SmartBuilding
 
                         // A quick bool to avoid an unnecessary log to console later.
                         bool anyItemsAdded = false;
-                        
+
                         // Then, we iterate through all of the items in the existing StorageFurniture, and add them to the new one.
                         foreach (var itemInStorage in (itemToPlace as StorageFurniture).heldItems)
                         {
@@ -2004,7 +2012,7 @@ namespace SmartBuilding
 
                             anyItemsAdded = true;
                         }
-                        
+
                         // If any items were added, inform the user of the purpose of logging them.
                         if (anyItemsAdded)
                             logger.Log(I18n.SmartBuilding_Message_StorageFurniture_RetrievalTip(), LogLevel.Info);
@@ -2091,14 +2099,14 @@ namespace SmartBuilding
                         {
                             // If the object in this tile is a fence, we add the torch to it.
                             //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
-                            
+
                             // We know it's a fence by type, but we need to make sure it isn't a gate, and to ensure it isn't already "holding" anything.
                             if (!o.Name.Equals("Gate") && o.heldObject != null)
                             {
                                 // There's something in there, so we need to refund the torch.
                                 RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
                             }
-                            
+
                             o.performObjectDropInAction(itemToPlace, false, Game1.player);
 
                             if (IdentifyItemType(o.heldObject) != ItemType.Torch)
@@ -2113,11 +2121,11 @@ namespace SmartBuilding
                         {
                             // If it's not a fence, we want to refund the item.
                             RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
-                            
+
                             return;
                         }
                     }
-                    
+
                     // There is no object here, so we treat it like a generic placeable.
                     if (!itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player))
                         RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
@@ -2238,6 +2246,29 @@ namespace SmartBuilding
                 default:
                     return null;
             }
+        }
+
+        public void ConfirmBuild()
+        {
+            // The build has been confirmed, so we iterate through our Dictionary, and pass each tile into PlaceObject.
+            foreach (KeyValuePair<Vector2, ItemInfo> v in tilesSelected)
+            {
+                // We want to allow placement for the duration of this method.
+                HarmonyPatches.Patches.AllowPlacement = true;
+
+                PlaceObject(v);
+
+                // And disallow it afterwards.
+                HarmonyPatches.Patches.AllowPlacement = false;
+            }
+
+            // Then, we clear the list, because building is done, and all errors are handled internally.
+            tilesSelected.Clear();
+        }
+
+        public void ClearBuild()
+        {
+            ClearPaintedTiles();
         }
     }
 }

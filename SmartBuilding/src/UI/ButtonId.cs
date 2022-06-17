@@ -7,6 +7,11 @@
         Erase,
         Draw,
         Insert,
-        Select
+        Select,
+        ObjectLayer,
+        TerrainFeatureLayer,
+        FurnitureLayer,
+        ConfirmBuild,
+        ClearBuild
     }
 }

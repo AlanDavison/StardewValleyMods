@@ -9,11 +9,11 @@ namespace SmartBuilding
     {
         // TODO: Add an "instantly build" toggle.
         public KeybindList EngageBuildMode = KeybindList.Parse("LeftShift+B");
-        public KeybindList HoldToDraw = KeybindList.Parse("MouseRight");
+        public KeybindList HoldToDraw = KeybindList.Parse("MouseLeft");
         public KeybindList HoldToDrawRectangle = KeybindList.Parse("LeftAlt");
         public KeybindList HoldToErase = KeybindList.Parse("LeftShift");
         public KeybindList HoldToInsert = KeybindList.Parse("LeftControl");
-        public KeybindList ConfirmBuild = KeybindList.Parse("MouseLeft");
+        public KeybindList ConfirmBuild = KeybindList.Parse("Enter");
         public KeybindList PickUpObject = KeybindList.Parse("Delete");
         public KeybindList PickUpFloor = KeybindList.Parse("End");
         public KeybindList PickUpFurniture = KeybindList.Parse("Home");
