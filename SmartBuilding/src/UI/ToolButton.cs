@@ -74,6 +74,7 @@ namespace SmartBuilding.UI
             get => layerToTarget;
         }
 
+        // TODO: Possibly refactor buttons into a Button base class, and have ToolButton and LayerButton inherit from that to simplify the Draw method?
         public void Draw(SpriteBatch b)
         {
             if (Type != ButtonType.Layer)
@@ -91,6 +92,8 @@ namespace SmartBuilding.UI
                         b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, Color.DarkSlateGray, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
                     }
                 }
+                else
+                    b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, Color.DarkSlateGray, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             }
 
             if (Type == ButtonType.Tool)
