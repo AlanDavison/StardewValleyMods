@@ -89,11 +89,11 @@ namespace SmartBuilding.UI
                     }
                     else
                     {
-                        b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, Color.DarkSlateGray, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+                        //b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, Color.DarkSlateGray, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
                     }
                 }
-                else
-                    b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, Color.DarkSlateGray, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+                //else
+                    //b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, Color.DarkSlateGray, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             }
 
             if (Type == ButtonType.Tool)
@@ -147,8 +147,6 @@ namespace SmartBuilding.UI
                         Utility.drawTextWithColoredShadow(b, ButtonTooltip, Game1.dialogueFont, new Vector2(Component.bounds.X + 96, Component.bounds.Y + 64), Color.WhiteSmoke, new Color(Color.Black, 0.75f));
                     }
                 }
-
-
             }
         }
 

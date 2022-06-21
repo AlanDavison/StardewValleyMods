@@ -26,6 +26,8 @@ namespace SmartBuilding.Utilities
                     return new Rectangle(0, 16, 16, 16);
                 case ButtonId.Select:
                     return new Rectangle(32, 16, 16, 16);
+                case ButtonId.DrawnLayer:
+                    return new Rectangle(0, 48, 16, 16);
                 case ButtonId.ObjectLayer:
                     return new Rectangle(0, 32, 16, 16);
                 case ButtonId.TerrainFeatureLayer:

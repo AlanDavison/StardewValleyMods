@@ -82,8 +82,9 @@ namespace SmartBuilding
                     if (Game1.onScreenMenus.Contains(toolMenuUi))
                         Game1.onScreenMenus.Remove(toolMenuUi);
 
-                    // And set our active tool to none.
+                    // And set our active tool and layer to none.
                     ModState.ActiveTool = null;
+                    ModState.SelectedLayer = null;
                 }
                 else
                 {
@@ -94,12 +95,13 @@ namespace SmartBuilding
                         new ToolButton(ButtonId.Erase, ButtonType.Tool, buttonActions.EraseClicked, 2, I18n.SmartBuilding_Buttons_Erase_Tooltip(), toolButtonsTexture),
                         new ToolButton(ButtonId.FilledRectangle, ButtonType.Tool, buttonActions.FilledRectangleClicked, 3, I18n.SmartBuilding_Buttons_FilledRectangle_Tooltip(), toolButtonsTexture),
                         //new ToolButton(ButtonId.Rectangle, ButtonType.Tool, 4, I18n.SmartBuilding_Buttons_EmptyRectangle_Tooltip(), toolButtonsTexture),
-                        new ToolButton(ButtonId.ObjectLayer, ButtonType.Layer, buttonActions.ObjectLayerClicked, 4, "Objects", toolButtonsTexture, TileFeature.Object), // Temporary. Make i18n key for this.
-                        new ToolButton(ButtonId.TerrainFeatureLayer, ButtonType.Layer, buttonActions.TerrainFeatureLayerClicked, 5, "Terrain Features", toolButtonsTexture, TileFeature.TerrainFeature), // Temporary. Make i18n key for this.
-                        new ToolButton(ButtonId.FurnitureLayer, ButtonType.Layer, buttonActions.FurnitureLayerClicked, 6, "Furniture", toolButtonsTexture, TileFeature.Furniture), // Temporary. Make i18n key for this.
-                        new ToolButton(ButtonId.Insert, ButtonType.Tool, buttonActions.InsertClicked, 7, "Insert", toolButtonsTexture), // Temporary. Make i18n key for this.
-                        new ToolButton(ButtonId.ConfirmBuild, ButtonType.Function, buttonActions.ConfirmBuildClicked, 8, "Confirm", toolButtonsTexture), // Temporary. Make i18n key for this.
-                        new ToolButton(ButtonId.ClearBuild, ButtonType.Function, buttonActions.ClearBuildClicked, 9, "Clear", toolButtonsTexture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.Insert, ButtonType.Tool, buttonActions.InsertClicked, 4, "Insert", toolButtonsTexture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.ConfirmBuild, ButtonType.Function, buttonActions.ConfirmBuildClicked, 5, "Confirm", toolButtonsTexture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.ClearBuild, ButtonType.Function, buttonActions.ClearBuildClicked, 6, "Clear", toolButtonsTexture), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.DrawnLayer, ButtonType.Layer, buttonActions.DrawnLayerClicked, 7, "Drawn", toolButtonsTexture, TileFeature.Drawn), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.ObjectLayer, ButtonType.Layer, buttonActions.ObjectLayerClicked, 8, "Objects", toolButtonsTexture, TileFeature.Object), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.TerrainFeatureLayer, ButtonType.Layer, buttonActions.TerrainFeatureLayerClicked, 9, "Terrain Features", toolButtonsTexture, TileFeature.TerrainFeature), // Temporary. Make i18n key for this.
+                        new ToolButton(ButtonId.FurnitureLayer, ButtonType.Layer, buttonActions.FurnitureLayerClicked, 10, "Furniture", toolButtonsTexture, TileFeature.Furniture), // Temporary. Make i18n key for this.
                     };
                     
                     // If we're enabling building mode, we enable toolMenuUi, and set it as the active clickable menu.
@@ -219,7 +221,7 @@ namespace SmartBuilding
 
         private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
         {
-            logger.Log($"Should clicks be blocked: {ModState.BlockMouseInteractions}");
+            //logger.Log($"Should clicks be blocked: {ModState.BlockMouseInteractions}");
 
             if (toolMenuUi != null)
             {
@@ -238,6 +240,12 @@ namespace SmartBuilding
                     // toolMenuUi.middleMouseHeld((int)MathF.Round(mouseState.X * Game1.options.uiScale), (int)MathF.Round(mouseState.X * Game1.options.uiScale));
 
                     toolMenuUi.SetCursorHoverState(mouseX, mouseY);
+                    
+                    // We also need to manually call the click event, because by default, it'll only work if the bounds of the IClickableMenu contain the cursor.
+                    // We specifically do not want the bounds to be expanded to include the side layer buttons, however, because that will be far too large a boundary.
+                    
+                    if (mouseState.LeftButton == ButtonState.Pressed || config.HoldToDraw.IsDown())
+                        toolMenuUi.receiveLeftClickOutOfBounds(mouseX, mouseY);
                 }
             }
         }
@@ -339,7 +347,21 @@ namespace SmartBuilding
                                     }
                                     break;
                                 case ButtonId.FilledRectangle:
-                                    // I need to think of a way to do the filled rectangle without relying upon the key released thing.
+                                    // This is a split method and is hideous, but this is the best I can think of for now.
+                                    
+                                    CurrentlyDrawing = true;
+                                    rectangleItem = Game1.player.CurrentItem;
+
+                                    if (startTile == null)
+                                    {
+                                        // If the start tile hasn't yet been set, then we want to set that.
+                                        startTile = Game1.currentCursorTile;
+                                    }
+
+                                    endTile = Game1.currentCursorTile;
+
+                                    rectTiles = CalculateRectangle(startTile.Value, endTile.Value, rectangleItem);
+                                    
                                     break;
                                 case ButtonId.Insert:
                                     break;
@@ -348,8 +370,32 @@ namespace SmartBuilding
                     }
                 }
             }
-            else
+            else if (config.HoldToDraw.GetState() == SButtonState.Released)
             {
+                if (ModState.ActiveTool.HasValue)
+                {
+                    if (ModState.ActiveTool == ButtonId.FilledRectangle)
+                    {
+                        // We need to process the key up stuff for the filled rectangle.
+                        
+                        // The rectangle drawing key was released, so we want to calculate the tiles within, and set CurrentlyDrawing to false.
+
+                        if (startTile.HasValue && endTile.HasValue)
+                        {
+                            List<Vector2> tiles = CalculateRectangle(startTile.Value, endTile.Value, rectangleItem);
+
+                            foreach (Vector2 tile in tiles)
+                            {
+                                AddTile(rectangleItem, tile);
+                            }
+
+                            startTile = null;
+                            endTile = null;
+                            rectTiles.Clear();
+                        }
+                    }
+                }
+                
                 // Otherwise, the key is up, meaning we want to indicate we're not currently drawing.
                 CurrentlyDrawing = false;
             }
@@ -376,23 +422,7 @@ namespace SmartBuilding
             }
             else
             {
-                // The rectangle drawing key was released, so we want to calculate the tiles within, and set CurrentlyDrawing to false.
-
-                if (startTile.HasValue && endTile.HasValue)
-                {
-                    List<Vector2> tiles = CalculateRectangle(startTile.Value, endTile.Value, rectangleItem);
-
-                    foreach (Vector2 tile in tiles)
-                    {
-                        AddTile(rectangleItem, tile);
-                    }
-
-                    startTile = null;
-                    endTile = null;
-                    rectTiles.Clear();
-                }
-
-                CurrentlyDrawing = false;
+                
             }
 
             // if (config.HoldToErase.IsDown())

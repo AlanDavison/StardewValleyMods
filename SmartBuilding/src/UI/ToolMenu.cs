@@ -47,14 +47,17 @@ namespace SmartBuilding.UI
 
             // startingHeight = 64 * (toolButtons.Count + 1)
 
-            startingHeight += 4 * 4;
+            // startingHeight += 4 * 4;
 
+            // First, we increment our height by 64 for every button, unless it's a layer button.
             foreach (ToolButton button in toolButtons)
             {
-                startingHeight += 64 + 8;
+                if (button.Type != ButtonType.Layer)
+                    startingHeight += 64;
             }
-
-            startingHeight += 4 * 4;
+            
+            // Then, we add 8 per button to allow 8 pixels of spacing between buttons.
+            startingHeight += toolButtons.Count * 8;
 
             base.initialize(startingXPos, startingYPos, startingWidth, startingHeight);
             logger = l;
@@ -66,26 +69,32 @@ namespace SmartBuilding.UI
             if (!enabled)
                 return;
 
+            if (ModState.ActiveTool.HasValue)
+            {
+                if (ModState.ActiveTool == ButtonId.Erase)
+                {
+                    drawTextureBox(
+                        b,
+                        Game1.menuTexture,
+                        new Rectangle(0, 256, 60, 60),
+                        xPositionOnScreen + 64,
+                        yPositionOnScreen,
+                        width + 32 + 8,
+                        240,
+                        Color.White,
+                        1f,
+                        true
+                    );
+                }
+            }
+            
             drawTextureBox(
                 b,
                 xPositionOnScreen,
                 yPositionOnScreen,
                 width,
                 height,
-                Color.LightGray
-            );
-
-            drawTextureBox(
-                b,
-                Game1.menuTexture,
-                new Rectangle(0, 256, 60, 60),
-                xPositionOnScreen,
-                yPositionOnScreen + (8 * 3) + 64 * 3,
-                width,
-                240,
-                Color.White,
-                1f,
-                false
+                Color.White
             );
 
             foreach (ToolButton button in toolButtons)
@@ -128,31 +137,40 @@ namespace SmartBuilding.UI
 
                 startingBounds.Y += 64 + 8;
                 // startingBounds.Y += 74;
+                
             }
 
             foreach (ToolButton button in toolButtons)
             {
-                // if (button.Type == ButtonType.Tool)
-                // {
-                //     if (ModState.ActiveTool.HasValue)
-                //     {
-                //         if (button.Id.Equals(ModState.ActiveTool))
-                //             button.CurrentOverlayColour = Color.Red;
-                //         else
-                //             button.CurrentOverlayColour = Color.White;
-                //     }
-                //     else
-                //         button.CurrentOverlayColour = Color.White;
-                // }
+                if (button.Type == ButtonType.Layer)
+                {
+                    button.Component.bounds = new Rectangle(button.Component.bounds.X + 64 + 32, button.Component.bounds.Y - 430, button.Component.bounds.Width, button.Component.bounds.Height);
+                }
             }
+
+            // foreach (ToolButton button in toolButtons)
+            // {
+            //     // if (button.Type == ButtonType.Tool)
+            //     // {
+            //     //     if (ModState.ActiveTool.HasValue)
+            //     //     {
+            //     //         if (button.Id.Equals(ModState.ActiveTool))
+            //     //             button.CurrentOverlayColour = Color.Red;
+            //     //         else
+            //     //             button.CurrentOverlayColour = Color.White;
+            //     //     }
+            //     //     else
+            //     //         button.CurrentOverlayColour = Color.White;
+            //     // }
+            // }
         }
 
-        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        public void receiveLeftClickOutOfBounds(int x, int y)
         {
             // If the menu isn't enabled, just return.
             if (!enabled)
                 return;
-
+            
             // This is where we'll look through all of our buttons, and perform actions appropriately.
             foreach (ToolButton button in toolButtons)
             {
@@ -166,11 +184,40 @@ namespace SmartBuilding.UI
                                 button.ButtonAction();
                         }
                     }
-                    else
+                }
+            }
+        }
+
+        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        {
+            // If the menu isn't enabled, just return.
+            if (!enabled)
+                return;
+
+            // This is where we'll loop through all of our buttons, and perform actions appropriately.
+            foreach (ToolButton button in toolButtons)
+            {
+                if (button.Component.containsPoint(x, y))
+                {
+                    if (button.Type != ButtonType.Layer)
                     {
                         ModState.SelectedLayer = null;
                         button.ButtonAction();
                     }
+                    
+                    // if (button.Type == ButtonType.Layer)
+                    // {
+                    //     if (ModState.ActiveTool.HasValue)
+                    //     {
+                    //         if (ModState.ActiveTool.Value == ButtonId.Erase)
+                    //             button.ButtonAction();
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //     ModState.SelectedLayer = null;
+                    //     button.ButtonAction();
+                    // }
                     // // First, we check to see if a button is a too
                     // if (button.Type == ButtonType.Tool)
                     //     ModState.ActiveTool = button.Id;
@@ -187,6 +234,11 @@ namespace SmartBuilding.UI
             }
         }
 
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            LockWithinBounds(ref xPositionOnScreen, ref yPositionOnScreen);
+        }
+
         public void middleMouseHeld(int x, int y)
         {
             // If the menu isn't enabled, just return.
@@ -200,11 +252,33 @@ namespace SmartBuilding.UI
 
                 xPositionOnScreen = x - newBounds.Width / 2;
                 yPositionOnScreen = (int)Math.Round(y - newBounds.Width * 0.5f);
+                
+                LockWithinBounds(ref xPositionOnScreen, ref yPositionOnScreen);
 
+                // xPositionOnScreen = x - xDelta;
+                // yPositionOnScreen = y - yDelta;
+                
                 // xPositionOnScreen = (int)MathF.Round(xPositionOnScreen * Game1.options.uiScale);
                 // yPositionOnScreen = (int)MathF.Round(yPositionOnScreen * Game1.options.uiScale);
             }
         }
+
+        private void LockWithinBounds(ref int x, ref int y)
+        {
+            // First, we check to see if the window is out of bounds to the left or above.
+            if (x < 0)
+                x = 0;
+            if (y < 0)
+                y = 0;
+            
+            // Then we check in the positive (to the right and down).
+            if (x + width + 110 > Game1.uiViewport.Width)
+                x = Game1.uiViewport.Width - width - 110;
+            if (y + height > Game1.uiViewport.Height)
+                y = Game1.uiViewport.Height - height;
+        }
+
+        //private int stringThing = "YOU NEED TO ADD A LAYER BUTTON FOR DRAWN TILES SO THE ERASE TOOL CAN REMOVE THOSE, WHILE NOT REMOVING ANYTHING IN THE WORLD.";
 
         public void SetCursorHoverState(int x, int y)
         {

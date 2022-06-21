@@ -26,6 +26,11 @@
             ModState.ActiveTool = ButtonId.FilledRectangle;
         }
 
+        public void DrawnLayerClicked()
+        {
+            ModState.SelectedLayer = TileFeature.Drawn;
+        }
+
         public void ObjectLayerClicked()
         {
             ModState.SelectedLayer = TileFeature.Object;

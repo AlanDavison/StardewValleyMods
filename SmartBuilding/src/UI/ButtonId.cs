@@ -8,6 +8,7 @@
         Draw,
         Insert,
         Select,
+        DrawnLayer,
         ObjectLayer,
         TerrainFeatureLayer,
         FurnitureLayer,
