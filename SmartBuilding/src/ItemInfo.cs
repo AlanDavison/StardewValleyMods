@@ -5,7 +5,7 @@ namespace SmartBuilding
     /// <summary>
     /// Basic Item metadata.
     /// </summary>
-    struct ItemInfo
+    public struct ItemInfo
     {
         /// <summary>
         /// A reference to the item to be placed.

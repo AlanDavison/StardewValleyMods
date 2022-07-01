@@ -17,12 +17,14 @@ namespace SmartBuilding
         private bool commandRunOnce = false;
         private ModEntry mod;
         private IDynamicGameAssetsApi dgaApi;
+        private IdentificationUtils identificationUtils;
 
-        public ConsoleCommand(Logger logger, ModEntry mod, IDynamicGameAssetsApi dgaApi)
+        public ConsoleCommand(Logger logger, ModEntry mod, IDynamicGameAssetsApi dgaApi, IdentificationUtils identificationUtils)
         {
             this.logger = logger;
             this.mod = mod; // This is a terrible way to access the item identification, but it'll do for now.
             this.dgaApi = dgaApi; // This is also terrible.
+            this.identificationUtils = identificationUtils;
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace SmartBuilding
                 {
                     if (item != null)
                     {
-                        ItemType type = mod.IdentifyItemType(item as StardewValley.Object);
+                        ItemType type = identificationUtils.IdentifyItemType(item as StardewValley.Object);
                         logger.Log($"ItemType of {item.Name}: {type}.", LogLevel.Info);
 
                         if (dgaApi.GetDGAItemId(item) != null)
