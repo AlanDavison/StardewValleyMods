@@ -21,5 +21,10 @@ namespace SmartBuilding
         /// Whether this item is destined to be inserted into a machine.
         /// </summary>
         public bool ToBeInserted;
+
+        /// <summary>
+        /// Whether this item is a DGA item.
+        /// </summary>
+        public bool IsDgaItem;
     }
 }

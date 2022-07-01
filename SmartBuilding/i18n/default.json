@@ -7,8 +7,14 @@
   "smart-building.buttons.draw.tooltip": "Draw objects directly in the world.",
   "smart-building.buttons.erase.tooltip": "Erase/pick up objects from the world.",
   "smart-building.buttons.filled-rectangle.tooltip": "Draw a filled rectangle in the world.",
-  "smart-building.buttons.empty-rectangle.tooltip": "Draw en empty (edge only) rectangle in the world.",
-  "smart-building.buttons.marquee-select.tooltip": "Select objects/floor features in the world. CURRENTLY UNIMPLEMENTED.",
+  "smart-building.buttons.empty-rectangle.tooltip": "Draw en empty (edge only) rectangle in the world. CURRENTLY UNIMPLEMENTED.",
+  "smart-building.buttons.insert.tooltip": "Insert items into machines/producers.",
+  "smart-building.buttons.confirm-build.tooltip": "Commit the drawn build to the world.",
+  "smart-building.buttons.clear-build.tooltip": "Clear the drawn (uncommitted) items.",
+  "smart-building.buttons.layer-drawn.tooltip": "Erase drawn (uncommitted) items.",
+  "smart-building.buttons.layer-object.tooltip": "Pick up objects (fences, chests, etc.) from the world.",
+  "smart-building.buttons.layer-terrainfeature.tooltip": "Pick up floors from the world.",
+  "smart-building.buttons.layer-furniture.tooltip": "Pick up furniture from the world.",
 
   // Settings menu text.
   "smart-building.settings.keybinds.title": "Keybinds",

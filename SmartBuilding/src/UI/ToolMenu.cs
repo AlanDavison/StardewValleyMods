@@ -18,6 +18,8 @@ namespace SmartBuilding.UI
         private Texture2D windowSkin;
         private bool enabled = false;
 
+        private int currentMouseX = 0;
+        private int currentMouseY = 0;
         private int previousMouseX = 0;
         private int previousMouseY = 0;
 
@@ -25,6 +27,7 @@ namespace SmartBuilding.UI
 
         // Input state gubbins
         private bool leftMouseDown;
+        private bool windowBeingDragged;
 
         // Debug gubbins.
         private string debugString;
@@ -35,7 +38,7 @@ namespace SmartBuilding.UI
             set { enabled = value; }
         }
 
-        public ToolMenu(Logger l, Texture2D buttonSpritesheet, Texture2D windowSkin, List<ToolButton> buttons)
+        public ToolMenu(Logger l, Texture2D buttonSpritesheet, List<ToolButton> buttons)
         {
             int startingXPos = (int)MathF.Round(100 * Game1.options.uiScale);
             int startingYPos = (int)MathF.Round(100 * Game1.options.uiScale);
@@ -80,7 +83,7 @@ namespace SmartBuilding.UI
                         xPositionOnScreen + 64,
                         yPositionOnScreen,
                         width + 32 + 8,
-                        240,
+                        64 * 4 + 8 * 8 + 64,
                         Color.White,
                         1f,
                         true
@@ -90,18 +93,33 @@ namespace SmartBuilding.UI
             
             drawTextureBox(
                 b,
+                Game1.menuTexture,
+                new Rectangle(0, 256, 60, 60),
                 xPositionOnScreen,
                 yPositionOnScreen,
                 width,
                 height,
-                Color.White
+                Color.White,
+                1f,
+                true
             );
+            
+            // drawTextureBox(
+            //     b,
+            //     xPositionOnScreen,
+            //     yPositionOnScreen,
+            //     width,
+            //     height,
+            //     Color.White
+            // );
 
             foreach (ToolButton button in toolButtons)
             {
                 button.Draw(b);
-
-                //b.Draw(toolButtonTexture, new Vector2(button.Component.bounds.X, button.Component.bounds.Y), button.Component.sourceRect, button.CurrentOverlayColour, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+            }
+            
+            foreach (ToolButton button in toolButtons)
+            {
                 if (button.IsHovered)
                 {
                     // b.DrawString(Game1.smallFont, button.ButtonTooltip, new Vector2(Game1.getMouseX() + 79, Game1.getMouseY() + 1), Color.Black);
@@ -119,8 +137,24 @@ namespace SmartBuilding.UI
             // If the menu isn't enabled, just return.
             if (!enabled)
                 return;
-
+            
+            // MouseState mouseState = Game1.input.GetMouseState();
+            // int currentMouseX = mouseState.X;
+            // int currentMouseY = mouseState.Y;
+            //
+            // currentMouseX = (int)MathF.Floor(currentMouseX / Game1.options.uiScale);
+            // currentMouseY = (int)MathF.Floor(currentMouseY / Game1.options.uiScale);
+            //
+            // DoWindowDrag(currentMouseX, currentMouseY);
             UpdateComponents();
+        }
+
+        private void DoWindowDrag(int x, int y)
+        {
+            if (!enabled || !windowBeingDragged)
+                return;
+            
+            
         }
 
         private void UpdateComponents()
@@ -137,7 +171,6 @@ namespace SmartBuilding.UI
 
                 startingBounds.Y += 64 + 8;
                 // startingBounds.Y += 74;
-                
             }
 
             foreach (ToolButton button in toolButtons)
@@ -145,6 +178,9 @@ namespace SmartBuilding.UI
                 if (button.Type == ButtonType.Layer)
                 {
                     button.Component.bounds = new Rectangle(button.Component.bounds.X + 64 + 32, button.Component.bounds.Y - 430, button.Component.bounds.Width, button.Component.bounds.Height);
+                    
+                    if (button.LayerToTarget == TileFeature.Furniture)
+                        button.Component.bounds.Height = 128;
                 }
             }
 
@@ -167,11 +203,74 @@ namespace SmartBuilding.UI
 
         public void receiveLeftClickOutOfBounds(int x, int y)
         {
+            // // If the menu isn't enabled, just return.
+            // if (!enabled)
+            //     return;
+            //
+            // // This is where we'll look through all of our buttons, and perform actions appropriately.
+            // foreach (ToolButton button in toolButtons)
+            // {
+            //     if (button.Component.containsPoint(x, y))
+            //     {
+            //         if (button.Type == ButtonType.Layer)
+            //         {
+            //             if (ModState.ActiveTool.HasValue)
+            //             {
+            //                 if (ModState.ActiveTool.Value == ButtonId.Erase)
+            //                     button.ButtonAction();
+            //             }
+            //         }
+            //     }
+            // }
+            //
+            // // This is where we'll loop through all of our buttons, and perform actions appropriately.
+            // foreach (ToolButton button in toolButtons)
+            // {
+            //     if (button.Component.containsPoint(x, y))
+            //     {
+            //         if (button.Type != ButtonType.Layer)
+            //         {
+            //             ModState.SelectedLayer = null;
+            //             button.ButtonAction();
+            //         }
+            //         
+            //         // if (button.Type == ButtonType.Layer)
+            //         // {
+            //         //     if (ModState.ActiveTool.HasValue)
+            //         //     {
+            //         //         if (ModState.ActiveTool.Value == ButtonId.Erase)
+            //         //             button.ButtonAction();
+            //         //     }
+            //         // }
+            //         // else
+            //         // {
+            //         //     ModState.SelectedLayer = null;
+            //         //     button.ButtonAction();
+            //         // }
+            //         // // First, we check to see if a button is a too
+            //         // if (button.Type == ButtonType.Tool)
+            //         //     ModState.ActiveTool = button.Id;
+            //         //
+            //         // if (button.Type == ButtonType.Function)
+            //         // {
+            //         //     if (button.Id == ButtonId.ConfirmBuild)
+            //         //         confirmBuild();
+            //         //     
+            //         //     if (button.Id == ButtonId.ClearBuild)
+            //         //         clearBuild();
+            //         // }
+            //     }
+            // }
+            
+        }
+
+        public void ReceiveLeftClick(int x, int y)
+        {
             // If the menu isn't enabled, just return.
             if (!enabled)
                 return;
             
-            // This is where we'll look through all of our buttons, and perform actions appropriately.
+            // This is where we'll loop through all of our buttons, and perform actions appropriately.
             foreach (ToolButton button in toolButtons)
             {
                 if (button.Component.containsPoint(x, y))
@@ -184,75 +283,137 @@ namespace SmartBuilding.UI
                                 button.ButtonAction();
                         }
                     }
-                }
-            }
-        }
-
-        public override void receiveLeftClick(int x, int y, bool playSound = true)
-        {
-            // If the menu isn't enabled, just return.
-            if (!enabled)
-                return;
-
-            // This is where we'll loop through all of our buttons, and perform actions appropriately.
-            foreach (ToolButton button in toolButtons)
-            {
-                if (button.Component.containsPoint(x, y))
-                {
-                    if (button.Type != ButtonType.Layer)
+                    else
                     {
                         ModState.SelectedLayer = null;
                         button.ButtonAction();
                     }
-                    
-                    // if (button.Type == ButtonType.Layer)
-                    // {
-                    //     if (ModState.ActiveTool.HasValue)
-                    //     {
-                    //         if (ModState.ActiveTool.Value == ButtonId.Erase)
-                    //             button.ButtonAction();
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     ModState.SelectedLayer = null;
-                    //     button.ButtonAction();
-                    // }
-                    // // First, we check to see if a button is a too
-                    // if (button.Type == ButtonType.Tool)
-                    //     ModState.ActiveTool = button.Id;
-                    //
-                    // if (button.Type == ButtonType.Function)
-                    // {
-                    //     if (button.Id == ButtonId.ConfirmBuild)
-                    //         confirmBuild();
-                    //     
-                    //     if (button.Id == ButtonId.ClearBuild)
-                    //         clearBuild();
-                    // }
                 }
             }
+            
+            // // This is where we'll loop through all of our buttons, and perform actions appropriately.
+            // foreach (ToolButton button in toolButtons)
+            // {
+            //     if (button.Component.containsPoint(x, y))
+            //     {
+            //         if (button.Type != ButtonType.Layer)
+            //         {
+            //             ModState.SelectedLayer = null;
+            //             button.ButtonAction();
+            //         }
+            //         
+            //         // if (button.Type == ButtonType.Layer)
+            //         // {
+            //         //     if (ModState.ActiveTool.HasValue)
+            //         //     {
+            //         //         if (ModState.ActiveTool.Value == ButtonId.Erase)
+            //         //             button.ButtonAction();
+            //         //     }
+            //         // }
+            //         // else
+            //         // {
+            //         //     ModState.SelectedLayer = null;
+            //         //     button.ButtonAction();
+            //         // }
+            //         // // First, we check to see if a button is a too
+            //         // if (button.Type == ButtonType.Tool)
+            //         //     ModState.ActiveTool = button.Id;
+            //         //
+            //         // if (button.Type == ButtonType.Function)
+            //         // {
+            //         //     if (button.Id == ButtonId.ConfirmBuild)
+            //         //         confirmBuild();
+            //         //     
+            //         //     if (button.Id == ButtonId.ClearBuild)
+            //         //         clearBuild();
+            //         // }
+            //     }
+            // }
         }
+        
+        // public override void receiveLeftClick(int x, int y, bool playSound = true)
+        // {
+        //     // If the menu isn't enabled, just return.
+        //     if (!enabled)
+        //         return;
+        //
+        //     // This is where we'll loop through all of our buttons, and perform actions appropriately.
+        //     foreach (ToolButton button in toolButtons)
+        //     {
+        //         if (button.Component.containsPoint(x, y))
+        //         {
+        //             if (button.Type != ButtonType.Layer)
+        //             {
+        //                 ModState.SelectedLayer = null;
+        //                 button.ButtonAction();
+        //             }
+        //             
+        //             // if (button.Type == ButtonType.Layer)
+        //             // {
+        //             //     if (ModState.ActiveTool.HasValue)
+        //             //     {
+        //             //         if (ModState.ActiveTool.Value == ButtonId.Erase)
+        //             //             button.ButtonAction();
+        //             //     }
+        //             // }
+        //             // else
+        //             // {
+        //             //     ModState.SelectedLayer = null;
+        //             //     button.ButtonAction();
+        //             // }
+        //             // // First, we check to see if a button is a too
+        //             // if (button.Type == ButtonType.Tool)
+        //             //     ModState.ActiveTool = button.Id;
+        //             //
+        //             // if (button.Type == ButtonType.Function)
+        //             // {
+        //             //     if (button.Id == ButtonId.ConfirmBuild)
+        //             //         confirmBuild();
+        //             //     
+        //             //     if (button.Id == ButtonId.ClearBuild)
+        //             //         clearBuild();
+        //             // }
+        //         }
+        //     }
+        // }
 
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             LockWithinBounds(ref xPositionOnScreen, ref yPositionOnScreen);
         }
 
-        public void middleMouseHeld(int x, int y)
+        public void MiddleMouseReleased(int x, int y)
+        {
+            if (!enabled)
+                return;
+
+            windowBeingDragged = false;
+        }
+
+        public void MiddleMouseHeld(int x, int y)
         {
             // If the menu isn't enabled, just return.
             if (!enabled)
                 return;
 
             // This is where we'll handle moving the UI. It doesn't matter which element the cursor is over.
-            if (this.isWithinBounds(x, y))
+            if (this.isWithinBounds(x, y) || windowBeingDragged)
             {
+                windowBeingDragged = true;
+                
                 Rectangle newBounds = new Rectangle(xPositionOnScreen, yPositionOnScreen, width, height);
 
-                xPositionOnScreen = x - newBounds.Width / 2;
-                yPositionOnScreen = (int)Math.Round(y - newBounds.Width * 0.5f);
+                int xDelta = x - previousMouseX;
+                int yDelta = y - previousMouseY;
                 
+                xPositionOnScreen += xDelta;
+                yPositionOnScreen += yDelta;
+                
+                // THIS IS THE GOOD ONE.
+                // xPositionOnScreen = x - newBounds.Width / 2;
+                // yPositionOnScreen = (int)Math.Round(y - newBounds.Width * 0.5f);
+                
+                //SnapToPixels();
                 LockWithinBounds(ref xPositionOnScreen, ref yPositionOnScreen);
 
                 // xPositionOnScreen = x - xDelta;
@@ -289,32 +450,46 @@ namespace SmartBuilding.UI
         {
             bool isInBounds = base.isWithinBounds(x, y);
 
-            if (!isInBounds)
-            {
-                foreach (ToolButton button in toolButtons)
-                {
-                    button.IsHovered = false;
-                    button.CurrentOverlayColour = Color.White;
-                }
-            }
+            // if (!isInBounds)
+            // {
+            //     foreach (ToolButton button in toolButtons)
+            //     {
+            //         button.IsHovered = false;
+            //         button.CurrentOverlayColour = Color.White;
+            //     }
+            // }
 
             return isInBounds;
         }
 
-        public override void performHoverAction(int x, int y)
+        public void DoHover(int x, int y)
         {
             // If the menu isn't enabled, just return.
             if (!enabled)
                 return;
-
-            ;
+            
+            //logger.Log($"DoHover coords: {x}x{y}");
 
             foreach (ToolButton button in toolButtons)
             {
                 if (button.Component.containsPoint(x, y))
                 {
-                    button.CurrentOverlayColour = Color.Gray;
-                    button.IsHovered = true;
+                    // If it's a layer button, we only want to do anything if erase is the currently selected tool.
+                    if (button.Type == ButtonType.Layer)
+                    {
+                        if (ModState.ActiveTool.HasValue && ModState.ActiveTool == ButtonId.Erase)
+                        {
+                            logger.Log($"Button {button.Id} hovered.");
+                            button.CurrentOverlayColour = Color.Gray;
+                            button.IsHovered = true;
+                        }
+                    }
+                    else
+                    {
+                        logger.Log($"Button {button.Id} hovered.");
+                        button.CurrentOverlayColour = Color.Gray;
+                        button.IsHovered = true;
+                    }
                 }
                 else
                 {
@@ -322,6 +497,31 @@ namespace SmartBuilding.UI
                     button.IsHovered = false;
                 }
             }
+            
+            previousMouseX = x;
+            previousMouseY = y;
+        }
+
+        public override void performHoverAction(int x, int y)
+        {
+            //logger.Log($"performHoverAction coords: {x}x{y}");
+            // // If the menu isn't enabled, just return.
+            // if (!enabled)
+            //     return;
+            //
+            // foreach (ToolButton button in toolButtons)
+            // {
+            //     if (button.Component.containsPoint(x, y))
+            //     {
+            //         button.CurrentOverlayColour = Color.Gray;
+            //         button.IsHovered = true;
+            //     }
+            //     else
+            //     {
+            //         button.CurrentOverlayColour = Color.White;
+            //         button.IsHovered = false;
+            //     }
+            // }
         }
     }
 }

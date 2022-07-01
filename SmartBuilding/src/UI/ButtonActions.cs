@@ -10,45 +10,58 @@
         {
             this.mod = mod;
         }
+
+        private void ResetTileState()
+        {
+            mod.ResetVolatileTiles();
+        }
         
         public void DrawClicked()
         {
             ModState.ActiveTool = ButtonId.Draw;
+            ResetTileState();
         }
 
         public void EraseClicked()
         {
             ModState.ActiveTool = ButtonId.Erase;
+            ResetTileState();
         }
 
         public void FilledRectangleClicked()
         {
             ModState.ActiveTool = ButtonId.FilledRectangle;
+            ResetTileState();
         }
 
         public void DrawnLayerClicked()
         {
             ModState.SelectedLayer = TileFeature.Drawn;
+            ResetTileState();
         }
 
         public void ObjectLayerClicked()
         {
             ModState.SelectedLayer = TileFeature.Object;
+            ResetTileState();
         }
 
         public void TerrainFeatureLayerClicked()
         {
             ModState.SelectedLayer = TileFeature.TerrainFeature;
+            ResetTileState();
         }
 
         public void FurnitureLayerClicked()
         {
             ModState.SelectedLayer = TileFeature.Furniture;
+            ResetTileState();
         }
 
         public void InsertClicked()
         {
             ModState.ActiveTool = ButtonId.Insert;
+            ResetTileState();
         }
 
         public void ConfirmBuildClicked()

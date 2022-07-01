@@ -18,7 +18,6 @@ namespace SmartBuilding.UI
         private Color currentOverlayColour;
         private bool isHovered;
         private bool enabled;
-        private int buttonIndex;
         private string buttonTooltip;
 
         public ClickableTextureComponent Component
@@ -49,11 +48,6 @@ namespace SmartBuilding.UI
             set { currentOverlayColour = value; }
         }
 
-        public int Index
-        {
-            get => buttonIndex;
-        }
-
         public ButtonId Id
         {
             get => buttonId;
@@ -74,7 +68,7 @@ namespace SmartBuilding.UI
             get => layerToTarget;
         }
 
-        // TODO: Possibly refactor buttons into a Button base class, and have ToolButton and LayerButton inherit from that to simplify the Draw method?
+        
         public void Draw(SpriteBatch b)
         {
             if (Type != ButtonType.Layer)
@@ -154,11 +148,10 @@ namespace SmartBuilding.UI
         /// Everything can be derived from the button ID.
         /// </summary>
         /// <param name="button"></param>
-        public ToolButton(ButtonId button, ButtonType type, Action action, int index, string tooltip, Texture2D texture, TileFeature? layerToTarget = null)
+        public ToolButton(ButtonId button, ButtonType type, Action action, string tooltip, Texture2D texture, TileFeature? layerToTarget = null)
 
         {
             Rectangle sourceRect = Ui.GetButtonSourceRect(button);
-            buttonIndex = index;
             buttonTooltip = tooltip;
             buttonId = button;
             buttonType = type;

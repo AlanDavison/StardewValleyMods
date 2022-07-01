@@ -7,16 +7,15 @@ namespace SmartBuilding
 {
     public class ModConfig
     {
-        // TODO: Add an "instantly build" toggle.
         public KeybindList EngageBuildMode = KeybindList.Parse("LeftShift+B");
         public KeybindList HoldToDraw = KeybindList.Parse("MouseLeft");
-        public KeybindList HoldToDrawRectangle = KeybindList.Parse("LeftAlt");
-        public KeybindList HoldToErase = KeybindList.Parse("LeftShift");
-        public KeybindList HoldToInsert = KeybindList.Parse("LeftControl");
-        public KeybindList ConfirmBuild = KeybindList.Parse("Enter");
-        public KeybindList PickUpObject = KeybindList.Parse("Delete");
-        public KeybindList PickUpFloor = KeybindList.Parse("End");
-        public KeybindList PickUpFurniture = KeybindList.Parse("Home");
+        // public KeybindList HoldToDrawRectangle = KeybindList.Parse("LeftAlt");
+        // public KeybindList HoldToErase = KeybindList.Parse("LeftShift");
+        // public KeybindList HoldToInsert = KeybindList.Parse("LeftControl");
+        // public KeybindList ConfirmBuild = KeybindList.Parse("Enter");
+        // public KeybindList PickUpObject = KeybindList.Parse("Delete");
+        // public KeybindList PickUpFloor = KeybindList.Parse("End");
+        // public KeybindList PickUpFurniture = KeybindList.Parse("Home");
         public bool ShowBuildQueue = true;
         public bool CanDestroyChests = false;
         public bool CrabPotsInAnyWaterTile = false;

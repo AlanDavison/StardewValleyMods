@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using DynamicGameAssets;
 using Microsoft.Xna.Framework.Graphics;
+using SmartBuilding.Helpers;
 using SmartBuilding.UI;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using xTile.Dimensions;
 
 namespace SmartBuilding
@@ -12,14 +15,14 @@ namespace SmartBuilding
     {
         private Logger logger;
         private bool commandRunOnce = false;
-        private Texture2D texture;
         private ModEntry mod;
+        private IDynamicGameAssetsApi dgaApi;
 
-        public ConsoleCommand(Logger logger, Texture2D texture, ModEntry mod)
+        public ConsoleCommand(Logger logger, ModEntry mod, IDynamicGameAssetsApi dgaApi)
         {
             this.logger = logger;
-            this.texture = texture;
             this.mod = mod; // This is a terrible way to access the item identification, but it'll do for now.
+            this.dgaApi = dgaApi; // This is also terrible.
         }
 
         /// <summary>
@@ -30,9 +33,9 @@ namespace SmartBuilding
         public void BindingUI(string command, string[] args)
         {
             Rectangle viewport = Game1.uiViewport;
-            BindingUi binding = new BindingUi(viewport.X, viewport.Y, viewport.Width, viewport.Height, texture, true);
+            // BindingUi binding = new BindingUi(viewport.X, viewport.Y, viewport.Width, viewport.Height, texture, true);
 
-            Game1.activeClickableMenu = binding;
+            // Game1.activeClickableMenu = binding;
         }
 
         public void IdentifyItemsCommand(string command, string[] args)
@@ -47,6 +50,12 @@ namespace SmartBuilding
                     {
                         ItemType type = mod.IdentifyItemType(item as StardewValley.Object);
                         logger.Log($"ItemType of {item.Name}: {type}.", LogLevel.Info);
+
+                        if (dgaApi.GetDGAItemId(item) != null)
+                        {
+                            // This did not return null, so we know this is a DGA item.
+                            logger.Log($"{item.Name} is a DGA item.");
+                        }
                     }
                 }
             }

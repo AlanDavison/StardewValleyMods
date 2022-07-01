@@ -1,30 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<!-- ModBuildConfig settings. -->
+	<!-- ModBuildConfig build settings import. -->
 	<Import Project="..\Build\SDV-1.5.6_SMAPI-3.14.0.targets" />
 	
 	<PropertyGroup>
-		<Version>1.7.0-ui-dev</Version>
+		<Version>1.7.0-beta</Version>
 		<TargetFramework>net5.0</TargetFramework>
+		<IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
+		<Nullable>enable</Nullable>
+		
+		<!-- ModBuildConfig settings. -->
+		<EnableHarmony>true</EnableHarmony>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
 		<PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.0.0" />
-	</ItemGroup>
-
-	<PropertyGroup>
-		<EnableHarmony>true</EnableHarmony>
-		<IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
-		<Nullable>enable</Nullable>
-	</PropertyGroup>
-
-	<ItemGroup>
 		<Folder Include="assets" />
-		<Folder Include="assets\Buttons" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="assets\Buttons\Draw Button.png" />
 	</ItemGroup>
 
 </Project>
