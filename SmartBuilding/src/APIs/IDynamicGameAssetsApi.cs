@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 
-namespace DynamicGameAssets
+namespace SmartBuilding.APIs
 {
     public interface IDynamicGameAssetsApi
     {

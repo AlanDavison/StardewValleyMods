@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
-using DynamicGameAssets;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SmartBuilding.Helpers;
+using SmartBuilding.APIs;
 using SmartBuilding.UI;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
@@ -32,8 +31,6 @@ namespace SmartBuilding
         private static ModConfig config = null!;
 
         private Dictionary<Vector2, ItemInfo> tilesSelected = new Dictionary<Vector2, ItemInfo>();
-        private Vector2 currentTile = Vector2.Zero;
-        private Vector2 hudPosition;
         private Texture2D itemBox = null!;
         private DrawingUtils drawingUtils;
         private IdentificationUtils identificationUtils;
@@ -188,7 +185,6 @@ namespace SmartBuilding
             monitor = Monitor;
             logger = new Logger(monitor);
             config = ModEntry.helper.ReadConfig<ModConfig>();
-            hudPosition = new Vector2(50, 0);
             buttonActions = new ButtonActions(this); // Ew, no. Fix this ugly nonsense later.
             drawingUtils = new DrawingUtils();
             identificationUtils = new IdentificationUtils(ModEntry.helper, logger, config, dgaApi, moreFertilizersApi, placementUtils);

@@ -1,10 +1,10 @@
-﻿using DynamicGameAssets;
-using Microsoft.Xna.Framework;
-using SmartBuilding.Helpers;
+﻿using Microsoft.Xna.Framework;
+using SmartBuilding.APIs;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using SObject = StardewValley.Object;
 
 namespace SmartBuilding.Utilities
 {
@@ -27,7 +27,7 @@ namespace SmartBuilding.Utilities
             this.placementUtils = placementUtils;
         }
 
-        public ProducerType IdentifyProducer(Object o)
+        public ProducerType IdentifyProducer(SObject o)
         {
             ProducerType type = ProducerType.NotAProducer;
 
@@ -90,7 +90,7 @@ namespace SmartBuilding.Utilities
             return type;
         }
 
-        public bool IsTypeOfObject(Object o, ItemType type)
+        public bool IsTypeOfObject(SObject o, ItemType type)
         {
             // We try to identify what kind of object we've been passed.
             ItemType oType = IdentifyItemType(o);
@@ -98,7 +98,7 @@ namespace SmartBuilding.Utilities
             return oType == type;
         }
 
-        public ItemType IdentifyItemType(Object item)
+        public ItemType IdentifyItemType(SObject item)
         {
             string itemName = item.Name;
 
@@ -146,7 +146,7 @@ namespace SmartBuilding.Utilities
             return ItemType.Generic;
         }
 
-        public ItemInfo GetItemInfo(Object item)
+        public ItemInfo GetItemInfo(SObject item)
         {
             ItemType itemType = IdentifyItemType(item);
             bool isDgaItem = false;
@@ -291,7 +291,7 @@ namespace SmartBuilding.Utilities
                     if (here.objects.ContainsKey(v))
                     {
                         // We know there's an object at these coordinates, so we grab a reference.
-                        Object o = here.objects[v];
+                        SObject o = here.objects[v];
 
                         // Then we return true if it's a fence, because we want to place the torch on the fence.
                         if (IsTypeOfObject(o, ItemType.Fence))
@@ -333,12 +333,12 @@ namespace SmartBuilding.Utilities
                     else if (here.objects.ContainsKey(v))
                     {
                         // We know an object exists here now, so we grab it.
-                        Object o = here.objects[v];
+                        SObject o = here.objects[v];
                         ItemType type;
                         Item itemToDestroy;
 
                         itemToDestroy = Utility.fuzzyItemSearch(o.Name);
-                        type = IdentifyItemType((Object)itemToDestroy);
+                        type = IdentifyItemType((SObject)itemToDestroy);
 
                         if (type == ItemType.Fence)
                         {
@@ -358,7 +358,7 @@ namespace SmartBuilding.Utilities
                         return false;
 
                     // If this is a More Fertilizers fertilizer, defer to More Fertilizer's placement logic.
-                    if (i is Object obj && moreFertilizersApi?.CanPlaceFertilizer(obj, here, v) == true)
+                    if (i is SObject obj && moreFertilizersApi?.CanPlaceFertilizer(obj, here, v) == true)
                         return true;
 
                     // If there's an object present, we don't want to place any fertilizer.
@@ -496,7 +496,7 @@ namespace SmartBuilding.Utilities
                     if (here.objects.ContainsKey(v))
                     {
                         // We know there's an object at these coordinates, so we grab a reference.
-                        Object o = here.objects[v];
+                        SObject o = here.objects[v];
 
                         // Then we return true if this is both a fence, and replacing fences is enabled.
                         return IsTypeOfObject(o, ItemType.Fence) && config.EnableReplacingFences;

@@ -2,7 +2,7 @@
 using StardewValley;
 using SObject = StardewValley.Object;
 
-namespace SmartBuilding.Helpers
+namespace SmartBuilding.APIs
 {
     /// <summary>
     /// The API for More Fertilizers, which handles placement of fertilizers by
