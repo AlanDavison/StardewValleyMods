@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using SmartBuilding.Logging;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewValley;
@@ -17,6 +18,7 @@ namespace SmartBuilding.UI
         private Texture2D toolButtonSpritesheet;
         private Texture2D windowSkin;
         private bool enabled = false;
+        private ModState modState;
 
         private int currentMouseX = 0;
         private int currentMouseY = 0;
@@ -38,12 +40,13 @@ namespace SmartBuilding.UI
             set { enabled = value; }
         }
 
-        public ToolMenu(Logger l, Texture2D buttonSpritesheet, List<ToolButton> buttons)
+        public ToolMenu(Logger l, Texture2D buttonSpritesheet, List<ToolButton> buttons, ModState modState)
         {
             int startingXPos = (int)MathF.Round(100 * Game1.options.uiScale);
             int startingYPos = (int)MathF.Round(100 * Game1.options.uiScale);
             int startingWidth = 100;
             int startingHeight = 0;
+            this.modState = modState;
             toolButtonSpritesheet = buttonSpritesheet;
             this.windowSkin = windowSkin;
             toolButtons = buttons;
@@ -72,9 +75,9 @@ namespace SmartBuilding.UI
             if (!enabled)
                 return;
 
-            if (ModState.ActiveTool.HasValue)
+            if (modState.ActiveTool.HasValue)
             {
-                if (ModState.ActiveTool == ButtonId.Erase)
+                if (modState.ActiveTool == ButtonId.Erase)
                 {
                     drawTextureBox(
                         b,
@@ -277,15 +280,15 @@ namespace SmartBuilding.UI
                 {
                     if (button.Type == ButtonType.Layer)
                     {
-                        if (ModState.ActiveTool.HasValue)
+                        if (modState.ActiveTool.HasValue)
                         {
-                            if (ModState.ActiveTool.Value == ButtonId.Erase)
+                            if (modState.ActiveTool.Value == ButtonId.Erase)
                                 button.ButtonAction();
                         }
                     }
                     else
                     {
-                        ModState.SelectedLayer = null;
+                        modState.SelectedLayer = null;
                         button.ButtonAction();
                     }
                 }
@@ -443,12 +446,12 @@ namespace SmartBuilding.UI
 
         public void SetCursorHoverState(int x, int y)
         {
-            ModState.BlockMouseInteractions = isWithinBounds(x, y);
+            modState.BlockMouseInteractions = isWithinBounds(x, y);
         }
 
         public override bool isWithinBounds(int x, int y)
         {
-            bool isInBounds = base.isWithinBounds(x, y);
+            bool isInMainWindowBounds = base.isWithinBounds(x, y);
 
             // if (!isInBounds)
             // {
@@ -459,7 +462,13 @@ namespace SmartBuilding.UI
             //     }
             // }
 
-            return isInBounds;
+            foreach (ToolButton button in toolButtons)
+            {
+                if (button.IsHovered)
+                    return true;
+            }
+
+            return isInMainWindowBounds;
         }
 
         public void DoHover(int x, int y)
@@ -477,16 +486,16 @@ namespace SmartBuilding.UI
                     // If it's a layer button, we only want to do anything if erase is the currently selected tool.
                     if (button.Type == ButtonType.Layer)
                     {
-                        if (ModState.ActiveTool.HasValue && ModState.ActiveTool == ButtonId.Erase)
+                        if (modState.ActiveTool.HasValue && modState.ActiveTool == ButtonId.Erase)
                         {
-                            logger.Log($"Button {button.Id} hovered.");
+                            // logger.Log($"Button {button.Id} hovered.");
                             button.CurrentOverlayColour = Color.Gray;
                             button.IsHovered = true;
                         }
                     }
                     else
                     {
-                        logger.Log($"Button {button.Id} hovered.");
+                        // logger.Log($"Button {button.Id} hovered.");
                         button.CurrentOverlayColour = Color.Gray;
                         button.IsHovered = true;
                     }

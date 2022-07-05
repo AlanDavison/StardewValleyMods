@@ -3,65 +3,62 @@
     public class ButtonActions
     {
         private ModEntry mod;
+        private ModState modState;
         
         // Simply passing in our main mod class is terrible, but... it's either this, or spend
         // forever rearchitecting when I could be working on the usability of the mod.
-        public ButtonActions(ModEntry mod)
+        public ButtonActions(ModEntry mod, ModState modState)
         {
             this.mod = mod;
-        }
-
-        private void ResetTileState()
-        {
-            mod.ResetVolatileTiles();
+            this.modState = modState;
         }
         
         public void DrawClicked()
         {
-            ModState.ActiveTool = ButtonId.Draw;
-            ResetTileState();
+            modState.ActiveTool = ButtonId.Draw;
+            modState.ResetVolatileTiles();
         }
 
         public void EraseClicked()
         {
-            ModState.ActiveTool = ButtonId.Erase;
-            ResetTileState();
+            modState.ActiveTool = ButtonId.Erase;
+            modState.ResetVolatileTiles();
         }
 
         public void FilledRectangleClicked()
         {
-            ModState.ActiveTool = ButtonId.FilledRectangle;
-            ResetTileState();
+            modState.ActiveTool = ButtonId.FilledRectangle;
+            modState.ResetVolatileTiles();
         }
 
         public void DrawnLayerClicked()
         {
-            ModState.SelectedLayer = TileFeature.Drawn;
-            ResetTileState();
+            modState.SelectedLayer = TileFeature.Drawn;
+            modState.ResetVolatileTiles();
         }
 
         public void ObjectLayerClicked()
         {
-            ModState.SelectedLayer = TileFeature.Object;
-            ResetTileState();
+            modState.SelectedLayer = TileFeature.Object;
+            modState.ResetVolatileTiles();
         }
 
         public void TerrainFeatureLayerClicked()
         {
-            ModState.SelectedLayer = TileFeature.TerrainFeature;
-            ResetTileState();
+            modState.SelectedLayer = TileFeature.TerrainFeature;
+            modState.ResetVolatileTiles();
         }
 
         public void FurnitureLayerClicked()
         {
-            ModState.SelectedLayer = TileFeature.Furniture;
-            ResetTileState();
+            modState.SelectedLayer = TileFeature.Furniture;
+            modState.ResetVolatileTiles();
         }
 
         public void InsertClicked()
         {
-            ModState.ActiveTool = ButtonId.Insert;
-            ResetTileState();
+            modState.ActiveTool = ButtonId.Insert;
+            modState.ResetVolatileTiles();
         }
 
         public void ConfirmBuildClicked()

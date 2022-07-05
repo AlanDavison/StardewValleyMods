@@ -9,7 +9,7 @@ namespace SmartBuilding.Utilities
         /// Get the source rectangle for the appropriate Texture2D for each individual button.
         /// </summary>
         /// <param name="button">The ID of the button being checked.</param>
-        /// <returns></returns>
+        /// <returns>The <see cref="Rectangle"/> source rect for the button in question.</returns>
         public static Rectangle GetButtonSourceRect(ButtonId button)
         {
             switch (button)

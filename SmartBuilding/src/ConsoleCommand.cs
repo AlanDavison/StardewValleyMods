@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using SmartBuilding.APIs;
+using SmartBuilding.Logging;
 using SmartBuilding.UI;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;

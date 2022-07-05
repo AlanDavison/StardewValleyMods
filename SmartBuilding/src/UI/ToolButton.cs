@@ -19,6 +19,7 @@ namespace SmartBuilding.UI
         private bool isHovered;
         private bool enabled;
         private string buttonTooltip;
+        private ModState modState;
 
         public ClickableTextureComponent Component
         {
@@ -75,9 +76,9 @@ namespace SmartBuilding.UI
                 b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, CurrentOverlayColour, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             else
             {
-                if (ModState.ActiveTool.HasValue)
+                if (modState.ActiveTool.HasValue)
                 {
-                    if (ModState.ActiveTool.Equals(ButtonId.Erase))
+                    if (modState.ActiveTool.Equals(ButtonId.Erase))
                     {
                         b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, CurrentOverlayColour, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
                     }
@@ -92,9 +93,9 @@ namespace SmartBuilding.UI
 
             if (Type == ButtonType.Tool)
             {
-                if (ModState.ActiveTool.HasValue)
+                if (modState.ActiveTool.HasValue)
                 {
-                    if (Id.Equals(ModState.ActiveTool.Value))
+                    if (Id.Equals(modState.ActiveTool.Value))
                     {
                         b.Draw(
                             Game1.mouseCursors,
@@ -112,7 +113,7 @@ namespace SmartBuilding.UI
 
             if (Type == ButtonType.Layer)
             {
-                if (ModState.SelectedLayer.HasValue)
+                if (modState.SelectedLayer.HasValue)
                 {
                     // b.Draw(
                     //     Game1.mouseCursors,
@@ -125,7 +126,7 @@ namespace SmartBuilding.UI
                     //     SpriteEffects.None,
                     //     0f);
 
-                    if (LayerToTarget.Equals(ModState.SelectedLayer.Value))
+                    if (LayerToTarget.Equals(modState.SelectedLayer.Value))
                     {
                         b.Draw(
                             Game1.mouseCursors,
@@ -148,7 +149,7 @@ namespace SmartBuilding.UI
         /// Everything can be derived from the button ID.
         /// </summary>
         /// <param name="button"></param>
-        public ToolButton(ButtonId button, ButtonType type, Action action, string tooltip, Texture2D texture, TileFeature? layerToTarget = null)
+        public ToolButton(ButtonId button, ButtonType type, Action action, string tooltip, Texture2D texture, ModState modState, TileFeature? layerToTarget = null)
 
         {
             Rectangle sourceRect = Ui.GetButtonSourceRect(button);
@@ -158,6 +159,7 @@ namespace SmartBuilding.UI
             buttonAction = action;
             this.layerToTarget = layerToTarget;
             currentOverlayColour = Color.White;
+            this.modState = modState;
 
             buttonComponent = new ClickableTextureComponent(
                 new Rectangle(0, 0, 0, 0),
