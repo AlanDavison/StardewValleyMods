@@ -13,6 +13,7 @@
         TerrainFeatureLayer,
         FurnitureLayer,
         ConfirmBuild,
-        ClearBuild
+        ClearBuild,
+        None
     }
 }

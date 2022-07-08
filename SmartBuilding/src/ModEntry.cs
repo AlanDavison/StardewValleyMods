@@ -31,10 +31,11 @@ namespace SmartBuilding
         private static Logger logger = null!;
         private static ModConfig config = null!;
 
+        // Mod state
         private ModState modState;
+        private Options.ItemStowingModes previousStowingMode;
 
-        
-        private Texture2D itemBox = null!;
+        // Helper utilities
         private DrawingUtils drawingUtils;
         private IdentificationUtils identificationUtils;
         private PlacementUtils placementUtils;
@@ -44,15 +45,13 @@ namespace SmartBuilding
         private string betaVersion = "This is a prerelease beta version of Smart Building 1.7.x.";
 
         // UI gubbins
+        private Texture2D itemBox = null!;
         private Texture2D toolButtonsTexture;
         private ButtonActions buttonActions;
         private Toolbar gameToolbar;
         private int currentMouseX;
         private int currentMouseY;
         private ToolMenu toolMenuUi;
-        
-        // State stuff
-        private Options.ItemStowingModes previousStowingMode;
 
         // Debug stuff to make my life less painful when going through my pre-release checklist.
         private ConsoleCommand command = null!;
@@ -97,23 +96,25 @@ namespace SmartBuilding
             // This is purely for our rectangle quantity drawing.
             ModEntry.helper.Events.Display.Rendered += Rendered;
 
+            // We need this to handle our custom UI events. The alternative is a Harmony patch, but that feels excessive.
             ModEntry.helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
 
             // If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
             ModEntry.helper.Events.Player.Warped += (sender, args) =>
             {
                 modState.ResetState();
-                KillToolUi();
+                LeaveBuildMode();
             };
 
             // ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
 
+            // Load up our textures.
             toolButtonsTexture = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "Buttons.png"));
             itemBox = ModEntry.helper.GameContent.Load<Texture2D>("LooseSprites/tailoring");
 
             Harmony harmony = new Harmony(ModManifest.UniqueID);
 
-            // I'll need more patches to ensure you can't interact with chests, etc., while building. Should be simple. 
+            // All of our Harmony patches to disable interactions while in build mode.
             harmony.Patch(
                 original: AccessTools.Method(typeof(SObject), nameof(SObject.placementAction)),
                 prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.PlacementAction_Prefix)));
@@ -133,10 +134,6 @@ namespace SmartBuilding
             harmony.Patch(
                 original: AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.checkForAction)),
                 prefix: new HarmonyMethod(typeof(HarmonyPatches.Patches), nameof(HarmonyPatches.Patches.StorageFurniture_DoAction_Prefix)));
-
-#if !DEBUG
-            ModEntry.helper.ConsoleCommands.Add("sb_binding_ui", "This will open up Smart Building's binding UI.", command.BindingUI);
-#endif
         }
         
         #region SMAPI Events
@@ -179,11 +176,9 @@ namespace SmartBuilding
         /// </summary>
         private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
         {
-            //logger.Log($"Should clicks be blocked: {ModState.BlockMouseInteractions}");
-
             if (toolMenuUi != null)
             {
-                // If our tool menu is enabled, we go forward with processing its events.
+                // If our tool menu is enabled and there's no menu up, we go forward with processing its events.
                 if (toolMenuUi.Enabled && Game1.activeClickableMenu == null)
                 {
                     MouseState mouseState = Game1.input.GetMouseState();
@@ -194,23 +189,21 @@ namespace SmartBuilding
                     currentMouseY = (int)MathF.Floor(currentMouseY / Game1.options.uiScale);
 
                     // We need to process our custom middle click held event.
-                    if (mouseState.MiddleButton == ButtonState.Pressed && Game1.oldMouseState.MiddleButton == ButtonState.Pressed)
+                    // if (mouseState.MiddleButton == ButtonState.Pressed && Game1.oldMouseState.MiddleButton == ButtonState.Pressed)
+                    if (config.HoldToMoveMenu.IsDown())
                         toolMenuUi.MiddleMouseHeld(currentMouseX, currentMouseY);
-                    if (mouseState.MiddleButton == ButtonState.Released)
+                    // if (mouseState.MiddleButton == ButtonState.Released)
+                    if (!config.HoldToMoveMenu.IsDown())
                         toolMenuUi.MiddleMouseReleased(currentMouseX, currentMouseY);
 
                     // Do our hover event.
                     toolMenuUi.DoHover(currentMouseX, currentMouseY);
 
-                    // toolMenuUi.middleMouseHeld((int)MathF.Round(mouseState.X * Game1.options.uiScale), (int)MathF.Round(mouseState.X * Game1.options.uiScale));
-
                     toolMenuUi.SetCursorHoverState(currentMouseX, currentMouseY);
 
-                    // We also need to manually call the click event, because by default, it'll only work if the bounds of the IClickableMenu contain the cursor.
+                    // We also need to manually call a click method, because by default, it'll only work if the bounds of the IClickableMenu contain the cursor.
                     // We specifically do not want the bounds to be expanded to include the side layer buttons, however, because that will be far too large a boundary.
-
-                    // TODO: Refactor this to only use config binding. This will require my own previousInputState thing, but that's not a big deal.
-                    if (mouseState.LeftButton == ButtonState.Pressed || config.HoldToDraw.IsDown())
+                    if ((mouseState.LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Released) || config.HoldToDraw.JustPressed())
                     {
                         toolMenuUi.ReceiveLeftClick(currentMouseX, currentMouseY);
                     }
@@ -283,36 +276,73 @@ namespace SmartBuilding
             {
                 if (!modState.BuildingMode)
                 {
-                    modState.BuildingMode = true;
-                    // We're entering building mode, so we create our UI.
-                    CreateToolUi();
-
-                    // First we save the current item stowing mode
-                    previousStowingMode = Game1.options.stowingMode;
-                    
-                    // Then we set it to off to avoid a strange stuttery drawing issue.
-                    Game1.options.stowingMode = Options.ItemStowingModes.Off;
+                    EnterBuildMode();
                 }
                 else
                 {
-                    modState.BuildingMode = false;
-                    
-                    // We're leaving building mode.
-                    KillToolUi();
-
-                    // And set our active tool and layer to none.
-                    modState.ActiveTool = null;
-                    modState.SelectedLayer = null;
-
-                    // Reset the state of the mod.
-                    modState.ResetState();
-                    
-                    // Then, finally, set the stowing mode back to what it used to be.
-                    Game1.options.stowingMode = previousStowingMode;
+                    LeaveBuildMode();
+                }
+            }
+            
+            // Handle our tool hotkeys.
+            if (modState.BuildingMode)
+            {
+                // We're in building mode, but we need to check to see if our UI has been instantiated.
+                if (toolMenuUi != null)
+                {
+                    // It's not null, so we check to see if it's enabled.
+                    if (toolMenuUi.Enabled)
+                    {
+                        // It's enabled, so now we go through our tool hotkeys.
+                        if (config.DrawTool.JustPressed())
+                        {
+                            modState.ActiveTool = ButtonId.Draw;
+                        }
+                        
+                        if (config.EraseTool.JustPressed())
+                        {
+                            modState.ActiveTool = ButtonId.Erase;
+                        }
+                        
+                        if (config.FilledRectangleTool.JustPressed())
+                        {
+                            modState.ActiveTool = ButtonId.FilledRectangle;
+                        }
+                        
+                        if (config.InsertTool.JustPressed())
+                        {
+                            modState.ActiveTool = ButtonId.Insert;
+                        }
+                        
+                        // Now we only want and need to go through our layer hotkeys if the active tool is the eraser.
+                        if (modState.ActiveTool == ButtonId.Erase)
+                        {
+                            // It is, so we go through them.
+                            if (config.DrawnLayer.JustPressed())
+                            {
+                                modState.SelectedLayer = TileFeature.Drawn;
+                            }
+                            
+                            if (config.ObjectLayer.JustPressed())
+                            {
+                                modState.SelectedLayer = TileFeature.Object;
+                            }
+                            
+                            if (config.FloorLayer.JustPressed())
+                            {
+                                modState.SelectedLayer = TileFeature.TerrainFeature;
+                            }
+                            
+                            if (config.FurnitureLayer.JustPressed())
+                            {
+                                modState.SelectedLayer = TileFeature.Furniture;
+                            }
+                        }
+                    }
                 }
             }
 
-            // If the player is drawing placeables in the world. 
+            // If the player is attempting to draw placeables in the world. 
             if (config.HoldToDraw.IsDown())
             {
                 if (modState.BuildingMode)
@@ -321,7 +351,7 @@ namespace SmartBuilding
                     if (!modState.BlockMouseInteractions && !gameToolbar.isWithinBounds(currentMouseX, currentMouseY))
                     {
                         // First, we need to make sure there even is a tool active.
-                        if (modState.ActiveTool.HasValue)
+                        if (modState.ActiveTool != ButtonId.None)
                         {
                             // There is, so we want to determine exactly which tool we're working with.
                             switch (modState.ActiveTool)
@@ -334,11 +364,11 @@ namespace SmartBuilding
                                     modState.AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, this);
                                     break;
                                 case ButtonId.Erase:
-                                    if (modState.SelectedLayer.HasValue)
-                                    {
-                                        worldUtils.DemolishOnTile(Game1.currentCursorTile, modState.SelectedLayer.Value);
+                                    // if (modState.SelectedLayer.HasValue)
+                                    // {
+                                        worldUtils.DemolishOnTile(Game1.currentCursorTile, modState.SelectedLayer);
                                         modState.EraseTile(Game1.currentCursorTile, this);
-                                    }
+                                    // }
                                     break;
                                 case ButtonId.FilledRectangle:
                                     // This is a split method and is hideous, but this is the best I can think of for now.
@@ -366,7 +396,8 @@ namespace SmartBuilding
             }
             else if (config.HoldToDraw.GetState() == SButtonState.Released)
             {
-                if (modState.ActiveTool.HasValue)
+                // We don't care to do this if there's no tool active.
+                if (modState.ActiveTool != ButtonId.None)
                 {
                     if (modState.ActiveTool == ButtonId.FilledRectangle)
                     {
@@ -394,7 +425,39 @@ namespace SmartBuilding
                 //CurrentlyDrawing = false;
             }
         }
-        
+
+        private void EnterBuildMode()
+        {
+
+            modState.BuildingMode = true;
+            // We're entering building mode, so we create our UI.
+            CreateToolUi();
+
+            // First we save the current item stowing mode
+            previousStowingMode = Game1.options.stowingMode;
+
+            // Then we set it to off to avoid a strange stuttery drawing issue.
+            Game1.options.stowingMode = Options.ItemStowingModes.Off;
+        }
+
+        private void LeaveBuildMode()
+        {
+            modState.BuildingMode = false;
+
+            // Kill our UI.
+            KillToolUi();
+
+            // And set our active tool and layer to none.
+            modState.ActiveTool = ButtonId.None;
+            modState.SelectedLayer = TileFeature.None;
+
+            // Reset the state of the mod.
+            modState.ResetState();
+
+            // Then, finally, set the stowing mode back to what it used to be.
+            Game1.options.stowingMode = previousStowingMode;
+        }
+
         /// <summary>
         /// SMAPI's <see cref="IDisplayEvents.RenderedWorld"/> event.
         /// </summary>
@@ -612,7 +675,7 @@ namespace SmartBuilding
                 {
                     if (modInfo.Manifest.Version.IsOlderThan("1.4.3"))
                     {
-                        logger.Log("Installed version of DGA is too low. Please update to DGA v1.4.3.");
+                        logger.Log("Installed version of DGA is too low. Please update to DGA v1.4.3 or higher.");
                         dgaApi = null;
                     }
                     
@@ -659,14 +722,92 @@ namespace SmartBuilding
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_EnterBuildMode(),
                 getValue: () => config.EngageBuildMode,
-                setValue: value => config.EngageBuildMode = value);
+                setValue: value => config.EngageBuildMode = value
+                );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDraw(),
                 getValue: () => config.HoldToDraw,
-                setValue: value => config.HoldToDraw = value);
+                setValue: value => config.HoldToDraw = value
+                );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToMoveUi(),
+                getValue: () => config.HoldToMoveMenu,
+                setValue: value => config.HoldToMoveMenu = value
+                );
 
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+            
+            configMenuApi.AddSectionTitle(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_OptionalKeybinds_Title()
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawTool(),
+                getValue: () => config.DrawTool,
+                setValue: value => config.DrawTool = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_EraseTool(),
+                getValue: () => config.EraseTool,
+                setValue: value => config.EraseTool = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FilledRectangleTool(),
+                getValue: () => config.FilledRectangleTool,
+                setValue: value => config.FilledRectangleTool = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_InsertTool(),
+                getValue: () => config.InsertTool,
+                setValue: value => config.InsertTool = value
+            );
+            
+            ////////
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawnLayer(),
+                getValue: () => config.DrawnLayer,
+                setValue: value => config.DrawnLayer = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_ObjectLayer(),
+                getValue: () => config.ObjectLayer,
+                setValue: value => config.ObjectLayer = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FloorLayer(),
+                getValue: () => config.FloorLayer,
+                setValue: value => config.FloorLayer = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FurnitureLayer(),
+                getValue: () => config.FurnitureLayer,
+                setValue: value => config.FurnitureLayer = value
+            );
+            
+            /////////
             configMenuApi.AddParagraph(
                 mod: ModManifest,
                 text: () => "" // This is purely for spacing.

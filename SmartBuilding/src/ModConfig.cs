@@ -9,6 +9,17 @@ namespace SmartBuilding
     {
         public KeybindList EngageBuildMode = KeybindList.Parse("LeftShift+B");
         public KeybindList HoldToDraw = KeybindList.Parse("MouseLeft");
+        public KeybindList HoldToMoveMenu = KeybindList.Parse("MouseMiddle");
+        // Optional tool hotkeys
+        public KeybindList DrawTool = KeybindList.Parse("");
+        public KeybindList EraseTool = KeybindList.Parse("");
+        public KeybindList FilledRectangleTool = KeybindList.Parse("");
+        public KeybindList InsertTool = KeybindList.Parse("");
+        // Optional layer hotkeys
+        public KeybindList DrawnLayer = KeybindList.Parse("");
+        public KeybindList ObjectLayer = KeybindList.Parse("");
+        public KeybindList FloorLayer = KeybindList.Parse("");
+        public KeybindList FurnitureLayer = KeybindList.Parse("");
         // public KeybindList HoldToDrawRectangle = KeybindList.Parse("LeftAlt");
         // public KeybindList HoldToErase = KeybindList.Parse("LeftShift");
         // public KeybindList HoldToInsert = KeybindList.Parse("LeftControl");

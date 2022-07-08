@@ -13,32 +13,23 @@ namespace SmartBuilding
     public class ModState
     {
         private Logger logger;
-        
         private bool inBuildMode = false;
         private bool blockMouseInteractions = false;
-        private ButtonId? activeTool;
-        private TileFeature? selectedLayer;
+        private ButtonId activeTool = ButtonId.None;
+        private TileFeature selectedLayer = TileFeature.None;
         private PlayerUtils playerUtils;
         private IdentificationUtils identificationUtils;
         private WorldUtils worldUtils;
         private PlacementUtils placementUtils;
         private bool buildingMode;
         
-        // All of our tile variables.
+        // All of our drawing variables.
         private Dictionary<Vector2, ItemInfo> tilesSelected = new Dictionary<Vector2, ItemInfo>();
         private Vector2? startTile = null;
         private Vector2? endTile = null;
         private List<Vector2> rectTiles = new List<Vector2>();
         private Item rectangleItem;
-        public Item RectangleItem
-        {
-            get { return rectangleItem; }
-            set { rectangleItem = value; /*?? throw new ArgumentNullException(nameof(value));*/ }
-        }
-        private bool currentlyDrawing;
-        private bool currentlyErasing;
-        private bool currentlyPlacing;
-
+        
         #region Properties
         
         public bool BuildingMode
@@ -83,22 +74,19 @@ namespace SmartBuilding
             set { endTile = value; }
         }
         
-        private bool CurrentlyDrawing
+        public Item RectangleItem
         {
-            get { return currentlyDrawing; }
-            set { currentlyDrawing = value; }
+            get { return rectangleItem; }
+            set { rectangleItem = value; /*?? throw new ArgumentNullException(nameof(value));*/ }
         }
-
-        private bool CurrentlyErasing
+        
+        public TileFeature SelectedLayer
         {
-            get { return currentlyErasing; }
-            set { currentlyErasing = value; }
-        }
-
-        private bool CurrentlyPlacing
-        {
-            get { return currentlyPlacing; }
-            set { currentlyPlacing = value; }
+            get => selectedLayer;
+            set
+            {
+                selectedLayer = value;
+            }
         }
         
         #endregion
@@ -112,14 +100,7 @@ namespace SmartBuilding
             this.placementUtils = placementUtils;
         }
         
-        public TileFeature? SelectedLayer
-        {
-            get => selectedLayer;
-            set
-            {
-                selectedLayer = value;
-            }
-        }
+        
         
         public void EnterBuildMode()
         {
@@ -128,10 +109,10 @@ namespace SmartBuilding
 
         public void LeaveBuildMode()
         {
-            ActiveTool = null;
+            ActiveTool = ButtonId.None;
         }
 
-        public ButtonId? ActiveTool
+        public ButtonId ActiveTool
         {
             get { return activeTool; }
             set { activeTool = value; }
@@ -168,9 +149,6 @@ namespace SmartBuilding
             
             // Reset all of our bools.
             buildingMode = false;
-            currentlyDrawing = false;
-            currentlyErasing = false;
-            currentlyPlacing = false;
             blockMouseInteractions = false;
             
             // And reset our Harmony patch bools.

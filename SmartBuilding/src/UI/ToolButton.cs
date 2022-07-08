@@ -76,7 +76,7 @@ namespace SmartBuilding.UI
                 b.Draw(Component.texture, new Vector2(Component.bounds.X, Component.bounds.Y), Component.sourceRect, CurrentOverlayColour, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             else
             {
-                if (modState.ActiveTool.HasValue)
+                if (modState.ActiveTool != ButtonId.None)
                 {
                     if (modState.ActiveTool.Equals(ButtonId.Erase))
                     {
@@ -93,9 +93,9 @@ namespace SmartBuilding.UI
 
             if (Type == ButtonType.Tool)
             {
-                if (modState.ActiveTool.HasValue)
+                if (modState.ActiveTool != ButtonId.None)
                 {
-                    if (Id.Equals(modState.ActiveTool.Value))
+                    if (Id.Equals(modState.ActiveTool))
                     {
                         b.Draw(
                             Game1.mouseCursors,
@@ -113,7 +113,7 @@ namespace SmartBuilding.UI
 
             if (Type == ButtonType.Layer)
             {
-                if (modState.SelectedLayer.HasValue)
+                if (modState.ActiveTool != ButtonId.None)
                 {
                     // b.Draw(
                     //     Game1.mouseCursors,
@@ -126,7 +126,7 @@ namespace SmartBuilding.UI
                     //     SpriteEffects.None,
                     //     0f);
 
-                    if (LayerToTarget.Equals(modState.SelectedLayer.Value))
+                    if (LayerToTarget.Equals(modState.SelectedLayer))
                     {
                         b.Draw(
                             Game1.mouseCursors,

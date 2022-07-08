@@ -25,6 +25,11 @@
         /// <summary>
         /// This is isn't a tile feature in the world, but a virtual drawn tile before being built.
         /// </summary>
-        Drawn
+        Drawn,
+        
+        /// <summary>
+        /// In place of null.
+        /// </summary>
+        None
     }
 }

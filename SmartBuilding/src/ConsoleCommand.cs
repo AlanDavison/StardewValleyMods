@@ -27,19 +27,6 @@ namespace SmartBuilding
             this.identificationUtils = identificationUtils;
         }
 
-        /// <summary>
-        /// Both arguments are ignored.
-        /// </summary>
-        /// <param name="command">Ignored.</param>
-        /// <param name="args">Ignored.</param>
-        public void BindingUI(string command, string[] args)
-        {
-            Rectangle viewport = Game1.uiViewport;
-            // BindingUi binding = new BindingUi(viewport.X, viewport.Y, viewport.Width, viewport.Height, texture, true);
-
-            // Game1.activeClickableMenu = binding;
-        }
-
         public void IdentifyItemsCommand(string command, string[] args)
         {
             if (Game1.player.Items != null && Game1.player.Items.Count > 0)

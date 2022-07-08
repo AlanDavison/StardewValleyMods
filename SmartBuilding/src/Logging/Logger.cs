@@ -18,25 +18,11 @@ namespace SmartBuilding.Logging
             this.translationHelper = translationHelper;
         }
 
-        // public void Log(string logMessage, LogLevel logLevel = LogLevel.Info, Action? erroringMethod = null)
-        // {
-        //     if (erroringMethod == null)
-        //     {
-        //         
-        //     }
-        //     else
-        //     {
-        //         monitor.Log($"Error in method: {erroringMethod.Method.Name}");
-        //         monitor.Log($"");
-        //     }
-        // }
-
         public void Log(string logMessage, LogLevel logLevel = LogLevel.Info)
         {
-            // First, we want to log the message in whichever language we're using.
             monitor.Log(logMessage, logLevel);
 
-            // Then, if it's a high priority LogLevel, we display it on the screen.
+            // If it's a high priority LogLevel, we display it on the screen.
             if (logLevel >= LogLevel.Warn)
             {
                 HUDMessage message = new HUDMessage(logMessage, 2);

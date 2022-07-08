@@ -75,7 +75,7 @@ namespace SmartBuilding.UI
             if (!enabled)
                 return;
 
-            if (modState.ActiveTool.HasValue)
+            if (modState.ActiveTool != ButtonId.None)
             {
                 if (modState.ActiveTool == ButtonId.Erase)
                 {
@@ -280,15 +280,15 @@ namespace SmartBuilding.UI
                 {
                     if (button.Type == ButtonType.Layer)
                     {
-                        if (modState.ActiveTool.HasValue)
+                        if (modState.ActiveTool != ButtonId.None)
                         {
-                            if (modState.ActiveTool.Value == ButtonId.Erase)
+                            if (modState.ActiveTool == ButtonId.Erase)
                                 button.ButtonAction();
                         }
                     }
                     else
                     {
-                        modState.SelectedLayer = null;
+                        modState.SelectedLayer = TileFeature.None;
                         button.ButtonAction();
                     }
                 }
@@ -486,7 +486,7 @@ namespace SmartBuilding.UI
                     // If it's a layer button, we only want to do anything if erase is the currently selected tool.
                     if (button.Type == ButtonType.Layer)
                     {
-                        if (modState.ActiveTool.HasValue && modState.ActiveTool == ButtonId.Erase)
+                        if (modState.ActiveTool != ButtonId.None && modState.ActiveTool == ButtonId.Erase)
                         {
                             // logger.Log($"Button {button.Id} hovered.");
                             button.CurrentOverlayColour = Color.Gray;
