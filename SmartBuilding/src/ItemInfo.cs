@@ -5,7 +5,7 @@ namespace SmartBuilding
     /// <summary>
     /// Basic Item metadata.
     /// </summary>
-    struct ItemInfo
+    public struct ItemInfo
     {
         /// <summary>
         /// A reference to the item to be placed.
@@ -21,5 +21,10 @@ namespace SmartBuilding
         /// Whether this item is destined to be inserted into a machine.
         /// </summary>
         public bool ToBeInserted;
+
+        /// <summary>
+        /// Whether this item is a DGA item.
+        /// </summary>
+        public bool IsDgaItem;
     }
 }
