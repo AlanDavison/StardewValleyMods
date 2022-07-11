@@ -107,6 +107,11 @@ namespace SmartBuilding.Utilities
             // Tools do not have a .Name property.
             if (item is Tool)
                 return ItemType.NotPlaceable;
+
+            // The only thing I know of to have a category of zero and a name of Chest is the starting
+            // seed packet, and picking that up with Smart Building is bad.
+            if (item.Category == 0 && item.Name.Equals("Chest"))
+                return ItemType.NotPlaceable;
             
             string itemName = item.Name;
 

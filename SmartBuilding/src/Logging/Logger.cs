@@ -18,12 +18,12 @@ namespace SmartBuilding.Logging
             this.translationHelper = translationHelper;
         }
 
-        public void Log(string logMessage, LogLevel logLevel = LogLevel.Info)
+        public void Log(string logMessage, LogLevel logLevel = LogLevel.Info, bool shouldAlwaysDisplayInHud = false)
         {
             monitor.Log(logMessage, logLevel);
 
-            // If it's a high priority LogLevel, we display it on the screen.
-            if (logLevel >= LogLevel.Warn)
+            // If it's a high priority LogLevel or it's marked as should be displayed, we display it on the screen.
+            if (logLevel >= LogLevel.Warn || shouldAlwaysDisplayInHud)
             {
                 HUDMessage message = new HUDMessage(logMessage, 2);
 

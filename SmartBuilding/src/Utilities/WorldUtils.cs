@@ -502,14 +502,22 @@ namespace SmartBuilding.Utilities
             {
                 if (here.objects.ContainsKey(tile))
                 {
-                    // We have an object in this tile, so we want to try to figure out what it is.
                     SObject o = here.objects[tile];
+
+                    // Firstly, we need to determine if the object has a category of zero, and a name of Chest.
+                    if (o.Category == 0 && o.Name.Equals("Chest"))
+                        return; // It does, so we return immediately.
+                    
+                    // We have an object in this tile, so we want to try to figure out what it is.
                     itemToDestroy = Utility.fuzzyItemSearch(o.Name);
 
                     type = identificationUtils.IdentifyItemType((SObject)itemToDestroy);
 
-                    // Chests need special handling because they can store items.
-                    if (type == ItemType.Chest)
+                    if (type == ItemType.NotPlaceable)
+                    {
+                        // If we're here, this means this is a specifically blacklisted item, and so we simply do nothing.
+                    }
+                    else if (type == ItemType.Chest) // Chests need special handling because they can store items.
                     {
                         // We're double checking at this point for safety. I want to be extra careful with chests.
                         if (here.objects.ContainsKey(tile))
@@ -523,6 +531,10 @@ namespace SmartBuilding.Utilities
                                 (o as Chest).destroyAndDropContents(tile * 64, here);
                                 Game1.player.addItemByMenuIfNecessary(chest.getOne());
                                 here.objects.Remove(tile);
+                            }
+                            else
+                            {
+                                logger.Log(I18n.SmartBuilding_Message_CheatyOptions_CanPickUpChests_Disabled(), LogLevel.Trace, true);
                             }
                         }
                     }
@@ -540,6 +552,10 @@ namespace SmartBuilding.Utilities
                                 (o as Chest).destroyAndDropContents(tile * 64, here);
                                 Game1.player.addItemByMenuIfNecessary(chest.getOne());
                                 here.objects.Remove(tile);
+                            }
+                            else
+                            {
+                                logger.Log(I18n.SmartBuilding_Message_CheatyOptions_CanPickUpChests_Disabled(), LogLevel.Trace, true);
                             }
                         }
                     }

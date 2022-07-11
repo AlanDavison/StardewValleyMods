@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SmartBuilding.APIs;
 using SmartBuilding.Logging;
@@ -7,6 +10,7 @@ using SmartBuilding.Utilities;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
 using xTile.Dimensions;
 
 namespace SmartBuilding
@@ -44,6 +48,60 @@ namespace SmartBuilding
                         {
                             // This did not return null, so we know this is a DGA item.
                             logger.Log($"{item.Name} is a DGA item.");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void IdentifyCursorTarget(string command, string[] args)
+        {
+            GameLocation here = Game1.currentLocation;
+            Vector2 targetTile = Game1.currentCursorTile;
+
+            if (here.objects.ContainsKey(targetTile))
+            {
+                var obj = here.objects[targetTile];
+                logger.Log($"Object under cursor's name: {obj.Name}");
+                logger.Log($"Object under cursor's display name: {obj.DisplayName}");
+                logger.Log($"Object under cursor's ParentSheetIndex: {obj.ParentSheetIndex}");
+                logger.Log($"Object under cursor's Type: {obj.Type}");
+                logger.Log($"Object under cursor's Category: {obj.Category}");
+                logger.Log($"Object under cursor's Fragility: {obj.Fragility}");
+                logger.Log($"Object under cursor's isSpawnedObject: {obj.isSpawnedObject}");
+                logger.Log($"Object under cursor's canBeGrabbed: {obj.CanBeGrabbed}");
+
+                if (obj is Chest newChest)
+                {
+                    logger.Log($"Object is giftBox: {newChest.giftbox}");
+                }
+
+                foreach (var data in obj.modData)
+                {
+                    foreach (var key in data.Keys)
+                    {
+                        foreach (var value in data.Values)
+                        {
+                            logger.Log($"Key: {key}, {value}");
+                        }
+                    }
+                }
+            }
+
+            if (here.terrainFeatures.ContainsKey(targetTile))
+            {
+                TerrainFeature feature = here.terrainFeatures[targetTile];
+                logger.Log($"TerrainFeature under cursor's modData: {feature.modData}");
+                logger.Log($"TerrainFeature under cursor's isPassable: {feature.isPassable()}");
+                logger.Log($"TerrainFeature under cursor's isActionable: {feature.isActionable()}");
+                
+                foreach (var data in feature.modData)
+                {
+                    foreach (var key in data.Keys)
+                    {
+                        foreach (var value in data.Values)
+                        {
+                            logger.Log($"Key: {key}, {value}");
                         }
                     }
                 }

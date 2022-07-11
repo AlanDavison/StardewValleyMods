@@ -32,6 +32,8 @@ namespace SmartBuilding.Utilities
             // Right now, this is only applicable for crab pots.
             if (config.CrabPotsInAnyWaterTile)
                 return true;
+            else
+                logger.Log(I18n.SmartBuilding_Message_CheatyOptions_CrabPotsInAnyWaterTile_Disabled(), LogLevel.Trace, true);
 
             // We create our list of cardinal and ordinal directions.
             List<Vector2> directions = new List<Vector2>()
@@ -111,11 +113,18 @@ namespace SmartBuilding.Utilities
                         TerrainFeature tf = Game1.currentLocation.terrainFeatures[v];
 
                         // Then we check to see if it is, indeed, Flooring.
-                        if (tf != null && tf is Flooring)
+                        if (tf != null && tf is Flooring floor)
                         {
-                            // If it is, and if the setting to replace floors with floors is enabled, we return true.
+                            // We now know we're dealing with flooring, so if the floor replacement
+                            // setting is enabled, we move on to our other checks.
                             if (config.EnableReplacingFloors)
-                                return true;
+                            {
+                                // If the names aren't the same, we return true, because we want to replace. Otherwise, false.
+                                if (!identificationUtils.GetFlooringNameFromId(floor.whichFloor).Equals(i.Name))
+                                    return true;
+                                else 
+                                    return false;
+                            }
                         }
 
                         return false;
@@ -145,7 +154,10 @@ namespace SmartBuilding.Utilities
                 case ItemType.Fertilizer:
                     // If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
                     if (!config.EnableCropFertilizers)
+                    {
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableCropFertilisers_Disabled(), LogLevel.Trace, true);
                         return false;
+                    }
 
                     // If this is a More Fertilizers fertilizer, defer to More Fertilizer's placement logic.
                     if (i is SObject obj && moreFertilizersApi?.CanPlaceFertilizer(obj, here, v) == true)
@@ -186,7 +198,10 @@ namespace SmartBuilding.Utilities
                 case ItemType.TreeFertilizer:
                     // If the setting to enable tree fertilizers is off, return false to ensure they can't be added to the queue.
                     if (!config.EnableTreeFertilizers)
+                    {
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableTreeFertilisers_Disabled(), LogLevel.Trace, true);
                         return false;
+                    }
 
                     // First, we determine if there's a TerrainFeature here.
                     if (here.terrainFeatures.ContainsKey(v))
@@ -209,7 +224,10 @@ namespace SmartBuilding.Utilities
                 case ItemType.Seed:
                     // If the setting to enable crops is off, return false to ensure they can't be added to the queue.
                     if (!config.EnablePlantingCrops)
+                    {
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnablePlantingCrops_Disabled(), LogLevel.Trace, true);
                         return false;
+                    }
 
                     // If there's an object present, we don't want to place a seed.
                     // It is technically valid, but there's no reason someone would want to.
@@ -256,7 +274,10 @@ namespace SmartBuilding.Utilities
                 case ItemType.Tapper:
                     // If the setting to enable tree tappers is off, we return false here to ensure nothing further happens.
                     if (!config.EnableTreeTappers)
+                    {
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableTreeTappers_Disabled(), LogLevel.Trace, true);
                         return false;
+                    }
 
                     // First, we need to check if there's a TerrainFeature here.
                     if (here.terrainFeatures.ContainsKey(v))
@@ -284,8 +305,19 @@ namespace SmartBuilding.Utilities
                         // We know there's an object at these coordinates, so we grab a reference.
                         SObject o = here.objects[v];
 
-                        // Then we return true if this is both a fence, and replacing fences is enabled.
-                        return identificationUtils.IsTypeOfObject(o, ItemType.Fence) && config.EnableReplacingFences;
+                        // We first need to determine if it's a fence.
+                        if (identificationUtils.IsTypeOfObject(o, ItemType.Fence))
+                        {
+                            // If it is, we only need to continue if the fence replacement setting is on.
+                            if (!config.EnableReplacingFences)
+                                return false;
+
+                            // If they're the same fences, we return false.
+                            if (o.Name.Equals(i.Name))
+                                return false;
+                            else
+                                return true;
+                        }
                     }
                     else if (here.terrainFeatures.ContainsKey(v))
                     {

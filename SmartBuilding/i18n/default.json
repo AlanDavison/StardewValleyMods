@@ -44,6 +44,7 @@
 
   "smart-building.settings.optional-toggles.title": "Optional Toggles",
   "smart-building.settings.optional-toggles.show-build-queue": "Show build queue",
+  "smart-building.settings.optional-toggles.instantly-build": "Instantly build",
   "smart-building.settings.optional-toggles.can-destroy-chests": "Can pick up chests",
   "smart-building.settings.optional-toggles.can-destroy-chests.tooltip": "WARNING: This will drop all contained items on the ground.",
   "smart-building.settings.optional-toggles.more-lax-floor-placement": "More lax floor placement",
@@ -116,6 +117,14 @@
   "smart-building.message.storage-furniture.adding-item": "Adding item",
   "smart-building.message.storage-furniture.retrieval-tip": "You can use the name and (primarily) ParentSheetId to help get the items back if something goes wrong.",
   "smart-buikding.message.trying-to-grab": "Trying to grab",
+
+  "smart-building.message.cheaty-options.crab-pots-in-any-water-tile.disabled": "Allowing crab pots in any water tile is disabled in the mod's settings.",
+  "smart-building.message.cheaty-options.enable-planting-crops.disabled": "Crop planting is disabled in the mod's settings.",
+  "smart-building.message.cheaty-options.enable-crop-fertilisers.disabled": "Crop fertilisation is disabled in the mod's settings.",
+  "smart-building.message.cheaty-options.enable-tree-fertilisers.disabled": "Tree fertilisation is disabled in the mod's settings.",
+  "smart-building.message.cheaty-options.enable-tree-tappers.disabled": "Tree tappers are disabled in the mod's settings.",
+  "smart-building.message.cheaty-options.enable-inserting-items-into-machines.disabled": "Inserting items into machines is disabled in the mod's settings.",
+  "smart-building.message.cheaty-options.can-pick-up-chests.disabled": "Picking up chests is disabled in the mod's settings.",
 
   // Commands
   "smart-building.commands.debug.sb-test": "If you need to read this, it is not for you. Here be dragons.",

@@ -27,6 +27,7 @@ namespace SmartBuilding
         // public KeybindList PickUpObject = KeybindList.Parse("Delete");
         // public KeybindList PickUpFloor = KeybindList.Parse("End");
         // public KeybindList PickUpFurniture = KeybindList.Parse("Home");
+        public bool InstantlyBuild = false;
         public bool ShowBuildQueue = true;
         public bool CanDestroyChests = false;
         public bool CrabPotsInAnyWaterTile = false;

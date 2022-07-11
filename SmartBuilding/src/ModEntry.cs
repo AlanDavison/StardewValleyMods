@@ -54,7 +54,7 @@ namespace SmartBuilding
         private ToolMenu toolMenuUi;
 
         // Debug stuff to make my life less painful when going through my pre-release checklist.
-        private ConsoleCommand command = null!;
+        private ConsoleCommand commands = null!;
 
         // Mod integrations.
         private IMoreFertilizersAPI? moreFertilizersApi;
@@ -65,7 +65,7 @@ namespace SmartBuilding
         private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
         {
             if (e.Name.IsEquivalentTo("Mods/SmartBuilding/ToolButtons"))
-                e.LoadFromModFile<Texture2D>("assets/Buttons.png", AssetLoadPriority.Medium);
+                e.LoadFromModFile<Texture2D>("assets/Buttons.png", AssetLoadPriority.Low);
 
             // if (e.Name.IsEquivalentTo("Mods/SmartBuilding/WindowSkin"))
             //     e.LoadFromModFile<Texture2D>("assets/WindowSkin.png", AssetLoadPriority.Medium);
@@ -106,11 +106,11 @@ namespace SmartBuilding
                 LeaveBuildMode();
             };
 
-            // ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
-
+            ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
+            
             // Load up our textures.
-            toolButtonsTexture = ModEntry.helper.ModContent.Load<Texture2D>(Path.Combine("assets", "Buttons.png"));
-            itemBox = ModEntry.helper.GameContent.Load<Texture2D>("LooseSprites/tailoring");
+            toolButtonsTexture = helper.GameContent.Load<Texture2D>("Mods/SmartBuilding/ToolButtons");
+            itemBox = helper.GameContent.Load<Texture2D>("LooseSprites/tailoring");
 
             Harmony harmony = new Harmony(ModManifest.UniqueID);
 
@@ -146,7 +146,7 @@ namespace SmartBuilding
                 if (menu is Toolbar)
                     gameToolbar = (Toolbar)menu;
             }
-            
+
             // Then we register with GMCM.
             RegisterWithGmcm();
             
@@ -163,9 +163,10 @@ namespace SmartBuilding
             buttonActions = new ButtonActions(this, modState); // Ew, no. Fix this ugly nonsense later.
             
             // Set up our console commands.
-            command = new ConsoleCommand(logger, this, dgaApi, identificationUtils);
-            this.Helper.ConsoleCommands.Add("sb_test", I18n.SmartBuilding_Commands_Debug_SbTest(), command.TestCommand);
-            this.Helper.ConsoleCommands.Add("sb_identify_all_items", I18n.SmartBuilding_Commands_Debug_SbIdentifyItems(), command.IdentifyItemsCommand);
+            commands = new ConsoleCommand(logger, this, dgaApi, identificationUtils);
+            this.Helper.ConsoleCommands.Add("sb_test", I18n.SmartBuilding_Commands_Debug_SbTest(), commands.TestCommand);
+            this.Helper.ConsoleCommands.Add("sb_identify_all_items", I18n.SmartBuilding_Commands_Debug_SbIdentifyItems(), commands.IdentifyItemsCommand);
+            this.Helper.ConsoleCommands.Add("sb_identify_cursor_target", "Identify targets under the cursor.", commands.IdentifyCursorTarget);
             
             // Then get the initial state of the item stowing mode setting.
             previousStowingMode = Game1.options.stowingMode;
@@ -362,6 +363,8 @@ namespace SmartBuilding
                                         return;
 
                                     modState.AddTile(Game1.player.CurrentItem, Game1.currentCursorTile, this);
+                                    if (config.InstantlyBuild)
+                                        buttonActions.ConfirmBuildClicked();
                                     break;
                                 case ButtonId.Erase:
                                     // if (modState.SelectedLayer.HasValue)
@@ -777,8 +780,6 @@ namespace SmartBuilding
                 setValue: value => config.InsertTool = value
             );
             
-            ////////
-            
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawnLayer(),
@@ -807,7 +808,6 @@ namespace SmartBuilding
                 setValue: value => config.FurnitureLayer = value
             );
             
-            /////////
             configMenuApi.AddParagraph(
                 mod: ModManifest,
                 text: () => "" // This is purely for spacing.
@@ -823,6 +823,13 @@ namespace SmartBuilding
                 name: () => I18n.SmartBuilding_Settings_OptionalToggles_ShowBuildQueue(),
                 getValue: () => config.ShowBuildQueue,
                 setValue: value => config.ShowBuildQueue = value
+            );
+            
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalToggles_InstantlyBuild(),
+                getValue: () => config.InstantlyBuild,
+                setValue: value => config.InstantlyBuild = value
             );
 
             configMenuApi.AddBoolOption(
@@ -1110,6 +1117,13 @@ namespace SmartBuilding
             // If the player isn't holding an item, we do nothing.
             if (Game1.player.CurrentItem == null)
                 return;
+            
+            // If inserting items is disabled, we do nothing.
+            if (!config.EnableInsertingItemsIntoMachines)
+            {
+                logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableInsertingItemsIntoMachines_Disabled(), LogLevel.Trace, true);
+                return;
+            }
 
             // There is no queue for item insertion, so we simply try to insert.
             modState.TryToInsertHere(v, item, this);
