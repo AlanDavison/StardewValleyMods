@@ -441,7 +441,7 @@ namespace SmartBuilding.Utilities
                             //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
                             // We know it's a fence by type, but we need to make sure it isn't a gate, and to ensure it isn't already "holding" anything.
-                            if (!o.Name.Equals("Gate") && o.heldObject != null)
+                            if (o.Name.Equals("Gate") && o.heldObject != null)
                             {
                                 // There's something in there, so we need to refund the torch.
                                 playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
@@ -507,6 +507,10 @@ namespace SmartBuilding.Utilities
                     // Firstly, we need to determine if the object has a category of zero, and a name of Chest.
                     if (o.Category == 0 && o.Name.Equals("Chest"))
                         return; // It does, so we return immediately.
+                    
+                    // Then we want to determine if the object contains modData from Market Day, because we don't want to affect their chests.
+                    if (identificationUtils.DoesObjectContainModData(o, "ceruleandeep.MarketDay"))
+                        return;
                     
                     // We have an object in this tile, so we want to try to figure out what it is.
                     itemToDestroy = Utility.fuzzyItemSearch(o.Name);
@@ -639,6 +643,10 @@ namespace SmartBuilding.Utilities
                 if (here.terrainFeatures.ContainsKey(tile))
                 {
                     TerrainFeature tf = here.terrainFeatures[tile];
+                    
+                    // We want to determine if the terrain feature contains modData from Market Day, because we don't want to affect their items.
+                    if (identificationUtils.DoesTerrainFeatureContainModData(tf, "ceruleandeep.MarketDay"))
+                        return;
 
                     // We only really want to be handling flooring when removing TerrainFeatures.
                     if (tf is Flooring)

@@ -41,13 +41,20 @@ namespace SmartBuilding
                 {
                     if (item != null)
                     {
-                        ItemType type = identificationUtils.IdentifyItemType(item as StardewValley.Object);
-                        logger.Log($"ItemType of {item.Name}: {type}.", LogLevel.Info);
-
-                        if (dgaApi.GetDGAItemId(item) != null)
+                        try
                         {
-                            // This did not return null, so we know this is a DGA item.
-                            logger.Log($"{item.Name} is a DGA item.");
+                            ItemType type = identificationUtils.IdentifyItemType(item as StardewValley.Object);
+                            logger.Log($"ItemType of {item.Name}: {type}.", LogLevel.Info);
+
+                            if (dgaApi?.GetDGAItemId(item) != null)
+                            {
+                                // This did not return null, so we know this is a DGA item.
+                                logger.Log($"{item.Name} is a DGA item.");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.Log($"{e.Message}");
                         }
                     }
                 }
@@ -383,6 +390,7 @@ namespace SmartBuilding
                         Utility.fuzzyItemSearch("Mahogany Seed", 10),
                         Utility.fuzzyItemSearch("Tapper", 10),
                         Utility.fuzzyItemSearch("Heavy Tapper", 10),
+                        Utility.fuzzyItemSearch("Tree Fertilizer", 100),
                     };
 
                     foreach (Item item in items)

@@ -41,8 +41,7 @@ namespace SmartBuilding
         public bool EnablePlacingStorageFurniture = false;
         // The cheesy zone.
         public bool EnablePlantingCrops = false;
-        public bool EnableCropFertilizers = false;
-        public bool EnableTreeFertilizers = false;
+        public bool EnableFertilizers = false;
         public bool EnableTreeTappers = false;
         public bool EnableInsertingItemsIntoMachines = false;
 		// Debug zone.

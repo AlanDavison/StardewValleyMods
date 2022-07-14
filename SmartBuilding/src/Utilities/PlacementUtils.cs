@@ -5,6 +5,7 @@ using SmartBuilding.Logging;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
+using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
 using SObject = StardewValley.Object;
 
@@ -85,7 +86,6 @@ namespace SmartBuilding.Utilities
                         // We know there's an object at these coordinates, so we grab a reference.
                         SObject o = here.objects[v];
 
-                        // Then we return true if it's a fence, because we want to place the torch on the fence.
                         if (identificationUtils.IsTypeOfObject(o, ItemType.Fence))
                         {
                             // It's a type of fence, but we also want to ensure that it isn't a gate.
@@ -117,6 +117,7 @@ namespace SmartBuilding.Utilities
                         {
                             // We now know we're dealing with flooring, so if the floor replacement
                             // setting is enabled, we move on to our other checks.
+                            
                             if (config.EnableReplacingFloors)
                             {
                                 // If the names aren't the same, we return true, because we want to replace. Otherwise, false.
@@ -124,6 +125,10 @@ namespace SmartBuilding.Utilities
                                     return true;
                                 else 
                                     return false;
+                            }
+                            else
+                            {
+                                logger.Log(I18n.SmartBuilding_Message_CheatyOptions_FloorReplacement_Disabled(), LogLevel.Trace, true);
                             }
                         }
 
@@ -147,15 +152,19 @@ namespace SmartBuilding.Utilities
                         }
                     }
 
+                    // Here, we want to display a message if the floor COULD be placed if the appropriate setting were enabled.
+                    if (!here.isTileLocationTotallyClearAndPlaceable(v) && !config.LessRestrictiveFloorPlacement)
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxFloorPlacement_Disabled(), LogLevel.Trace, true);
+                        
                     // At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
                     return config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
                 case ItemType.Chest:
                     goto case ItemType.Generic;
                 case ItemType.Fertilizer:
                     // If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
-                    if (!config.EnableCropFertilizers)
+                    if (!config.EnableFertilizers)
                     {
-                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableCropFertilisers_Disabled(), LogLevel.Trace, true);
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableFertilisers_Disabled(), LogLevel.Trace, true);
                         return false;
                     }
 
@@ -197,9 +206,9 @@ namespace SmartBuilding.Utilities
                     return false;
                 case ItemType.TreeFertilizer:
                     // If the setting to enable tree fertilizers is off, return false to ensure they can't be added to the queue.
-                    if (!config.EnableTreeFertilizers)
+                    if (!config.EnableFertilizers)
                     {
-                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableTreeFertilisers_Disabled(), LogLevel.Trace, true);
+                        logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableFertilisers_Disabled(), LogLevel.Trace, true);
                         return false;
                     }
 
@@ -253,12 +262,15 @@ namespace SmartBuilding.Utilities
                                     i,
                                     "CanPlantThisSeedHere"
                                 );
-
-                                return canPlant.Invoke<bool>(new[] { (object)hd, (int)v.X, (int)v.Y, false });
-
-                                // And we return false here if the reflection failed, because we couldn't determine plantability.
-                                logger.Log("Reflecting into DGA to determine seed plantability failed. Please DO NOT report this to spacechase0.", LogLevel.Error);
-                                return false;
+                                
+                                if (canPlant != null)
+                                    return canPlant.Invoke<bool>(new[] { (object)hd, (int)v.X, (int)v.Y, false });
+                                else
+                                {
+                                    // And we return false here if the reflection failed, because we couldn't determine plantability.
+                                    logger.Log("Reflecting into DGA to determine seed plantability failed. Please DO NOT report this to DGA's author.", LogLevel.Error);
+                                    return false;
+                                }
                             }
                             else
                             {
@@ -310,7 +322,11 @@ namespace SmartBuilding.Utilities
                         {
                             // If it is, we only need to continue if the fence replacement setting is on.
                             if (!config.EnableReplacingFences)
+                            {
+                                // And create our notification.
+                                logger.Log(I18n.SmartBuilding_Message_CheatyOptions_FenceReplacement_Disabled(), LogLevel.Trace, true);
                                 return false;
+                            }
 
                             // If they're the same fences, we return false.
                             if (o.Name.Equals(i.Name))
@@ -348,7 +364,11 @@ namespace SmartBuilding.Utilities
 
                     // If the setting for allowing storage furniture is off, we get the hell out.
                     if (!config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
+                    {
+                        logger.Log(I18n.SmartBuilding_Error_StorageFurniture_SettingIsOff(), LogLevel.Trace, true);
+                        
                         return false;
+                    }
 
                     if (config.LessRestrictiveFurniturePlacement)
                         return true;
@@ -356,27 +376,53 @@ namespace SmartBuilding.Utilities
                     {
                         return (i as StorageFurniture).canBePlacedHere(here, v);
                     }
+
+                    break;
                 case ItemType.TvFurniture:
                     if (config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                    {
                         return true;
+                    }
                     else
                     {
-                        return (i as TV).canBePlacedHere(here, v);
+                        if (!(i as TV).canBePlacedHere(here, v))
+                        {
+                            logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxFurniturePlacement_Disabled(), LogLevel.Trace, true);
+                            return false;
+                        }
+                        else
+                            return true;
                     }
                 case ItemType.BedFurniture:
                     if (config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
+                    {
                         return true;
+                    }
                     else
                     {
-                        return (i as BedFurniture).canBePlacedHere(here, v);
+                        if (!(i as BedFurniture).canBePlacedHere(here, v))
+                        {
+                            logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxFurniturePlacement_Disabled(), LogLevel.Trace, true);
+                            return false;
+                        }
+                        else
+                            return true;
                     }
                 case ItemType.GenericFurniture:
                     // In this place, we play fast and loose, and return true.
                     if (config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                    {
                         return true;
+                    }
                     else
                     {
-                        return (i as Furniture).canBePlacedHere(here, v);
+                        if (!(i as Furniture).canBePlacedHere(here, v))
+                        {
+                            logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxFurniturePlacement_Disabled(), LogLevel.Trace, true);
+                            return false;
+                        }
+                        else
+                            return true;
                     }
                 case ItemType.Generic:
                     GenericPlaceable: // A goto, I know, gross, but... it works, and is fine for now, until I split out detection logic into methods.
@@ -397,12 +443,24 @@ namespace SmartBuilding.Utilities
                                 // There is no object here, so we return true, as we should be able to place the object here.
                                 return true;
                             }
-
-                            // We could just fall through to vanilla logic again at this point, but that would be vaguely pointless, so we just return false.
-                            return false;
                         }
                     }
-                    return Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v);
+
+                    if (Game1.currentLocation.isTileLocationTotallyClearAndPlaceableIgnoreFloors(v))
+                    {
+                        // This is true, so we simply return true.
+
+                        return true;
+                    }
+                    else
+                    {
+                        // It's false, so we want to warn that placement would be possible if the correct setting were enabled, and there's no object in the tile.
+                        
+                        if (!here.objects.ContainsKey(v))
+                            logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxObjectPlacement_Disabled(), LogLevel.Trace, true);
+
+                        return false;
+                    }
             }
 
             // If the PlaceableType is somehow none of these, we want to be safe and return false.

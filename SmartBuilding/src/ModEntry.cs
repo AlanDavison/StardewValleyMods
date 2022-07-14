@@ -19,6 +19,7 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
+using Patches = SmartBuilding.HarmonyPatches.Patches;
 using SObject = StardewValley.Object;
 
 namespace SmartBuilding
@@ -41,8 +42,6 @@ namespace SmartBuilding
         private PlacementUtils placementUtils;
         private PlayerUtils playerUtils;
         private WorldUtils worldUtils;
-
-        private string betaVersion = "This is a prerelease beta version of Smart Building 1.7.x.";
 
         // UI gubbins
         private Texture2D itemBox = null!;
@@ -102,11 +101,20 @@ namespace SmartBuilding
             // If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
             ModEntry.helper.Events.Player.Warped += (sender, args) =>
             {
-                modState.ResetState();
                 LeaveBuildMode();
             };
 
-            ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
+            ModEntry.helper.Events.GameLoop.SaveLoaded += (sender, args) =>
+            {
+                LeaveBuildMode();
+            };
+
+            ModEntry.helper.Events.GameLoop.ReturnedToTitle += (sender, args) =>
+            {
+                LeaveBuildMode();
+            };
+
+                ModEntry.helper.Events.Content.AssetRequested += OnAssetRequested;
             
             // Load up our textures.
             toolButtonsTexture = helper.GameContent.Load<Texture2D>("Mods/SmartBuilding/ToolButtons");
@@ -431,7 +439,14 @@ namespace SmartBuilding
 
         private void EnterBuildMode()
         {
+            // If the world isn't ready, we return.
+            if (!Context.IsWorldReady)
+                return;
 
+            // If it's a festival, we return.
+            if (Game1.isFestival())
+                return;
+            
             modState.BuildingMode = true;
             // We're entering building mode, so we create our UI.
             CreateToolUi();
@@ -721,93 +736,32 @@ namespace SmartBuilding
                 text: () => I18n.SmartBuilding_Settings_Keybinds_Paragraph_GmcmWarning()
             );
 
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_EnterBuildMode(),
-                getValue: () => config.EngageBuildMode,
-                setValue: value => config.EngageBuildMode = value
-                );
-
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDraw(),
-                getValue: () => config.HoldToDraw,
-                setValue: value => config.HoldToDraw = value
-                );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToMoveUi(),
-                getValue: () => config.HoldToMoveMenu,
-                setValue: value => config.HoldToMoveMenu = value
-                );
+            RegisterMandatoryKeybinds(configMenuApi);
 
             configMenuApi.AddParagraph(
                 mod: ModManifest,
                 text: () => "" // This is purely for spacing.
             );
+            
+            configMenuApi.AddSectionTitle(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_OptionalToggles_Title()
+            );
+
+            RegisterToggleSettings(configMenuApi);
             
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
                 text: () => I18n.SmartBuilding_Settings_OptionalKeybinds_Title()
             );
             
-            configMenuApi.AddKeybindList(
+            RegisterOptionalKeybinds(configMenuApi);
+
+            configMenuApi.AddParagraph(
                 mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawTool(),
-                getValue: () => config.DrawTool,
-                setValue: value => config.DrawTool = value
+                text: () => "" // This is purely for spacing.
             );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_EraseTool(),
-                getValue: () => config.EraseTool,
-                setValue: value => config.EraseTool = value
-            );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FilledRectangleTool(),
-                getValue: () => config.FilledRectangleTool,
-                setValue: value => config.FilledRectangleTool = value
-            );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_InsertTool(),
-                getValue: () => config.InsertTool,
-                setValue: value => config.InsertTool = value
-            );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawnLayer(),
-                getValue: () => config.DrawnLayer,
-                setValue: value => config.DrawnLayer = value
-            );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_ObjectLayer(),
-                getValue: () => config.ObjectLayer,
-                setValue: value => config.ObjectLayer = value
-            );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FloorLayer(),
-                getValue: () => config.FloorLayer,
-                setValue: value => config.FloorLayer = value
-            );
-            
-            configMenuApi.AddKeybindList(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FurnitureLayer(),
-                getValue: () => config.FurnitureLayer,
-                setValue: value => config.FurnitureLayer = value
-            );
-            
+
             configMenuApi.AddParagraph(
                 mod: ModManifest,
                 text: () => "" // This is purely for spacing.
@@ -815,8 +769,161 @@ namespace SmartBuilding
 
             configMenuApi.AddSectionTitle(
                 mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_OptionalToggles_Title()
+                text: () => I18n.SmartBuilding_Settings_CheatyOptions_Title()
             );
+
+            RegisterCheatyToggleOptions(configMenuApi);
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+
+            configMenuApi.AddSectionTitle(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_Debug_Title()
+            );
+
+            RegisterDebugSettings(configMenuApi);
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => "" // This is purely for spacing.
+            );
+
+            configMenuApi.AddSectionTitle(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_Title()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_Paragraph()
+            );
+
+            RegisterDangerousSettings(configMenuApi);
+
+            configMenuApi.AddPageLink(
+                mod: ModManifest,
+                pageId: "JsonGuide",
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_PageLink()
+            );
+
+            configMenuApi.AddPage(
+                mod: ModManifest,
+                pageId: "JsonGuide",
+                pageTitle: () => I18n.SmartBuilding_Settings_JsonGuide_PageTitle()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide1()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide2()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide3()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide4()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: ModManifest,
+                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide5()
+            );
+        }
+
+        private void RegisterDangerousSettings(IGenericModConfigMenuApi configMenuApi)
+        {
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_EnablePlacingStorageFurniture(),
+                tooltip: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_EnablePlacingStorageFurniture_Tooltip(),
+                getValue: () => config.EnablePlacingStorageFurniture,
+                setValue: value => config.EnablePlacingStorageFurniture = value
+            );
+        }
+
+        private void RegisterDebugSettings(IGenericModConfigMenuApi configMenuApi)
+        {
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugCommand(),
+                getValue: () => config.EnableDebugCommand,
+                setValue: value => config.EnableDebugCommand = value
+            );
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugKeybinds(),
+                getValue: () => config.EnableDebugControls,
+                setValue: value => config.EnableDebugControls = value
+            );
+
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Debug_IdentifyProducerToConsole(),
+                getValue: () => config.IdentifyProducer,
+                setValue: value => config.IdentifyProducer = value);
+
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Debug_IdentifyHeldItemToConsole(),
+                getValue: () => config.IdentifyItem,
+                setValue: value => config.IdentifyItem = value);
+        }
+
+        private void RegisterCheatyToggleOptions(IGenericModConfigMenuApi configMenuApi)
+        {
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_CrabPotsInAnyWaterTile(),
+                getValue: () => config.CrabPotsInAnyWaterTile,
+                setValue: value => config.CrabPotsInAnyWaterTile = value
+            );
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnablePlantingCrops(),
+                getValue: () => config.EnablePlantingCrops,
+                setValue: value => config.EnablePlantingCrops = value
+            );
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableFertilisers(),
+                getValue: () => config.EnableFertilizers,
+                setValue: value => config.EnableFertilizers = value
+            );
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeTappers(),
+                getValue: () => config.EnableTreeTappers,
+                setValue: value => config.EnableTreeTappers = value
+            );
+
+            configMenuApi.AddBoolOption(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableInsertingItemsIntoMachines(),
+                getValue: () => config.EnableInsertingItemsIntoMachines,
+                setValue: value => config.EnableInsertingItemsIntoMachines = value
+            );
+        }
+
+        private void RegisterToggleSettings(IGenericModConfigMenuApi configMenuApi)
+        {
 
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
@@ -824,7 +931,7 @@ namespace SmartBuilding
                 getValue: () => config.ShowBuildQueue,
                 setValue: value => config.ShowBuildQueue = value
             );
-            
+
             configMenuApi.AddBoolOption(
                 mod: ModManifest,
                 name: () => I18n.SmartBuilding_Settings_OptionalToggles_InstantlyBuild(),
@@ -884,155 +991,91 @@ namespace SmartBuilding
                 name: () => I18n.SmartBuilding_Settings_OptionalToggles_EnableReplacingFences(),
                 tooltip: () => I18n.SmartBuilding_Settings_OptionalToggles_EnableReplacingFences_Tooltip(),
                 getValue: () => config.EnableReplacingFences,
-                setValue: value => config.EnableReplacingFences = value
-            );
+                setValue: value => config.EnableReplacingFences = value);
+        }
 
-            configMenuApi.AddParagraph(
-                mod: ModManifest,
-                text: () => "" // This is purely for spacing.
-            );
+        private void RegisterOptionalKeybinds(IGenericModConfigMenuApi configMenuApi)
+        {
 
-            configMenuApi.AddSectionTitle(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_CheatyOptions_Title()
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_CheatyOptions_CrabPotsInAnyWaterTile(),
-                getValue: () => config.CrabPotsInAnyWaterTile,
-                setValue: value => config.CrabPotsInAnyWaterTile = value
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnablePlantingCrops(),
-                getValue: () => config.EnablePlantingCrops,
-                setValue: value => config.EnablePlantingCrops = value
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableCropFertilisers(),
-                getValue: () => config.EnableCropFertilizers,
-                setValue: value => config.EnableCropFertilizers = value
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeFertilisers(),
-                getValue: () => config.EnableTreeFertilizers,
-                setValue: value => config.EnableTreeFertilizers = value
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableTreeTappers(),
-                getValue: () => config.EnableTreeTappers,
-                setValue: value => config.EnableTreeTappers = value
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_CheatyOptions_EnableInsertingItemsIntoMachines(),
-                getValue: () => config.EnableInsertingItemsIntoMachines,
-                setValue: value => config.EnableInsertingItemsIntoMachines = value
-            );
-
-            configMenuApi.AddParagraph(
-                mod: ModManifest,
-                text: () => "" // This is purely for spacing.
-            );
-
-            configMenuApi.AddSectionTitle(
-                mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_Debug_Title()
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugCommand(),
-                getValue: () => config.EnableDebugCommand,
-                setValue: value => config.EnableDebugCommand = value
-            );
-
-            configMenuApi.AddBoolOption(
-                mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Debug_EnableDebugKeybinds(),
-                getValue: () => config.EnableDebugControls,
-                setValue: value => config.EnableDebugControls = value
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawTool(),
+                getValue: () => config.DrawTool,
+                setValue: value => config.DrawTool = value
             );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Debug_IdentifyProducerToConsole(),
-                getValue: () => config.IdentifyProducer,
-                setValue: value => config.IdentifyProducer = value);
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_EraseTool(),
+                getValue: () => config.EraseTool,
+                setValue: value => config.EraseTool = value
+            );
 
             configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_Debug_IdentifyHeldItemToConsole(),
-                getValue: () => config.IdentifyItem,
-                setValue: value => config.IdentifyItem = value);
-
-            configMenuApi.AddParagraph(
-                mod: ModManifest,
-                text: () => "" // This is purely for spacing.
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FilledRectangleTool(),
+                getValue: () => config.FilledRectangleTool,
+                setValue: value => config.FilledRectangleTool = value
             );
 
-            configMenuApi.AddSectionTitle(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_Title()
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_InsertTool(),
+                getValue: () => config.InsertTool,
+                setValue: value => config.InsertTool = value
             );
 
-            configMenuApi.AddParagraph(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_Paragraph()
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_DrawnLayer(),
+                getValue: () => config.DrawnLayer,
+                setValue: value => config.DrawnLayer = value
             );
 
-            configMenuApi.AddBoolOption(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                name: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_EnablePlacingStorageFurniture(),
-                tooltip: () => I18n.SmartBuilding_Settings_PotentiallyDangerous_EnablePlacingStorageFurniture_Tooltip(),
-                getValue: () => config.EnablePlacingStorageFurniture,
-                setValue: value => config.EnablePlacingStorageFurniture = value
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_ObjectLayer(),
+                getValue: () => config.ObjectLayer,
+                setValue: value => config.ObjectLayer = value
             );
 
-            configMenuApi.AddPageLink(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                pageId: "JsonGuide",
-                text: () => I18n.SmartBuilding_Settings_JsonGuide_PageLink()
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FloorLayer(),
+                getValue: () => config.FloorLayer,
+                setValue: value => config.FloorLayer = value
             );
 
-            configMenuApi.AddPage(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                pageId: "JsonGuide",
-                pageTitle: () => I18n.SmartBuilding_Settings_JsonGuide_PageTitle()
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_FurnitureLayer(),
+                getValue: () => config.FurnitureLayer,
+                setValue: value => config.FurnitureLayer = value
+            );
+        }
+
+        private void RegisterMandatoryKeybinds(IGenericModConfigMenuApi configMenuApi)
+        {
+
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_EnterBuildMode(),
+                getValue: () => config.EngageBuildMode,
+                setValue: value => config.EngageBuildMode = value
             );
 
-            configMenuApi.AddParagraph(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide1()
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToDraw(),
+                getValue: () => config.HoldToDraw,
+                setValue: value => config.HoldToDraw = value
             );
 
-            configMenuApi.AddParagraph(
+            configMenuApi.AddKeybindList(
                 mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide2()
-            );
-
-            configMenuApi.AddParagraph(
-                mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide3()
-            );
-
-            configMenuApi.AddParagraph(
-                mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide4()
-            );
-
-            configMenuApi.AddParagraph(
-                mod: ModManifest,
-                text: () => I18n.SmartBuilding_Settings_JsonGuide_Guide5()
+                name: () => I18n.SmartBuilding_Settings_Keybinds_Binds_HoldToMoveUi(),
+                getValue: () => config.HoldToMoveMenu,
+                setValue: value => config.HoldToMoveMenu = value
             );
         }
 

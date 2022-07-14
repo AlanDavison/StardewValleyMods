@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
+using Netcode;
 using SmartBuilding.APIs;
 using SmartBuilding.Logging;
 using StardewModdingAPI;
@@ -89,6 +92,52 @@ namespace SmartBuilding.Utilities
             }
 
             return type;
+        }
+
+        public bool DoesObjectContainModData(SObject obj, string search)
+        {
+            if (obj != null && obj.modData != null)
+            {
+                foreach (var modData in obj.modData)
+                {
+                    foreach (var key in modData.Keys)
+                    {
+                        foreach (var value in modData.Values)
+                        {
+                            if (key.Contains(search) || value.Contains(search))
+                                return true;
+                        }
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        public bool DoesTerrainFeatureContainModData(TerrainFeature tf, string search)
+        {
+            Stopwatch timer = new Stopwatch();
+            
+            timer.Start();
+            if (tf != null && tf.modData != null)
+            {
+                foreach (var modData in tf.modData)
+                {
+                    foreach (var key in modData.Keys)
+                    {
+                        foreach (var value in modData.Values)
+                        {
+                            if (key.Contains(search) || value.Contains(search))
+                                return true;
+                        }
+                    }
+                }
+            }
+            timer.Stop();
+            
+            logger.Log($"Took {timer.ElapsedMilliseconds}ms to search modData.", LogLevel.Trace);
+            
+            return false;
         }
 
         public bool IsTypeOfObject(SObject o, ItemType type)
