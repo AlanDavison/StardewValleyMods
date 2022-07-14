@@ -63,7 +63,7 @@ namespace SmartBuilding
 
         private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
         {
-            if (e.Name.IsEquivalentTo("Mods/SmartBuilding/ToolButtons"))
+            if (e.NameWithoutLocale.IsEquivalentTo("Mods/SmartBuilding/ToolButtons"))
                 e.LoadFromModFile<Texture2D>("assets/Buttons.png", AssetLoadPriority.Low);
 
             // if (e.Name.IsEquivalentTo("Mods/SmartBuilding/WindowSkin"))
