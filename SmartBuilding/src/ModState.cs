@@ -211,6 +211,13 @@ namespace SmartBuilding
                     // The producer in question removes automatically, so we don't need to manually deduct the item.
                     needToDeduct = false;
                 }
+                else if (type == ProducerType.TechnicallyNotAProducerButIsATorch)
+                {
+                    // And then we attempt to shove the held gem into the torch.
+                    worldUtils.ShoveGemIntoTorch(item, o, targetTile);
+
+                    return true;
+                }
 
                 worldUtils.InsertItem(item, o, needToDeduct);
             }

@@ -715,5 +715,60 @@ namespace SmartBuilding.Utilities
                 Game1.player.reduceActiveItemByOne();
             }
         }
+
+        public void ShoveGemIntoTorch(Item item, SObject o, Vector2 targetTile)
+        {
+            // If the gem isn't in our list, we nope out of it.
+            if (!identificationUtils.IsValidPrismaticFireGem(item))
+                return;
+            
+            // First, we want to check to see if we're dealing with a fence.
+            ItemType type = identificationUtils.IdentifyItemType(o);
+
+            if (type == ItemType.Fence)
+            {
+                // It's a fence, so we want to grab a reference to the torch inside it, if any.
+                if (o.heldObject.Value != null && o.heldObject.Value is Torch)
+                {
+                    // It's a torch, so we grab a reference to it.
+                    Torch torch = (Torch)o.heldObject;
+                    
+                    // Now we check to see if the torch is already coloured.
+                    if (torch.modData.ContainsKey("aedenthorn.PrismaticFire") && torch.modData["aedenthorn.PrismaticFire"].Equals(Game1.player.ActiveObject.Name))
+                    {
+                        // This colour gem is already inserted, so we do nothing.
+
+                        return;
+                    }
+                    else
+                    {
+                        // Otherwise, we insert our gem.
+                        torch.modData["aedenthorn.PrismaticFire"] = Game1.player.ActiveObject.Name;
+                        Game1.player.reduceActiveItemByOne();
+                    }
+                }
+            }
+            else
+            {
+                // It isn't a fence, so we simply try to grab a reference to the torch.
+                if (o is Torch torch)
+                {
+                    // We've got the torch, so we check its modData.
+                    // Now we check to see if the torch is already coloured.
+                    if (torch.modData.ContainsKey("aedenthorn.PrismaticFire") && torch.modData["aedenthorn.PrismaticFire"].Equals(Game1.player.ActiveObject.Name))
+                    {
+                        // This colour gem is already inserted, so we do nothing.
+
+                        return;
+                    }
+                    else
+                    {
+                        // Otherwise, we insert our gem.
+                        torch.modData["aedenthorn.PrismaticFire"] = Game1.player.ActiveObject.Name;
+                        Game1.player.reduceActiveItemByOne();
+                    }
+                }
+            }
+        }
     }
 }

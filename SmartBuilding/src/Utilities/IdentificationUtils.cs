@@ -31,9 +31,63 @@ namespace SmartBuilding.Utilities
             this.placementUtils = placementUtils;
         }
 
+        public bool IsValidPrismaticFireGem(Item gem)
+        {
+            switch (gem.Name)
+            {
+                case "Prismatic Shard":
+                    return true;
+                case "Amethyst":
+                    return true;
+                case "Ruby":
+                    return true;
+                case "Emerald":
+                    return true;
+                case "Diamond":
+                    return true;
+                case "Topaz":
+                    return true;
+            }
+
+            return false;
+        }
+
         public ProducerType IdentifyProducer(SObject o)
         {
             ProducerType type = ProducerType.NotAProducer;
+
+            // If aedenthorn's Prismatic Fire mod is installed, we want to check for the presence of a torch.
+            if (helper.ModRegistry.IsLoaded("aedenthorn.PrismaticFire"))
+            {
+                if (o is Torch || o is Fence)
+                {
+                    // It's a torch or a fence, so we need to determine, firstly, if it's a torch.
+                    if (o is Fence)
+                    {
+                        // It's a fence, so we grab a reference to it.
+                        Fence fence = (Fence)o;
+
+                        if (fence.heldObject.Value != null)
+                        {
+                            if (fence.heldObject.Value is Torch)
+                            {
+
+                                // It's a torch, so we return appropriately.
+
+                                return ProducerType.TechnicallyNotAProducerButIsATorch;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // We know it isn't a fence, but that it is a torch, so we simply need to return appropriately.
+
+                        return ProducerType.TechnicallyNotAProducerButIsATorch;
+                    }
+
+                    return ProducerType.NotAProducer;
+                }
+            }
 
             if (o.Category == -9 && o.Type.Equals("Crafting"))
             {
