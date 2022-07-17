@@ -10,3 +10,6 @@
 * Investigate whether there's a less terrible way to go about identifying the correct floor/path (as in `GetFlooringIdFromName` and `GetFlooringNameFromId`).
   * I suppose a `Dictionary<string, int>` would do quite nicely as a lookup table here...
 * Investigate whether there's a less terible way to get the type of chest, as in `GetChestType`.
+
+# MEASURING TAPE TOOL.
+## Duh.
