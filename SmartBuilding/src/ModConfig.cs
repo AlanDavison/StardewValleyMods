@@ -15,6 +15,8 @@ namespace SmartBuilding
         public KeybindList EraseTool = KeybindList.Parse("");
         public KeybindList FilledRectangleTool = KeybindList.Parse("");
         public KeybindList InsertTool = KeybindList.Parse("");
+        public KeybindList CommitBuild = KeybindList.Parse("");
+        public KeybindList CancelBuild = KeybindList.Parse("");
         // Optional layer hotkeys
         public KeybindList DrawnLayer = KeybindList.Parse("");
         public KeybindList ObjectLayer = KeybindList.Parse("");

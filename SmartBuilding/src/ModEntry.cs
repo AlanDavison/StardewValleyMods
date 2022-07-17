@@ -322,6 +322,16 @@ namespace SmartBuilding
                         {
                             modState.ActiveTool = ButtonId.Insert;
                         }
+
+                        if (config.CommitBuild.JustPressed())
+                        {
+                            ConfirmBuild();
+                        }
+
+                        if (config.CancelBuild.JustPressed())
+                        {
+                            ClearBuild();
+                        }
                         
                         // Now we only want and need to go through our layer hotkeys if the active tool is the eraser.
                         if (modState.ActiveTool == ButtonId.Erase)
@@ -1023,6 +1033,20 @@ namespace SmartBuilding
                 name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_InsertTool(),
                 getValue: () => config.InsertTool,
                 setValue: value => config.InsertTool = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_CommitBuild(),
+                getValue: () => config.CommitBuild,
+                setValue: value => config.CommitBuild = value
+            );
+            
+            configMenuApi.AddKeybindList(
+                mod: ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_ClearBuild(),
+                getValue: () => config.CancelBuild,
+                setValue: value => config.CancelBuild = value
             );
 
             configMenuApi.AddKeybindList(
