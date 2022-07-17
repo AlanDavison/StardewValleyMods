@@ -3,7 +3,7 @@
 	<Import Project="..\Build\SDV-1.5.6_SMAPI-3.15.x.targets" />
 	
 	<PropertyGroup>
-		<Version>1.7.0</Version>
+		<Version>1.7.1</Version>
 		<TargetFramework>net5.0</TargetFramework>
 		<IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
 		<Nullable>enable</Nullable>
