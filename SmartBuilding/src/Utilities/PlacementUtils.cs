@@ -159,6 +159,16 @@ namespace SmartBuilding.Utilities
                     // At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
                     return config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
                 case ItemType.Chest:
+                    // We want to be extra safe here, so we confirm it is in fact of type Chest.
+                    if (i is Chest)
+                    {
+                        // Then grab a reference to it...
+                        Chest chest = (Chest)i;
+
+                        // ...and return false if it contains any items.
+                        if (chest.items.Any())
+                            return false;
+                    }
                     goto case ItemType.Generic;
                 case ItemType.Fertilizer:
                     // If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
