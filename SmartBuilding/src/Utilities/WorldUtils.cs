@@ -6,6 +6,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using SObject = StardewValley.Object;
 
 namespace SmartBuilding.Utilities
@@ -695,7 +696,7 @@ namespace SmartBuilding.Utilities
                         return;
 
                     // Otherwise, we can continue.
-                    logger.Log($"{I18n.SmartBuikding_Message_TryingToGrab()} {furnitureToGrab.Name}");
+                    logger.Log($"{I18n.SmartBuilding_Message_TryingToGrab()} {furnitureToGrab.Name}");
                     Game1.player.addItemToInventory(furnitureToGrab);
                     here.furniture.Remove(furnitureToGrab);
                 }
