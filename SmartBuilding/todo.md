@@ -2,12 +2,9 @@
 ## High-priority TODOs should go in the code where the change will occur.
 
 * Correct spacing restrictions for fruit trees.
-* Refactor and tidy up everything.
 * Consider making toolbar buttons data-driven via a config JSON.
 * Fix the negative tile coordinate cursor offset bug.
 * Figure out how to transplant fish correctly to allow fishtank furniture to be placed.
-* Split out detection/placement logic into separate methods where it would be neater.
-* Split out item identification into its own place.
 * Modularise `HasAdjacentNonWaterTile` to not be only for crab pots.
 * Tidy up DemolishOnTile, perhaps relying upon a few external methods with appropriate parameters instead of repeated logic within many if statements.
 * Investigate whether there's a less terrible way to go about identifying the correct floor/path (as in `GetFlooringIdFromName` and `GetFlooringNameFromId`).
