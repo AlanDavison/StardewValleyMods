@@ -4,7 +4,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
 
-namespace SmartBuilding.Logging
+namespace DecidedlyShared.Logging
 {
     public class Logger
     {
