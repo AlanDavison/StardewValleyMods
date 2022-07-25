@@ -20,7 +20,7 @@ namespace SmartBuilding.Utilities
         private ITapGiantCropsAPI? giantCropTapApi;
         private Logger logger;
         private IModHelper helper;
-        
+
         public PlacementUtils(ModConfig config, IdentificationUtils identificationUtils, IMoreFertilizersAPI moreFertilizersApi, ITapGiantCropsAPI giantCropTapApi, Logger logger, IModHelper helper)
         {
             this.config = config;
@@ -61,7 +61,7 @@ namespace SmartBuilding.Utilities
 
             return false;
         }
-        
+
         /// <summary>
         /// Will return whether or not a tile can be placed 
         /// </summary>
@@ -120,13 +120,13 @@ namespace SmartBuilding.Utilities
                         {
                             // We now know we're dealing with flooring, so if the floor replacement
                             // setting is enabled, we move on to our other checks.
-                            
+
                             if (config.EnableReplacingFloors)
                             {
                                 // If the names aren't the same, we return true, because we want to replace. Otherwise, false.
                                 if (!identificationUtils.GetFlooringNameFromId(floor.whichFloor).Equals(i.Name))
                                     return true;
-                                else 
+                                else
                                     return false;
                             }
                             else
@@ -158,7 +158,7 @@ namespace SmartBuilding.Utilities
                     // Here, we want to display a message if the floor COULD be placed if the appropriate setting were enabled.
                     if (!here.isTileLocationTotallyClearAndPlaceable(v) && !config.LessRestrictiveFloorPlacement)
                         logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxFloorPlacement_Disabled(), LogLevel.Trace, true);
-                        
+
                     // At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
                     return config.LessRestrictiveFloorPlacement || here.isTileLocationTotallyClearAndPlaceable(v);
                 case ItemType.Chest:
@@ -275,7 +275,7 @@ namespace SmartBuilding.Utilities
                                     i,
                                     "CanPlantThisSeedHere"
                                 );
-                                
+
                                 if (canPlant != null)
                                     return canPlant.Invoke<bool>(new[] { (object)hd, (int)v.X, (int)v.Y, false });
                                 else
@@ -321,28 +321,29 @@ namespace SmartBuilding.Utilities
                             }
                         }
 
-                Vector2 cursorTile = Game1.currentCursorTile;
-                foreach (ResourceClump clump in here.resourceClumps)
-                {
-                    if (clump is GiantCrop && clump.occupiesTile((int)cursorTile.X, (int)cursorTile.Y))
-                    {
-                        // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
+                        Vector2 cursorTile = Game1.currentCursorTile;
 
-                        if (giantCropTapApi != null)
+                        foreach (ResourceClump clump in here.resourceClumps)
                         {
-                            bool canPlace = giantCropTapApi.CanPlaceTapper(here, cursorTile, (SObject)i);
-                            
-                            // if (!canPlace)
-                            //     Game1.showRedMessage("This is not a valid giant crop.");
-                            // else
-                            //     Game1.showRedMessage("This is a valid giant crop.");
+                            if (clump is GiantCrop && clump.occupiesTile((int)cursorTile.X, (int)cursorTile.Y))
+                            {
+                                // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
 
-                            return canPlace;
+                                if (giantCropTapApi != null)
+                                {
+                                    bool canPlace = giantCropTapApi.CanPlaceTapper(here, cursorTile, (SObject)i);
+
+                                    // if (!canPlace)
+                                    //     Game1.showRedMessage("This is not a valid giant crop.");
+                                    // else
+                                    //     Game1.showRedMessage("This is a valid giant crop.");
+
+                                    return canPlace;
+                                }
+
+                                return false;
+                            }
                         }
-                        
-                        return false;
-                    }
-                }
                     }
 
                     return false;
@@ -402,7 +403,7 @@ namespace SmartBuilding.Utilities
                     if (!config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
                     {
                         logger.Log(I18n.SmartBuilding_Error_StorageFurniture_SettingIsOff(), LogLevel.Trace, true);
-                        
+
                         return false;
                     }
 
@@ -491,7 +492,7 @@ namespace SmartBuilding.Utilities
                     else
                     {
                         // It's false, so we want to warn that placement would be possible if the correct setting were enabled, and there's no object in the tile.
-                        
+
                         if (!here.objects.ContainsKey(v))
                             logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxObjectPlacement_Disabled(), LogLevel.Trace, true);
 
