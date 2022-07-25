@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using Netcode;
 using SmartBuilding.APIs;
-using SmartBuilding.Logging;
+using DecidedlyShared.Logging;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;

@@ -1,4 +1,4 @@
-﻿using SmartBuilding.Logging;
+﻿using DecidedlyShared.Logging;
 using StardewModdingAPI;
 using StardewValley;
 

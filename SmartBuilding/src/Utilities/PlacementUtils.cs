@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using SmartBuilding.APIs;
-using SmartBuilding.Logging;
+using DecidedlyShared.Logging;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
