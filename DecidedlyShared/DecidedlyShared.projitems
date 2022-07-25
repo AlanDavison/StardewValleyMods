@@ -10,8 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\ISpaceCoreApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Directions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\Translations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Maps.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Placement.cs" />
   </ItemGroup>
 </Project>
