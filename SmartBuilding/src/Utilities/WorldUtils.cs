@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DecidedlyShared.APIs;
 using Microsoft.Xna.Framework;
 using SmartBuilding.APIs;
 using DecidedlyShared.Logging;
@@ -18,9 +19,10 @@ namespace SmartBuilding.Utilities
         private PlayerUtils playerUtils;
         private ModConfig config;
         private Logger logger;
-        private IMoreFertilizersAPI moreFertilizersApi;
+        private IMoreFertilizersAPI? moreFertilizersApi;
+        private ITapGiantCropsAPI? giantCropTapApi;
 
-        public WorldUtils(IdentificationUtils identificationUtils, PlacementUtils placementutils, PlayerUtils playerUtils, ModConfig config, Logger logger, IMoreFertilizersAPI moreFertilizersApi)
+        public WorldUtils(IdentificationUtils identificationUtils, PlacementUtils placementutils, PlayerUtils playerUtils, ITapGiantCropsAPI giantCropTapApi, ModConfig config, Logger logger, IMoreFertilizersAPI moreFertilizersApi)
         {
             this.identificationUtils = identificationUtils;
             this.placementUtils = placementutils;
@@ -28,6 +30,7 @@ namespace SmartBuilding.Utilities
             this.config = config;
             this.logger = logger;
             this.moreFertilizersApi = moreFertilizersApi;
+            this.giantCropTapApi = giantCropTapApi;
         }
 
         /// <summary>
@@ -305,184 +308,198 @@ namespace SmartBuilding.Utilities
                                 }
                             }
                         }
-                    }
-                }
-                else if (itemInfo.ItemType == ItemType.FishTankFurniture)
-                {
-                    // This cannot be reached, because placement of fish tanks is blocked for now.
 
-                    // // We're dealing with a fish tank. This has dangerous consequences.
-                    // if (config.LessRestrictiveFurniturePlacement)
-                    // {
-                    //     FishTankFurniture tank = new FishTankFurniture(itemToPlace.ParentSheetIndex, targetTile);
-                    //
-                    //     foreach (var fish in (itemToPlace as FishTankFurniture).tankFish)
-                    //     {
-                    //         tank.tankFish.Add(fish);
-                    //     }
-                    //
-                    //     foreach (var fish in tank.tankFish)
-                    //     {
-                    //         fish.ConstrainToTank();
-                    //     }
-                    //
-                    //     here.furniture.Add(tank);
-                    // }
-                    // else
-                    // {
-                    //     (itemToPlace as FishTankFurniture).placementAction(here, (int)targetTile.X, (int)targetTile.Y, Game1.player);
-                    // }
-                }
-                else if (itemInfo.ItemType == ItemType.StorageFurniture)
-                {
-                    if (config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
+                        foreach (ResourceClump clump in here.resourceClumps)
+                        {
+                            if (clump is GiantCrop && clump.occupiesTile((int)targetTile.X, (int)targetTile.Y))
+                            {
+                                // It's a giant crop, so we defer to Tap Giant Crops's placement.
+
+                                if (!giantCropTapApi.TryPlaceTapper(here, targetTile, itemToPlace))
+                                {
+                                    // If the placement action didn't succeed, we refund the item.
+                                    playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_TreeTapper_PlacementFailed(), LogLevel.Error);
+                                }
+                            }
+                        }
+                    }
+                    else if (itemInfo.ItemType == ItemType.FishTankFurniture)
+                    {
+                        // This cannot be reached, because placement of fish tanks is blocked for now.
+
+                        // // We're dealing with a fish tank. This has dangerous consequences.
+                        // if (config.LessRestrictiveFurniturePlacement)
+                        // {
+                        //     FishTankFurniture tank = new FishTankFurniture(itemToPlace.ParentSheetIndex, targetTile);
+                        //
+                        //     foreach (var fish in (itemToPlace as FishTankFurniture).tankFish)
+                        //     {
+                        //         tank.tankFish.Add(fish);
+                        //     }
+                        //
+                        //     foreach (var fish in tank.tankFish)
+                        //     {
+                        //         fish.ConstrainToTank();
+                        //     }
+                        //
+                        //     here.furniture.Add(tank);
+                        // }
+                        // else
+                        // {
+                        //     (itemToPlace as FishTankFurniture).placementAction(here, (int)targetTile.X, (int)targetTile.Y, Game1.player);
+                        // }
+                    }
+                    else if (itemInfo.ItemType == ItemType.StorageFurniture)
+                    {
+                        if (config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
+                        {
+                            bool placedSuccessfully = false;
+
+                            // We need to create a new instance of StorageFurniture.
+                            StorageFurniture storage = new StorageFurniture(itemToPlace.ParentSheetIndex, targetTile);
+
+                            // A quick bool to avoid an unnecessary log to console later.
+                            bool anyItemsAdded = false;
+
+                            // Then, we iterate through all of the items in the existing StorageFurniture, and add them to the new one.
+                            foreach (var itemInStorage in (itemToPlace as StorageFurniture).heldItems)
+                            {
+                                logger.Log($"{I18n.SmartBuilding_Message_StorageFurniture_AddingItem()} {itemInStorage.Name} ({itemInStorage.ParentSheetIndex}).", LogLevel.Info);
+                                storage.AddItem(itemInStorage);
+
+                                anyItemsAdded = true;
+                            }
+
+                            // If any items were added, inform the user of the purpose of logging them.
+                            if (anyItemsAdded)
+                                logger.Log(I18n.SmartBuilding_Message_StorageFurniture_RetrievalTip(), LogLevel.Info);
+
+                            // If we have less restrictive furniture placement enabled, we simply try to place it. Otherwise, we use the vanilla placementAction.
+                            if (config.LessRestrictiveFurniturePlacement)
+                                here.furniture.Add(storage as StorageFurniture);
+                            else
+                                placedSuccessfully = storage.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+
+                            // Here, we check to see if the placement was successful. If not, we refund the item.
+                            if (!here.furniture.Contains(storage) && !placedSuccessfully)
+                                playerUtils.RefundItem(storage, I18n.SmartBuilding_Error_StorageFurniture_PlacementFailed(), LogLevel.Error);
+                        }
+                        else
+                            playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_StorageFurniture_SettingIsOff(), LogLevel.Info, true);
+                    }
+                    else if (itemInfo.ItemType == ItemType.TvFurniture)
                     {
                         bool placedSuccessfully = false;
+                        TV tv = null;
 
-                        // We need to create a new instance of StorageFurniture.
-                        StorageFurniture storage = new StorageFurniture(itemToPlace.ParentSheetIndex, targetTile);
-
-                        // A quick bool to avoid an unnecessary log to console later.
-                        bool anyItemsAdded = false;
-
-                        // Then, we iterate through all of the items in the existing StorageFurniture, and add them to the new one.
-                        foreach (var itemInStorage in (itemToPlace as StorageFurniture).heldItems)
+                        // We need to determine which we we're placing this TV based upon the furniture placement restriction option.
+                        if (config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                         {
-                            logger.Log($"{I18n.SmartBuilding_Message_StorageFurniture_AddingItem()} {itemInStorage.Name} ({itemInStorage.ParentSheetIndex}).", LogLevel.Info);
-                            storage.AddItem(itemInStorage);
-
-                            anyItemsAdded = true;
-                        }
-
-                        // If any items were added, inform the user of the purpose of logging them.
-                        if (anyItemsAdded)
-                            logger.Log(I18n.SmartBuilding_Message_StorageFurniture_RetrievalTip(), LogLevel.Info);
-
-                        // If we have less restrictive furniture placement enabled, we simply try to place it. Otherwise, we use the vanilla placementAction.
-                        if (config.LessRestrictiveFurniturePlacement)
-                            here.furniture.Add(storage as StorageFurniture);
-                        else
-                            placedSuccessfully = storage.placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
-
-                        // Here, we check to see if the placement was successful. If not, we refund the item.
-                        if (!here.furniture.Contains(storage) && !placedSuccessfully)
-                            playerUtils.RefundItem(storage, I18n.SmartBuilding_Error_StorageFurniture_PlacementFailed(), LogLevel.Error);
-                    }
-                    else
-                        playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_StorageFurniture_SettingIsOff(), LogLevel.Info, true);
-                }
-                else if (itemInfo.ItemType == ItemType.TvFurniture)
-                {
-                    bool placedSuccessfully = false;
-                    TV tv = null;
-
-                    // We need to determine which we we're placing this TV based upon the furniture placement restriction option.
-                    if (config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
-                    {
-                        tv = new TV(itemToPlace.ParentSheetIndex, targetTile);
-                        here.furniture.Add(tv);
-                    }
-                    else
-                    {
-                        placedSuccessfully = (itemToPlace as TV).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
-                    }
-
-                    // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
-                    if (tv != null && !here.furniture.Contains(tv as TV) && !placedSuccessfully)
-                        playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_TvFurniture_PlacementFailed(), LogLevel.Error);
-                }
-                else if (itemInfo.ItemType == ItemType.BedFurniture)
-                {
-                    bool placedSuccessfully = false;
-                    BedFurniture bed = null;
-
-                    // We decide exactly how we're placing the furniture based upon the less restrictive setting.
-                    if (config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
-                    {
-                        bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
-                        here.furniture.Add(bed);
-                    }
-                    else
-                        placedSuccessfully = (itemToPlace as BedFurniture).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
-
-                    // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
-                    if (bed != null && !here.furniture.Contains(bed as BedFurniture) && !placedSuccessfully)
-                        playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_BedFurniture_PlacementFailed(), LogLevel.Error);
-
-                }
-                else if (itemInfo.ItemType == ItemType.GenericFurniture)
-                {
-                    bool placedSuccessfully = false;
-                    Furniture furniture = null;
-
-                    // Determine exactly how we're placing this furniture.
-                    if (config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
-                    {
-                        furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
-                        here.furniture.Add(furniture);
-                    }
-                    else
-                        placedSuccessfully = (itemToPlace as Furniture).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
-
-                    // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
-                    if (furniture != null && !here.furniture.Contains(furniture as Furniture) && !placedSuccessfully)
-                        playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_Furniture_PlacementFailed(), LogLevel.Error);
-                }
-                else if (itemInfo.ItemType == ItemType.Torch)
-                {
-                    // We need to figure out whether there's a fence in the placement tile.
-                    if (here.objects.ContainsKey(targetTile))
-                    {
-                        // We know there's an object at these coordinates, so we grab a reference.
-                        SObject o = here.objects[targetTile];
-
-                        if (identificationUtils.IsTypeOfObject(o, ItemType.Fence))
-                        {
-                            // If the object in this tile is a fence, we add the torch to it.
-                            //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
-
-                            // We know it's a fence by type, but we need to make sure it isn't a gate, and to ensure it isn't already "holding" anything.
-                            if (o.Name.Equals("Gate") && o.heldObject != null)
-                            {
-                                // There's something in there, so we need to refund the torch.
-                                playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
-                            }
-
-                            o.performObjectDropInAction(itemToPlace, false, Game1.player);
-
-                            if (identificationUtils.IdentifyItemType(o.heldObject) != ItemType.Torch)
-                            {
-                                // If the fence isn't "holding" a torch, there was a problem, so we should refund.
-                                playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
-                            }
-
-                            return;
+                            tv = new TV(itemToPlace.ParentSheetIndex, targetTile);
+                            here.furniture.Add(tv);
                         }
                         else
                         {
-                            // If it's not a fence, we want to refund the item.
+                            placedSuccessfully = (itemToPlace as TV).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+                        }
+
+                        // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
+                        if (tv != null && !here.furniture.Contains(tv as TV) && !placedSuccessfully)
+                            playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_TvFurniture_PlacementFailed(), LogLevel.Error);
+                    }
+                    else if (itemInfo.ItemType == ItemType.BedFurniture)
+                    {
+                        bool placedSuccessfully = false;
+                        BedFurniture bed = null;
+
+                        // We decide exactly how we're placing the furniture based upon the less restrictive setting.
+                        if (config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
+                        {
+                            bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
+                            here.furniture.Add(bed);
+                        }
+                        else
+                            placedSuccessfully = (itemToPlace as BedFurniture).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+
+                        // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
+                        if (bed != null && !here.furniture.Contains(bed as BedFurniture) && !placedSuccessfully)
+                            playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_BedFurniture_PlacementFailed(), LogLevel.Error);
+
+                    }
+                    else if (itemInfo.ItemType == ItemType.GenericFurniture)
+                    {
+                        bool placedSuccessfully = false;
+                        Furniture furniture = null;
+
+                        // Determine exactly how we're placing this furniture.
+                        if (config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                        {
+                            furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
+                            here.furniture.Add(furniture);
+                        }
+                        else
+                            placedSuccessfully = (itemToPlace as Furniture).placementAction(here, (int)targetTile.X * 64, (int)targetTile.Y * 64, Game1.player);
+
+                        // If both of these are false, the furniture was not successfully placed, so we need to refund the item.
+                        if (furniture != null && !here.furniture.Contains(furniture as Furniture) && !placedSuccessfully)
+                            playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_Furniture_PlacementFailed(), LogLevel.Error);
+                    }
+                    else if (itemInfo.ItemType == ItemType.Torch)
+                    {
+                        // We need to figure out whether there's a fence in the placement tile.
+                        if (here.objects.ContainsKey(targetTile))
+                        {
+                            // We know there's an object at these coordinates, so we grab a reference.
+                            SObject o = here.objects[targetTile];
+
+                            if (identificationUtils.IsTypeOfObject(o, ItemType.Fence))
+                            {
+                                // If the object in this tile is a fence, we add the torch to it.
+                                //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
+
+                                // We know it's a fence by type, but we need to make sure it isn't a gate, and to ensure it isn't already "holding" anything.
+                                if (o.Name.Equals("Gate") && o.heldObject != null)
+                                {
+                                    // There's something in there, so we need to refund the torch.
+                                    playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
+                                }
+
+                                o.performObjectDropInAction(itemToPlace, false, Game1.player);
+
+                                if (identificationUtils.IdentifyItemType(o.heldObject) != ItemType.Torch)
+                                {
+                                    // If the fence isn't "holding" a torch, there was a problem, so we should refund.
+                                    playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
+                                }
+
+                                return;
+                            }
+                            else
+                            {
+                                // If it's not a fence, we want to refund the item.
+                                playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+
+                                return;
+                            }
+                        }
+
+                        // There is no object here, so we treat it like a generic placeable.
+                        if (!itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player))
                             playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
-
-                            return;
-                        }
                     }
+                    else
+                    { // We're dealing with a generic placeable.
+                        bool successfullyPlaced = itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
-                    // There is no object here, so we treat it like a generic placeable.
-                    if (!itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player))
-                        playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+                        // if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
+                        if (!successfullyPlaced)
+                            playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+                    }
                 }
                 else
-                { // We're dealing with a generic placeable.
-                    bool successfullyPlaced = itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
-
-                    // if (Game1.currentLocation.objects.ContainsKey(item.Key) && Game1.currentLocation.objects[item.Key].Name.Equals(itemToPlace.Name))
-                    if (!successfullyPlaced)
-                        playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+                {
+                    playerUtils.RefundItem(item.Value.Item);
                 }
-            }
-            else
-            {
-                playerUtils.RefundItem(item.Value.Item);
             }
         }
 

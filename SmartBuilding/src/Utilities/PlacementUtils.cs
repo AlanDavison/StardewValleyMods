@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DecidedlyShared.APIs;
 using Microsoft.Xna.Framework;
 using SmartBuilding.APIs;
 using DecidedlyShared.Logging;
@@ -16,14 +17,16 @@ namespace SmartBuilding.Utilities
         private ModConfig config;
         private IdentificationUtils identificationUtils;
         private IMoreFertilizersAPI? moreFertilizersApi;
+        private ITapGiantCropsAPI? giantCropTapApi;
         private Logger logger;
         private IModHelper helper;
         
-        public PlacementUtils(ModConfig config, IdentificationUtils identificationUtils, IMoreFertilizersAPI moreFertilizersApi, Logger logger, IModHelper helper)
+        public PlacementUtils(ModConfig config, IdentificationUtils identificationUtils, IMoreFertilizersAPI moreFertilizersApi, ITapGiantCropsAPI giantCropTapApi, Logger logger, IModHelper helper)
         {
             this.config = config;
             this.identificationUtils = identificationUtils;
             this.moreFertilizersApi = moreFertilizersApi;
+            this.giantCropTapApi = giantCropTapApi;
             this.logger = logger;
             this.helper = helper;
         }
@@ -317,6 +320,29 @@ namespace SmartBuilding.Utilities
                                 return tree.growthStage >= 5;
                             }
                         }
+
+                Vector2 cursorTile = Game1.currentCursorTile;
+                foreach (ResourceClump clump in here.resourceClumps)
+                {
+                    if (clump is GiantCrop && clump.occupiesTile((int)cursorTile.X, (int)cursorTile.Y))
+                    {
+                        // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
+
+                        if (giantCropTapApi != null)
+                        {
+                            bool canPlace = giantCropTapApi.CanPlaceTapper(here, cursorTile, (SObject)i);
+                            
+                            // if (!canPlace)
+                            //     Game1.showRedMessage("This is not a valid giant crop.");
+                            // else
+                            //     Game1.showRedMessage("This is a valid giant crop.");
+
+                            return canPlace;
+                        }
+                        
+                        return false;
+                    }
+                }
                     }
 
                     return false;

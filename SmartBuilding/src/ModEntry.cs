@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using DecidedlyShared.APIs;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,6 +20,7 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.SDKs;
 using StardewValley.TerrainFeatures;
+using IGenericModConfigMenuApi = SmartBuilding.APIs.IGenericModConfigMenuApi;
 using Patches = SmartBuilding.HarmonyPatches.Patches;
 using SObject = StardewValley.Object;
 
@@ -58,6 +60,7 @@ namespace SmartBuilding
         // Mod integrations.
         private IMoreFertilizersAPI? moreFertilizersApi;
         private IDynamicGameAssetsApi? dgaApi;
+        private ITapGiantCropsAPI? giantCropTapApi;
 
         #region Asset Loading Gubbins
 
@@ -164,9 +167,9 @@ namespace SmartBuilding
             // Set up our helpers.
             drawingUtils = new DrawingUtils();
             identificationUtils = new IdentificationUtils(ModEntry.helper, logger, config, dgaApi, moreFertilizersApi, placementUtils);
-            placementUtils = new PlacementUtils(config, identificationUtils, moreFertilizersApi, logger, helper);
+            placementUtils = new PlacementUtils(config, identificationUtils, moreFertilizersApi, giantCropTapApi, logger, helper);
             playerUtils = new PlayerUtils(logger);
-            worldUtils = new WorldUtils(identificationUtils, placementUtils,  playerUtils, config, logger, moreFertilizersApi);
+            worldUtils = new WorldUtils(identificationUtils, placementUtils,  playerUtils, giantCropTapApi, config, logger, moreFertilizersApi);
             modState = new ModState(logger, playerUtils, identificationUtils, worldUtils, placementUtils);
             buttonActions = new ButtonActions(this, modState); // Ew, no. Fix this ugly nonsense later.
             
@@ -623,6 +626,49 @@ namespace SmartBuilding
                     }
                 }
             }
+            
+            // TODO: DEBUG STUFF.
+            foreach (ResourceClump clump in Game1.currentLocation.resourceClumps)
+            {
+                Vector2 v = Game1.currentCursorTile;
+                Item tapper = Utility.fuzzyItemSearch("Tapper");
+                
+                if (clump is GiantCrop && clump.occupiesTile((int)v.X, (int)v.Y))
+                {
+                    // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
+
+                    if (giantCropTapApi != null)
+                    {
+                        bool canPlace = giantCropTapApi.CanPlaceTapper(Game1.currentLocation, v, (SObject)tapper);
+
+                        if (canPlace)
+                        {
+                            e.SpriteBatch.Draw(Game1.mouseCursors, 
+                                new Vector2(Game1.getMouseX(), Game1.getMouseY()), 
+                                new Rectangle(194, 388, 16, 16), 
+                                Color.White, 
+                                0f, 
+                                Vector2.Zero, 
+                                4f, 
+                                SpriteEffects.None, 
+                                1f);
+                        }
+                        else
+                        {
+                            e.SpriteBatch.Draw(Game1.mouseCursors, 
+                                new Vector2(Game1.getMouseX(), Game1.getMouseY()),
+                                new Rectangle(194, 388, 16, 16), 
+                                Color.Red, 
+                                0f, 
+                                Vector2.Zero, 
+                                4f, 
+                                SpriteEffects.None, 
+                                1f);
+                        }
+                            
+                    }
+                }
+            }
         }
 
         #endregion
@@ -692,7 +738,7 @@ namespace SmartBuilding
                 }
                 catch (Exception e)
                 {
-                    logger.Log($"Exception {e} getting More Fertilizers API.");
+                    logger.Exception(e);
                 }
             }
             
@@ -714,8 +760,22 @@ namespace SmartBuilding
                     }
                     catch (Exception e)
                     {
-                        logger.Log($"Exception {e} getting Dynamic Game Assets API.");
+                        logger.Exception(e);
                     }
+                }
+            }
+            
+            // Check whether Tap Giant Crops is even installed
+            if (helper.ModRegistry.IsLoaded("atravita.TapGiantCrops"))
+            {
+                // No need to check against the version here, so we just try to get the API.
+                try
+                {
+                    this.giantCropTapApi = this.Helper.ModRegistry.GetApi<ITapGiantCropsAPI>("atravita.TapGiantCrops");
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e);
                 }
             }
         }
