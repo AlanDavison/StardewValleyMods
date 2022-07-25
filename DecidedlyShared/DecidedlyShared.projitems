@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISpaceCoreApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\ITapGiantCropsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Directions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Translations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Logger.cs" />
