@@ -67,12 +67,12 @@ namespace SmartBuilding.Utilities
         /// <returns></returns>
         public bool CanBePlacedHere(Vector2 v, Item i)
         {
-            // // If the item is a tool, we want to return.
-            // if (i is Tool)
-            //     return false;
+            // If the item is not an SObject, we return.
+            if (i is not SObject)
+                return false;
 
-            ItemType itemType = identificationUtils.IdentifyItemType((Object)i);
-            ItemInfo itemInfo = identificationUtils.GetItemInfo((Object)i);
+            ItemType itemType = identificationUtils.IdentifyItemType((SObject)i);
+            ItemInfo itemInfo = identificationUtils.GetItemInfo((SObject)i);
             GameLocation here = Game1.currentLocation;
 
             switch (itemType)
