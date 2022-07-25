@@ -7,6 +7,7 @@ namespace SmartBuilding.Constants
     {
         public static List<Vector2> vector2 = new List<Vector2>()
         {
+            new Vector2(0, 0), // Centre
             new Vector2(-1, 0), // Left
             new Vector2(1, 0), // Right
             new Vector2(0, -1), // Up
