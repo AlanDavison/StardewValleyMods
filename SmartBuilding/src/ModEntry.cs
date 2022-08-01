@@ -61,6 +61,7 @@ namespace SmartBuilding
         private IMoreFertilizersAPI? moreFertilizersApi;
         private IDynamicGameAssetsApi? dgaApi;
         private ITapGiantCropsAPI? giantCropTapApi;
+        private IToolbarIconsApi? toolbarIconsApi;
 
         #region Asset Loading Gubbins
 
@@ -181,6 +182,16 @@ namespace SmartBuilding
             
             // Then get the initial state of the item stowing mode setting.
             previousStowingMode = Game1.options.stowingMode;
+
+            if (toolbarIconsApi != null)
+            {
+                toolbarIconsApi.AddToolbarIcon("smart-building.toggle-build-mode", "Mods/SmartBuilding/ToolButtons", Ui.GetButtonSourceRect(ButtonId.Draw), I18n.SmartBuilding_Integrations_ToolbarIcons_Tooltip());
+                toolbarIconsApi.ToolbarIconPressed += (o, s) =>
+                {
+                    if (s.Equals("smart-building.toggle-build-mode"))
+                        ToggleBuildMode();
+                };
+            }
         }
 
         /// <summary>
@@ -286,14 +297,7 @@ namespace SmartBuilding
             // If the player presses to engage build mode, we flip the bool.
             if (config.EngageBuildMode.JustPressed())
             {
-                if (!modState.BuildingMode)
-                {
-                    EnterBuildMode();
-                }
-                else
-                {
-                    LeaveBuildMode();
-                }
+                ToggleBuildMode();
             }
             
             // Handle our tool hotkeys.
@@ -447,6 +451,18 @@ namespace SmartBuilding
 
                 // Otherwise, the key is up, meaning we want to indicate we're not currently drawing.
                 //CurrentlyDrawing = false;
+            }
+        }
+
+        private void ToggleBuildMode()
+        {
+            if (!modState.BuildingMode)
+            {
+                EnterBuildMode();
+            }
+            else
+            {
+                LeaveBuildMode();
             }
         }
 
@@ -776,6 +792,32 @@ namespace SmartBuilding
                 catch (Exception e)
                 {
                     logger.Exception(e);
+                }
+            }
+            
+            // Check if Toolbar Icons is installed.
+            if (helper.ModRegistry.IsLoaded("furyx639.ToolbarIcons"))
+            {
+                if (this.Helper.ModRegistry.Get("furyx639.ToolbarIcons") is IModInfo modInfo)
+                {
+                    if (modInfo.Manifest.Version.IsOlderThan("2.3.0"))
+                    {
+                        logger.Log("Installed version of Toolbar Icons is too old. Please update it to 2.3.0 or higher.");
+                        this.toolbarIconsApi = null;
+                    }
+                    else
+                    {
+                        // Try to get the API.
+                        try
+                        {
+                            this.toolbarIconsApi = this.Helper.ModRegistry.GetApi<IToolbarIconsApi>("furyx639.ToolbarIcons");
+                        }
+                        catch (Exception e)
+                        {
+                            logger.Exception(e);
+                        }
+                    }
+                        
                 }
             }
         }

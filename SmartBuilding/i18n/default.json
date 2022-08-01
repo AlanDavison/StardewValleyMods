@@ -3,6 +3,9 @@
   "smart-building.info.build-cancelled": "User left build mode. Refunding items.",
   "smart-building.info.refunded-into-player-inventory": "refunded into player's inventory.",
   
+  // Integrations
+  "smart-building.integrations.toolbar-icons.tooltip": "Enable Building Mode",
+  
   // Tool button tooltips
   "smart-building.buttons.draw.tooltip": "Draw objects directly in the world.",
   "smart-building.buttons.erase.tooltip": "Erase/pick up objects from the world.",
