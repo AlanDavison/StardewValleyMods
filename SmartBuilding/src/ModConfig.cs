@@ -7,9 +7,11 @@ namespace SmartBuilding
 {
     public class ModConfig
     {
+        // Main keybinds
         public KeybindList EngageBuildMode = KeybindList.Parse("LeftShift+B");
         public KeybindList HoldToDraw = KeybindList.Parse("MouseLeft");
         public KeybindList HoldToMoveMenu = KeybindList.Parse("MouseMiddle");
+        
         // Optional tool hotkeys
         public KeybindList DrawTool = KeybindList.Parse("");
         public KeybindList EraseTool = KeybindList.Parse("");
@@ -17,6 +19,7 @@ namespace SmartBuilding
         public KeybindList InsertTool = KeybindList.Parse("");
         public KeybindList CommitBuild = KeybindList.Parse("");
         public KeybindList CancelBuild = KeybindList.Parse("");
+        
         // Optional layer hotkeys
         public KeybindList DrawnLayer = KeybindList.Parse("");
         public KeybindList ObjectLayer = KeybindList.Parse("");
@@ -29,6 +32,8 @@ namespace SmartBuilding
         // public KeybindList PickUpObject = KeybindList.Parse("Delete");
         // public KeybindList PickUpFloor = KeybindList.Parse("End");
         // public KeybindList PickUpFurniture = KeybindList.Parse("Home");
+        
+        // Toggles
         public bool InstantlyBuild = false;
         public bool ShowBuildQueue = true;
         public bool CanDestroyChests = false;
@@ -38,14 +43,17 @@ namespace SmartBuilding
         public bool LessRestrictiveObjectPlacement = false;
         public bool LessRestrictiveFloorPlacement = false;
         public bool LessRestrictiveFurniturePlacement = false;
-        public bool LessRestrictiveBedPlacement = false;        
+        public bool LessRestrictiveBedPlacement = false;    
+        
         // THE DANGER ZONE.
         public bool EnablePlacingStorageFurniture = false;
+        
         // The cheesy zone.
         public bool EnablePlantingCrops = false;
         public bool EnableFertilizers = false;
         public bool EnableTreeTappers = false;
         public bool EnableInsertingItemsIntoMachines = false;
+        
 		// Debug zone.
         public bool EnableDebugCommand = false;
 		public bool EnableDebugControls = false;
