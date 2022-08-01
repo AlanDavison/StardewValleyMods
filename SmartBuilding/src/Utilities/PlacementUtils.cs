@@ -320,29 +320,28 @@ namespace SmartBuilding.Utilities
                                 return tree.growthStage >= 5;
                             }
                         }
-
-                        Vector2 cursorTile = Game1.currentCursorTile;
-
-                        foreach (ResourceClump clump in here.resourceClumps)
+                    }
+                    
+                    // If there isn't a tree here, we next check for a giant grop.
+                    foreach (ResourceClump clump in here.resourceClumps)
+                    {
+                        if (clump is GiantCrop && clump.occupiesTile((int)v.X, (int)v.Y))
                         {
-                            if (clump is GiantCrop && clump.occupiesTile((int)cursorTile.X, (int)cursorTile.Y))
+                            // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
+
+                            if (giantCropTapApi != null)
                             {
-                                // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
+                                bool canPlace = giantCropTapApi.CanPlaceTapper(here, v, (SObject)i);
 
-                                if (giantCropTapApi != null)
-                                {
-                                    bool canPlace = giantCropTapApi.CanPlaceTapper(here, cursorTile, (SObject)i);
+                                // if (!canPlace)
+                                //     Game1.showRedMessage("This is not a valid giant crop.");
+                                // else
+                                //     Game1.showRedMessage("This is a valid giant crop.");
 
-                                    // if (!canPlace)
-                                    //     Game1.showRedMessage("This is not a valid giant crop.");
-                                    // else
-                                    //     Game1.showRedMessage("This is a valid giant crop.");
-
-                                    return canPlace;
-                                }
-
-                                return false;
+                                return canPlace;
                             }
+
+                            return false;
                         }
                     }
 

@@ -294,7 +294,7 @@ namespace SmartBuilding.Utilities
                     if (placementUtils.CanBePlacedHere(targetTile, itemToPlace))
                     {
                         // If there's a TerrainFeature here, we need to know if it's a tree.
-                        if (here.terrainFeatures[targetTile] is Tree)
+                        if (here.terrainFeatures.ContainsKey(targetTile) && here.terrainFeatures[targetTile] is Tree)
                         {
                             // If it is, we grab a reference, and check for a tapper on it already.
                             Tree tree = (Tree)here.terrainFeatures[targetTile];
@@ -307,8 +307,12 @@ namespace SmartBuilding.Utilities
                                     playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_TreeTapper_PlacementFailed(), LogLevel.Error);
                                 }
                             }
+
+                            // And return to avoid triggering the giant crop check.
+                            return;
                         }
 
+                        // Now we check for a giant crop.
                         foreach (ResourceClump clump in here.resourceClumps)
                         {
                             if (clump is GiantCrop && clump.occupiesTile((int)targetTile.X, (int)targetTile.Y))
