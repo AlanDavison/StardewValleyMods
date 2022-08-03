@@ -642,49 +642,6 @@ namespace SmartBuilding
                     }
                 }
             }
-            
-            // TODO: DEBUG STUFF.
-            foreach (ResourceClump clump in Game1.currentLocation.resourceClumps)
-            {
-                Vector2 v = Game1.currentCursorTile;
-                Item tapper = Utility.fuzzyItemSearch("Tapper");
-                
-                if (clump is GiantCrop && clump.occupiesTile((int)v.X, (int)v.Y))
-                {
-                    // It's a giant crop, so we defer to Tap Giant Crop's API for placement validity.
-
-                    if (giantCropTapApi != null)
-                    {
-                        bool canPlace = giantCropTapApi.CanPlaceTapper(Game1.currentLocation, v, (SObject)tapper);
-
-                        if (canPlace)
-                        {
-                            e.SpriteBatch.Draw(Game1.mouseCursors, 
-                                new Vector2(Game1.getMouseX(), Game1.getMouseY()), 
-                                new Rectangle(194, 388, 16, 16), 
-                                Color.White, 
-                                0f, 
-                                Vector2.Zero, 
-                                4f, 
-                                SpriteEffects.None, 
-                                1f);
-                        }
-                        else
-                        {
-                            e.SpriteBatch.Draw(Game1.mouseCursors, 
-                                new Vector2(Game1.getMouseX(), Game1.getMouseY()),
-                                new Rectangle(194, 388, 16, 16), 
-                                Color.Red, 
-                                0f, 
-                                Vector2.Zero, 
-                                4f, 
-                                SpriteEffects.None, 
-                                1f);
-                        }
-                            
-                    }
-                }
-            }
         }
 
         #endregion
