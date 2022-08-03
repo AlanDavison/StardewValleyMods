@@ -13,6 +13,11 @@
         Axe,
         
         /// <summary>
+        /// A hoe is required to dig up artifact spots.
+        /// </summary>
+        Hoe,
+        
+        /// <summary>
         /// We don't want to deal with this object.
         /// </summary>
         NotAllowed

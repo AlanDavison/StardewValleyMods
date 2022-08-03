@@ -14,6 +14,9 @@ namespace DecidedlyShared.Utilities
             if (obj.Name.Equals("Twig"))
                 return Constants.BreakableType.Axe;
 
+            if (obj.Name.Equals("Artifact Spot"))
+                return Constants.BreakableType.Hoe;
+
             return Constants.BreakableType.NotAllowed;
         }
 
