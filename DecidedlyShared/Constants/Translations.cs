@@ -5,7 +5,7 @@ namespace DecidedlyShared.Constants
 {
     public static class Translations
     {
-        private static Dictionary<string, string> MapToDisplayName = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> MapToDisplayName = new()
         {
             { "Farm", "<FarmName> Farm" },
             { "FarmHouse", "<FarmName> Farm House" },

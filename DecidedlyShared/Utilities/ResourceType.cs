@@ -1,6 +1,4 @@
-﻿using SmartBuilding.Constants;
-
-namespace DecidedlyShared.Utilities
+﻿namespace DecidedlyShared.Utilities
 {
     public class IdentifyResourceType
     {

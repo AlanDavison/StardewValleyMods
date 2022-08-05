@@ -5,12 +5,12 @@ using SObject = StardewValley.Object;
 namespace DecidedlyShared.APIs
 {
     /// <summary>
-    /// The API for this mod.
+    ///     The API for this mod.
     /// </summary>
     public interface ITapGiantCropsAPI
     {
         /// <summary>
-        /// Checks whether or not a tapper can be added to this particular tile.
+        ///     Checks whether or not a tapper can be added to this particular tile.
         /// </summary>
         /// <param name="loc">Game location.</param>
         /// <param name="tile">Tile.</param>
@@ -18,7 +18,7 @@ namespace DecidedlyShared.APIs
         public bool CanPlaceTapper(GameLocation loc, Vector2 tile, SObject obj);
 
         /// <summary>
-        /// Called to place a tapper a the specific tile.
+        ///     Called to place a tapper a the specific tile.
         /// </summary>
         /// <param name="loc">GameLocation.</param>
         /// <param name="tile">Tile.</param>

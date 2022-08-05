@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
@@ -11,70 +10,79 @@ namespace DecidedlyShared.UI
 {
     public class UiElement : ClickableTextureComponent
     {
-        private int elementSpacing;
-        private UiElement? parentElement = null;
-        private UiElement? okayButton;
-        private UiElement? titleBar;
-        private List<UiElement> childElements;
-        private List<UiElement> visibleElements;
-        private Orientation childOrientation;
-        private Alignment childAlignment;
-        private int margins = 16;
-        private int maxTextLength = 500;
-        private int maxElementsVisible = 4;
-        private int currentTopIndex = 0;
-        private string labelText;
+        private readonly Alignment childAlignment;
+        private readonly List<UiElement> childElements;
+        private readonly Orientation childOrientation;
+        private readonly int elementSpacing;
+        private readonly string labelText;
+        private readonly int margins = 16;
+        private int currentTopIndex;
         private bool isHovered;
+        private int maxTextLength = 500;
+        private UiElement? okayButton;
+        private UiElement? parentElement;
+        private UiElement? titleBar;
+        private List<UiElement> visibleElements;
 
-        public int MaximumElementsVisible
+        public UiElement(string name, string label, string hoverText, int width = 0, int height = 0,
+                         Orientation orientation = Orientation.Vertical, Alignment childAlignment = Alignment.Middle,
+                         int elementSpacing = 0) : base(new Rectangle(0, 0, 0, 0), Game1.menuTexture,
+            new Rectangle(0, 256, 60, 60), 1f)
         {
-            get => maxElementsVisible;
-            set => maxElementsVisible = value;
+            this.childElements = new List<UiElement>();
+            this.bounds.Width = width;
+            this.bounds.Height = height;
+            this.childAlignment = childAlignment;
+            this.childOrientation = orientation;
+            this.elementSpacing = elementSpacing;
+            this.labelText = label;
+            this.visibleElements = new List<UiElement>();
         }
+
+        public int MaximumElementsVisible { get; set; } = 4;
 
         public int CurrentTopIndex
         {
-            get => currentTopIndex;
+            get => this.currentTopIndex;
             set
             {
                 if (value < 0)
                 {
-                    currentTopIndex = 0; 
-                    UpdateElements();
+                    this.currentTopIndex = 0;
+                    this.UpdateElements();
 
                     return;
                 }
-                if (value > childElements.Count - maxElementsVisible - 1)
+
+                if (value > this.childElements.Count - this.MaximumElementsVisible - 1)
                 {
-                    currentTopIndex = childElements.Count - maxElementsVisible - 1;
-                    UpdateElements();
+                    this.currentTopIndex = this.childElements.Count - this.MaximumElementsVisible - 1;
+                    this.UpdateElements();
 
                     return;
                 }
 
-                currentTopIndex = value;
-                UpdateElements();
+                this.currentTopIndex = value;
+                this.UpdateElements();
             }
         }
 
         public void ReceiveCursorHover(int x, int y)
         {
             if (this.bounds.Contains(x, y))
-                isHovered = true;
+                this.isHovered = true;
             else
-                isHovered = false;
-            
-            foreach (UiElement element in visibleElements)
-            {
+                this.isHovered = false;
+
+            foreach (var element in this.visibleElements)
                 element.ReceiveCursorHover(x, y);
-            }
         }
 
         public void AddElement(UiElement element)
         {
             element.parentElement = this;
-            childElements.Add(element);
-            
+            this.childElements.Add(element);
+
             if (!element.labelText.Equals(""))
             {
                 element.bounds.Width = (int)Game1.dialogueFont.MeasureString(element.labelText).X;
@@ -84,12 +92,12 @@ namespace DecidedlyShared.UI
 
         public void UpdateElements()
         {
-            visibleElements = childElements.GetRange(currentTopIndex, maxElementsVisible);
-            
-            if (visibleElements.Any())
+            this.visibleElements = this.childElements.GetRange(this.currentTopIndex, this.MaximumElementsVisible);
+
+            if (this.visibleElements.Any())
             {
-                ResizeToChildren();
-                UpdateChildrenPositions();
+                this.ResizeToChildren();
+                this.UpdateChildrenPositions();
             }
         }
 
@@ -99,9 +107,9 @@ namespace DecidedlyShared.UI
             int tallestElement = 0;
             int cumulativeHeight = 0;
 
-            cumulativeHeight += margins;
-            
-            foreach (UiElement element in childElements)
+            cumulativeHeight += this.margins;
+
+            foreach (var element in this.childElements)
             {
                 if (element.bounds.Width > widestElement)
                     widestElement = element.bounds.Width;
@@ -109,38 +117,38 @@ namespace DecidedlyShared.UI
                 if (element.bounds.Height > tallestElement)
                     tallestElement = element.bounds.Height;
 
-                cumulativeHeight += element.bounds.Height + elementSpacing;
+                cumulativeHeight += element.bounds.Height + this.elementSpacing;
             }
 
-            cumulativeHeight += margins;
+            cumulativeHeight += this.margins;
 
-            this.bounds.Width = widestElement + margins * 2;
+            this.bounds.Width = widestElement + this.margins * 2;
             this.bounds.Height = cumulativeHeight;
         }
 
         public void ResizeToChildren()
         {
-            switch (childOrientation)
+            switch (this.childOrientation)
             {
                 case Orientation.Horizontal:
                     int totalWidth = 0;
                     int highestElement = 0;
-                    
+
                     // Calculate the total width based on all of our elements, plus the global element spacing.
-                    foreach (UiElement element in visibleElements)
+                    foreach (var element in this.visibleElements)
                     {
-                        totalWidth += element.bounds.Width + elementSpacing;
-                        
+                        totalWidth += element.bounds.Width + this.elementSpacing;
+
                         if (element.bounds.Height > highestElement)
                             highestElement = element.bounds.Height;
                     }
-                    
+
                     // And subtract one bit of spacing.
-                    totalWidth -= elementSpacing;
-                    
+                    totalWidth -= this.elementSpacing;
+
                     // Then add in our margins.
-                    totalWidth += margins * 2;
-                    highestElement += margins * 2;
+                    totalWidth += this.margins * 2;
+                    highestElement += this.margins * 2;
 
                     this.bounds.Width = totalWidth;
                     this.bounds.Height = highestElement;
@@ -148,21 +156,17 @@ namespace DecidedlyShared.UI
                 case Orientation.Vertical:
                     int totalHeight = 0;
                     // int widestElement = 0;
-                    
+
                     // Calculate the total width based on all of our elements, plus the global element spacing.
-                    foreach (UiElement element in visibleElements)
-                    {
-                        totalHeight += element.bounds.Height + elementSpacing;
-                        
-                        // if (element.bounds.Width > widestElement)
-                        //     widestElement = element.bounds.Width;
-                    }
-                    
+                    foreach (var element in this.visibleElements)
+                        totalHeight += element.bounds.Height + this.elementSpacing;
+                    // if (element.bounds.Width > widestElement)
+                    //     widestElement = element.bounds.Width;
                     // And subtract one bit of spacing.
-                    totalHeight -= elementSpacing;
-                    
+                    totalHeight -= this.elementSpacing;
+
                     // Then add in our margins.
-                    totalHeight += margins * 2;
+                    totalHeight += this.margins * 2;
                     //widestElement += margins * 2;
 
                     this.bounds.Height = totalHeight;
@@ -173,41 +177,43 @@ namespace DecidedlyShared.UI
 
         public void UpdateChildrenPositions()
         {
-            if (childOrientation == Orientation.Horizontal)
+            if (this.childOrientation == Orientation.Horizontal)
             {
                 int totalPriorElementWidth = 0;
 
-                foreach (UiElement element in visibleElements)
+                foreach (var element in this.visibleElements)
                 {
-                    totalPriorElementWidth += element.bounds.Width + elementSpacing;
+                    totalPriorElementWidth += element.bounds.Width + this.elementSpacing;
 
                     element.bounds.X = element.parentElement.bounds.Left + totalPriorElementWidth;
 
-                    switch (childAlignment)
+                    switch (this.childAlignment)
                     {
                         case Alignment.Top:
                             element.bounds.Y = element.parentElement.bounds.Top + totalPriorElementWidth;
                             break;
                         case Alignment.Middle:
-                            element.bounds.Y = element.parentElement.bounds.Height / 2 + element.bounds.Height + totalPriorElementWidth;
+                            element.bounds.Y = element.parentElement.bounds.Height / 2 + element.bounds.Height +
+                                               totalPriorElementWidth;
                             break;
                         case Alignment.Bottom:
-                            element.bounds.Y = element.parentElement.bounds.Height - element.bounds.Height + totalPriorElementWidth;
+                            element.bounds.Y = element.parentElement.bounds.Height - element.bounds.Height +
+                                               totalPriorElementWidth;
                             break;
                     }
 
-                    totalPriorElementWidth += elementSpacing;
+                    totalPriorElementWidth += this.elementSpacing;
                 }
             }
-            else if (childOrientation == Orientation.Vertical)
+            else if (this.childOrientation == Orientation.Vertical)
             {
-                int totalPriorElementHeight = margins;
+                int totalPriorElementHeight = this.margins;
                 string blah = this.labelText;
-                string blah2 = this.name;
+                string? blah2 = this.name;
 
-                foreach (UiElement element in visibleElements)
+                foreach (var element in this.visibleElements)
                 {
-                    switch (childAlignment)
+                    switch (this.childAlignment)
                     {
                         case Alignment.Left:
                             element.bounds.X = element.parentElement.bounds.Left + element.parentElement.margins;
@@ -218,25 +224,14 @@ namespace DecidedlyShared.UI
                             element.bounds.Y = element.parentElement.bounds.Top + totalPriorElementHeight;
                             break;
                         case Alignment.Right:
-                            element.bounds.Y = element.parentElement.bounds.Height - element.bounds.Height + totalPriorElementHeight;
+                            element.bounds.Y = element.parentElement.bounds.Height - element.bounds.Height +
+                                               totalPriorElementHeight;
                             break;
                     }
 
-                    totalPriorElementHeight += elementSpacing + element.bounds.Height;
+                    totalPriorElementHeight += this.elementSpacing + element.bounds.Height;
                 }
             }
-        }
-
-        public UiElement(string name, string label, string hoverText, int width = 0, int height = 0, Orientation orientation = Orientation.Vertical, Alignment childAlignment = Alignment.Middle, int elementSpacing = 0) : base(new Rectangle(0, 0, 0, 0), Game1.menuTexture, new Rectangle(0, 256, 60, 60), 1f, false)
-        {
-            childElements = new List<UiElement>();
-            this.bounds.Width = width;
-            this.bounds.Height = height;
-            this.childAlignment = childAlignment;
-            this.childOrientation = orientation;
-            this.elementSpacing = elementSpacing;
-            this.labelText = label;
-            visibleElements = new List<UiElement>();
         }
 
         public void Draw(SpriteBatch sb)
@@ -246,32 +241,30 @@ namespace DecidedlyShared.UI
             {
                 // If our parentElement is null, we're the root element, so we don't want a hover effect.
                 if (this.isHovered && this.parentElement != null)
-                {
                     sb.Draw(
                         Game1.mouseCursors,
-                        new Rectangle(this.parentElement.bounds.Left + 16, this.bounds.Y, parentElement.bounds.Width - 32, this.bounds.Height), 
+                        new Rectangle(this.parentElement.bounds.Left + 16, this.bounds.Y,
+                            this.parentElement.bounds.Width - 32, this.bounds.Height),
                         new Rectangle(269, 520, 1, 1),
                         new Color(221, 148, 84)
                     );
-                }
 
                 Drawing.DrawStringWithShadow(
-                    sb, 
-                    Game1.dialogueFont, 
-                    this.labelText, 
-                    new Vector2(this.bounds.X, this.bounds.Y), 
-                    Color.Black, 
+                    sb,
+                    Game1.dialogueFont,
+                    this.labelText,
+                    new Vector2(this.bounds.X, this.bounds.Y),
+                    Color.Black,
                     new Color(221, 148, 84));
             }
             else
             {
                 // We want to draw ourselves first, if we have a texture.
                 if (this.texture != null)
-                {
                     //sb.Draw(this.texture, this.bounds, this.sourceRect, Color.White);
                     IClickableMenu.drawTextureBox(
                         sb,
-                        this.texture, 
+                        this.texture,
                         this.sourceRect,
                         this.bounds.X,
                         this.bounds.Y,
@@ -281,7 +274,6 @@ namespace DecidedlyShared.UI
                         1f,
                         this.labelText.Equals("") ? false : true
                     );
-                }
             }
 
             // And our children second, so we don't cover them.
@@ -290,11 +282,9 @@ namespace DecidedlyShared.UI
             //     element.Draw(sb);
             // }
 
-            foreach (UiElement element in visibleElements)
-            {
+            foreach (var element in this.visibleElements)
                 element.Draw(sb);
-            }
-            
+
             // for (int i = currentTopIndex; i < Math.Min(childElements.Count, maxElementsVisible); i++)
             // {
             //     childElements[i].Draw(sb);
