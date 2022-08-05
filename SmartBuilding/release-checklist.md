@@ -8,6 +8,7 @@ Not all aspects necessarily need to be checkeed based on the scope of the releas
 ## 1.0.8
 
 Checklist:
+
 * Flooring (regular) — PASSED
 * Flooring (replacement) — PASSED
 * Flooring (regular and replacement) — PASSED
@@ -25,6 +26,7 @@ Checklist:
 ## 1.1.0
 
 Checklist
+
 * Flooring (regular) — PASSED
 * Flooring (replacement) — PASSED
 * Flooring (regular and replacement) — PASSED
@@ -51,6 +53,7 @@ Checklist
 ## 1.1.1 — Hotfix for tree planting
 
 Checklist
+
 * Flooring (regular) —
 * Flooring (replacement) —
 * Flooring (regular and replacement) —
@@ -78,52 +81,73 @@ Checklist
 ## 1.2.0 — Massive restructuring of logic and code, and good Furniture support. *TRIPLE CHECK EVERYTHING.*
 
 Checklist
+
 * Flooring (regular; including under fences) — PASSED
 * Flooring (replacement) — PASSED
 * Flooring (regular and replacement) — PASSED
 * Flooring (less restrictive mode) — PASSED
 * Flooring (less restrictive mode + replacement) — PASSED
 * Flooring (removal) — PASSED
+
 ---
+
 * Furniture (placement) — PASSED
 * Furniture (removal) — PASSED
 * Furniture (less restrictive placement) — PASSED
 * Furniture (functionality, i.e., lighting, etc.) — PASSED
+
 ---
+
 * TV Furniture (placement) — PASSED
 * TV Furniture (removal) — PASSED
 * TV Furniture (less restrictive placement) — PASSED
 * TV Furniture (functionality, i.e., weather report, etc.) — PASSED
+
 ---
+
 * Storage Furniture (placement) — PASSED
 * Storage Furniture (removal) — PASSED
 * Storage Furniture (less restrictive placement) — PASSED
 * Storage Furniture (functionality, i.e., item storage) — PASSED
 * Storage Furniture (item retention) — PASSED
+
 ---
+
 * Bed Furniture (placement) — PASSED
 * Bed Furniture (removal) — PASSED
 * Bed Furniture (less restrictive placement) — PASSED
 * Bed Furniture (functionality, i.e., sleeping) — PASSED
+
 ---
+
 * Chests (placement) — PASSED
 * Chests (removal) — PASSED
+
 ---
+
 * Trees (regular) — PASSED
 * Trees (fruit) — PASSED
 * Tree fertilizer (with and without setting) — PASSED
 * Tappers (with and without setting) — PASSED
 * Tappers (removal) — PASSED
+
 ---
+
 * Fertilizer (with and without setting) — PASSED
 * Seeds (with and without setting) — PASSED
+
 ---
+
 * Fences (regular) — PASSED
 * Fences (replacement) — PASSED
+
 ---
+
 * Modded objects (placement) — PASSED
 * Modded objects (removal) — PASSED
+
 ---
+
 * Interactions with menus — PASSED
 * Leftover debug gubbins (some in Harmony patches) — PASSED
 * Version bump — PASSED
@@ -132,16 +156,22 @@ Checklist
 ## 1.3.1 — Addition of item insertion, extra Harmony patches to block interactions while in build mode, and fixes for placement of modded seeds.
 
 ### Interaction blocking
-### Misc 
+
+### Misc
+
 * Leftover debug gubbins
 * Version bump
 
 ### Object and producer identification
+
 ### Flooring
+
 ### Furniture
 
 ### TV Furniture
+
 ### Storage furniture
+
 ### Bed furniture
 
 ### Chests
@@ -161,10 +191,13 @@ Checklist
 ## 1.3.3 — Fixed bug in build queue scaling.
 
 ### Interaction blocking
+
 *
+
 ### Misc
 
 ### Object and producer identification
+
 ### Flooring
 
 ### Furniture
@@ -186,11 +219,10 @@ Checklist
 ### Modded objects
 
 ### Item insertion
+
 ### Item insertion (modded; PFM)
 
 ## 1.4.0 — Added constant pickup toggle, and fixed bug with picking up auto-grabbers and tree tappers.
-
-
 
 ### Misc
 
@@ -219,6 +251,7 @@ Checklist
 ### Modded objects — "modded"
 
 ### Item insertion — "insertion"
+
 ### Item insertion (modded; PFM)
 
 ## 1.5.0 — Added i18n support with Chinese translation (thanks to Becks723), and support for More Fertilizers.
@@ -256,7 +289,7 @@ Checklist
 ### Modded objects — "modded"
 
 ### Item insertion — "insertion"
- 
+
 ### Item insertion (modded; PFM)
 
 ## 1.6.0 — Rectangle drawing, and torches on fences.
@@ -272,7 +305,9 @@ Checklist
 ### Known prior bugs. Ensure no regression — "regression"
 
 ### Object and producer identification — "identification"
+
     *
+
 ### Flooring — "flooring"
 
 ### Furniture — "furniture"
@@ -306,10 +341,12 @@ Checklist
 ### Interaction blocking
 
 ### Misc
+
 * Leftover debug gubbins
 * Version bump
 
 ### I18n Translations
+
 * Ensure other languages (zh right now) function correctly
 
 ### Mod Integration
