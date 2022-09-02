@@ -49,7 +49,8 @@ namespace CarryYourPet.Patches
 
         public static bool FarmerIsCarrying_Postfix(bool __result)
         {
-            __result = carriedCharacter.Npc != null;
+            if (carriedCharacter.Npc != null)
+                __result = true;
 
             return __result;
         }
