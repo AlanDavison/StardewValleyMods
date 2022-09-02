@@ -9,7 +9,9 @@
     <Import_RootNamespace>DecidedlyShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\IDynamicGameAssetsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\IMoreFertilizersAPI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISpaceCoreApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ITapGiantCropsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IToolbarIconsApi.cs" />
@@ -17,6 +19,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Directions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ToolToBreak.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Translations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\ButtonWatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\InputEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyWatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MouseWatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Alignment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Orientation.cs" />
