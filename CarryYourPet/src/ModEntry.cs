@@ -142,8 +142,6 @@ namespace CarryYourPet
                 character.position.Value = Game1.player.position.Value + new Vector2(-32f, -112f);
             else if (character is FarmAnimal)
                 character.position.Value = Game1.player.position.Value + new Vector2(-32f, -168f);
-
-            Game1.player.showCarrying();
         }
     }
 }
