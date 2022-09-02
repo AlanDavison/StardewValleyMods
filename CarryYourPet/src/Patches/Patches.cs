@@ -62,10 +62,16 @@ namespace CarryYourPet.Patches
                 // If the carried NPC is not null, we need to control the drawing.
                 if (carriedCharacter?.Npc != null)
                 {
-                    // If ShouldDraw is true, it means we're manually drawing for this frame, so we should return true to allow the method to run.
-                    if (carriedCharacter.ShouldDraw)
+                    // If this is the Pet instance we're carrying, we need to handle the drawing.
+                    if (__instance == carriedCharacter?.Npc)
+                    {
+                        // If ShouldDraw is true, it means we're manually drawing for this frame, so we should return true to allow the method to run.
+                        if (carriedCharacter.ShouldDraw)
+                            return true;
+                        return false;
+                    }
+                    else // If it isn't, we allow the game to draw as per usual.
                         return true;
-                    return false;
                 }
             }
             catch (Exception e)
