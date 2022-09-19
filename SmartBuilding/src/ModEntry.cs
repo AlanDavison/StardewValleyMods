@@ -7,7 +7,6 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SmartBuilding.APIs;
 using SmartBuilding.UI;
 using SmartBuilding.Utilities;
 using StardewModdingAPI;
@@ -16,7 +15,7 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.Objects;
-using IGenericModConfigMenuApi = SmartBuilding.APIs.IGenericModConfigMenuApi;
+using IGenericModConfigMenuApi = DecidedlyShared.APIs.IGenericModConfigMenuApi;
 using Patches = SmartBuilding.HarmonyPatches.Patches;
 using SObject = StardewValley.Object;
 
@@ -917,7 +916,7 @@ namespace SmartBuilding
                         }
                     }
 
-            // If the player is attempting to draw placeables in the world. 
+            // If the player is attempting to draw placeables in the world.
             if (config.HoldToDraw.IsDown())
             {
                 if (this.modState.BuildingMode)

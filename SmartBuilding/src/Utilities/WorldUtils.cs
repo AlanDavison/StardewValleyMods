@@ -438,6 +438,7 @@ namespace SmartBuilding.Utilities
                 }
                 else if (itemInfo.ItemType == ItemType.GenericFurniture)
                 {
+                    // TODO: Fix bug where placing furniture with more lax placement on ignores rotations.
                     bool placedSuccessfully = false;
                     Furniture furniture = null;
 
