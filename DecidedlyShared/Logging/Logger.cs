@@ -10,7 +10,7 @@ namespace DecidedlyShared.Logging
         private ITranslationHelper translationHelper;
         //private HashSet<> messageQueue;
 
-        public Logger(IMonitor monitor, ITranslationHelper translationHelper)
+        public Logger(IMonitor monitor, ITranslationHelper translationHelper = null)
         {
             this.monitor = monitor;
             this.translationHelper = translationHelper;
