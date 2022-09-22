@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 
 namespace DecidedlyShared.Utilities
 {
@@ -32,6 +34,26 @@ namespace DecidedlyShared.Utilities
                 text,
                 position,
                 textColour
+            );
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch doing the drawing.</param>
+        /// <param name="position">The pixel co-ordinate to draw our pixel at.</param>
+        public static void DrawSinglePixel(SpriteBatch spriteBatch, Vector2 position, Color colour)
+        {
+            spriteBatch.Draw(
+                Game1.mouseCursors,
+                position,
+                new Rectangle(177, 1355, 1, 1),
+                colour,
+                0f,
+                Vector2.Zero,
+                Game1.pixelZoom,
+                SpriteEffects.None,
+                1f
             );
         }
     }
