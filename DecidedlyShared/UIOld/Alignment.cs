@@ -1,4 +1,4 @@
-﻿namespace DecidedlyShared.UI
+﻿namespace DecidedlyShared.UIOld
 {
     public enum Alignment
     {

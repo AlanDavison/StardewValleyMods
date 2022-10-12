@@ -1,6 +1,7 @@
-﻿namespace DecidedlyShared.Input;
+﻿using System;
+using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 
-public class MouseWatch
-{
-    
-}
+namespace DecidedlyShared.Input;
+
+public record struct MouseWatch(MouseButton button, KeyPressType Type, Action? Callback, Action<string, LogLevel>? LogCallback);
