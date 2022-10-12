@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DecidedlyShared.APIs;
@@ -46,19 +47,18 @@ namespace SmartCursor
             helper.Events.Display.RenderedWorld += this.DisplayOnRenderedWorld;
             helper.Events.World.ObjectListChanged += this.WorldOnObjectListChanged;
             helper.Events.World.TerrainFeatureListChanged += this.WorldOnTerrainFeatureListChanged;
-            helper.Events.World.ResourceClumpListChanged += this.WorldOnResourceClumpListChanged;
             helper.Events.GameLoop.UpdateTicked += this.GameLoopOnUpdateTicked;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
         }
 
-        private void WorldOnResourceClumpListChanged(object? sender, ResourceClumpListChangedEventArgs e)
-        {
-            this.logger.Log("Resource clump event fired.", LogLevel.Info);
-            if (e.IsCurrentLocation)
-            {
-                this.GatherResources(e.Location);
-            }
-        }
+        // private void WorldOnResourceClumpListChanged(object? sender, ResourceClumpListChangedEventArgs e)
+        // {
+        //     this.logger.Log("Resource clump event fired.", LogLevel.Info);
+        //     if (e.IsCurrentLocation)
+        //     {
+        //         this.GatherResources(e.Location);
+        //     }
+        // }
 
         /// <summary>
         /// For clearing our targeted object, and setting our hold bool appropriately.
