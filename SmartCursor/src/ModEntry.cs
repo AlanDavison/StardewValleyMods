@@ -4,7 +4,6 @@ using System.Linq;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Constants;
 using DecidedlyShared.Logging;
-using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -24,18 +23,21 @@ namespace SmartCursor
         private Logger logger;
         private Vector2? targetedObject;
         private readonly int baseRange = 3;
-        private byte cooldownTimer;
-        private byte cooldownThreshold = 45;
+        private byte cooldownThreshold = 30;
         private bool isHoldKeyDown;
-        private float staminaPerHit;
+
+        private Dictionary<int, int> toolRanges = new Dictionary<int, int>();
 
         public override void Entry(IModHelper helper)
         {
+            // Create our initial tool range values.
+            for (int i = 0; i < 8; i++)
+                this.toolRanges.Add(i, i + 1);
+
             this.breakableResources = new List<BreakableEntity>();
             this.targetedObject = new Vector2();
             this.logger = new Logger(this.Monitor, helper.Translation);
             this.config = helper.ReadConfig<SmartCursorConfig>();
-            this.staminaPerHit = 1f;
             I18n.Init(helper.Translation);
 
             helper.Events.Player.Warped += this.OnPlayerWarped;
@@ -44,8 +46,18 @@ namespace SmartCursor
             helper.Events.Display.RenderedWorld += this.DisplayOnRenderedWorld;
             helper.Events.World.ObjectListChanged += this.WorldOnObjectListChanged;
             helper.Events.World.TerrainFeatureListChanged += this.WorldOnTerrainFeatureListChanged;
+            helper.Events.World.ResourceClumpListChanged += this.WorldOnResourceClumpListChanged;
             helper.Events.GameLoop.UpdateTicked += this.GameLoopOnUpdateTicked;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
+        }
+
+        private void WorldOnResourceClumpListChanged(object? sender, ResourceClumpListChangedEventArgs e)
+        {
+            this.logger.Log("Resource clump event fired.", LogLevel.Info);
+            if (e.IsCurrentLocation)
+            {
+                this.GatherResources(e.Location);
+            }
         }
 
         /// <summary>
@@ -70,6 +82,11 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
+            this.RegisterWithGmcm();
+        }
+
+        private void RegisterWithGmcm()
+        {
             var configMenuApi =
                 this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
 
@@ -89,6 +106,70 @@ namespace SmartCursor
                     () => this.config.SmartCursorHold,
                     button => this.config.SmartCursorHold = button,
                     () => I18n.Settings_Keybinds_HoldToActivate());
+
+                configMenuApi.AddSectionTitle(
+                    this.ModManifest,
+                    () => I18n.Settings_Ranges_TierRanges_Title());
+
+                configMenuApi.AddParagraph(
+                    this.ModManifest,
+                    () => I18n.Settings_Ranges_TierAmountNotice());
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierOneRange,
+                    setValue: i => { this.toolRanges[0] = i;},
+                    name: () => I18n.Settings_Ranges_Tier1Range(),
+                    min: 1,
+                    max: 20);
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierTwoRange,
+                    setValue: i => { this.toolRanges[1] = i;},
+                    name: () => I18n.Settings_Ranges_Tier2Range(),
+                    min: 1,
+                    max: 20);
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierThreeRange,
+                    setValue: i => { this.toolRanges[2] = i;},
+                    name: () => I18n.Settings_Ranges_Tier3Range(),
+                    min: 1,
+                    max: 20);
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierFourRange,
+                    setValue: i => { this.toolRanges[3] = i;},
+                    name: () => I18n.Settings_Ranges_Tier4Range(),
+                    min: 1,
+                    max: 20);
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierFiveRange,
+                    setValue: i => { this.toolRanges[4] = i;},
+                    name: () => I18n.Settings_Ranges_Tier5Range(),
+                    min: 1,
+                    max: 20);
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierSixRange,
+                    setValue: i => { this.toolRanges[5] = i;},
+                    name: () => I18n.Settings_Ranges_Tier6Range(),
+                    min: 1,
+                    max: 20);
+
+                configMenuApi.AddNumberOption(
+                    mod: this.ModManifest,
+                    getValue: () => this.config.TierSevenRange,
+                    setValue: i => { this.toolRanges[6] = i;},
+                    name: () => I18n.Settings_Ranges_Tier7Range(),
+                    min: 1,
+                    max: 20);
 
                 configMenuApi.AddSectionTitle(
                     this.ModManifest,
@@ -139,19 +220,17 @@ namespace SmartCursor
         /// </summary>
         private void GameLoopOnUpdateTicked(object? sender, UpdateTickedEventArgs e)
         {
-            this.cooldownTimer++;
-
             // We only want to process any of this if our smart cursor key is held down.
             if (this.isHoldKeyDown)
             {
                 // We need a player reference to get its position.
-                var player = Game1.player;
+                Farmer? player = Game1.player;
 
                 // This is where our calculated object distances will go. Should be optimised in future.
                 Dictionary<BreakableEntity, float> objectDistancesFromPlayer;
 
                 // Grab a reference for our player tile.
-                var playerTile = Game1.player.getTileLocation();
+                Vector2 playerTile = Game1.player.getTileLocation();
 
                 if (player.CurrentTool != null)
                     this.targetedObject = this.GetTileToTarget(playerTile, player.CurrentTool);
@@ -163,25 +242,37 @@ namespace SmartCursor
             MouseState mouseState = Game1.input.GetMouseState();
 
             // Now, if our cooldown timer has passed and the correct keys are held, we want to hit again.
-            if (this.cooldownTimer >= this.cooldownThreshold && this.isHoldKeyDown && (gamepadState.IsButtonDown(Buttons.X)
-                    || mouseState.LeftButton == ButtonState.Pressed))
+            if (this.isHoldKeyDown && (gamepadState.IsButtonDown(Buttons.X)
+                    || mouseState.LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
             {
-                if (Game1.player.UsingTool)
-                    return;
+                // if (Game1.player.UsingTool)
+                //     return;
+                Game1.player.UsingTool = true;
 
                 var dummy = new Farmer();
 
                 if (this.targetedObject.HasValue && Game1.player.CurrentTool != null)
                 {
-                    Game1.player.CurrentTool.DoFunction(
-                        Game1.currentLocation,
-                        (int)this.targetedObject.Value.X * 64,
-                        (int)this.targetedObject.Value.Y * 64, 1, dummy);
+                    this.BreakObject(Game1.player, Game1.player.CurrentTool, true);
 
                     this.GatherResources(Game1.currentLocation);
-                    this.cooldownTimer = 0;
                 }
+
+                Game1.player.EndUsingTool();
             }
+        }
+
+        private void BreakObject(Farmer player, Tool tool, bool refundStamina)
+        {
+            float startingStamina = player.stamina;
+
+            tool.DoFunction(
+                Game1.currentLocation,
+                (int)this.targetedObject.Value.X * 64,
+                (int)this.targetedObject.Value.Y * 64, 1, player);
+
+            if (refundStamina)
+                player.stamina = startingStamina;
         }
 
         /// <summary>
@@ -228,7 +319,7 @@ namespace SmartCursor
                     var sortedDistances =
                         from distance in objectDistancesFromPlayer
                         where distance.Key.Type == breakableType &&
-                              distance.Value < this.baseRange + tool.UpgradeLevel
+                              distance.Value < this.toolRanges[tool.UpgradeLevel] + 1
                         orderby distance.Value
                         select distance;
 
@@ -257,6 +348,15 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void WorldOnObjectListChanged(object? sender, ObjectListChangedEventArgs e)
         {
+            this.logger.Log("Object event fired.", LogLevel.Info);
+            if (e.IsCurrentLocation)
+            {
+                this.GatherResources(e.Location);
+            }
+        }
+
+        private void WorldOnLargeTerrainFeatureListChanged(object? sender, LargeTerrainFeatureListChangedEventArgs e)
+        {
             if (e.IsCurrentLocation)
             {
                 this.GatherResources(e.Location);
@@ -271,6 +371,7 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void WorldOnTerrainFeatureListChanged(object? sender, TerrainFeatureListChangedEventArgs e)
         {
+            this.logger.Log("Terrain feature event fired.", LogLevel.Info);
             if (e.IsCurrentLocation)
             {
                 this.GatherResources(e.Location);
@@ -317,10 +418,7 @@ namespace SmartCursor
             {
                 if (this.targetedObject.HasValue && Game1.player.CurrentTool != null)
                 {
-                    Game1.player.CurrentTool.DoFunction(
-                        Game1.currentLocation,
-                        (int)this.targetedObject.Value.X * 64,
-                        (int)this.targetedObject.Value.Y * 64, 1, dummy);
+                    this.BreakObject(Game1.player, Game1.player.CurrentTool, true);
 
                     this.GatherResources(Game1.currentLocation);
                 }
@@ -355,18 +453,23 @@ namespace SmartCursor
 
             // First, we loop through the location's objects and add them to our breakable resources list.
             foreach (KeyValuePair<Vector2, SObject> pair in location.Objects.Pairs)
+            {
                 if (pair.Value.Category == 0)
                     this.breakableResources.Add(new BreakableEntity(pair.Value, this.config));
+            }
 
             // Then the same with terrain features.
             foreach (var feature in location.terrainFeatures.Values)
+            {
                 if (feature is Tree tree)
                     this.breakableResources.Add(new BreakableEntity(tree, this.config));
+            }
 
             // And finally, resource clumps.
             foreach (var clump in location.resourceClumps)
             {
                 this.breakableResources.Add(new BreakableEntity(clump, this.config));
+                // this.logger.Log($"Clump parentSheetIndex: {clump.parentSheetIndex}");
             }
 
             time.Stop();
