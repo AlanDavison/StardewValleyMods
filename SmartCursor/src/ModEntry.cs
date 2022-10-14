@@ -214,29 +214,40 @@ namespace SmartCursor
             }
         }
 
+        //TODO we probably don't need to update this every updateTick
+        // update when:
+        // use tool button is pressed
+        // after BreakObject()
+        //
+        // this is probably used for showing the target too, so update when:
+        // after GatherResources()
+        // after player moves
+        // after player changes tool
+        //
+        // are there other events for which we should update?
+        private void updateTargetedObject()
+        {
+            // We only want to process any of this if our smart cursor key is held down.
+            if (this.isHoldKeyDown)
+            {
+                this.targetedObject = this.GetTileToTargetForPlayer(Game1.player);
+            }
+            else
+            {
+                this.targetedObject = null;
+            }
+                
+        }
+
         /// <summary>
         /// Every tick while the smart cursor key is held down, we want to check distances.
         /// This could do with some heavy optimisation, but it doesn't seem to hurt performance for me.
         /// </summary>
         private void GameLoopOnUpdateTicked(object? sender, UpdateTickedEventArgs e)
         {
-            // We only want to process any of this if our smart cursor key is held down.
-            if (this.isHoldKeyDown)
-            {
-                // We need a player reference to get its position.
-                Farmer? player = Game1.player;
-
-                // This is where our calculated object distances will go. Should be optimised in future.
-                Dictionary<BreakableEntity, float> objectDistancesFromPlayer;
-
-                // Grab a reference for our player tile.
-                Vector2 playerTile = Game1.player.getTileLocation();
-
-                if (player.CurrentTool != null)
-                    this.targetedObject = this.GetTileToTarget(playerTile, player.CurrentTool);
-            }
-            else
-                this.targetedObject = null;
+            //TODO should we update GamePadState and MouseState before checking isHoldKeyDown?
+            //TODO don't call this from GameLoopOnUpdateTicked
+            updateTargetedObject();
 
             GamePadState gamepadState = Game1.input.GetGamePadState();
             MouseState mouseState = Game1.input.GetMouseState();
@@ -276,18 +287,24 @@ namespace SmartCursor
         }
 
         /// <summary>
-        /// Calculate the distance between the player and all resources, and return the closest resource, which we
-        /// then want to target.
+        /// return the tile location of the closest resource that is targetable by the current tool
         /// </summary>
-        /// <param name="playerTile">The <see cref="Vector2"> tile the player is standing on.</param>
-        /// <param name="tool"></param>
-        /// <param name="breakableType"></param>
-        private Vector2? GetTileToTarget(Vector2 playerTile, Tool tool)
+        /// <param name="player">The <see cref="Farmer"></param>
+        private Vector2? GetTileToTargetForPlayer(Farmer player)
         {
-            Dictionary<BreakableEntity, float> objectDistancesFromPlayer = new Dictionary<BreakableEntity, float>();
-            BreakableType breakableType;
+            // Grab a reference for our player tile.
+            Vector2 playerTile = Game1.player.getTileLocation();
 
-            switch (tool)
+            if (player.CurrentTool == null)
+            {
+                //NOTE: durring refactoring, I noticed this.targetedObject was set to null if !isHoldKeyDown,
+                // but this.targetedObject was just unchanged when player.CurrentTool was null.
+                // That seemed unintentional but I'm making a note because this is a functional change.
+                return null;
+            }
+
+            BreakableType breakableType;
+            switch (player.CurrentTool)
             {
                 case Pickaxe:
                     breakableType = BreakableType.Pickaxe;
@@ -303,12 +320,27 @@ namespace SmartCursor
                     break;
             }
 
+            return GetTileToTarget(playerTile, breakableType, this.breakableResources, this.toolRanges[player.CurrentTool.UpgradeLevel] + 1f);
+        }
+
+        /// <summary>
+        /// Calculate the distance between the player and all resources, and return the closest resource, which we
+        /// then want to target.
+        /// </summary>
+        /// <param name="playerTile">The <see cref="Vector2"> tile the player is standing on.</param>
+        /// <param name="breakableType" The <see cref="BreakableEntity"> target type></param>
+        /// <param name="resources" The <see cref="List<BreakableEntity>"> targets to consider></param>
+        /// <param name="toolRange" The <see cref="float"> radius that the tool can reach></param>
+        private Vector2? GetTileToTarget_Old(Vector2 playerTile, BreakableType breakableType, List<BreakableEntity> resources, float toolRange)
+        {
+            Dictionary<BreakableEntity, float> objectDistancesFromPlayer = new Dictionary<BreakableEntity, float>();
+
             // We don't need to do any of this if the player isn't holding a whitelisted tool.
             if (breakableType != BreakableType.NotAllowed)
             {
                 // Loop through the breakable resources gathered for this map, and add them to a new Dictionary along
                 // with the distance between the player and the resource.
-                foreach (var resource in this.breakableResources)
+                foreach (var resource in resources)
                     objectDistancesFromPlayer.Add(resource, Vector2.Distance(resource.Tile, playerTile));
 
                 // If there's anything in our new distances dictionary...
@@ -319,7 +351,7 @@ namespace SmartCursor
                     var sortedDistances =
                         from distance in objectDistancesFromPlayer
                         where distance.Key.Type == breakableType &&
-                              distance.Value < this.toolRanges[tool.UpgradeLevel] + 1
+                              distance.Value < toolRange
                         orderby distance.Value
                         select distance;
 
@@ -339,6 +371,50 @@ namespace SmartCursor
 
             return null;
         }
+
+        /// <summary>
+        /// How is this faster than before:
+        /// This mod calculates range as a circle shape
+        /// Calculating a Vector2.Distance uses Math.Sqrt which is slow.
+        /// It is faster to compare Vector2.DistanceSquared to toolRangeSquared.
+        /// 
+        /// If we were to calculate range as a square shape like the base game 
+        /// We we would need Math.abs and/or more value comparisons
+        /// 
+        /// also creating and sorting a dictionary is slow, particularly when we only care about the nearest item result.
+        /// </summary>
+        /// <param name="playerTile">The <see cref="Vector2"> tile the player is standing on.</param>
+        /// <param name="breakableType" The <see cref="BreakableEntity"> target type></param>
+        /// <param name="resources" The <see cref="List<BreakableEntity>"> targets to consider></param>
+        /// <param name="toolRange" The <see cref="float"> radius that the tool can reach></param>
+        private Vector2? GetTileToTarget(Vector2 playerTile, BreakableType breakableType, List<BreakableEntity> resources, float toolRange)
+        {
+            float nearestDistanceSquared = float.MaxValue;
+            Vector2? nearestTile = null;
+            float toolRangeSquared = toolRange * toolRange;
+            foreach (BreakableEntity resource in resources)
+            {
+                if (resource.Type == breakableType) //tile is valid
+                {
+                    float distanceSquared = Vector2.DistanceSquared(resource.Tile, playerTile);
+                    if(distanceSquared < nearestDistanceSquared) //tile is the new closest
+                    {
+                        nearestDistanceSquared = distanceSquared;
+                        nearestTile = resource.Tile;
+                    }
+                }
+            }
+            if(nearestDistanceSquared < toolRangeSquared)
+            {
+                return nearestTile;
+            }
+            else
+            {
+                return null; //no valid tiles were near enough for your tool
+            }
+        }
+
+        
 
         /// <summary>
         ///     Triggered when the world's object list changes, so the current location's resources can be
