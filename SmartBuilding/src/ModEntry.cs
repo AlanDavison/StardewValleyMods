@@ -17,7 +17,6 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using IGenericModConfigMenuApi = DecidedlyShared.APIs.IGenericModConfigMenuApi;
 using Patches = SmartBuilding.HarmonyPatches.Patches;
-using SObject = StardewValley.Object;
 
 namespace SmartBuilding
 {
@@ -763,6 +762,9 @@ namespace SmartBuilding
                 this.commands.IdentifyItemsCommand);
             this.Helper.ConsoleCommands.Add("sb_identify_cursor_target", "Identify targets under the cursor.",
                 this.commands.IdentifyCursorTarget);
+            this.Helper.ConsoleCommands.Add("sb_count",
+                "Count how many instances of an object exist in the current map.",
+                this.commands.CountInMap);
 
             // Then get the initial state of the item stowing mode setting.
             this.previousStowingMode = Game1.options.stowingMode;

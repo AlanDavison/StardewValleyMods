@@ -7,7 +7,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
-using SObject = StardewValley.Object;
 
 namespace SmartBuilding.Utilities
 {
@@ -22,8 +21,8 @@ namespace SmartBuilding.Utilities
         private readonly PlayerUtils playerUtils;
 
         public WorldUtils(IdentificationUtils identificationUtils, PlacementUtils placementutils,
-                          PlayerUtils playerUtils, ITapGiantCropsAPI giantCropTapApi, ModConfig config, Logger logger,
-                          IMoreFertilizersAPI moreFertilizersApi)
+            PlayerUtils playerUtils, ITapGiantCropsAPI giantCropTapApi, ModConfig config, Logger logger,
+            IMoreFertilizersAPI moreFertilizersApi)
         {
             this.identificationUtils = identificationUtils;
             this.placementUtils = placementutils;
@@ -510,11 +509,11 @@ namespace SmartBuilding.Utilities
                         this.playerUtils.RefundItem(item.Value.Item,
                             I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
                 }
-
             }
             else
             {
-                this.playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(), LogLevel.Error);
+                this.playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(),
+                    LogLevel.Error);
             }
         }
 
@@ -640,12 +639,46 @@ namespace SmartBuilding.Utilities
                             return;
 
                         // Now we need to figure out whether the object has a heldItem within it.
-                        if (o.heldObject != null)
+                        if (o.heldObject.Value != null)
+                        {
                             // There's an item inside here, so we need to determine whether to refund the item, or discard it if it's a chest.
                             if (o.heldObject.Value is Chest)
+                            {
                                 // It's a chest, so we want to force it to drop all of its items.
                                 if ((o.heldObject.Value as Chest).items.Count > 0)
                                     (o.heldObject.Value as Chest).destroyAndDropContents(tile * 64, here);
+                            }
+                            else
+                            {
+                                // We know there's a held object, and it isn't a chest. At this point, I know of
+                                // only two things it can be: pressure nozzles, or enrichers.
+                                // TODO: Modularise this for the big rewrite. This is a quick, hacky fix.
+
+                                if (o.heldObject.Value != null && o.heldObject.Value.ParentSheetIndex == 915)
+                                {
+                                    // This is a pressure nozzle, so we refund it before destroying the sprinkler.
+                                    Game1.player.addItemByMenuIfNecessary(o.heldObject.Value.getOne());
+                                }
+                                else if (o.heldObject.Value.ParentSheetIndex == 913)
+                                {
+                                    // This is an enricher, which itself should have a held object. Held objectception.
+
+                                    if (o.heldObject.Value.heldObject.Value != null)
+                                    {
+                                        // It, does, indeed has a held object.
+
+                                        if (o.heldObject.Value.heldObject.Value is Chest enricherChest)
+                                        {
+                                            // And it is definitely a chest, so we want the chest to drop its items.
+                                            enricherChest.destroyAndDropContents(tile * 64, here);
+                                        }
+                                    }
+
+                                    // We now want to refund the enricher itself.
+                                    Game1.player.addItemByMenuIfNecessary(o.heldObject.Value.getOne());
+                                }
+                            }
+                        }
 
                         o.performRemoveAction(tile * 64, here);
                         Game1.player.addItemByMenuIfNecessary(o.getOne());

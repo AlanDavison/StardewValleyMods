@@ -7,7 +7,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
-using SObject = StardewValley.Object;
 
 namespace SmartBuilding.Utilities
 {
@@ -21,8 +20,8 @@ namespace SmartBuilding.Utilities
         private readonly IMoreFertilizersAPI? moreFertilizersApi;
 
         public PlacementUtils(ModConfig config, IdentificationUtils identificationUtils,
-                              IMoreFertilizersAPI moreFertilizersApi, ITapGiantCropsAPI giantCropTapApi, Logger logger,
-                              IModHelper helper)
+            IMoreFertilizersAPI moreFertilizersApi, ITapGiantCropsAPI giantCropTapApi, Logger logger,
+            IModHelper helper)
         {
             this.config = config;
             this.identificationUtils = identificationUtils;
@@ -98,9 +97,8 @@ namespace SmartBuilding.Utilities
                             return true;
                         }
                     }
-                    else
-                        goto
-                            GenericPlaceable; // Please don't hate me too much. This is temporary until everything gets split out into separate methods eventually.
+                    else // This is temporary until everything gets split out into separate methods eventually.
+                        goto GenericPlaceable;
 
                     break;
                 case ItemType.CrabPot

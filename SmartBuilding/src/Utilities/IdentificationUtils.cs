@@ -5,7 +5,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
-using SObject = StardewValley.Object;
 
 namespace SmartBuilding.Utilities
 {
@@ -19,7 +18,7 @@ namespace SmartBuilding.Utilities
         private PlacementUtils placementUtils;
 
         public IdentificationUtils(IModHelper helper, Logger logger, ModConfig config, IDynamicGameAssetsApi? dgaApi,
-                                   IMoreFertilizersAPI? moreFertilizersApi, PlacementUtils placementUtils)
+            IMoreFertilizersAPI? moreFertilizersApi, PlacementUtils placementUtils)
         {
             this.helper = helper;
             this.logger = logger;

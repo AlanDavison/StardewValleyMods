@@ -6,7 +6,6 @@ using SmartBuilding.HarmonyPatches;
 using SmartBuilding.UI;
 using SmartBuilding.Utilities;
 using StardewValley;
-using SObject = StardewValley.Object;
 
 namespace SmartBuilding
 {
@@ -24,7 +23,7 @@ namespace SmartBuilding
         private Dictionary<Vector2, ItemInfo> tilesSelected = new();
 
         public ModState(Logger logger, PlayerUtils playerUtils, IdentificationUtils identificationUtils,
-                        WorldUtils worldUtils, PlacementUtils placementUtils)
+            WorldUtils worldUtils, PlacementUtils placementUtils)
         {
             this.logger = logger;
             this.playerUtils = playerUtils;
@@ -159,7 +158,7 @@ namespace SmartBuilding
 
             var itemInfo = this.identificationUtils.GetItemInfo((SObject)item);
 
-            // We only want to add the tile if the Dictionary doesn't already contain it. 
+            // We only want to add the tile if the Dictionary doesn't already contain it.
             if (!this.tilesSelected.ContainsKey(v))
                 // We then want to check if the item can even be placed in this spot.
                 if (this.placementUtils.CanBePlacedHere(v, item))

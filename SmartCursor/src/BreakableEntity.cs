@@ -1,7 +1,6 @@
 ﻿using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using StardewValley.TerrainFeatures;
-using SObject = StardewValley.Object;
 
 namespace SmartCursor
 {
