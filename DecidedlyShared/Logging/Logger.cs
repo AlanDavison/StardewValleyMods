@@ -17,12 +17,12 @@ namespace DecidedlyShared.Logging
             this.translationHelper = translationHelper;
         }
 
-        public void Log(string logMessage, LogLevel logLevel = LogLevel.Info, bool shouldAlwaysDisplayInHud = false)
+        public void Log(string logMessage, LogLevel logLevel = LogLevel.Info, bool displayInHud = false)
         {
             this.monitor.Log(logMessage, logLevel);
 
-            // If it's a high priority LogLevel or it's marked as should be displayed, we display it on the screen if we're in-game.
-            if (Context.IsWorldReady && (logLevel >= LogLevel.Warn || shouldAlwaysDisplayInHud))
+            // If this is marked as should be displayed, we display it on the screen if we're in-game.
+            if (Context.IsWorldReady && (displayInHud))
             {
                 HUDMessage message = new(logMessage, 2);
 
@@ -31,9 +31,14 @@ namespace DecidedlyShared.Logging
             }
         }
 
-        public void Error(string logMessage)
+        public void Error(string logMessage, bool displayInHud = false)
         {
-            this.Log(logMessage, LogLevel.Error, true);
+            this.Log(logMessage, LogLevel.Error, displayInHud);
+        }
+
+        public void Warn(string logMessage, bool displayInHud = false)
+        {
+            this.Log(logMessage, LogLevel.Warn, displayInHud);
         }
 
         public void Exception(Exception e)
