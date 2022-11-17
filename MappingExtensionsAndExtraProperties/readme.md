@@ -6,11 +6,12 @@ All releases can be found on my [Nexus page](https://www.nexusmods.com/users/794
 This mod does nothing on its own. Its primary purpose is to allow map authors to spice up their maps with the new custom tile properties, extra features, etc., that this mod adds.
 
 ## Current tile properties
+### Click on the link to go to the mini-docs for each one
 | **Tile Property**                                                           | **Layer** | **Description**                                                                                                                                                                                                                                     |
 |-----------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [*CloseupInteraction_Image*](#Using-the-CloseupInteraction-tile-properties) | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use. |
-| [*CloseupInteraction_Text*]()                                               | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                 |
-| [*DHSetMailFlag*]()                                                         | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                |
+| [*CloseupInteraction_Text*](#Using-the-CloseupInteraction-tile-properties)  | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                 |
+| [*DHSetMailFlag*](#Using-the-DHSetMailFlag-tile-property)                   | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                |
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -66,7 +67,7 @@ In `540 305 42 28`, `540` is the x co-ordinate of the top-left corner of the reg
 
 **Warning**: It's worth keeping in mind the size of the image, and whether or not it will interfere with Stardew Valley when running at lower resolutions when combined with the text display option. I recommend you **always test your images at a varying UI scale settings and window sizes** if you want to play it safe.
 
-### Using the `DHSetMailFlag` tile property
+### Using the DHSetMailFlag tile property
 This one is fairly self-explanatory. You would add the tile property `DHSetMailFlag`, and the value for it is the mail flag you want to be set. for example:
 
 ```json
