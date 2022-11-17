@@ -74,12 +74,6 @@ This one is fairly self-explanatory. You would add the tile property `DHSetMailF
     "Format": "1.28.0",
     "Changes": [
         {
-            // Loading Pierre's shop counter image
-            "Action": "Load",
-            "Target": "Mods/DecidedlyHuman/PierreCounterThing",
-            "FromFile": "assets/pierre-counter-thing.png"
-        },
-        {
             // Apply the tile property
             "Action": "EditMap",
             "Target": "Maps/SeedShop",
