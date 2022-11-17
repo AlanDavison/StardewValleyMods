@@ -6,6 +6,7 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using xTile.Dimensions;
 using xTile.ObjectModel;
@@ -33,7 +34,7 @@ public static class Patches
             int tileX = tileLocation.X;
             int tileY = tileLocation.Y;
 
-            // Try to get the back property of the given tile.
+            // Check for a CloseupInteraction property on the given tile.
             if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionImage.TileProperty,
                     out PropertyValue closeupInteractionProperty))
             {
@@ -106,7 +107,19 @@ public static class Patches
                 // Finally, we create our menu, and set it to be the current, active menu.
                 MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.TileProperty}");
                 Game1.activeClickableMenu = menu;
-            } // We don't want to do anything if we reach this point. We can just the player was interacting with anything else.
+            }
+
+            // Check for the DHSetMailFlag property on a given tile.
+            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, DhSetMailFlag.TileProperty,
+                    out PropertyValue dhSetMailFlagProperty))
+            {
+                // It exists, so parse it.
+                if (Parsers.TryParse(dhSetMailFlagProperty.ToString(), out DhSetMailFlag parsedProperty))
+                {
+                    // We've parsed it, so we try setting the mail flag appropriately.
+                    Player.TryAddMailFlag(parsedProperty.MailFlag, Game1.player);
+                }
+            }
         }
         catch (Exception e)
         {

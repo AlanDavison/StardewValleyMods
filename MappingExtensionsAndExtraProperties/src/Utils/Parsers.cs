@@ -8,8 +8,17 @@ namespace MappingExtensionsAndExtraProperties.Utils;
 
 public class Parsers
 {
+    public static bool TryParse(string property, out DhSetMailFlag parsedProperty)
+    {
+        // There isn't really anything to parse here.
+        parsedProperty = new DhSetMailFlag(property);
+
+        return true;
+    }
+
     public static bool TryParse(string property, out CloseupInteractionText parsedProperty)
     {
+        // Not much to parse here, so we just set and return.
         parsedProperty = new CloseupInteractionText();
         parsedProperty.Text = property;
 

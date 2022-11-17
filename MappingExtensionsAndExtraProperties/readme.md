@@ -8,9 +8,9 @@ This mod does nothing on its own. Its primary purpose is to allow map authors to
 ## Current tile properties
 | **Tile Property**          | **Layer** | **Description**                                                                                                                                                                                                                                     |
 |----------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _CloseupInteraction_Image_ | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use. |
-| _CloseupInteraction_Text_  | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                 |
-
+| *CloseupInteraction_Image* | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use. |
+| *CloseupInteraction_Text*  | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                 |
+| *DHSetMailFlag*            | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                |
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -65,3 +65,46 @@ Will display the fortune teller, and a message reading "The spirits tell me you'
 In `540 305 42 28`, `540` is the x co-ordinate of the top-left corner of the region of the specified image you want to display, `305` is the y co-ordinate, `42` is the width, and `28` is the height.
 
 **Warning**: It's worth keeping in mind the size of the image, and whether or not it will interfere with Stardew Valley when running at lower resolutions when combined with the text display option. I recommend you **always test your images at a varying UI scale settings and window sizes** if you want to play it safe.
+
+### Using the `DHSetMailFlag` tile property
+This one is fairly self-explanatory. You would add the tile property `DHSetMailFlag`, and the value for it is the mail flag you want to be set. for example:
+
+```json
+{
+    "Format": "1.28.0",
+    "Changes": [
+        {
+            // Loading Pierre's shop counter image
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/PierreCounterThing",
+            "FromFile": "assets/pierre-counter-thing.png"
+        },
+        {
+            // Apply the tile property
+            "Action": "EditMap",
+            "Target": "Maps/SeedShop",
+            "When": {
+                "HasFlag |contains=DHSeenFortuneTellerImage": false
+            },
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 8,
+                        "Y": 18
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "CloseupInteraction_Image": "LooseSprites/Cursors 540 305 42 28",
+                        "CloseupInteraction_Text": "The spirits tell me you're learning how to use a new mod...",
+                        "DHSetMailFlag": "DHSeenFortuneTellerImage"
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+
+With this example, interacting with the tile will bring up the fortune teller image and message, and set the mail flag `DHSeenFortuneTellerImage`. Whenever Content Patcher refreshes its patches, the interaction to bring up the image and description will vanish.
+
+You could also use this for any kind of conditional patch that checks for a mail flag.
