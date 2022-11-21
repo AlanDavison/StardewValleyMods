@@ -18,10 +18,10 @@ public static class Patches
     private static Logger? logger = null;
     private static TilePropertyHandler? tileProperties = null;
 
-    public static void InitialisePatches(Logger logger)
+    public static void InitialisePatches(Logger logger, TilePropertyHandler tileProperties)
     {
         Patches.logger = logger;
-        tileProperties = new TilePropertyHandler(Patches.logger);
+        Patches.tileProperties = tileProperties;
     }
 
     public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
@@ -107,12 +107,13 @@ public static class Patches
                 // Finally, we create our menu, and set it to be the current, active menu.
                 MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.TileProperty}");
                 Game1.activeClickableMenu = menu;
+                menu.MenuOpened();
             }
 
             // Check for the DHSetMailFlag property on a given tile.
             if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, DhSetMailFlag.TileProperty,
                     out PropertyValue dhSetMailFlagProperty))
-            {
+            {Game1.isInspectionAtCurrentCursorTile = true;
                 // It exists, so parse it.
                 if (Parsers.TryParse(dhSetMailFlagProperty.ToString(), out DhSetMailFlag parsedProperty))
                 {
@@ -125,6 +126,23 @@ public static class Patches
         {
             logger.Error("Caught exception handling GameLocation.checkAction in a postfix. Details follow:");
             logger.Exception(e);
+        }
+    }
+
+    public static void Game1_drawMouseCursor_Prefix(Game1 __instance)
+    {
+        int xTile = (int)Game1.currentCursorTile.X;
+        int yTile = (int)Game1.currentCursorTile.Y;
+
+        if (tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, DhSetMailFlag.TileProperty,
+                out PropertyValue _) ||
+            tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, CloseupInteractionImage.TileProperty,
+                out PropertyValue _)
+
+           )
+        {
+            // Game1.isInspectionAtCurrentCursorTile = true;
+            Game1.mouseCursor = 5;
         }
     }
 }
