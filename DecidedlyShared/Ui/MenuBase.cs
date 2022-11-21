@@ -10,13 +10,14 @@ public class MenuBase : IClickableMenu
     // Every base menu needs a container, and only a container.
     private ContainerElement uiContainer;
     private string menuName;
+    private string openSound;
 
     public string MenuName
     {
         get => this.menuName;
     }
 
-    public MenuBase(ContainerElement uiContainer, string name)
+    public MenuBase(ContainerElement uiContainer, string name, string openSound = "bigSelect")
     {
         this.uiContainer = uiContainer;
         this.xPositionOnScreen = 0;
@@ -25,6 +26,12 @@ public class MenuBase : IClickableMenu
         this.height = Game1.uiViewport.Height;
         this.uiContainer.textureTint = Color.White;
         this.menuName = name;
+        this.openSound = openSound;
+    }
+
+    public void MenuOpened()
+    {
+        Game1.playSound(this.openSound);
     }
 
     public override void draw(SpriteBatch b)
