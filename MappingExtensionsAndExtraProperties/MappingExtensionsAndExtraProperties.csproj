@@ -6,9 +6,9 @@
     <PropertyGroup>
         <Name>Mapping Extensions and Extra Properties (MEEP)</Name>
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
-        <MinimumApiVersion>3.15.0</MinimumApiVersion>
-        <UpdateKeys>Nexus:00000</UpdateKeys>
-        <Version>1.0.0</Version>
+        <MinimumApiVersion>3.16.0</MinimumApiVersion>
+        <UpdateKeys>Nexus:14493</UpdateKeys>
+        <Version>1.0.1-testing</Version>
     </PropertyGroup>
 
     <PropertyGroup>
