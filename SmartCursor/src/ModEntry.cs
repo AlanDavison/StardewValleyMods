@@ -453,7 +453,7 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void WorldOnObjectListChanged(object? sender, ObjectListChangedEventArgs e)
         {
-            this.logger.Log("Object event fired.", LogLevel.Info);
+            // this.logger.Log("Object event fired.", LogLevel.Info);
             if (e.IsCurrentLocation)
             {
                 this.GatherResources(e.Location);
@@ -476,7 +476,7 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void WorldOnTerrainFeatureListChanged(object? sender, TerrainFeatureListChangedEventArgs e)
         {
-            this.logger.Log("Terrain feature event fired.", LogLevel.Info);
+            // this.logger.Log("Terrain feature event fired.", LogLevel.Info);
             if (e.IsCurrentLocation)
             {
                 this.GatherResources(e.Location);
