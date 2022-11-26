@@ -10,4 +10,10 @@
         <UpdateKeys>Nexus:13268</UpdateKeys>
         <Version>1.1.2</Version>
     </PropertyGroup>
+
+    <ItemGroup>
+      <None Update="release-notes.md">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>
