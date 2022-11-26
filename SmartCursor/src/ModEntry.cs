@@ -117,7 +117,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierOneRange,
-                    setValue: i => { this.toolRanges[0] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[0] = i;
+                        this.config.TierOneRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier1Range(),
                     min: 1,
                     max: 20);
@@ -125,7 +129,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierTwoRange,
-                    setValue: i => { this.toolRanges[1] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[1] = i;
+                        this.config.TierTwoRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier2Range(),
                     min: 1,
                     max: 20);
@@ -133,7 +141,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierThreeRange,
-                    setValue: i => { this.toolRanges[2] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[2] = i;
+                        this.config.TierThreeRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier3Range(),
                     min: 1,
                     max: 20);
@@ -141,7 +153,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierFourRange,
-                    setValue: i => { this.toolRanges[3] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[3] = i;
+                        this.config.TierFourRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier4Range(),
                     min: 1,
                     max: 20);
@@ -149,7 +165,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierFiveRange,
-                    setValue: i => { this.toolRanges[4] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[4] = i;
+                        this.config.TierFiveRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier5Range(),
                     min: 1,
                     max: 20);
@@ -157,7 +177,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierSixRange,
-                    setValue: i => { this.toolRanges[5] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[5] = i;
+                        this.config.TierSixRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier6Range(),
                     min: 1,
                     max: 20);
@@ -165,7 +189,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierSevenRange,
-                    setValue: i => { this.toolRanges[6] = i; },
+                    setValue: i =>
+                    {
+                        this.toolRanges[6] = i;
+                        this.config.TierSevenRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier7Range(),
                     min: 1,
                     max: 20);
