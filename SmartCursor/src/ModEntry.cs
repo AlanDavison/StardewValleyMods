@@ -30,14 +30,15 @@ namespace SmartCursor
 
         public override void Entry(IModHelper helper)
         {
-            // Create our initial tool range values.
-            for (int i = 0; i < 8; i++)
-                this.toolRanges.Add(i, i + 1);
+            // Read our config.
+            this.config = helper.ReadConfig<SmartCursorConfig>();
+
+            // And get our tool ranges.
+            this.config.GetToolRanges(out this.toolRanges);
 
             this.breakableResources = new List<BreakableEntity>();
             this.targetedObject = new Vector2();
             this.logger = new Logger(this.Monitor, helper.Translation);
-            this.config = helper.ReadConfig<SmartCursorConfig>();
             I18n.Init(helper.Translation);
 
             helper.Events.Player.Warped += this.OnPlayerWarped;
@@ -49,15 +50,6 @@ namespace SmartCursor
             helper.Events.GameLoop.UpdateTicked += this.GameLoopOnUpdateTicked;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
         }
-
-        // private void WorldOnResourceClumpListChanged(object? sender, ResourceClumpListChangedEventArgs e)
-        // {
-        //     this.logger.Log("Resource clump event fired.", LogLevel.Info);
-        //     if (e.IsCurrentLocation)
-        //     {
-        //         this.GatherResources(e.Location);
-        //     }
-        // }
 
         /// <summary>
         /// For clearing our targeted object, and setting our hold bool appropriately.

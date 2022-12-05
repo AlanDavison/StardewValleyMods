@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using System.Collections.Generic;
+using StardewModdingAPI;
 
 namespace SmartCursor
 {
@@ -20,5 +21,19 @@ namespace SmartCursor
         public bool AllowTargetingBabyTrees = false;
         public bool AllowTargetingGiantCrops = false;
         public bool AllowTargetingTappedTrees = false;
+
+        // This is bad. But... it'll do for now.
+        public void GetToolRanges(out Dictionary<int, int> ranges)
+        {
+            ranges = new Dictionary<int, int>();
+
+            ranges[0] = this.TierOneRange;
+            ranges[1] = this.TierTwoRange;
+            ranges[2] = this.TierThreeRange;
+            ranges[3] = this.TierFourRange;
+            ranges[4] = this.TierFiveRange;
+            ranges[5] = this.TierSixRange;
+            ranges[6] = this.TierSevenRange;
+        }
     }
 }
