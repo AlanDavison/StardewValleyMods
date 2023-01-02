@@ -3,11 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 
-public struct CloseupInteractionImage
+public struct CloseupInteractionImage : ITilePropertyData
 {
-    public static string TileProperty = "CloseupInteraction_Image";
+    public static string PropertyKey => "MEEP_CloseupInteraction_Image";
     public Texture2D Texture;
     public Rectangle SourceRect;
+    private ITilePropertyData tilePropertyDataImplementation;
 
     public int Width
     {
@@ -18,4 +19,5 @@ public struct CloseupInteractionImage
     {
         get => this.SourceRect.Height;
     }
+
 }

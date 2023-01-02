@@ -1,8 +1,8 @@
 ﻿namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 
-public struct DhSetMailFlag
+public struct SetMailFlag : ITilePropertyData
 {
-    public static string TileProperty = "DHSetMailFlag";
+    public static string PropertyKey => "MEEP_SetMailFlag";
     private string mailFlag;
 
     public string MailFlag
@@ -10,7 +10,7 @@ public struct DhSetMailFlag
         get => this.mailFlag;
     }
 
-    public DhSetMailFlag(string mailFlag)
+    public SetMailFlag(string mailFlag)
     {
         this.mailFlag = mailFlag;
     }

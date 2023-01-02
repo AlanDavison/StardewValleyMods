@@ -1,7 +1,7 @@
 ﻿namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 
-public class CloseupInteractionText
+public struct CloseupInteractionText : ITilePropertyData
 {
-    public static string TileProperty = "CloseupInteraction_Text";
+    public static string PropertyKey => "MEEP_CloseupInteraction_Text";
     public string Text;
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
 using DecidedlyShared.Logging;
@@ -10,6 +11,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using xTile.Dimensions;
 using xTile.ObjectModel;
+using xTile.Tiles;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -27,15 +29,17 @@ public static class Patches
     public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
         xTile.Dimensions.Rectangle viewport, Farmer who)
     {
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
         // Consider removing this try/catch.
         try
         {
-            // First, pull our tile co-ordinates from the Location.
+            // First, pull our tile co-ordinates from the location.
             int tileX = tileLocation.X;
             int tileY = tileLocation.Y;
 
             // Check for a CloseupInteraction property on the given tile.
-            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionImage.TileProperty,
+            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionImage.PropertyKey,
                     out PropertyValue closeupInteractionProperty))
             {
                 // We have our tile property. We need to check for the presence of an existing Action tile property.
@@ -89,7 +93,7 @@ public static class Patches
                     Color.White));
 
                 // Next, we want to see if there's a text tile property to display.
-                if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionText.TileProperty,
+                if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionText.PropertyKey,
                         out PropertyValue closeupTextProperty))
                 {
                     // There is, so we try to parse it.
@@ -105,17 +109,17 @@ public static class Patches
                 }
 
                 // Finally, we create our menu, and set it to be the current, active menu.
-                MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.TileProperty}");
+                MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}");
                 Game1.activeClickableMenu = menu;
                 menu.MenuOpened();
             }
 
             // Check for the DHSetMailFlag property on a given tile.
-            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, DhSetMailFlag.TileProperty,
+            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, SetMailFlag.PropertyKey,
                     out PropertyValue dhSetMailFlagProperty))
             {Game1.isInspectionAtCurrentCursorTile = true;
                 // It exists, so parse it.
-                if (Parsers.TryParse(dhSetMailFlagProperty.ToString(), out DhSetMailFlag parsedProperty))
+                if (Parsers.TryParse(dhSetMailFlagProperty.ToString(), out SetMailFlag parsedProperty))
                 {
                     // We've parsed it, so we try setting the mail flag appropriately.
                     Player.TryAddMailFlag(parsedProperty.MailFlag, Game1.player);
@@ -127,6 +131,24 @@ public static class Patches
             logger.Error("Caught exception handling GameLocation.checkAction in a postfix. Details follow:");
             logger.Exception(e);
         }
+
+        timer.Stop();
+
+        logger.Log($"Took {timer.ElapsedMilliseconds} to process in CheckAction patch.", LogLevel.Info);
+    }
+
+    // Scary.
+    public static void GameLocation_Ctor_Postfix(GameLocation __instance, string mapPath, string name)
+    {
+
+
+        // foreach (Tile tile in __instance.Map.GetLayer("Back").Tiles.Array)
+        // {
+        //     if (tile is null)
+        //         continue;
+        //
+        //
+        // }
     }
 
     public static void Game1_drawMouseCursor_Prefix(Game1 __instance)
@@ -134,14 +156,11 @@ public static class Patches
         int xTile = (int)Game1.currentCursorTile.X;
         int yTile = (int)Game1.currentCursorTile.Y;
 
-        if (tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, DhSetMailFlag.TileProperty,
+        if (tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, SetMailFlag.PropertyKey,
                 out PropertyValue _) ||
-            tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, CloseupInteractionImage.TileProperty,
-                out PropertyValue _)
-
-           )
+            tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, CloseupInteractionImage.PropertyKey,
+                out PropertyValue _))
         {
-            // Game1.isInspectionAtCurrentCursorTile = true;
             Game1.mouseCursor = 5;
         }
     }
