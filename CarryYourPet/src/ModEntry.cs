@@ -22,9 +22,6 @@ namespace CarryYourPet
         private static Logger logger;
         private static ModConfig config;
 
-        // private int i =
-        //     "Do the fix idea for finnicky dropping of pets you had on Discord. Instead of doing the dropping in the patches, do it in your own code so it's not dependent on the interaction being perfect.";
-
         // NPC stuff.
         private CarriedCharacter carriedCharacter;
 
@@ -82,6 +79,16 @@ namespace CarryYourPet
             helper.Events.Display.RenderedWorld += this.DisplayOnRenderedWorld;
             helper.Events.Player.Warped += this.PlayerOnWarped;
             helper.Events.GameLoop.GameLaunched += (sender, args) => { this.RegisterWithGmcm(); };
+            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+        }
+
+        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
+        {
+            if (!Context.IsWorldReady)
+                return;
+
+            if (config.HoldToCarryNpc.JustPressed())
+                this.DropCarriedCharacter();
         }
 
         private void RegisterWithGmcm()
@@ -116,6 +123,12 @@ namespace CarryYourPet
         private void PlayerOnWarped(object sender, WarpedEventArgs e)
         {
             // On warp, we want to "drop" the NPC, which is to say, set the carried property to null.
+            this.DropCarriedCharacter();
+        }
+
+        private void DropCarriedCharacter()
+        {
+
             this.carriedCharacter.Npc = null;
         }
 
