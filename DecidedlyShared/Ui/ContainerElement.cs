@@ -12,7 +12,7 @@ public class ContainerElement : UiElement
 
     public ContainerElement(string name, Rectangle bounds, bool drawBox = false, Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null,
-        int topEdgeSize = 4, int bottomEdgeSize = 4, int leftEdgeSize = 4, int rightEdgeSize = 4,
+        int topEdgeSize = 16, int bottomEdgeSize = 12, int leftEdgeSize = 12, int rightEdgeSize = 16,
         int containerMargin = 4)
         : base(name, bounds, texture, sourceRect, color,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)

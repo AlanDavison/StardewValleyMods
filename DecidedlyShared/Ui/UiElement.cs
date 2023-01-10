@@ -61,7 +61,7 @@ public class UiElement
 
     public virtual void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(this.texture, this.bounds, this.sourceRect, this.textureTint);
+        // spriteBatch.Draw(this.texture, this.bounds, this.sourceRect, this.textureTint);
     }
 
     internal void BoundsChanged()

@@ -37,8 +37,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ClickableUiElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ContainerElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\DraggableElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ui\HBoxElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\MenuBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Orientation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ui\PaginatedMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\SlicedBoxElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\TextElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\UiElement.cs" />

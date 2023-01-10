@@ -8,13 +8,33 @@ namespace DecidedlyShared.Ui;
 public class MenuBase : IClickableMenu
 {
     // Every base menu needs a container, and only a container.
-    private ContainerElement uiContainer;
+    internal ContainerElement uiContainer;
     private string menuName;
     private string openSound;
 
     public string MenuName
     {
         get => this.menuName;
+    }
+
+    public Vector2 TopLeftCorner
+    {
+        get => new Vector2(this.uiContainer.bounds.Left, this.uiContainer.bounds.Top);
+    }
+
+    public Vector2 BottomLeftCorner
+    {
+        get => new Vector2(this.uiContainer.bounds.Left, this.uiContainer.bounds.Bottom);
+    }
+
+    public Vector2 TopRightCorner
+    {
+        get => new Vector2(this.uiContainer.bounds.Right, this.uiContainer.bounds.Top);
+    }
+
+    public Vector2 BottomRightCorner
+    {
+        get => new Vector2(this.uiContainer.bounds.Right, this.uiContainer.bounds.Bottom);
     }
 
     public MenuBase(ContainerElement uiContainer, string name, string openSound = "bigSelect")
@@ -42,6 +62,10 @@ public class MenuBase : IClickableMenu
 
     public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
     {
+        this.xPositionOnScreen = 0;
+        this.yPositionOnScreen = 0;
+        this.width = Game1.uiViewport.Width;
+        this.height = Game1.uiViewport.Height;
         this.uiContainer.OrganiseChildren();
     }
 
