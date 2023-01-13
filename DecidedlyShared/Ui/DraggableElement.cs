@@ -3,14 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DecidedlyShared.Ui;
 
-public class DraggableElement : ClickableUiElement
+public class DraggableElement : UiElement
 {
     private bool currentlyBeingDragged;
     private UiElement dragArea;
 
-    public DraggableElement(string name, Rectangle bounds, Texture2D? texture = null, Rectangle? sourceRect = null,
+    public DraggableElement(string name, Rectangle bounds, DrawableType type = DrawableType.Texture,Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null)
-        : base(name, bounds, texture, sourceRect, color)
+        : base(name, bounds, type, texture, sourceRect, color)
     {
     }
 }

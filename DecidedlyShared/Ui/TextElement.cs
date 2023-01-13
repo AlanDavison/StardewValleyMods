@@ -5,7 +5,7 @@ using StardewValley.BellsAndWhistles;
 
 namespace DecidedlyShared.Ui;
 
-public class TextElement : SlicedBoxElement
+public class TextElement : UiElement
 {
     private string text;
     private SpriteFont font;
@@ -13,9 +13,9 @@ public class TextElement : SlicedBoxElement
 
     public TextElement(
         string name, Rectangle bounds, int widthConstraint = 1000, string text = "",
-        SpriteFont? font = null, Texture2D? texture = null, Rectangle? sourceRect = null, Color? color = null,
+        SpriteFont? font = null, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null, Color? color = null,
         int topEdgeSize = 16, int bottomEdgeSize = 16, int leftEdgeSize = 16, int rightEdgeSize = 16)
-        : base(name, bounds, texture, sourceRect, color,
+        : base(name, bounds, type, texture, sourceRect, color,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         if (font == null)

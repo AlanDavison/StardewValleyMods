@@ -8,13 +8,12 @@ public class ContainerElement : UiElement
 {
     internal List<UiElement> childElements = new List<UiElement>();
     internal int containerMargin;
-    internal bool drawBox;
 
-    public ContainerElement(string name, Rectangle bounds, bool drawBox = false, Texture2D? texture = null, Rectangle? sourceRect = null,
+    public ContainerElement(string name, Rectangle bounds, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null,
         int topEdgeSize = 16, int bottomEdgeSize = 12, int leftEdgeSize = 12, int rightEdgeSize = 16,
         int containerMargin = 4)
-        : base(name, bounds, texture, sourceRect, color,
+        : base(name, bounds, type, texture, sourceRect, color,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         this.bounds = bounds;
@@ -24,10 +23,9 @@ public class ContainerElement : UiElement
             this.textureTint = Color.White;
 
         this.containerMargin = containerMargin;
-        this.drawBox = drawBox;
     }
 
-    internal void AddChild(UiElement child)
+    internal virtual void AddChild(UiElement child)
     {
         if (!this.childElements.Contains(child))
         {
@@ -40,20 +38,7 @@ public class ContainerElement : UiElement
 
     internal virtual void Draw(SpriteBatch spriteBatch)
     {
-        if (this.drawBox)
-        {
-            Utils.DrawBox(
-                spriteBatch,
-                this.texture,
-                this.sourceRect,
-                this.bounds,
-                this.topEdgeSize,
-                this.leftEdgeSize,
-                this.rightEdgeSize,
-                this.bottomEdgeSize);
-        }
-
-        // base.Draw(spriteBatch);
+        base.Draw(spriteBatch);
 
         foreach (UiElement child in this.childElements)
         {
@@ -61,7 +46,27 @@ public class ContainerElement : UiElement
         }
     }
 
-    internal virtual void OrganiseChildren()
+    public override void ReceiveLeftClick(int x, int y)
+    {
+        foreach (UiElement child in this.childElements)
+        {
+            child.ReceiveLeftClick(x, y);
+        }
+
+        base.ReceiveLeftClick(x, y);
+    }
+
+    public override void ReceiveRightClick(int x, int y)
+    {
+        foreach (UiElement child in this.childElements)
+        {
+            child.ReceiveRightClick(x, y);
+        }
+
+        base.ReceiveRightClick(x, y);
+    }
+
+    internal override void OrganiseChildren()
     {
     }
 }

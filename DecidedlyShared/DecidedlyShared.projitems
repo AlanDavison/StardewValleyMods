@@ -34,14 +34,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\World.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WorldTile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Alignment.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ui\ClickableUiElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ContainerElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\DraggableElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ui\DrawableType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\HBoxElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\MenuBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ui\MenuPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Orientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\PaginatedMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ui\SlicedBoxElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\TextElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\UiElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ImageElement.cs" />

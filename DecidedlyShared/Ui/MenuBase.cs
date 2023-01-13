@@ -17,25 +17,7 @@ public class MenuBase : IClickableMenu
         get => this.menuName;
     }
 
-    public Vector2 TopLeftCorner
-    {
-        get => new Vector2(this.uiContainer.bounds.Left, this.uiContainer.bounds.Top);
-    }
 
-    public Vector2 BottomLeftCorner
-    {
-        get => new Vector2(this.uiContainer.bounds.Left, this.uiContainer.bounds.Bottom);
-    }
-
-    public Vector2 TopRightCorner
-    {
-        get => new Vector2(this.uiContainer.bounds.Right, this.uiContainer.bounds.Top);
-    }
-
-    public Vector2 BottomRightCorner
-    {
-        get => new Vector2(this.uiContainer.bounds.Right, this.uiContainer.bounds.Bottom);
-    }
 
     public MenuBase(ContainerElement uiContainer, string name, string openSound = "bigSelect")
     {
@@ -67,6 +49,21 @@ public class MenuBase : IClickableMenu
         this.width = Game1.uiViewport.Width;
         this.height = Game1.uiViewport.Height;
         this.uiContainer.OrganiseChildren();
+    }
+
+    public override void receiveLeftClick(int x, int y, bool playSound = true)
+    {
+        this.uiContainer.ReceiveLeftClick(x, y);
+    }
+
+    public override void receiveRightClick(int x, int y, bool playSound = true)
+    {
+        this.uiContainer.ReceiveRightClick(x, y);
+    }
+
+    public override void releaseLeftClick(int x, int y)
+    {
+        base.releaseLeftClick(x, y);
     }
 
     public override void emergencyShutDown()

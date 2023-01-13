@@ -13,10 +13,10 @@ public class VBoxElement : ContainerElement
     private Alignment alignment;
     private int childSpacing;
 
-    public VBoxElement(string name, Rectangle bounds, bool drawBox = false, Texture2D? texture = null, Rectangle? sourceRect = null,
+    public VBoxElement(string name, Rectangle bounds, DrawableType type = DrawableType.Texture, Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null,
         int topEdgeSize = 4, int bottomEdgeSize = 4, int leftEdgeSize = 4, int rightEdgeSize = 4, int childSpacing = 4)
-        : base(name, bounds, drawBox, texture, sourceRect, color,
+        : base(name, bounds, type, texture, sourceRect, color,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         this.childSpacing = childSpacing;
@@ -54,9 +54,9 @@ public class VBoxElement : ContainerElement
         this.bounds.Width -= widthModulo * 4;
         this.bounds.Height -= heightModulo * 4;
 
-        Vector2 centrePosition = Utility.getTopLeftPositionForCenteringOnScreen(totalWidth, totalHeight);
-        this.bounds.X = (int)centrePosition.X;
-        this.bounds.Y = (int)centrePosition.Y;
+        Vector2 centrePosition = Utility.getTopLeftPositionForCenteringOnScreen(this.Width, this.Height);
+        this.X = (int)centrePosition.X;
+        this.Y = (int)centrePosition.Y;
 
         int previousChildBottom = 0;
 
