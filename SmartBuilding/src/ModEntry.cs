@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DecidedlyShared.APIs;
@@ -96,6 +96,9 @@ namespace SmartBuilding
             // We need this to handle our custom UI events. The alternative is a Harmony patch, but that feels excessive.
             ModEntry.helper.Events.GameLoop.UpdateTicking += this.OnUpdateTicking;
 
+            // Register our SaveLoaded event to get the initial item stowing setting.
+            ModEntry.helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
+
             // If the screen is changed, clear our painted tiles, because currently, placing objects is done on the current screen.
             ModEntry.helper.Events.Player.Warped += (sender, args) => { this.LeaveBuildMode(); };
 
@@ -131,6 +134,12 @@ namespace SmartBuilding
             harmony.Patch(
                 AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.checkForAction)),
                 new HarmonyMethod(typeof(Patches), nameof(Patches.StorageFurniture_DoAction_Prefix)));
+        }
+
+        private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+        {
+            // Get the initial state of the item stowing mode setting.
+            this.previousStowingMode = Game1.options.stowingMode;
         }
 
         private void KillToolUi()
@@ -764,10 +773,7 @@ namespace SmartBuilding
                 this.commands.IdentifyCursorTarget);
             this.Helper.ConsoleCommands.Add("sb_count",
                 "Count how many instances of an object exist in the current map.",
-                this.commands.CountInMap);
-
-            // Then get the initial state of the item stowing mode setting.
-            this.previousStowingMode = Game1.options.stowingMode;
+                this.commands.CountInMap);            
 
             if (this.toolbarIconsApi != null)
             {
@@ -1102,7 +1108,7 @@ namespace SmartBuilding
                     screenHeight = Game1.uiViewport.Height;
                     var startingPoint = new Vector2();
 
-                    #region Shameless decompile copy
+#region Shameless decompile copy
 
                     var playerGlobalPosition = Game1.player.GetBoundingBox().Center;
                     var playerLocalVector =
@@ -1110,7 +1116,7 @@ namespace SmartBuilding
                             viewport: Game1.viewport);
                     bool toolbarAtTop = playerLocalVector.Y > Game1.viewport.Height / 2 + 64 ? true : false;
 
-                    #endregion
+#endregion
 
 
                     if (toolbarAtTop)
@@ -1158,6 +1164,6 @@ namespace SmartBuilding
             }
         }
 
-        #endregion
+#endregion
     }
 }
