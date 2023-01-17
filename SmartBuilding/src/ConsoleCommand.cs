@@ -66,7 +66,6 @@ namespace SmartBuilding
                 return;
             }
 
-
             GameLocation location = Game1.currentLocation;
             int objectCount = 0;
 

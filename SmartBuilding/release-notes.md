@@ -1,7 +1,7 @@
 # Smart Building release notes
 
 ## 1.7.7
-Fixes a fairly long-standing problem with item stowing.
+Fixes a fairly long-standing problem with item stowing, and the initial version of an object counting command.
 ## 1.7.4
 Adds integration for Tap Giant Crops, and Toolbar Icons!
 ## 1.7.3
