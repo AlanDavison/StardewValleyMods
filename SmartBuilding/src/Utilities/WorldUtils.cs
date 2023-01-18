@@ -459,8 +459,8 @@ namespace SmartBuilding.Utilities
                     // Determine exactly how we're placing this furniture.
                     if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                     {
-                        furniture = ((itemToPlace.getOne()) as Furniture)!;
-                        furniture.TileLocation = targetTile;
+                        furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
+                        furniture.currentRotation.Value = (itemToPlace as Furniture).currentRotation.Value;
                         here.furniture.Add(furniture);
                     }
                     else
