@@ -49,6 +49,7 @@ namespace SmartBuilding
 
         // Mod integrations.
         private IMoreFertilizersAPI? moreFertilizersApi;
+        private IGrowableBushesAPI? growBushesApi;
         private PlacementUtils placementUtils;
         private PlayerUtils playerUtils;
         private Options.ItemStowingModes previousStowingMode;
@@ -241,6 +242,16 @@ namespace SmartBuilding
                 try
                 {
                     this.giantCropTapApi = this.Helper.ModRegistry.GetApi<ITapGiantCropsAPI>("atravita.TapGiantCrops");
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e);
+                }
+
+            if (helper.ModRegistry.IsLoaded("atravita.GrowableBushes"))
+                try
+                {
+                    this.growBushesApi = this.Helper.ModRegistry.GetApi<IGrowableBushesAPI>("atravita.GrowableBushes");
                 }
                 catch (Exception e)
                 {
@@ -755,13 +766,13 @@ namespace SmartBuilding
             // Set up our helpers.
             this.drawingUtils = new DrawingUtils();
             this.identificationUtils =
-                new IdentificationUtils(helper, logger, config, this.dgaApi, this.moreFertilizersApi,
+                new IdentificationUtils(helper, logger, config, this.dgaApi, this.moreFertilizersApi, this.growBushesApi,
                     this.placementUtils);
             this.placementUtils = new PlacementUtils(config, this.identificationUtils, this.moreFertilizersApi,
-                this.giantCropTapApi, logger, helper);
+                this.giantCropTapApi, this.growBushesApi, logger, helper);
             this.playerUtils = new PlayerUtils(logger);
             this.worldUtils = new WorldUtils(this.identificationUtils, this.placementUtils, this.playerUtils,
-                this.giantCropTapApi, config, logger, this.moreFertilizersApi);
+                this.giantCropTapApi, config, logger, this.moreFertilizersApi, this.growBushesApi);
             this.modState = new ModState(logger, this.playerUtils, this.identificationUtils, this.worldUtils,
                 this.placementUtils);
             this.buttonActions = new ButtonActions(this, this.modState); // Ew, no. Fix this ugly nonsense later.

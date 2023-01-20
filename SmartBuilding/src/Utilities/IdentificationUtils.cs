@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using DecidedlyShared.Logging;
 using DecidedlyShared.APIs;
 using StardewModdingAPI;
@@ -15,16 +15,18 @@ namespace SmartBuilding.Utilities
         private readonly Logger logger;
         private ModConfig config;
         private IMoreFertilizersAPI? moreFertilizersApi;
+        private IGrowableBushesAPI? growableBushesApi;
         private PlacementUtils placementUtils;
 
         public IdentificationUtils(IModHelper helper, Logger logger, ModConfig config, IDynamicGameAssetsApi? dgaApi,
-            IMoreFertilizersAPI? moreFertilizersApi, PlacementUtils placementUtils)
+            IMoreFertilizersAPI? moreFertilizersApi, IGrowableBushesAPI? growableBushesAPI, PlacementUtils placementUtils)
         {
             this.helper = helper;
             this.logger = logger;
             this.config = config;
             this.dgaApi = dgaApi;
             this.moreFertilizersApi = moreFertilizersApi;
+            this.growableBushesApi = growableBushesAPI;
             this.placementUtils = placementUtils;
         }
 
@@ -228,6 +230,8 @@ namespace SmartBuilding.Utilities
                 return ItemType.Fertilizer;
             else if (item.Name.Equals("Tapper") || item.Name.Equals("Heavy Tapper"))
                 return ItemType.Tapper;
+            else if (item is SObject @object && this.growableBushesApi?.GetSizeOfBushIfApplicable(@object) != BushSizes.Invalid)
+                return ItemType.atravitaBush;
 
             return ItemType.Generic;
         }

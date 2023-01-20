@@ -1,4 +1,4 @@
-﻿namespace SmartBuilding
+namespace SmartBuilding
 {
     /// <summary>
     ///     The type of feature we're working with.
@@ -16,6 +16,11 @@
         ///     A <see cref="StardewValley.TerrainFeatures.TerrainFeature" />.
         /// </summary>
         TerrainFeature,
+
+        /// <summary>
+        ///     A <see cref="StardewValley.TerrainFeatures.LargeTerrainFeature" />.
+        /// </summary>
+        LargeTerrainFeature,
 
         /// <summary>
         ///     A <see cref="StardewValley.Objects.Furniture" />

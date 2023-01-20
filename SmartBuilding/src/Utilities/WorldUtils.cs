@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
@@ -17,12 +17,13 @@ namespace SmartBuilding.Utilities
         private readonly IdentificationUtils identificationUtils;
         private readonly Logger logger;
         private readonly IMoreFertilizersAPI? moreFertilizersApi;
+        private readonly IGrowableBushesAPI? growableBushesAPI;
         private readonly PlacementUtils placementUtils;
         private readonly PlayerUtils playerUtils;
 
         public WorldUtils(IdentificationUtils identificationUtils, PlacementUtils placementutils,
-            PlayerUtils playerUtils, ITapGiantCropsAPI giantCropTapApi, ModConfig config, Logger logger,
-            IMoreFertilizersAPI moreFertilizersApi)
+            PlayerUtils playerUtils, ITapGiantCropsAPI? giantCropTapApi, ModConfig config, Logger logger,
+            IMoreFertilizersAPI? moreFertilizersApi, IGrowableBushesAPI? growableBushesAPI)
         {
             this.identificationUtils = identificationUtils;
             this.placementUtils = placementutils;
@@ -30,6 +31,7 @@ namespace SmartBuilding.Utilities
             this.config = config;
             this.logger = logger;
             this.moreFertilizersApi = moreFertilizersApi;
+            this.growableBushesAPI = growableBushesAPI;
             this.giantCropTapApi = giantCropTapApi;
         }
 
@@ -46,6 +48,19 @@ namespace SmartBuilding.Utilities
             var targetTile = item.Key;
             var itemInfo = item.Value;
             var here = Game1.currentLocation;
+
+            if (itemToPlace is not null && itemInfo.ItemType == ItemType.atravitaBush)
+            {
+                // try to place the bush.
+                if (this.growableBushesAPI?.TryPlaceBush(itemToPlace, here, targetTile, this.config.LessRestrictiveObjectPlacement) != true)
+                {
+                    // refund the bush.
+                    this.playerUtils.RefundItem(itemToPlace,
+                        $"{I18n.SmartBuilding_Integrations_GrowableBushes_InvalidBushPosition()}: {itemToPlace.Name} @ {targetTile}",
+                        LogLevel.Debug, true);
+                }
+                return;
+            }
 
             if (itemToPlace != null && this.placementUtils.CanBePlacedHere(targetTile, itemInfo.Item))
             {
@@ -439,12 +454,13 @@ namespace SmartBuilding.Utilities
                 {
                     // TODO: Fix bug where placing furniture with more lax placement on ignores rotations.
                     bool placedSuccessfully = false;
-                    Furniture furniture = null;
+                    Furniture? furniture = null;
 
                     // Determine exactly how we're placing this furniture.
                     if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                     {
                         furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
+                        furniture.currentRotation.Value = (itemToPlace as Furniture).currentRotation.Value;
                         here.furniture.Add(furniture);
                     }
                     else
@@ -470,14 +486,14 @@ namespace SmartBuilding.Utilities
                             //itemToPlace.placementAction(Game1.currentLocation, (int)item.Key.X * 64, (int)item.Key.Y * 64, Game1.player);
 
                             // We know it's a fence by type, but we need to make sure it isn't a gate, and to ensure it isn't already "holding" anything.
-                            if (o.Name.Equals("Gate") && o.heldObject != null)
+                            if (o.Name.Equals("Gate") && o.heldObject.Value != null)
                                 // There's something in there, so we need to refund the torch.
                                 this.playerUtils.RefundItem(item.Value.Item,
                                     I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
 
                             o.performObjectDropInAction(itemToPlace, false, Game1.player);
 
-                            if (this.identificationUtils.IdentifyItemType(o.heldObject) != ItemType.Torch)
+                            if (this.identificationUtils.IdentifyItemType(o.heldObject.Value) != ItemType.Torch)
                                 // If the fence isn't "holding" a torch, there was a problem, so we should refund.
                                 this.playerUtils.RefundItem(item.Value.Item,
                                     I18n.SmartBuilding_Error_Torch_PlacementInFenceFailed(), LogLevel.Error);
@@ -723,6 +739,22 @@ namespace SmartBuilding.Utilities
                         here.terrainFeatures.Remove(tile);
                     }
                 }
+
+            // handle picking up growable bushes.
+            if (feature == TileFeature.LargeTerrainFeature)
+            {
+                // try to pick up a bush. If successful, we'll be given the bush as an item.
+                if (this.growableBushesAPI?.TryPickUpBush(here, tile, false) is SObject bush)
+                {
+                    // try to add it to the player inventory.
+                    if (!Game1.player.addItemToInventoryBool(bush))
+                    {
+                        // if we fail, drop it at their feet.
+                        var debris = new Debris(bush, Game1.player.Position);
+                        here.debris.Add(debris);
+                    }
+                }
+            }
 
             if (feature == TileFeature.Furniture)
             {

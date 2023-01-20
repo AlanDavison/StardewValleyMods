@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
@@ -14,19 +14,21 @@ namespace SmartBuilding.Utilities
     {
         private readonly ModConfig config;
         private readonly ITapGiantCropsAPI? giantCropTapApi;
+        private readonly IGrowableBushesAPI? growableBushesApi;
         private readonly IModHelper helper;
         private readonly IdentificationUtils identificationUtils;
         private readonly Logger logger;
         private readonly IMoreFertilizersAPI? moreFertilizersApi;
 
         public PlacementUtils(ModConfig config, IdentificationUtils identificationUtils,
-            IMoreFertilizersAPI moreFertilizersApi, ITapGiantCropsAPI giantCropTapApi, Logger logger,
-            IModHelper helper)
+            IMoreFertilizersAPI? moreFertilizersApi, ITapGiantCropsAPI? giantCropTapApi, IGrowableBushesAPI? growableBushesApi,
+            Logger logger, IModHelper helper)
         {
             this.config = config;
             this.identificationUtils = identificationUtils;
             this.moreFertilizersApi = moreFertilizersApi;
             this.giantCropTapApi = giantCropTapApi;
+            this.growableBushesApi = growableBushesApi;
             this.logger = logger;
             this.helper = helper;
         }
@@ -328,6 +330,15 @@ namespace SmartBuilding.Utilities
                         }
 
                     return false;
+                case ItemType.atravitaBush:
+                    if (i is not SObject bush)
+                        return false;
+
+                    if (this.growableBushesApi is null)
+                        return false; // this should be impossible.
+
+                    return this.growableBushesApi.CanPlaceBush(bush, here, v, this.config.LessRestrictiveObjectPlacement);
+
                 case ItemType.Fence:
                     // We want to deal with fences specifically in order to handle fence replacements.
                     if (here.objects.ContainsKey(v))
