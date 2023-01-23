@@ -141,10 +141,6 @@ namespace SmartBuilding
         {
             // Get the initial state of the item stowing mode setting.
             this.previousStowingMode = Game1.options.stowingMode;
-
-            this.Monitor.Log($"After {nameof(this.OnSaveLoaded)}:", LogLevel.Info);
-            this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-            this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
         }
 
         private void KillToolUi()
@@ -321,6 +317,17 @@ namespace SmartBuilding
             );
 
             this.RegisterToggleSettings(configMenuApi);
+
+            configMenuApi.AddSectionTitle(
+                this.ModManifest,
+                () => I18n.SmartBuilding_Settings_ItemStowing_Title()
+            );
+
+            configMenuApi.AddParagraph(
+                mod: this.ModManifest,
+                text: () => I18n.SmartBuilding_Settings_ItemStowing_TitleScreenOnly());
+
+            this.RegisterItemStowingSettings(configMenuApi);
 
             configMenuApi.AddSectionTitle(
                 this.ModManifest,
@@ -659,6 +666,27 @@ namespace SmartBuilding
             );
         }
 
+        private void RegisterItemStowingSettings(IGenericModConfigMenuApi config)
+        {
+            config.SetTitleScreenOnlyForNextOptions(
+                mod: this.ModManifest,
+                true);
+
+            config.AddParagraph(
+                mod: this.ModManifest,
+                text: () => I18n.SmartBuilding_Settings_ItemStowing_Description());
+
+            config.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => I18n.SmartBuilding_Settings_ItemStowing_ControlItemStowing(),
+                getValue: () => ModEntry.config.ShouldControlItemStowing,
+                setValue: b => ModEntry.config.ShouldControlItemStowing = b);
+
+            config.SetTitleScreenOnlyForNextOptions(
+                mod: this.ModManifest,
+                false);
+        }
+
         private List<Vector2> CalculateRectangle(Vector2 cornerOne, Vector2 cornerTwo, Item item)
         {
             Vector2 topLeft;
@@ -808,13 +836,6 @@ namespace SmartBuilding
         /// </summary>
         private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
         {
-            if (e.IsMultipleOf(240))
-            {
-                this.Monitor.Log($"Start of {nameof(this.OnUpdateTicking)} (2s increments):", LogLevel.Info);
-                this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-                this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
-            }
-
             if (this.toolMenuUi != null)
                 // If our tool menu is enabled and there's no menu up, we go forward with processing its events.
                 if (this.toolMenuUi.Enabled && Game1.activeClickableMenu == null)
@@ -846,13 +867,6 @@ namespace SmartBuilding
                         config.HoldToDraw.JustPressed())
                         this.toolMenuUi.ReceiveLeftClick(this.currentMouseX, this.currentMouseY);
                 }
-
-            if (e.IsMultipleOf(240))
-            {
-                this.Monitor.Log($"End of {nameof(this.OnUpdateTicking)} (2s increments:", LogLevel.Info);
-                this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-                this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
-            }
         }
 
         /// <summary>
@@ -1038,10 +1052,6 @@ namespace SmartBuilding
             if (!Context.IsWorldReady)
                 return;
 
-            this.Monitor.Log($"Beginning of {nameof(this.EnterBuildMode)}:", LogLevel.Info);
-            this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-            this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
-
             // If it's a festival, we return.
             if (Game1.isFestival())
                 return;
@@ -1054,19 +1064,11 @@ namespace SmartBuilding
             this.previousStowingMode = Game1.options.stowingMode;
 
             // Then we set it to off to avoid a strange stuttery drawing issue.
-            Game1.options.stowingMode = Options.ItemStowingModes.Off;
-
-            this.Monitor.Log($"End of {nameof(this.EnterBuildMode)}:", LogLevel.Info);
-            this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-            this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
+            if (ModEntry.config.ShouldControlItemStowing) Game1.options.stowingMode = Options.ItemStowingModes.Off;
         }
 
         private void LeaveBuildMode()
         {
-            this.Monitor.Log($"Beginning of {nameof(this.LeaveBuildMode)}:", LogLevel.Info);
-            this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-            this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
-
             this.modState.BuildingMode = false;
 
             // Kill our UI.
@@ -1080,11 +1082,7 @@ namespace SmartBuilding
             this.modState.ResetState();
 
             // Then, finally, set the stowing mode back to what it used to be.
-            Game1.options.stowingMode = this.previousStowingMode;
-
-            this.Monitor.Log($"End of {nameof(this.LeaveBuildMode)}:", LogLevel.Info);
-            this.Monitor.Log($"\tStowing setting value: {Game1.options.stowingMode.ToString()}", LogLevel.Info);
-            this.Monitor.Log($"\tPrevious stowing setting value: {this.previousStowingMode.ToString()}", LogLevel.Info);
+            if (ModEntry.config.ShouldControlItemStowing) Game1.options.stowingMode = this.previousStowingMode;
         }
 
         /// <summary>
