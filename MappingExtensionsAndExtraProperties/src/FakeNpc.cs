@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DecidedlyShared.Logging;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties;
@@ -9,10 +11,13 @@ namespace MappingExtensionsAndExtraProperties;
 public class FakeNpc : NPC
 {
     private List<string> dialogueLines;
+    private Logger logger;
 
-    public FakeNpc(AnimatedSprite sprite, Vector2 tile, int facingDirection, string name)
+    public FakeNpc(AnimatedSprite sprite, Vector2 tile, int facingDirection, string name, Logger logger)
         : base(sprite, tile, facingDirection, name)
     {
+        this.logger = logger;
+        // this.logger.Log($"{name} of type {nameof(FakeNpc)} created.", LogLevel.Trace);
     }
 
     // public override bool checkAction(Farmer who, GameLocation l)
@@ -37,4 +42,9 @@ public class FakeNpc : NPC
     {
         return true;
     }
+
+    // ~FakeNpc()
+    // {
+    //     this.logger?.Log($"{this.name.Value} of type {nameof(FakeNpc)} being collected.", LogLevel.Trace);
+    // }
 }

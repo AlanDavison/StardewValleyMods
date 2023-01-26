@@ -4,6 +4,7 @@ using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
+using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Models.TileProperties.FakeNpc;
 using MappingExtensionsAndExtraProperties.Utils;
@@ -20,13 +21,14 @@ public class ModEntry : Mod
 {
     private Logger logger;
     private TilePropertyHandler tileProperties;
+    private MeepApi api;
 
     public override void Entry(IModHelper helper)
     {
         var harmony = new Harmony(this.ModManifest.UniqueID);
         this.logger = new Logger(this.Monitor);
         this.tileProperties = new TilePropertyHandler(this.logger);
-        Patches.InitialisePatches(this.logger,  this.tileProperties);
+        Patches.InitialisePatches(this.logger, this.tileProperties);
 
         helper.Events.Player.Warped += (sender, args) =>
         {
@@ -39,11 +41,8 @@ public class ModEntry : Mod
                     Game1.exitActiveMenu();
             }
 
-            // We want to add our fake NPCs to the new map at this point.
-
-
             // Then remove our fake NPCs from the previous map.
-            Utils.Locations.RemoveFakeNpcs(args.OldLocation);
+            // Utils.Locations.RemoveFakeNpcs(args.OldLocation);
         };
 
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
@@ -54,7 +53,7 @@ public class ModEntry : Mod
 
             foreach (GameLocation location in Game1.locations)
             {
-                Utils.Locations.RemoveFakeNpcs(location);
+                Utils.Locations.RemoveFakeNpcs(location, this.logger);
             }
         };
 
@@ -68,29 +67,18 @@ public class ModEntry : Mod
             AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
             prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
 
-        // Super scary. Patching GameLocation's constructor.
-        harmony.Patch(
-            AccessTools.Constructor(typeof(GameLocation), new Type[] {typeof(string), typeof(string)}),
-            postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.GameLocation_Ctor_Postfix)));
-
         // Our asset loading.
         helper.Events.Content.AssetRequested += (sender, args) =>
         {
             if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FakeNPC/Dialogue"))
             {
-                args.LoadFrom(() => { return new Dictionary<string, string>();}, AssetLoadPriority.Low);
+                args.LoadFrom(() => { return new Dictionary<string, string>(); }, AssetLoadPriority.Low);
             }
         };
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(ICollection<GameLocation>), nameof(Game1.locations.Add)),
         //     prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
-
-#if DEBUG
-        helper.Events.Display.MenuChanged += (sender, args) =>
-        {
-
-        };
 
         helper.Events.Player.Warped += (sender, args) =>
         {
@@ -118,9 +106,10 @@ public class ModEntry : Mod
                                     fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteHeight : 32),
                                 new Vector2(i, y) * 64f,
                                 2,
-                                property.ToString()
+                                property.ToString(),
+                                this.logger
                             );
-                            // Dictionary<string, string> dialogue = Game1.content.Load<Dictionary<string, string>>($"MEEP/FakeNPC/Dialogue/{property.ToString()}");
+
                             Dictionary<string, string> dialogue =
                                 helper.GameContent.Load<Dictionary<string, string>>(
                                     $"MEEP/FakeNPC/Dialogue/{fakeNpcProperty.NpcName}");
@@ -130,12 +119,27 @@ public class ModEntry : Mod
                                 character.CurrentDialogue.Push(new Dialogue(d.Value, character));
                             }
 
-                            args.NewLocation.characters.Add(character);
+                            // A safeguard for multiplayer.
+                            if (!args.NewLocation.isTileOccupied(new Vector2(i, y)))
+                            {
+                                args.NewLocation.characters.Add(character);
+                                this.logger.Log($"Fake NPC {character.Name} spawned in {args.NewLocation.Name} at X:{i}, Y:{y}.", LogLevel.Trace);
+                            }
+
+                            // if (!args.NewLocation.characters.Contains(character))
+
+                        }
+                        else
+                        {
+                            this.logger.Error($"Failed to parse property {property.ToString()}");
                         }
                     }
                 }
             }
         };
+
+#if DEBUG
+        helper.Events.Display.MenuChanged += (sender, args) => { };
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
@@ -151,7 +155,8 @@ public class ModEntry : Mod
                     new AnimatedSprite("Characters\\NotAbigail", 0, 16, 32),
                     Game1.currentCursorTile * 64f,
                     2,
-                    "NotAbigail"
+                    "NotAbigail",
+                    this.logger
                 );
 
                 string sheet = character.GetDialogueSheetName();
@@ -167,5 +172,10 @@ public class ModEntry : Mod
             }
         };
 #endif
+    }
+
+    public override object? GetApi()
+    {
+        return this.api;
     }
 }

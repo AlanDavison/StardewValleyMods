@@ -8,12 +8,13 @@ This mod does nothing on its own. Its primary purpose is to allow map authors to
 
 ## Current tile properties
 ### Click on the link to go to the mini-docs for each one
-| **Tile Property**                                                                | **Layer** | **Description**                                                                                                                                                                                                                                     |
-|----------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [*MEEP_CloseupInteraction_Image*](#Using-the-CloseupInteraction-tile-properties) | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use. |
-| [*MEEP_CloseupInteraction_Text*](#Using-the-CloseupInteraction-tile-properties)  | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                 |
-| [*MEEP_SetMailFlag*](#Using-the-MEEP_SetMailFlag-tile-property)                  | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                |
-| [*MEEP_FakeNPC*](#Using-the-MEEP_FakeNPC-tile-property)                          | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC.                                                                   |
+| **Tile Property**                                                                | **Layer** | **Description**                                                                                                                                                                                                                                                           |
+|----------------------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)           | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                       |
+| [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)      | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                       |
+| [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Back      | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images. |
+| [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                     | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                      |
+| [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                              | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC.                                                                                         |
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -68,6 +69,52 @@ Will display the fortune teller, and a message reading "The spirits tell me you'
 In `540 305 42 28`, `540` is the x co-ordinate of the top-left corner of the region of the specified image you want to display, `305` is the y co-ordinate, `42` is the width, and `28` is the height.
 
 **Warning**: It's worth keeping in mind the size of the image, and whether or not it will interfere with Stardew Valley when running at lower resolutions when combined with the text display option. I recommend you **always test your images at a varying UI scale settings and window sizes** if you want to play it safe.
+
+### Using the CloseupInteraction reel tile properties
+An example of a closeup interaction reel looks like so:
+```json
+{
+    "Changes": [
+        {
+            // Demonstration of a multiple image reel (option one).
+            "Action": "EditMap",
+            "Target": "Maps/Town",
+            "Update": "OnTimeChange",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 24,
+                        "Y": 53
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_CloseupInteraction_Image_1": "LooseSprites/Cursors 540 305 42 28",
+                        "MEEP_CloseupInteraction_Text_1": "The spirits tell me you're learning how to use a new mod...",
+                        "MEEP_CloseupInteraction_Image_2": "LooseSprites/Cursors 644 361 42 28",
+                        "MEEP_CloseupInteraction_Text_2": "FOOD!",
+                        "MEEP_CloseupInteraction_Image_3": "LooseSprites/Cursors 112 656 16 64",
+                        "MEEP_CloseupInteraction_Image_4": "LooseSprites/Cursors 160 660 32 60",
+                        "MEEP_CloseupInteraction_Text_4": "Weird, pink tentacle spiral thing?"
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+The `MEEP_CloseupInteraction_Image_1`, `MEEP_CloseupInteraction_Image_2`, etc. properties are required, and you cannot have more `MEEP_CloseupInteraction_Text_1` properties than image ones, as they'll simply be ignored.
+
+In this example, there are four images:
+
+(`MEEP_CloseupInteraction_Image_1`, `MEEP_CloseupInteraction_Image_2` `MEEP_CloseupInteraction_Image_3` `MEEP_CloseupInteraction_Image_3`)
+
+and three descriptions
+
+(`MEEP_CloseupInteraction_Text_1`, `MEEP_CloseupInteraction_Text_2`, `MEEP_CloseupInteraction_Text_4`)
+
+Note how there is no `MEEP_CloseupInteraction_Text_3`.This simply means that when the user switches to the third page, the image on that page won't have any text beneath it.
+
+
 
 ### Using the MEEP_SetMailFlag tile property
 This one is fairly self-explanatory. You would add the tile property `DHSetMailFlag`, and the value for it is the mail flag you want to be set. for example:
