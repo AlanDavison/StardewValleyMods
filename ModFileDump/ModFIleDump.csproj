@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Build\SDV-1.5.6.targets"/>
-    <Import Project="..\Build\Common.csproj"/>
-    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+    <Import Project="..\Build\SDV-1.5.6.targets" />
+    <Import Project="..\Build\Common.csproj" />
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
     <PropertyGroup>
         <Name>Mod File Dump</Name>
@@ -14,5 +14,9 @@
     <PropertyGroup>
         <EnableHarmony>false</EnableHarmony>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MappingExtensionsAndExtraProperties\MappingExtensionsAndExtraProperties.csproj" />
+    </ItemGroup>
 
 </Project>
