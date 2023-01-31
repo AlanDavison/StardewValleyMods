@@ -9,6 +9,7 @@ using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Models.TileProperties.FakeNpc;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -22,16 +23,21 @@ public class ModEntry : Mod
     private Logger logger;
     private TilePropertyHandler tileProperties;
     private MeepApi api;
+    private List<FakeNpc> allNpcs;
 
     public override void Entry(IModHelper helper)
     {
         var harmony = new Harmony(this.ModManifest.UniqueID);
         this.logger = new Logger(this.Monitor);
         this.tileProperties = new TilePropertyHandler(this.logger);
+        this.allNpcs = new List<FakeNpc>();
         Patches.InitialisePatches(this.logger, this.tileProperties);
 
         helper.Events.Player.Warped += (sender, args) =>
         {
+            // if (Game1.activeClickableMenu is null)
+            //     return;
+
             // We need to ensure we can kill relevant UIs if the player is warping.
             if (Game1.activeClickableMenu is MenuBase menu)
             {
@@ -46,16 +52,7 @@ public class ModEntry : Mod
         };
 
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
-        helper.Events.GameLoop.Saving += (sender, args) =>
-        {
-            // We already do this manually whenever we leave a location, but this is something I want
-            // extra security on.
-
-            foreach (GameLocation location in Game1.locations)
-            {
-                Utils.Locations.RemoveFakeNpcs(location, this.logger);
-            }
-        };
+        helper.Events.GameLoop.DayEnding += this.OnDayEnding;
 
         // Our patch for handling interactions.
         harmony.Patch(
@@ -85,11 +82,28 @@ public class ModEntry : Mod
             int mapWidth = args.NewLocation.Map.DisplayWidth / Game1.tileSize;
             int mapHeight = args.NewLocation.Map.DisplayHeight / Game1.tileSize;
 
-            for (int i = 0; i < mapWidth; i++)
+            // if (mapWidth == 0 || mapHeight == 0)
+            //     return;
+
+            for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapHeight; y++)
                 {
-                    Tile tile = args.NewLocation.Map.GetLayer("Back").Tiles.Array[i, y];
+#if DEBUG
+                    this.logger.Log($"Processing tile {x}:{y} in map {args.NewLocation.Name}.", LogLevel.Info);
+#endif
+                    Tile tile;
+
+                    try
+                    {
+                        tile = args.NewLocation.Map.GetLayer("Back").Tiles.Array[x, y];
+                    }
+                    catch (Exception e)
+                    {
+                        this.logger.Error($"Couldn't get tile {x}, {y} from map {args.NewLocation.Name}.");
+
+                        continue;
+                    }
 
                     if (tile == null)
                         continue;
@@ -104,10 +118,11 @@ public class ModEntry : Mod
                                     0,
                                     fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteWidth : 16,
                                     fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteHeight : 32),
-                                new Vector2(i, y) * 64f,
+                                new Vector2(x, y) * 64f,
                                 2,
                                 property.ToString(),
-                                this.logger
+                                this.logger,
+                                args.NewLocation
                             );
 
                             Dictionary<string, string> dialogue =
@@ -120,10 +135,13 @@ public class ModEntry : Mod
                             }
 
                             // A safeguard for multiplayer.
-                            if (!args.NewLocation.isTileOccupied(new Vector2(i, y)))
+                            if (!args.NewLocation.isTileOccupied(new Vector2(x, y)))
                             {
                                 args.NewLocation.characters.Add(character);
-                                this.logger.Log($"Fake NPC {character.Name} spawned in {args.NewLocation.Name} at X:{i}, Y:{y}.", LogLevel.Trace);
+                                this.allNpcs.Add(character);
+                                this.logger.Log(
+                                    $"Fake NPC {character.Name} spawned in {args.NewLocation.Name} at X:{x}, Y:{y}.",
+                                    LogLevel.Trace);
                             }
 
                             // if (!args.NewLocation.characters.Contains(character))
@@ -136,6 +154,13 @@ public class ModEntry : Mod
                     }
                 }
             }
+
+        };
+
+        helper.Events.Display.RenderingWorld += (sender, args) =>
+        {
+            args.SpriteBatch.DrawString(Game1.dialogueFont, "AAAAAAAAAAAAAAAAAAA", Vector2.Zero,
+                Color.Red, 0f, Vector2.Zero, new Vector2(10, 10), SpriteEffects.None, 0f);
         };
 
 #if DEBUG
@@ -143,35 +168,60 @@ public class ModEntry : Mod
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
-            int cursorX = (int)Game1.currentCursorTile.X;
-            int cursorY = (int)Game1.currentCursorTile.Y;
-            GameLocation here = Game1.currentLocation;
-
-            if (args.IsDown(SButton.OemSemicolon))
-            {
-                // Item furnace = ObjectFactory.getItemFromDescription(1, 13, 1);
-                // Game1.currentLocation.Objects.Add(Game1.currentCursorTile, (SObject)furnace);
-                FakeNpc character = new FakeNpc(
-                    new AnimatedSprite("Characters\\NotAbigail", 0, 16, 32),
-                    Game1.currentCursorTile * 64f,
-                    2,
-                    "NotAbigail",
-                    this.logger
-                );
-
-                string sheet = character.GetDialogueSheetName();
-
-                // character.CurrentDialogue.Push(new Dialogue("Hello!", Game1.getCharacterFromName("Abigail")));
-                // character.CurrentDialogue.Push(new Dialogue("Hello!", Game1.getCharacterFromName("Abigail")));
-                // character.CurrentDialogue.Push(new Dialogue("How are you doing today?", Game1.getCharacterFromName("Abigail")));
-                // character.CurrentDialogue.Push(new Dialogue("I'm glad to hear!", Game1.getCharacterFromName("Abigail")));
-                // character.Dialogue.Add("Wed", "Thing");
-                // character.Dialogue.Add();
-
-                here.characters.Add(character);
-            }
+            // int cursorX = (int)Game1.currentCursorTile.X;
+            // int cursorY = (int)Game1.currentCursorTile.Y;
+            // GameLocation here = Game1.currentLocation;
+            //
+            // if (args.IsDown(SButton.OemSemicolon))
+            // {
+            //     // Item furnace = ObjectFactory.getItemFromDescription(1, 13, 1);
+            //     // Game1.currentLocation.Objects.Add(Game1.currentCursorTile, (SObject)furnace);
+            //     FakeNpc character = new FakeNpc(
+            //         new AnimatedSprite("Characters\\NotAbigail", 0, 16, 32),
+            //         Game1.currentCursorTile * 64f,
+            //         2,
+            //         "NotAbigail",
+            //         this.logger
+            //     );
+            //
+            //     string sheet = character.GetDialogueSheetName();
+            //
+            //     // character.CurrentDialogue.Push(new Dialogue("Hello!", Game1.getCharacterFromName("Abigail")));
+            //     // character.CurrentDialogue.Push(new Dialogue("Hello!", Game1.getCharacterFromName("Abigail")));
+            //     // character.CurrentDialogue.Push(new Dialogue("How are you doing today?", Game1.getCharacterFromName("Abigail")));
+            //     // character.CurrentDialogue.Push(new Dialogue("I'm glad to hear!", Game1.getCharacterFromName("Abigail")));
+            //     // character.Dialogue.Add("Wed", "Thing");
+            //     // character.Dialogue.Add();
+            //
+            //     here.characters.Add(character);
+            // }
         };
 #endif
+    }
+
+    // This is just to ensure we come before Solid Foundation's DayEnding event.
+    [EventPriority((EventPriority)int.MaxValue)]
+    private void OnDayEnding(object? sender, DayEndingEventArgs e)
+    {
+        // We already do this manually whenever we leave a location, but this is something I want
+        // extra security on.
+
+        foreach (FakeNpc npc in this.allNpcs)
+        {
+            npc.KillNpc();
+        }
+
+        // foreach (GameLocation location in Game1.locations)
+        // {
+        //     Utils.Locations.RemoveFakeNpcs(location, this.logger);
+        // }
+        //
+        // foreach (Building building in Game1.getFarm().buildings)
+        // {
+        //     if (building.indoors.Value is GameLocation indoors)
+        //         Utils.Locations.RemoveFakeNpcs(indoors, this.logger);
+        //
+        // }
     }
 
     public override object? GetApi()
