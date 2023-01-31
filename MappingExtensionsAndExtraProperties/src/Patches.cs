@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Menus;
 using xTile.Dimensions;
 using xTile.ObjectModel;
 using xTile.Tiles;
@@ -164,6 +165,26 @@ public static class Patches
                 MenuBase menu = new MenuBase(pagedMenu, $"Reel");
                 Game1.activeClickableMenu = menu;
                 menu.MenuOpened();
+            }
+            else if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, LetterText.PropertyKey,
+                         out PropertyValue letterProperty))
+            {
+                if (Parsers.TryParse(letterProperty.ToString(), out LetterText letter))
+                {
+                    LetterViewerMenu letterViewer = new LetterViewerMenu(letter.Text, "Test");
+
+                    if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, LetterType.PropertyKey,
+                            out PropertyValue letterTypeProperty))
+                    {
+                        if (Parsers.TryParse(letterTypeProperty.ToString(), out LetterType letterType))
+                        {
+                            letterViewer.whichBG = letterType.Type - 1;
+                        }
+
+                    }
+
+                    Game1.activeClickableMenu = letterViewer;
+                }
             }
 
             // Check for the DHSetMailFlag property on a given tile.

@@ -68,6 +68,29 @@ public class Parsers
         return true;
     }
 
+    public static bool TryParse(string property, out LetterText parsedProperty)
+    {
+        parsedProperty = new LetterText();
+        parsedProperty.Text = property;
+
+        return true;
+    }
+
+    public static bool TryParse(string property, out LetterType parsedProperty)
+    {
+        parsedProperty = new LetterType();
+        parsedProperty.Type = 1;
+
+        if (int.TryParse(property.ToString(), out int type))
+        {
+            parsedProperty.Type = type;
+
+            return true;
+        }
+
+        return false;
+    }
+
     public static bool TryParse(string property, out CloseupInteractionImage parsedProperty)
     {
         parsedProperty = new CloseupInteractionImage();
