@@ -13,7 +13,7 @@ public class ContainerElement : UiElement
         Color? color = null,
         int topEdgeSize = 16, int bottomEdgeSize = 12, int leftEdgeSize = 12, int rightEdgeSize = 16,
         int containerMargin = 4)
-        : base(name, bounds, type, texture, sourceRect, color,
+        : base(name, bounds, type, texture, sourceRect, color, false,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         this.bounds = bounds;

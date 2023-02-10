@@ -20,6 +20,7 @@ public class UiElement
     internal DrawableType drawableType;
     internal Action? leftClickCallback;
     internal Action? rightClickCallback;
+    internal bool drawShadow;
 
     public bool DrawBox
     {
@@ -119,7 +120,7 @@ public class UiElement
     }
 
     public UiElement(string name, Rectangle bounds, DrawableType type = DrawableType.Texture, Texture2D texture = null, Rectangle? sourceRect = null,
-        Color? color = null,
+        Color? color = null, bool drawShadow = false,
         int topEdgeSize = 16, int bottomEdgeSize = 12, int leftEdgeSize = 12, int rightEdgeSize = 16, int scale = 4)
     {
         this.elementName = name;
@@ -128,6 +129,7 @@ public class UiElement
         if (sourceRect.HasValue) this.sourceRect = sourceRect.Value;
         this.drawableType = type;
         this.scale = scale;
+        this.drawShadow = drawShadow;
 
         if (sourceRect.HasValue)
         {
@@ -184,7 +186,12 @@ public class UiElement
     public virtual void Draw(SpriteBatch spriteBatch)
     {
         if (this.drawableType == DrawableType.Texture)
+        {
+            if (this.drawShadow)
+                spriteBatch.Draw(this.texture, new Rectangle(this.bounds.X + 4, this.bounds.Y + 4, this.bounds.Width, this.bounds.Height), this.sourceRect, this.textureTint);
+
             spriteBatch.Draw(this.texture, this.bounds, this.sourceRect, this.textureTint);
+        }
         else if (this.drawableType == DrawableType.SlicedBox)
         {
             Utils.DrawBox(
@@ -203,7 +210,12 @@ public class UiElement
     public virtual void Draw(SpriteBatch spriteBatch, Color colourTint)
     {
         if (this.drawableType == DrawableType.Texture)
+        {
+            if (this.drawShadow)
+                spriteBatch.Draw(this.texture, new Rectangle(this.bounds.X + 4, this.bounds.Y + 4, this.bounds.Width, this.bounds.Height), this.sourceRect, Color.Black);
+
             spriteBatch.Draw(this.texture, this.bounds, this.sourceRect, colourTint);
+        }
         else if (this.drawableType == DrawableType.SlicedBox)
         {
             Utils.DrawBox(
@@ -237,6 +249,11 @@ public class UiElement
             return;
 
         this.rightClickCallback.Invoke();
+    }
+
+    public virtual void ReceiveScrollWheel(int direction)
+    {
+
     }
 
     internal virtual void OrganiseChildren()

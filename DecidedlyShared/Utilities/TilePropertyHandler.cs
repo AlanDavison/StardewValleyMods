@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using DecidedlyShared.Logging;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using DecidedlyShared.Ui;
+using Microsoft.Xna.Framework;
 using StardewValley;
 using xTile;
 using xTile.Dimensions;
@@ -29,6 +32,30 @@ public class TilePropertyHandler
         out PropertyValue tileProperty)
     {
         return this.TryGetTileProperty(x, y, location, "Buildings", key, out tileProperty);
+    }
+
+    public bool TryGetPropertyFromString(string keyToCheck, string property, out PropertyValue stringProperty)
+    {
+        stringProperty = null;
+
+        string[] splitProperty = property.Split(" ");
+
+        if (splitProperty.Length < 1)
+            return false;
+
+        if (!splitProperty[0].Equals(keyToCheck))
+            return false;
+
+        StringBuilder args = new StringBuilder();
+
+        for (int i = 1; i < splitProperty.Length; i++)
+        {
+            args.Append($"{splitProperty[i]} ");
+        }
+
+        stringProperty = new PropertyValue(args.ToString());
+
+        return true;
     }
 
     public bool TryGetTileProperty(int x, int y, GameLocation location, string layer, string key,

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
@@ -31,6 +32,11 @@ public class MenuBase : IClickableMenu
         this.openSound = openSound;
     }
 
+    public void SetOpenSound(string openSound)
+    {
+        this.openSound = openSound;
+    }
+
     public void MenuOpened()
     {
         Game1.playSound(this.openSound);
@@ -59,6 +65,11 @@ public class MenuBase : IClickableMenu
     public override void receiveRightClick(int x, int y, bool playSound = true)
     {
         this.uiContainer.ReceiveRightClick(x, y);
+    }
+
+    public override void receiveScrollWheelAction(int direction)
+    {
+        this.uiContainer.ReceiveScrollWheel(direction);
     }
 
     public override void releaseLeftClick(int x, int y)

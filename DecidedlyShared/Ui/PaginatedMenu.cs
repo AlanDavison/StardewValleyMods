@@ -19,6 +19,7 @@ public class PaginatedMenu : ContainerElement
     private Rectangle leftArrowSourceRect = new Rectangle(8, 268, 44, 40);
     private Rectangle rightArrowSourceRect = new Rectangle(12, 204, 44, 40);
     private int currentIndex = 0;
+    private string pageTurnCueName;
 
     private int Index
     {
@@ -36,7 +37,7 @@ public class PaginatedMenu : ContainerElement
         }
     }
 
-    public PaginatedMenu(string name, List<MenuPage> pages, Rectangle bounds, DrawableType type = DrawableType.Texture, Texture2D? texture = null,
+    public PaginatedMenu(string name, List<MenuPage> pages, Rectangle bounds, DrawableType type = DrawableType.Texture, string pageTurnCue = "bigSelect", Texture2D? texture = null,
         Rectangle? sourceRect = null,
         Color? color = null, int topEdgeSize = 4, int bottomEdgeSize = 4, int leftEdgeSize = 4, int rightEdgeSize = 4,
         Orientation orientation = Orientation.Horizontal) :
@@ -44,6 +45,7 @@ public class PaginatedMenu : ContainerElement
     {
         this.pages = pages;
         this.orientation = orientation;
+        this.pageTurnCueName = pageTurnCue;
 
         this.SetupPages(this.orientation);
         this.OrganiseUi(this.orientation);
@@ -142,14 +144,16 @@ public class PaginatedMenu : ContainerElement
                         DrawableType.Texture,
                         Game1.mouseCursors,
                         this.leftArrowSourceRect,
-                        scale: 1);
+                        scale: 1,
+                        drawShadow: true);
                     this.nextArrow = new UiElement(
                         "Previous Arrow",
                         rightArrowBounds,
                         DrawableType.Texture,
                         Game1.mouseCursors,
                         this.rightArrowSourceRect,
-                        scale: 1);
+                        scale: 1,
+                        drawShadow: true);
 
                     this.previousArrow.leftClickCallback = this.PreviousArrowClicked;
                     this.nextArrow.leftClickCallback = this.NextArrowClicked;
@@ -240,14 +244,18 @@ public class PaginatedMenu : ContainerElement
 
     private void PreviousArrowClicked()
     {
+        if (this.currentIndex > 0)
+            Game1.playSound(this.pageTurnCueName);
+
         this.Index--;
-        Game1.playSound("bigSelect");
     }
 
     private void NextArrowClicked()
     {
+        if (this.currentIndex < this.pages.Count - 1)
+            Game1.playSound(this.pageTurnCueName);
+
         this.Index++;
-        Game1.playSound("bigSelect");
     }
 
     // public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
@@ -293,17 +301,25 @@ public class PaginatedMenu : ContainerElement
         base.ReceiveLeftClick(x, y);
     }
 
+    public override void ReceiveScrollWheel(int direction)
+    {
+        if (direction < 0)
+            this.nextArrow.leftClickCallback.Invoke();
+        else
+            this.previousArrow.leftClickCallback.Invoke();
+    }
+
     internal override void Draw(SpriteBatch spriteBatch)
     {
         if (this.currentIndex == 0)
             this.previousArrow.Draw(spriteBatch, Color.DarkGray);
         else
-            this.previousArrow.Draw(spriteBatch);
+            this.previousArrow.Draw(spriteBatch, Color.White);
 
-        if (this.currentIndex == this.pages.Count)
+        if (this.currentIndex == this.pages.Count - 1)
             this.nextArrow.Draw(spriteBatch, Color.DarkGray);
         else
-            this.nextArrow.Draw(spriteBatch);
+            this.nextArrow.Draw(spriteBatch, Color.White);
 
         if (this.pages.Count >= 1)
             this.pages[this.currentIndex].Draw(spriteBatch);

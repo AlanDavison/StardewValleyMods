@@ -15,7 +15,7 @@ public class TextElement : UiElement
         string name, Rectangle bounds, int widthConstraint = 1000, string text = "",
         SpriteFont? font = null, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null, Color? color = null,
         int topEdgeSize = 16, int bottomEdgeSize = 16, int leftEdgeSize = 16, int rightEdgeSize = 16)
-        : base(name, bounds, type, texture, sourceRect, color,
+        : base(name, bounds, type, texture, sourceRect, color, false,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         if (font == null)
