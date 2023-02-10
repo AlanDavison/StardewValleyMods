@@ -1,5 +1,7 @@
 # Smart Building release notes
 
+## 1.7.8
+Hopefully fully fixed the item stowing issue, and added a workaround to recover from the previous glitched state. Added a PR from atravita adding support for their upcoming mod.
 ## 1.7.7
 Fixes a fairly long-standing problem with item stowing, and the initial version of an object counting command.
 ## 1.7.4

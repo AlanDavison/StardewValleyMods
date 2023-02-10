@@ -230,8 +230,11 @@ namespace SmartBuilding.Utilities
                 return ItemType.Fertilizer;
             else if (item.Name.Equals("Tapper") || item.Name.Equals("Heavy Tapper"))
                 return ItemType.Tapper;
-            else if (item is SObject @object && this.growableBushesApi?.GetSizeOfBushIfApplicable(@object) != BushSizes.Invalid)
-                return ItemType.atravitaBush;
+            else if (item is SObject obj)
+            {
+                if (this.growableBushesApi!= null && this.growableBushesApi?.GetSizeOfBushIfApplicable(obj) != BushSizes.Invalid)
+                    return ItemType.atravitaBush;
+            }
 
             return ItemType.Generic;
         }

@@ -12,9 +12,6 @@ namespace SmartBuilding
 
         // Item stowing
         public bool ShouldControlItemStowing = false;
-        public bool NoStowing = true;
-        public bool GamepadOnlyStowing = false;
-        public bool BothStowing = false;
 
         // Optional layer hotkeys
         public KeybindList DrawnLayer = KeybindList.Parse("");
