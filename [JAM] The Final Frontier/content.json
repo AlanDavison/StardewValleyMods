@@ -1,0 +1,9 @@
+{
+    "Format": "1.28.0",
+    "CustomLocations": [ 
+        {
+          "Name": "Custom_JojaStationDock",
+          "FromMapFile": "assets/Custom_JojaStationDock.tmx"
+        }
+      ]
+}
