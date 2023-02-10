@@ -64,6 +64,11 @@ public class ModEntry : Mod
             AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
             prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
 
+        // We need this to handle items with integrated closeup interactions.
+        // harmony.Patch(
+        //     AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.performUseAction)),
+        //     prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.SObject_PerformUseAction)));
+
         // Our asset loading.
         helper.Events.Content.AssetRequested += (sender, args) =>
         {
@@ -79,11 +84,14 @@ public class ModEntry : Mod
 
         helper.Events.Player.Warped += (sender, args) =>
         {
-            int mapWidth = args.NewLocation.Map.DisplayWidth / Game1.tileSize;
-            int mapHeight = args.NewLocation.Map.DisplayHeight / Game1.tileSize;
+            // int mapWidth = args.NewLocation.Map.DisplayWidth / Game1.tileSize;
+            // int mapHeight = args.NewLocation.Map.DisplayHeight / Game1.tileSize;
 
             // if (mapWidth == 0 || mapHeight == 0)
             //     return;
+
+            int mapWidth = args.NewLocation.Map.GetLayer("Back").Tiles.Array.GetLength(0);
+            int mapHeight = args.NewLocation.Map.GetLayer("Back").Tiles.Array.GetLength(1);
 
             for (int x = 0; x < mapWidth; x++)
             {
@@ -100,7 +108,8 @@ public class ModEntry : Mod
                     }
                     catch (Exception e)
                     {
-                        this.logger.Error($"Couldn't get tile {x}, {y} from map {args.NewLocation.Name}.");
+                        this.logger.Error($"Couldn't get tile {x}, {y} from map {args.NewLocation.Name}. Exception follows.");
+                        this.logger.Exception(e);
 
                         continue;
                     }

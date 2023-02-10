@@ -6,7 +6,7 @@
     <PropertyGroup>
         <Name>Mapping Extensions and Extra Properties (MEEP)</Name>
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
-        <MinimumApiVersion>3.16.0</MinimumApiVersion>
+        <MinimumApiVersion>3.18.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
         <Version>1.0.6</Version>
     </PropertyGroup>
@@ -14,5 +14,4 @@
     <PropertyGroup>
         <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
-
 </Project>

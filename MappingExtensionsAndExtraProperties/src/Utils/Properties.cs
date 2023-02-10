@@ -21,6 +21,16 @@ public class Properties
         this.properties = new TilePropertyHandler(this.logger);
     }
 
+    public bool TryGetItemInteractionReel(string key, SObject obj, out List<MenuPage> pages)
+    {
+        pages = new List<MenuPage>();
+
+
+
+        return true;
+    }
+
+    // This relies on external things, and is stinky. TODO: Combine this and the item reel property into one later.
     public bool TryGetInteractionReel(int x, int y, GameLocation location, string key,
         out List<MenuPage> pages)
     {
@@ -31,7 +41,7 @@ public class Properties
         while (this.properties.TryGetTileProperty(x, y, location, "Back", $"{key}_{propertyNumber}", out PropertyValue property))
         {
             if (Parsers.TryParse(property.ToString(),
-                    out CloseupInteractionImage parsed))
+                    out CloseupInteractionImage parsedImageProperty))
             {
                 TextElement textElement = null;
 
@@ -57,11 +67,11 @@ public class Properties
                 MenuPage menuPage = new MenuPage();
                 UiElement picture = new UiElement(
                     "Picture",
-                    new Microsoft.Xna.Framework.Rectangle(0, 0, parsed.SourceRect.Width * 4,
-                        parsed.SourceRect.Height * 4),
+                    new Microsoft.Xna.Framework.Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
+                        parsedImageProperty.SourceRect.Height * 4),
                     DrawableType.Texture,
-                    parsed.Texture,
-                    parsed.SourceRect,
+                    parsedImageProperty.Texture,
+                    parsedImageProperty.SourceRect,
                     Color.White);
 
                 menuPage.page = picture;
