@@ -1,5 +1,10 @@
 # MEEP Release Notes
 
+* 1.1.1
+  * `Letter` tile properties added to allow map authors to trigger a custom letter/mail to appear when the player interacts with a given tile.
+* 1.0.6
+  * `FakeNPC` tile property added, allowing map authors to add NPCs that appear to be a real NPC, but without all of the setup required for a typical NPC.
+  * `CloseupInteraction_Image` properties tweaked to allow specifying multiple images/descriptions that can be flipped through.
 * 1.0.0
   * The mod exists.
   * `CloseupInteraction_Image`, `CloseupInteraction_Text`, and `DHSetMailFlag` tile properties added.
