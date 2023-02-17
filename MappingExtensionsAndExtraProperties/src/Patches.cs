@@ -256,7 +256,7 @@ public static class Patches
             // If the parsing failed, we want to nope out and log appropriately.
 
             logger.Error(
-                $"Parsing tile property CloseupInteraction_Image on layer \"Back\" at {tileX}, {tileY} in {location.Name} failed. Is it formatted correctly?");
+                $"Parsing tile property CloseupInteraction_Image on layer \"Back\" at {tileX}, {tileY} in {location.Name} failed. Is it formatted correctly? Was the texture loaded correctly?");
             logger.Error($"Property value: {closeupInteractionProperty.ToString()}");
         }
 
