@@ -1,4 +1,4 @@
-﻿namespace MappingExtensionsAndExtraProperties.Models.TileProperties.FakeNpc;
+﻿namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 
 public struct DhFakeNpc : ITilePropertyData
 {

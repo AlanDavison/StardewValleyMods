@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,11 +10,11 @@ public class ContainerElement : UiElement
     internal List<UiElement> childElements = new List<UiElement>();
     internal int containerMargin;
 
-    public ContainerElement(string name, Rectangle bounds, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null,
+    public ContainerElement(string name, Rectangle bounds, Logger logger, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null,
         int topEdgeSize = 16, int bottomEdgeSize = 12, int leftEdgeSize = 12, int rightEdgeSize = 16,
         int containerMargin = 4)
-        : base(name, bounds, type, texture, sourceRect, color, false,
+        : base(name, bounds, logger, type, texture, sourceRect, color, false,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         this.bounds = bounds;

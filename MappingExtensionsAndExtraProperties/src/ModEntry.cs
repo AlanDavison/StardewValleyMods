@@ -6,7 +6,6 @@ using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using MappingExtensionsAndExtraProperties.Models.TileProperties.FakeNpc;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,9 +34,6 @@ public class ModEntry : Mod
 
         helper.Events.Player.Warped += (sender, args) =>
         {
-            // if (Game1.activeClickableMenu is null)
-            //     return;
-
             // We need to ensure we can kill relevant UIs if the player is warping.
             if (Game1.activeClickableMenu is MenuBase menu)
             {
@@ -54,6 +50,15 @@ public class ModEntry : Mod
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
         helper.Events.GameLoop.DayEnding += this.OnDayEnding;
 
+        // Our asset loading.
+        helper.Events.Content.AssetRequested += (sender, args) =>
+        {
+            if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FakeNPC/Dialogue"))
+            {
+                args.LoadFrom(() => { return new Dictionary<string, string>(); }, AssetLoadPriority.Low);
+            }
+        };
+
         // Our patch for handling interactions.
         harmony.Patch(
             AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
@@ -64,42 +69,27 @@ public class ModEntry : Mod
             AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
             prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
 
-        // We need this to handle items with integrated closeup interactions.
+        // We need this to handle items with integrated closeup interactions. Disabled for now.
         // harmony.Patch(
         //     AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.performUseAction)),
         //     prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.SObject_PerformUseAction)));
-
-        // Our asset loading.
-        helper.Events.Content.AssetRequested += (sender, args) =>
-        {
-            if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FakeNPC/Dialogue"))
-            {
-                args.LoadFrom(() => { return new Dictionary<string, string>(); }, AssetLoadPriority.Low);
-            }
-        };
-
-        // harmony.Patch(
-        //     AccessTools.Method(typeof(ICollection<GameLocation>), nameof(Game1.locations.Add)),
-        //     prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
 
         helper.Events.Player.Warped += (sender, args) =>
         {
             // int mapWidth = args.NewLocation.Map.DisplayWidth / Game1.tileSize;
             // int mapHeight = args.NewLocation.Map.DisplayHeight / Game1.tileSize;
 
-            // if (mapWidth == 0 || mapHeight == 0)
-            //     return;
-
             int mapWidth = args.NewLocation.Map.GetLayer("Back").Tiles.Array.GetLength(0);
             int mapHeight = args.NewLocation.Map.GetLayer("Back").Tiles.Array.GetLength(1);
+
+            if (mapWidth == 0 || mapHeight == 0)
+                return;
 
             for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapHeight; y++)
                 {
-#if DEBUG
-                    this.logger.Log($"Processing tile {x}:{y} in map {args.NewLocation.Name}.", LogLevel.Info);
-#endif
+                    // this.logger.Debug($"Processing tile {x}:{y} in map {args.NewLocation.Name}.");
                     Tile tile;
 
                     try
@@ -152,9 +142,6 @@ public class ModEntry : Mod
                                     $"Fake NPC {character.Name} spawned in {args.NewLocation.Name} at X:{x}, Y:{y}.",
                                     LogLevel.Trace);
                             }
-
-                            // if (!args.NewLocation.characters.Contains(character))
-
                         }
                         else
                         {
@@ -166,14 +153,12 @@ public class ModEntry : Mod
 
         };
 
+#if DEBUG
         helper.Events.Display.RenderingWorld += (sender, args) =>
         {
             args.SpriteBatch.DrawString(Game1.dialogueFont, "AAAAAAAAAAAAAAAAAAA", Vector2.Zero,
                 Color.Red, 0f, Vector2.Zero, new Vector2(10, 10), SpriteEffects.None, 0f);
         };
-
-#if DEBUG
-        helper.Events.Display.MenuChanged += (sender, args) => { };
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
@@ -208,13 +193,10 @@ public class ModEntry : Mod
 #endif
     }
 
-    // This is just to ensure we come before Solid Foundation's DayEnding event.
+    // This is just to ensure we come most other DayEnding events.
     [EventPriority((EventPriority)int.MaxValue)]
     private void OnDayEnding(object? sender, DayEndingEventArgs e)
     {
-        // We already do this manually whenever we leave a location, but this is something I want
-        // extra security on.
-
         foreach (FakeNpc npc in this.allNpcs)
         {
             npc.KillNpc();

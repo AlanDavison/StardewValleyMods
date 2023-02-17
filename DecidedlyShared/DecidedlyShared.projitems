@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\VBoxElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Sound.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TilePropertyHandler.cs" />
     <Folder Include="$(MSBuildThisFileDirectory)Types" />
     <Compile Include="$(MSBuildThisFileDirectory)UIOld\UiElement.cs" />

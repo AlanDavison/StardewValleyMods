@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DecidedlyShared.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -12,10 +13,10 @@ public class TextElement : UiElement
     private int widthConstraint;
 
     public TextElement(
-        string name, Rectangle bounds, int widthConstraint = 1000, string text = "",
+        string name, Rectangle bounds, Logger logger, int widthConstraint = 1000, string text = "",
         SpriteFont? font = null, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null, Color? color = null,
         int topEdgeSize = 16, int bottomEdgeSize = 16, int leftEdgeSize = 16, int rightEdgeSize = 16)
-        : base(name, bounds, type, texture, sourceRect, color, false,
+        : base(name, bounds, logger, type, texture, sourceRect, color, false,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         if (font == null)

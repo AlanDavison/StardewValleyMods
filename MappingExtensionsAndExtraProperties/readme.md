@@ -1,5 +1,5 @@
 ﻿# Mapping Extensions and Extra Properties (MEEP) Documentation
-**Version 1.0.0**
+**Version 1.1.0**
 
 All releases can be found on my [Nexus page](https://www.nexusmods.com/users/79440738?tab=user+files).
 
@@ -7,7 +7,8 @@ All releases can be found on my [Nexus page](https://www.nexusmods.com/users/794
 This mod does nothing on its own. Its primary purpose is to allow map authors to spice up their maps with the new custom tile properties, extra features, etc., that this mod adds.
 
 ## Current tile properties
-### Click on the link to go to the mini-docs for each one
+Click on the link to go to the mini-docs for each one
+
 | **Tile Property**                                                                | **Layer** | **Description**                                                                                                                                                                                                                                                           |
 |----------------------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)           | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                       |
@@ -15,6 +16,7 @@ This mod does nothing on its own. Its primary purpose is to allow map authors to
 | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Back      | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images. |
 | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                     | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                      |
 | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                              | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC.                                                                                         |
+| [*Letter*](#Using-the-MEEP-Letter-tile-property)                                 | Back      | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                           |
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -232,7 +234,7 @@ Finally, we need to add a tile property to specify where we want the NPC to spaw
 ```json
 {
     "Action": "EditMap",
-    "Target": "Maps/Town"
+    "Target": "Maps/Town",
     "MapTiles": [
         {
             "Position": {
@@ -247,3 +249,44 @@ Finally, we need to add a tile property to specify where we want the NPC to spaw
     ]
 }
 ```
+
+### Using the MEEP Letter tile property
+The `Letter` tile properties are fairly simple. There are two of them -- `MEEP_Letter`, and `MEEP_Letter_Type`.
+
+#### MEEP_Letter
+This is the mandatory property, and is fairly simple:
+```json
+{
+    "Changes": [
+        {
+            "Action": "EditMap",
+            "Target": "Maps/Custom_MEEP_Station",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 13,
+                        "Y": 13
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_Letter": "Super Evil Joja Plans^^Ha, fooled you! No plans here.^^Have some wood, though.%item object 388 50 %%",
+                        "MEEP_Letter_Type": "2"
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+
+You just need to specify the tile property on the desired tile, and format the letter contents as you would for any mail/letter.
+
+**Important note**: Most, if not all vanilla mail commands should work here. However, given that the letter can be opened as many times as the player desires as long as the patch remains in place, you want to be very, very careful not to allow for infinite items, and other weird issues.
+
+#### MEEP_Letter_Type
+This is optional, but incredibly simple. Simply add the tile property as seen above.
+
+See the vanilla letter types below:
+
+
+![MEEP letter type numbers](https://i.imgur.com/llJupGQ.png)

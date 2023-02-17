@@ -1,4 +1,5 @@
 using System;
+using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -21,6 +22,7 @@ public class UiElement
     internal Action? leftClickCallback;
     internal Action? rightClickCallback;
     internal bool drawShadow;
+    internal Logger logger;
 
     public bool DrawBox
     {
@@ -119,7 +121,7 @@ public class UiElement
         }
     }
 
-    public UiElement(string name, Rectangle bounds, DrawableType type = DrawableType.Texture, Texture2D texture = null, Rectangle? sourceRect = null,
+    public UiElement(string name, Rectangle bounds, Logger logger, DrawableType type = DrawableType.Texture, Texture2D texture = null, Rectangle? sourceRect = null,
         Color? color = null, bool drawShadow = false,
         int topEdgeSize = 16, int bottomEdgeSize = 12, int leftEdgeSize = 12, int rightEdgeSize = 16, int scale = 4)
     {
@@ -130,6 +132,7 @@ public class UiElement
         this.drawableType = type;
         this.scale = scale;
         this.drawShadow = drawShadow;
+        this.logger = logger;
 
         if (sourceRect.HasValue)
         {
@@ -187,6 +190,11 @@ public class UiElement
     {
         if (this.drawableType == DrawableType.Texture)
         {
+            if (this.texture is null)
+            {
+                return;
+            }
+
             if (this.drawShadow)
                 spriteBatch.Draw(this.texture, new Rectangle(this.bounds.X + 4, this.bounds.Y + 4, this.bounds.Width, this.bounds.Height), this.sourceRect, this.textureTint);
 

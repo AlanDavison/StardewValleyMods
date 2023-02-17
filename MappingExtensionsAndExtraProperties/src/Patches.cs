@@ -7,6 +7,7 @@ using MappingExtensionsAndExtraProperties.Utils;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -53,7 +54,8 @@ public static class Patches
                 DoCloseupInteraction(__instance, tileX, tileY, closeupInteractionProperty);
             }
             // If there isn't a single interaction property, we want to look for the start of a reel.
-            else if (Patches.propertyUtils.TryGetInteractionReel(tileX, tileY, __instance, CloseupInteractionImage.PropertyKey,
+            else if (Patches.propertyUtils.TryGetInteractionReel(tileX, tileY, __instance,
+                         CloseupInteractionImage.PropertyKey,
                          out List<MenuPage> pages))
             {
                 string cueName = "bigSelect";
@@ -62,13 +64,14 @@ public static class Patches
                 if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionSound.PropertyKey,
                         out PropertyValue closeupSoundProperty))
                 {
-                    if (Parsers.TryParse(closeupSoundProperty.ToString(), out CloseupInteractionSound parsedSoundProperty))
+                    if (Parsers.TryParse(closeupSoundProperty.ToString(),
+                            out CloseupInteractionSound parsedSoundProperty))
                     {
                         cueName = parsedSoundProperty.CueName;
                     }
                 }
 
-                DoCloseupReel(pages, cueName);
+                DoCloseupReel(pages, Patches.logger, cueName);
             }
             // There isn't a reel either, so we check for a letter property.
             else if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, LetterText.PropertyKey,
@@ -181,7 +184,7 @@ public static class Patches
             {
                 if (Parsers.TryParse(letterTypeProperty.ToString(), out LetterType letterType))
                 {
-                        letterViewer.whichBG = letterType.BgType - 1;
+                    letterViewer.whichBG = letterType.BgType - 1;
                 }
             }
 
@@ -189,7 +192,7 @@ public static class Patches
         }
     }
 
-    private static void DoCloseupReel(List<MenuPage> pages, string soundCue = "bigSelect")
+    private static void DoCloseupReel(List<MenuPage> pages, Logger logger, string soundCue = "bigSelect")
     {
 
         // List<MenuPage> pages = new List<MenuPage>();
@@ -219,11 +222,12 @@ public static class Patches
             "Interaction Reel",
             pages,
             Utility.xTileToMicrosoftRectangle(Game1.uiViewport),
+            Patches.logger,
             DrawableType.None,
             soundCue);
 
         // Finally, we create our menu, and set it to be the current, active menu.
-        MenuBase menu = new MenuBase(pagedMenu, $"Reel", soundCue);
+        MenuBase menu = new MenuBase(pagedMenu, $"Reel", logger, soundCue);
         Game1.activeClickableMenu = menu;
         menu.MenuOpened();
     }
@@ -263,6 +267,7 @@ public static class Patches
                 0,
                 0,
                 closeupInteractionParsed.SourceRect.Width * 2, closeupInteractionParsed.SourceRect.Height),
+            Patches.logger,
             DrawableType.None,
             Game1.menuTexture,
             new Microsoft.Xna.Framework.Rectangle(0, 256, 60, 60),
@@ -277,6 +282,7 @@ public static class Patches
             "Picture",
             new Microsoft.Xna.Framework.Rectangle(0, 0, closeupInteractionParsed.SourceRect.Width * 4,
                 closeupInteractionParsed.SourceRect.Height * 4),
+            Patches.logger,
             DrawableType.Texture,
             closeupInteractionParsed.Texture,
             closeupInteractionParsed.SourceRect,
@@ -293,6 +299,7 @@ public static class Patches
                 vBox.AddChild(new TextElement(
                     "Popup Text Box",
                     Microsoft.Xna.Framework.Rectangle.Empty,
+                    Patches.logger,
                     600,
                     parsedTextProperty.Text));
             }
@@ -303,7 +310,7 @@ public static class Patches
         }
 
         // Finally, we create our menu.
-        MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}");
+        MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}", Patches.logger);
 
         // Now we check for a sound interaction property.
         if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
@@ -331,6 +338,7 @@ public static class Patches
                 0,
                 0,
                 closeupInteractionParsed.SourceRect.Width * 2, closeupInteractionParsed.SourceRect.Height),
+            Patches.logger,
             DrawableType.None,
             Game1.menuTexture,
             new Microsoft.Xna.Framework.Rectangle(0, 256, 60, 60),
@@ -345,6 +353,7 @@ public static class Patches
             "Picture",
             new Microsoft.Xna.Framework.Rectangle(0, 0, closeupInteractionParsed.SourceRect.Width * 4,
                 closeupInteractionParsed.SourceRect.Height * 4),
+            Patches.logger,
             DrawableType.Texture,
             closeupInteractionParsed.Texture,
             closeupInteractionParsed.SourceRect,
@@ -356,6 +365,7 @@ public static class Patches
             vBox.AddChild(new TextElement(
                 "Popup Text Box",
                 Microsoft.Xna.Framework.Rectangle.Empty,
+                Patches.logger,
                 600,
                 closeupInteractionText.Value.Text));
         }
@@ -387,7 +397,7 @@ public static class Patches
 
         // Finally, we create our menu, and set it to be the current, active menu.
 
-        MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}", soundCue);
+        MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}", Patches.logger, soundCue);
         Game1.activeClickableMenu = menu;
         menu.MenuOpened();
     }
@@ -401,7 +411,8 @@ public static class Patches
                 out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, CloseupInteractionImage.PropertyKey,
                 out PropertyValue _) ||
-            tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, $"{CloseupInteractionImage.PropertyKey}_1",
+            tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation,
+                $"{CloseupInteractionImage.PropertyKey}_1",
                 out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, LetterType.PropertyKey,
                 out PropertyValue _) ||

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Mime;
 using System.Text;
+using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -20,6 +22,7 @@ public class PaginatedMenu : ContainerElement
     private Rectangle rightArrowSourceRect = new Rectangle(12, 204, 44, 40);
     private int currentIndex = 0;
     private string pageTurnCueName;
+    // private Logger logger;
 
     private int Index
     {
@@ -37,15 +40,16 @@ public class PaginatedMenu : ContainerElement
         }
     }
 
-    public PaginatedMenu(string name, List<MenuPage> pages, Rectangle bounds, DrawableType type = DrawableType.Texture, string pageTurnCue = "bigSelect", Texture2D? texture = null,
+    public PaginatedMenu(string name, List<MenuPage> pages, Rectangle bounds, Logger logger, DrawableType type = DrawableType.Texture, string pageTurnCue = "bigSelect", Texture2D? texture = null,
         Rectangle? sourceRect = null,
         Color? color = null, int topEdgeSize = 4, int bottomEdgeSize = 4, int leftEdgeSize = 4, int rightEdgeSize = 4,
         Orientation orientation = Orientation.Horizontal) :
-        base(name, bounds, type, texture, sourceRect, color, topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
+        base(name, bounds, logger, type, texture, sourceRect, color, topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         this.pages = pages;
         this.orientation = orientation;
         this.pageTurnCueName = pageTurnCue;
+        // this.logger = logger;
 
         this.SetupPages(this.orientation);
         this.OrganiseUi(this.orientation);
@@ -70,6 +74,7 @@ public class PaginatedMenu : ContainerElement
                 VBoxElement horizontalPage = new VBoxElement(
                     "Page",
                     Rectangle.Empty,
+                    this.logger,
                     DrawableType.Texture
                 );
 
@@ -84,6 +89,7 @@ public class PaginatedMenu : ContainerElement
                 VBoxElement verticalPage = new VBoxElement(
                     "Page",
                     Rectangle.Empty,
+                    this.logger,
                     DrawableType.Texture
                 );
 
@@ -141,6 +147,7 @@ public class PaginatedMenu : ContainerElement
                     this.previousArrow = new UiElement(
                         "Previous Arrow",
                         leftArrowBounds,
+                        this.logger,
                         DrawableType.Texture,
                         Game1.mouseCursors,
                         this.leftArrowSourceRect,
@@ -149,6 +156,7 @@ public class PaginatedMenu : ContainerElement
                     this.nextArrow = new UiElement(
                         "Previous Arrow",
                         rightArrowBounds,
+                        this.logger,
                         DrawableType.Texture,
                         Game1.mouseCursors,
                         this.rightArrowSourceRect,
@@ -182,6 +190,7 @@ public class PaginatedMenu : ContainerElement
                     this.previousArrow = new UiElement(
                         "Previous Arrow",
                         upArrowBounds,
+                        this.logger,
                         DrawableType.Texture,
                         Game1.mouseCursors,
                         this.upArrowSourceRect,
@@ -189,6 +198,7 @@ public class PaginatedMenu : ContainerElement
                     this.nextArrow = new UiElement(
                         "Previous Arrow",
                         downArrowBounds,
+                        this.logger,
                         DrawableType.Texture,
                         Game1.mouseCursors,
                         this.downArrowSourceRect,
@@ -245,7 +255,10 @@ public class PaginatedMenu : ContainerElement
     private void PreviousArrowClicked()
     {
         if (this.currentIndex > 0)
-            Game1.playSound(this.pageTurnCueName);
+        {
+            if (!Utilities.Sound.TryPlaySound(this.pageTurnCueName))
+                this.logger.Error($"Oops! I failed while trying to play sound cue {this.pageTurnCueName} in {Game1.currentLocation.Name}. Is it a valid cue?");
+        }
 
         this.Index--;
     }
@@ -253,7 +266,10 @@ public class PaginatedMenu : ContainerElement
     private void NextArrowClicked()
     {
         if (this.currentIndex < this.pages.Count - 1)
-            Game1.playSound(this.pageTurnCueName);
+        {
+            if (!Utilities.Sound.TryPlaySound(this.pageTurnCueName))
+                this.logger.Error($"Oops! I failed while trying to play sound cue {this.pageTurnCueName} in {Game1.currentLocation.Name}. Is it a valid cue?");
+        }
 
         this.Index++;
     }

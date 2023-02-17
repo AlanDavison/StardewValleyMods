@@ -55,6 +55,7 @@ public class Properties
                         textElement = new TextElement(
                             "Popup Text Box",
                             Microsoft.Xna.Framework.Rectangle.Empty,
+                            this.logger,
                             600,
                             parsedTextProperty.Text);
                     }
@@ -69,6 +70,7 @@ public class Properties
                     "Picture",
                     new Microsoft.Xna.Framework.Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
                         parsedImageProperty.SourceRect.Height * 4),
+                    this.logger,
                     DrawableType.Texture,
                     parsedImageProperty.Texture,
                     parsedImageProperty.SourceRect,

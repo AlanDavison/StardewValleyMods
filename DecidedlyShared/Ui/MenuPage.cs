@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DecidedlyShared.Ui;
 
@@ -25,7 +26,7 @@ public class MenuPage
         {
             int width = this.page.Width;
             if (this.pageText != null)
-                width += this.pageText.Width;
+                width = Math.Max(this.pageText.Width, this.page.Width);
 
             return width;
         }

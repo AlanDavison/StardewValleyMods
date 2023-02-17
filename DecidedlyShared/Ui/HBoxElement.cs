@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DecidedlyShared.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
@@ -12,10 +13,10 @@ public class HBoxElement : ContainerElement
     private Alignment alignment;
     private int childSpacing;
 
-    public HBoxElement(string name, Rectangle bounds, DrawableType type = DrawableType.Texture, Texture2D? texture = null, Rectangle? sourceRect = null,
+    public HBoxElement(string name, Rectangle bounds, Logger logger, DrawableType type = DrawableType.Texture, Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null,
         int topEdgeSize = 4, int bottomEdgeSize = 4, int leftEdgeSize = 4, int rightEdgeSize = 4, int childSpacing = 4)
-        : base(name, bounds, type, texture, sourceRect, color,
+        : base(name, bounds, logger, type, texture, sourceRect, color,
             topEdgeSize, bottomEdgeSize, leftEdgeSize, rightEdgeSize)
     {
         this.childSpacing = childSpacing;

@@ -1,4 +1,5 @@
 ﻿using System;
+using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -12,6 +13,7 @@ public class MenuBase : IClickableMenu
     internal ContainerElement uiContainer;
     private string menuName;
     private string openSound;
+    private Logger logger;
 
     public string MenuName
     {
@@ -20,7 +22,7 @@ public class MenuBase : IClickableMenu
 
 
 
-    public MenuBase(ContainerElement uiContainer, string name, string openSound = "bigSelect")
+    public MenuBase(ContainerElement uiContainer, string name, Logger logger, string openSound = "bigSelect")
     {
         this.uiContainer = uiContainer;
         this.xPositionOnScreen = 0;
@@ -30,6 +32,7 @@ public class MenuBase : IClickableMenu
         this.uiContainer.textureTint = Color.White;
         this.menuName = name;
         this.openSound = openSound;
+        this.logger = logger;
     }
 
     public void SetOpenSound(string openSound)
@@ -39,7 +42,8 @@ public class MenuBase : IClickableMenu
 
     public void MenuOpened()
     {
-        Game1.playSound(this.openSound);
+        if (!Utilities.Sound.TryPlaySound(this.openSound))
+            this.logger.Error($"Oops! I failed while trying to play sound cue {this.openSound} in {Game1.currentLocation.Name}. Is it a valid cue?");
     }
 
     public override void draw(SpriteBatch b)

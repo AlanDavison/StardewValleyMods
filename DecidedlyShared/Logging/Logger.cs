@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using StardewModdingAPI;
 using StardewValley;
 
@@ -41,10 +42,16 @@ namespace DecidedlyShared.Logging
             this.Log(logMessage, LogLevel.Warn, displayInHud);
         }
 
+        [Conditional("DEBUG")]
+        public void Debug(string logMessage)
+        {
+            this.Log(logMessage, LogLevel.Info);
+        }
+
         public void Exception(Exception e)
         {
             this.monitor.Log($"Exception: {e.Message}", LogLevel.Error);
-            this.monitor.Log($"Full exception data: \n{e.Data}", LogLevel.Error);
+            this.monitor.Log($"Stack trace: \n{e.StackTrace}", LogLevel.Error);
         }
     }
 }

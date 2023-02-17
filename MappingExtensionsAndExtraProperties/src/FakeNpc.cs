@@ -19,20 +19,18 @@ public class FakeNpc : NPC
     {
         this.logger = logger;
         this.npcLocation = npcLocation;
-        // this.logger.Log($"{name} of type {nameof(FakeNpc)} created.", LogLevel.Trace);
+        this.logger.Log($"{name} of type {nameof(FakeNpc)} created in {npcLocation.Name}.", LogLevel.Trace);
+
+#if DEBUG
+        // Extra debug logging in case I need to try to narrow down serialisation issues.
+        this.logger.Log("Players present:");
+
+        foreach (Farmer player in npcLocation.farmers)
+        {
+            this.logger.Log($"{player.Name}:{player.userID}:{player.UniqueMultiplayerID.ToString()}", LogLevel.Info);
+        }
+#endif
     }
-
-
-
-    // public override bool checkAction(Farmer who, GameLocation l)
-    // {
-    //     // this.CurrentDialogue.Push(new Dialogue("Hey @, you think you could build a raft?#$e#I saw a few cool islands on the way here I want to visit.", this));
-    //     //
-    //     // Game1.drawDialogue(this);
-    //     // base.facePlayer(who);
-    //
-    //     return base.checkAction(who, l);
-    // }
 
     public override bool CanSocialize
     {
@@ -56,7 +54,9 @@ public class FakeNpc : NPC
                 this.npcLocation.characters.Remove(this);
             }
         }
+        else
+            this.logger?.Error($"{this.Name}'s internal FakeNPC location was null. Please let me know if you see this occur!");
 
-        this.logger?.Log($"{this.name.Value} killed in location {this.npcLocation.Name}.", LogLevel.Trace);
+        this.logger?.Log($"{this.Name} killed in location {this.npcLocation.Name}.", LogLevel.Trace);
     }
 }
