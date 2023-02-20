@@ -1,5 +1,5 @@
 ﻿# Mapping Extensions and Extra Properties (MEEP) Documentation
-**Version 1.1.0**
+**Version 1.2.0**
 
 All releases can be found on my [Nexus page](https://www.nexusmods.com/users/79440738?tab=user+files).
 
