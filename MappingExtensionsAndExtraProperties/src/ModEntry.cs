@@ -119,10 +119,17 @@ public class ModEntry : Mod
                                     fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteHeight : 32),
                                 new Vector2(x, y) * 64f,
                                 2,
-                                property.ToString(),
+                                fakeNpcProperty.NpcName,
                                 this.logger,
                                 args.NewLocation
                             );
+                            if (fakeNpcProperty.HasSpriteSizes)
+                            {
+                                if (fakeNpcProperty.SpriteWidth > 16)
+                                    character.HideShadow = true;
+
+                                character.Breather = false;
+                            }
 
                             Dictionary<string, string> dialogue =
                                 helper.GameContent.Load<Dictionary<string, string>>(

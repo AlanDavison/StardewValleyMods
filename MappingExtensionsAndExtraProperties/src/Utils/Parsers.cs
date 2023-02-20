@@ -329,8 +329,7 @@ public class Parsers
         1) One parameter (NPC name)
         2) Three parameters (NPC name, sprite width, sprite height)
         */
-        // if (splitProperty.Length < 1 || (splitProperty.Length > 1 && splitProperty.Length != 3))
-        if (splitProperty.Length != 1)
+        if (splitProperty.Length < 1 || (splitProperty.Length > 1 && splitProperty.Length != 3))
             return false;
 
         parsedProperty.NpcName = splitProperty[0];
@@ -343,17 +342,17 @@ public class Parsers
                 return false; // If there's an NPC in the dispositions matching our fake NPC, we bail.
         }
 
-        // // We've gotten this far, so we check to see if we only have the one argument.
-        // if (splitProperty.Length == 1)
-        //     return true; // If we only have an NPC name argument, we can simply return true here.
-        //
-        // // We know we're dealing with the full set of arguments, so we try to parse them all.
-        // if (!int.TryParse(splitProperty[1], out npcSpriteWidth)) return false;
-        // if (!int.TryParse(splitProperty[2], out npcSpriteHeight)) return false;
-        //
-        // parsedProperty.SpriteWidth = npcSpriteHeight;
-        // parsedProperty.SpriteHeight = npcSpriteHeight;
-        // parsedProperty.HasSpriteSizes = true;
+        // We've gotten this far, so we check to see if we only have the one argument.
+        if (splitProperty.Length == 1)
+            return true; // If we only have an NPC name argument, we can simply return true here.
+
+        // We know we're dealing with the full set of arguments, so we try to parse them all.
+        if (!int.TryParse(splitProperty[1], out npcSpriteWidth)) return false;
+        if (!int.TryParse(splitProperty[2], out npcSpriteHeight)) return false;
+
+        parsedProperty.SpriteWidth = npcSpriteHeight;
+        parsedProperty.SpriteHeight = npcSpriteHeight;
+        parsedProperty.HasSpriteSizes = true;
 
         return true;
     }

@@ -32,6 +32,15 @@ public class FakeNpc : NPC
 #endif
     }
 
+    // Vanilla method does centre the shadow correctly.
+    // public override Vector2 GetShadowOffset()
+    // {
+    //     int npcWidth = this.sprite.Value.SpriteWidth;
+    //     int npcHeight = this.sprite.Value.SpriteHeight;
+    //
+    //     return new Vector2(0, 0);
+    // }
+
     public override bool CanSocialize
     {
         get

@@ -9,14 +9,14 @@ This mod does nothing on its own. Its primary purpose is to allow map authors to
 ## Current tile properties
 Click on the link to go to the mini-docs for each one
 
-| **Tile Property**                                                                | **Layer** | **Description**                                                                                                                                                                                                                                                           |
-|----------------------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)           | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                       |
-| [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)      | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                       |
-| [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Back      | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images. |
-| [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                     | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                      |
-| [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                              | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC.                                                                                         |
-| [*Letter*](#Using-the-MEEP-Letter-tile-property)                                 | Back      | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                           |
+| Updated in version | **Tile Property**                                                                | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
+|:-------------------|----------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1.0.6              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)           | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
+| 1.0.6              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)      | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
+| 1.0.6              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Back      | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
+| 1.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                     | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
+| **1.2.0**          | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                              | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
+| 1.1.1              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                                 | Back      | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -116,7 +116,25 @@ and three descriptions
 
 Note how there is no `MEEP_CloseupInteraction_Text_3`.This simply means that when the user switches to the third page, the image on that page won't have any text beneath it.
 
+### USing the MEEP_CloseupInteraction_Sound tile property
+You can spice up your closeup interactions by specifying that a given sound cue be played when the interaction is opened, or the page is turned in the reel.
 
+```json
+{
+    "Position": {
+        "X": 40,
+        "Y": 22
+    },
+    "Layer": "Back",
+    "SetProperties": {
+        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/MaruRobot",
+        "MEEP_CloseupInteraction_Text": "It's Maru's robot! Did someone copy the design?",
+        "MEEP_CloseupInteraction_Sound": "dog_bark"
+    }
+}
+```
+
+The sound cue must be valid, or MEEP will log an error every time the property is interacted with, and no sound will be played.
 
 ### Using the MEEP_SetMailFlag tile property
 This one is fairly self-explanatory. You would add the tile property `DHSetMailFlag`, and the value for it is the mail flag you want to be set. for example:
@@ -158,7 +176,7 @@ You could also use this for any kind of conditional patch that checks for a mail
 ### Using the MEEP_FakeNPC tile property
 This tile property will allow you to spawn a "fake" NPC on a given tile. Unlike a "real" NPC, which needs a disposition, and lots of setup, a "fake" NPC needs very, very little. Fake NPCs cannot receive gifts, don't have a schedule, and won't move around. They're intended to be a middle ground between a simple static NPC sprite, and a fully-fledged NPC.
 
-The basic setup is as follows:
+The most basic setup is as follows:
 ```json
 {
     "Format": "1.28.0",
@@ -249,6 +267,33 @@ Finally, we need to add a tile property to specify where we want the NPC to spaw
     ]
 }
 ```
+
+#### Optional argument: NPC sprite size
+We can also, however, specify a custom NPC sprite size. Yes, that means you can have an NPC larger than 16x32. How to do that is very simple:
+```json
+{
+    "Action": "EditMap",
+    "Target": "Maps/Town",
+    "MapTiles": [
+        {
+            "Position": {
+                "X": 29,
+                "Y": 56
+            },
+            "Layer": "Back",
+            "SetProperties": {
+                "MEEP_FakeNPC": "NotAbigail 32 32"
+            }
+        }
+    ]
+}
+```
+
+This will create a fake NPC with a size of 32x32. Currently, I've only tested 32x32, and 64x64.
+
+Do note, however, that using a custom size for your NPC will disable the breathing animation and shadow. This is primarily because the vanilla shadow is very specifically designed for a 16x32 NPC, and looks very bad on different sizes of NPC.
+
+Instead, you can just draw the shadows into the NPC sprite. This allows for much nicer looking shadows, too!
 
 ### Using the MEEP Letter tile property
 The `Letter` tile properties are fairly simple. There are two of them -- `MEEP_Letter`, and `MEEP_Letter_Type`.
