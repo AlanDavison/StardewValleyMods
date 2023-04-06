@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using DecidedlyShared.Logging;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
