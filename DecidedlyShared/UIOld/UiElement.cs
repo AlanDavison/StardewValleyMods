@@ -4,12 +4,9 @@ using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
-using Microsoft.Build.Framework;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
-using StardewValley.GameData.HomeRenovations;
 using StardewValley.Menus;
 
 namespace DecidedlyShared.UIOld
