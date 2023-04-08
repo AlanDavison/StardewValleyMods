@@ -7,13 +7,15 @@
 
 # Oh, no
 * Special, fancy, animated backgrounds
+* Animated images.
 
 # Difficulty not examined yet
 * Atravita: maybe out of scope, but what if I could open a MEEP picture at the end of a dialogue pretty please?
-* Atravita: If you want to reallllllyyyyyy scope creep give me TAS?
-* Animated images.
+* Atravita: If you want to reallllllyyyyyy scope creep give me TAS? (temporary animated sprite)
 * Screen reader/general accessibility via Stardew Access (https://github.com/khanshoaib3/stardew-access)
 * Counter for how many times a fake NPC has been chatted with, via a CP token, maybe?
+* MEEP event commands!
+* Custom letter stationery
 
 # Pretty easy
 
