@@ -9,14 +9,16 @@ This mod does nothing on its own. Its primary purpose is to allow map authors to
 ## Current tile properties
 Click on the link to go to the mini-docs for each one
 
-| Updated in version | **Tile Property**                                                                | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
-|:-------------------|----------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1.0.6              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)           | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
-| 1.0.6              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)      | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
-| 1.0.6              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Back      | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
-| 1.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                     | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
-| **1.2.0**          | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                              | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
-| 1.1.1              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                                 | Back      | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
+| Updated in version | **Tile Property**                                                                     | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
+|:-------------------|---------------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1.0.6              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)                | Back      | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
+| 1.0.6              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)           | Back      | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
+| 1.0.6              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties)      | Back      | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
+| 1.1.1              | [*Closeup Interaction Sound*](#Using-the-MEEP_CloseupInteraction_Sound-tile-property) | Back      | This is a tile property you can use alongside any of the other Closeup Interaction properties. When you specify a game sound cue using it, the sound will play when the player opens the interaction, or turns the page in the case of a reel.                                                                                    |
+| 1.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                          | Back      | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
+| 1.2.0              | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                                   | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
+| 1.1.1              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                                      | Back      | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
+| **1.3.0**          | [*Letter*](#MEEP_Letter_Type)                                 | Back      | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -116,7 +118,7 @@ and three descriptions
 
 Note how there is no `MEEP_CloseupInteraction_Text_3`.This simply means that when the user switches to the third page, the image on that page won't have any text beneath it.
 
-### USing the MEEP_CloseupInteraction_Sound tile property
+### Using the MEEP_CloseupInteraction_Sound tile property
 You can spice up your closeup interactions by specifying that a given sound cue be played when the interaction is opened, or the page is turned in the reel.
 
 ```json
@@ -329,9 +331,49 @@ You just need to specify the tile property on the desired tile, and format the l
 **Important note**: Most, if not all vanilla mail commands should work here. However, given that the letter can be opened as many times as the player desires as long as the patch remains in place, you want to be very, very careful not to allow for infinite items, and other weird issues.
 
 #### MEEP_Letter_Type
-This is optional, but incredibly simple. Simply add the tile property as seen above.
+There are two ways to use `MEEP_Letter_Type`. One is to simply specify the vanilla letter background type (seen [here](https://i.imgur.com/llJupGQ.png)), *or* specify your own custom background image.
 
-See the vanilla letter types below:
+Your custom image *must* follow the vanilla size, however. The file should be 320x180 pixels, but *visually* does not need to fill up the entire image.
 
+##### Vanilla background example
+```json
+{
+    "Position": {
+        "X": 13,
+        "Y": 12
+    },
+    "Layer": "Back",
+    "SetProperties": {
+        "MEEP_Letter": "Pretend this is a very, very long letter with multiple evil Joja-related plans in it.",
+        "MEEP_Letter_Type": "2"
+    }
+}
+```
 
-![MEEP letter type numbers](https://i.imgur.com/llJupGQ.png)
+Note nothing but the specific vanilla letter background ID in the property.
+
+##### Custom background example
+Firstly, you need to load your image somewhere in your Content Patcher mod as demonstrated below.
+```json
+{
+    "Action": "Load",
+    "Target": "Mods/DecidedlyHuman/JojaLetterBG",
+    "FromFile": "assets/letter-bg.png"
+}
+```
+
+Then, as seen the example below, specify the loaded image in the property.
+
+```json
+{
+    "Position": {
+        "X": 13,
+        "Y": 18
+    },
+    "Layer": "Back",
+    "SetProperties": {
+        "MEEP_Letter": "Super Evil Joja Plans^^Ha, fooled you! No plans here.",
+        "MEEP_Letter_Type": "Mods/DecidedlyHuman/JojaLetterBG"
+    }
+},
+```
