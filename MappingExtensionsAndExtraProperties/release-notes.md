@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 1.3.0
+  * `MEEP_Letter_Type` tile property updated to allow for custom letter backgrounds.
 * 1.2.0
   * `FakeNPC` tile property updated to add support for custom sprite sizes.
   * `MEEP_CloseupInteraction_Sound` tile property added, to allow the selection of a sound cue from the game to be played when the interaction is opened, and when pages in the reel are turned.
