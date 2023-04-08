@@ -31,6 +31,7 @@ public class ModEntry : Mod
         this.tileProperties = new TilePropertyHandler(this.logger);
         this.allNpcs = new List<FakeNpc>();
         Patches.InitialisePatches(this.logger, this.tileProperties);
+        Parsers.InitialiseParsers(this.logger, helper);
 
         helper.Events.Player.Warped += (sender, args) =>
         {
@@ -163,8 +164,8 @@ public class ModEntry : Mod
 #if DEBUG
         helper.Events.Display.RenderingWorld += (sender, args) =>
         {
-            args.SpriteBatch.DrawString(Game1.dialogueFont, "AAAAAAAAAAAAAAAAAAA", Vector2.Zero,
-                Color.Red, 0f, Vector2.Zero, new Vector2(10, 10), SpriteEffects.None, 0f);
+            // args.SpriteBatch.DrawString(Game1.dialogueFont, "AAAAAAAAAAAAAAAAAAA", Vector2.Zero,
+            //     Color.Red, 0f, Vector2.Zero, new Vector2(10, 10), SpriteEffects.None, 0f);
         };
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
@@ -200,7 +201,7 @@ public class ModEntry : Mod
 #endif
     }
 
-    // This is just to ensure we come most other DayEnding events.
+    // This is just to ensure we come before as many other DayEnding events as possible.
     [EventPriority((EventPriority)int.MaxValue)]
     private void OnDayEnding(object? sender, DayEndingEventArgs e)
     {
