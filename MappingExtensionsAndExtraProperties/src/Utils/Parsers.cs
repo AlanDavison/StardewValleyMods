@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using DecidedlyShared.Logging;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -16,13 +18,11 @@ public class Parsers
 {
     private static Logger logger;
     private static IModHelper helper;
-    private static bool isInitialised = false;
 
-    public Parsers(Logger l, IModHelper h)
+    public static void InitialiseParsers(Logger l, IModHelper h)
     {
         logger = l;
         helper = h;
-        isInitialised = true;
     }
 
     public static bool TryParseIncludingKey(string property, out CloseupInteractionImage parsedProperty)
@@ -101,20 +101,20 @@ public class Parsers
         return true;
     }
 
-    public static bool TryParseIncludingKey(string property, out LetterType parsedProperty)
-    {
-        parsedProperty = new LetterType();
-
-        string[] splitProperty = property.Split(" ");
-
-        if (splitProperty.Length < 1)
-            return false;
-
-        if (int.TryParse(splitProperty[0], out parsedProperty.BgType))
-            return true;
-
-        return false;
-    }
+    // public static bool TryParseIncludingKey(string property, out LetterType parsedProperty)
+    // {
+    //     parsedProperty = new LetterType();
+    //
+    //     string[] splitProperty = property.Split(" ");
+    //
+    //     if (splitProperty.Length < 1)
+    //         return false;
+    //
+    //     if (int.TryParse(splitProperty[0], out parsedProperty.BgType))
+    //         return true;
+    //
+    //     return false;
+    // }
 
     public static bool TryParseIncludingKey(string property, out CloseupInteractionSound parsedProperty)
     {
@@ -165,6 +165,7 @@ public class Parsers
         }
         catch (Exception e)
         {
+            Parsers.logger.Error("Could not get big craftable from property. Did you use the correct ID?");
             parsedProperty.bigCraftable = null;
             return false;
         }
@@ -216,30 +217,49 @@ public class Parsers
     public static bool TryParse(string property, out LetterType parsedProperty)
     {
         parsedProperty = new LetterType();
-
-        // if (!isInitialised)
-        //     return false;
-
         string[] splitProperty = property.Split(" ");
         Texture2D letterTexture = null;
-        Rectangle sourceRect;
-        int rectX;
-        int rectY;
 
         /*
          * For this property, we expect:
-         * 1) One parameter (the vanilla letter BG type)
+         * 1) The vanilla BG letter type (an int)
          * OR
-         * 1) The texture asset name
-         * 2) The x co-ordinate of the source rect
-         * 3) The y co-ordinate of the source rect
+         * 1) The texture asset name (a string)
          */
 
-        if (int.TryParse(splitProperty[0], out int letterBgType))
+        if (splitProperty.Length == 1)
         {
-            // The first value parsed to an int, so we're done.
-            parsedProperty = new LetterType(letterBgType);
-            return true;
+            if (int.TryParse(splitProperty[0], out int letterBgType))
+            {
+                // The first value parsed to an int, so we're done.
+                parsedProperty = new LetterType(letterBgType);
+                return true;
+            }
+            else
+            {
+                // If that failed, we may be dealing with a texture asset instead.
+                Texture2D texture;
+
+                try
+                {
+                    texture = Game1.content.Load<Texture2D>(splitProperty[0]);
+                    parsedProperty = new LetterType(0, texture);
+
+                    return true;
+                }
+                catch (ContentLoadException e)
+                {
+                    Parsers.logger.Error("First parameter of property wasn't a valid asset name. Is it spelled correctly?");
+                    Parsers.logger.Error($"Asset name: {splitProperty[0]}");
+                    Parsers.logger.Exception(e);
+
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            Parsers.logger.Error("Couldn't parse this letter type property. Check that it has the correct number of parameters.");
         }
 
         // // It's not an int, so we need to assume it's an asset name.
@@ -289,6 +309,8 @@ public class Parsers
         }
         catch (Exception e)
         {
+            Parsers.logger.Error($"Couldn't load texture {splitProperty[0]} from property {property}.");
+            Parsers.logger.Error("Did you load the image correctly?");
             return false;
         }
 
@@ -338,7 +360,10 @@ public class Parsers
         foreach (string npc in dispositions.Keys)
         {
             if (npc.Equals(parsedProperty.NpcName, StringComparison.OrdinalIgnoreCase))
-                return false; // If there's an NPC in the dispositions matching our fake NPC, we bail.
+                {
+                    Parsers.logger.Error($"There's an NPC in the dispositions with the same name ({parsedProperty.NpcName}) as your fake NPC. This is spooky, so the NPC won't be spawned.");
+                    return false; // If there's an NPC in the dispositions matching our fake NPC, we bail.
+                }
         }
 
         // We've gotten this far, so we check to see if we only have the one argument.
