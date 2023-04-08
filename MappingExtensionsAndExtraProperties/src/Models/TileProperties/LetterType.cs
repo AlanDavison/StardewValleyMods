@@ -10,52 +10,22 @@ namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 public struct LetterType : ITilePropertyData
 {
     public static string PropertyKey => "MEEP_Letter_Type";
-    // private bool hasCustomTexture;
-    // private Texture2D texture;
-    // private Rectangle sourceRect;
-    public int BgType;
+    private bool hasCustomTexture;
+    private Texture2D? texture;
+    private int bgType;
 
-    // public bool HasCustomTexture => this.hasCustomTexture;
-    // public Texture2D Texture => this.texture;
-    // public Rectangle SourceRect => this.sourceRect;
+    public int BgType => this.bgType;
+    public bool HasCustomTexture => this.hasCustomTexture;
+    public Texture2D Texture => this.texture;
 
-    public LetterType(int type)
+    public LetterType(int type, Texture2D? texture = null)
     {
-        // Texture2D tex = helper.GameContent.Load<Texture2D>("LooseSprites\\letterBG");
-        // Rectangle rect;
-
-        // switch (type)
-        // {
-        //     case 0:
-        //         rect = new Rectangle(0, 0, 320, 180);
-        //         break;
-        //     case 1:
-        //         rect = new Rectangle(320, 0, 320, 180);
-        //         break;
-        //     case 2:
-        //         rect = new Rectangle(640, 0, 320, 180);
-        //         break;
-        //     case 3:
-        //         rect = new Rectangle(960, 0, 320, 180);
-        //         break;
-        //     default:
-        //         rect = new Rectangle(0, 0, 320, 180);
-        //         break;
-        // }
+        this.texture = texture;
+        this.hasCustomTexture = this.texture is not null;
 
         if (type < 0 || type > 3)
-            this.BgType = 1;
+            this.bgType = 1;
         else
-            this.BgType = type;
-        // this.texture = tex;
-        // this.sourceRect = rect;
-        // this.hasCustomTexture = true;
+            this.bgType = type;
     }
-
-    // public LetterType(Texture2D texture, Rectangle sourceRect)
-    // {
-    //     this.texture = texture;
-    //     this.sourceRect = sourceRect;
-    //     this.hasCustomTexture = false;
-    // }
 }
