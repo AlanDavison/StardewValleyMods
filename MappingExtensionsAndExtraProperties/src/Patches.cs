@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Formats.Asn1;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
 using DecidedlyShared.Logging;
@@ -9,12 +8,10 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
 using xTile.ObjectModel;
-using xTile.Tiles;
 
 namespace MappingExtensionsAndExtraProperties;
 
