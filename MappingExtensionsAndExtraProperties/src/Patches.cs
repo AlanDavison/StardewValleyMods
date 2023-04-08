@@ -170,7 +170,6 @@ public static class Patches
 
     private static void DoLetter(GameLocation location, PropertyValue letterProperty, int tileX, int tileY)
     {
-
         if (Parsers.TryParse(letterProperty.ToString(), out LetterText letter))
         {
             LetterViewerMenu letterViewer = new LetterViewerMenu(letter.Text, "Test");
@@ -180,7 +179,14 @@ public static class Patches
             {
                 if (Parsers.TryParse(letterTypeProperty.ToString(), out LetterType letterType))
                 {
-                    letterViewer.whichBG = letterType.BgType - 1;
+                    if (letterType.HasCustomTexture)
+                    {
+                        letterViewer.letterTexture = letterType.Texture;
+                        letterViewer.whichBG = 0;
+                    }
+                    else
+                        letterViewer.whichBG = letterType.BgType;
+                    // letterViewer.whichBG = letterType.BgType - 1;
                 }
             }
 
@@ -224,6 +230,10 @@ public static class Patches
 
         // Finally, we create our menu, and set it to be the current, active menu.
         MenuBase menu = new MenuBase(pagedMenu, $"Reel", logger, soundCue);
+
+        // And set our container's parent.
+        pagedMenu.SetParent(menu);
+
         Game1.activeClickableMenu = menu;
         menu.MenuOpened();
     }
@@ -249,11 +259,7 @@ public static class Patches
         if (!Parsers.TryParse(closeupInteractionProperty.ToString(),
                 out CloseupInteractionImage closeupInteractionParsed))
         {
-            // If the parsing failed, we want to nope out and log appropriately.
-
-            logger.Error(
-                $"Parsing tile property CloseupInteraction_Image on layer \"Back\" at {tileX}, {tileY} in {location.Name} failed. Is it formatted correctly? Was the texture loaded correctly?");
-            logger.Error($"Property value: {closeupInteractionProperty.ToString()}");
+            // If the parsing failed, we want to nope out.
         }
 
         // At this point, we have our correctly-parsed tile property, so we create our image container.
@@ -307,6 +313,9 @@ public static class Patches
 
         // Finally, we create our menu.
         MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}", Patches.logger);
+
+        // And set our container's parent.
+        vBox.SetParent(menu);
 
         // Now we check for a sound interaction property.
         if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
@@ -392,8 +401,11 @@ public static class Patches
         // }
 
         // Finally, we create our menu, and set it to be the current, active menu.
-
         MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}", Patches.logger, soundCue);
+
+        // And set our container's parent.
+        vBox.SetParent(menu);
+
         Game1.activeClickableMenu = menu;
         menu.MenuOpened();
     }
