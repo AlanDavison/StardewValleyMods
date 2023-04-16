@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using DecidedlyShared.Logging;
+using DecidedlyShared.Ui;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 
@@ -8,8 +12,13 @@ namespace TerrainFeatureRefresh;
 
 public class ModEntry : Mod
 {
+    private Logger logger;
+
     public override void Entry(IModHelper helper)
     {
+        this.logger = new Logger(this.Monitor);
+
+        helper.Events.Content.AssetRequested += this.ContentOnAssetRequested;
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
             if (args.IsDown(SButton.OemSemicolon))
@@ -19,11 +28,12 @@ public class ModEntry : Mod
                 // GameLocation curLoc = Game1.currentLocation;
 
                 // TODO: Change this to use GameLocation.CreateGameLocation(string id) instead.
-                GameLocation location = new GameLocation(Game1.currentLocation.mapPath.Value, Game1.currentLocation.Name);
+                GameLocation location =
+                    new GameLocation(Game1.currentLocation.mapPath.Value, Game1.currentLocation.Name);
                 // GameLocation curLoc = Game1.currentLocation;
 
                 List<Vector2> objectsToRemove = new();
-                foreach(Vector2 tile in Game1.currentLocation.Objects.Keys)
+                foreach (Vector2 tile in Game1.currentLocation.Objects.Keys)
                 {
                     objectsToRemove.Add(tile);
                 }
@@ -74,6 +84,75 @@ public class ModEntry : Mod
                     Game1.currentLocation.largeTerrainFeatures.Add(feature);
                 }
             }
+
+            if (args.IsDown(SButton.Home))
+            {
+                HBoxElement mainHBox =
+                    new HBoxElement("Main Box", Rectangle.Empty, this.logger, DrawableType.SlicedBox);
+                VBoxElement leftColumn = new VBoxElement("Left Column", new Rectangle(0, 0, 100, 400), this.logger,
+                    DrawableType.None);
+                VBoxElement rightColumn = new VBoxElement("Right Column", new Rectangle(0, 0, 100, 600), this.logger,
+                    DrawableType.None);
+
+                HBoxElement checkbox = new HBoxElement("Checkbox", Rectangle.Empty, this.logger, DrawableType.None);
+                UiElement checkboxImage = new UiElement(
+                    "Checkbox One Image",
+                    Rectangle.Empty,
+                    this.logger,
+                    DrawableType.Texture,
+                    Game1.mouseCursors,
+                    new Rectangle(227, 425, 9, 9));
+                TextElement checkboxLabel = new TextElement(
+                    "Checkbox One Label",
+                    Rectangle.Empty,
+                    this.logger,
+                    400,
+                    "Checkbox One",
+                    Game1.dialogueFont,
+                    DrawableType.None
+                );
+                checkbox.AddChild(checkboxImage);
+                checkbox.AddChild(checkboxLabel);
+
+                HBoxElement checkboxTwo = new HBoxElement("Checkbox Two", Rectangle.Empty, this.logger, DrawableType.None);
+                UiElement checkboxImageTwo = new UiElement(
+                    "Checkbox Two Image",
+                    Rectangle.Empty,
+                    this.logger,
+                    DrawableType.Texture,
+                    Game1.mouseCursors,
+                    new Rectangle(227, 425, 9, 9));
+                TextElement checkboxLabelTwo = new TextElement(
+                    "Checkbox Two Label",
+                    Rectangle.Empty,
+                    this.logger,
+                    400,
+                    "Checkbox Two",
+                    Game1.dialogueFont,
+                    DrawableType.None
+                );
+                checkboxTwo.AddChild(checkboxImageTwo);
+                checkboxTwo.AddChild(checkboxLabelTwo);
+
+                leftColumn.AddChild(checkbox);
+                rightColumn.AddChild(checkboxTwo);
+
+                mainHBox.AddChild(leftColumn);
+                mainHBox.AddChild(rightColumn);
+
+                Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(640, 480);
+                TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 640, 380);
+
+                Game1.activeClickableMenu = menu;
+            }
         };
+    }
+
+    private void ContentOnAssetRequested(object? sender, AssetRequestedEventArgs e)
+    {
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/ButtonPanel"))
+        {
+            e.LoadFromModFile<Texture2D>("assets/button-panel.png", AssetLoadPriority.Low);
+        }
     }
 }

@@ -2,6 +2,11 @@
     <Import Project="..\Build\1.6-alpha.targets" />
     <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
+    <!--
+    This is more hardcoded than it usually is, because I don't have things set up nicely to allow for good 1.5.6 and 1.6
+    development yet. This will be cleaned up for 1.6's release.
+    -->
+
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
@@ -14,9 +19,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1"/>
-        <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.0.0"/>
-        <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="1.0.3"/>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+        <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.0.0" />
+        <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="1.0.3" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -24,7 +29,7 @@
         <Description>Resets terrain features for 1.6 and above.</Description>
         <MinimumApiVersion>3.15.0</MinimumApiVersion>
         <UpdateKeys>Nexus:00000</UpdateKeys>
-        <Version>0.0.1-bushtime</Version>
+        <Version>0.0.1-alpha</Version>
     </PropertyGroup>
 
     <PropertyGroup>
