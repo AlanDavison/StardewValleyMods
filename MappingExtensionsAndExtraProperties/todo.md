@@ -16,6 +16,7 @@
 * Counter for how many times a fake NPC has been chatted with, via a CP token, maybe?
 * MEEP event commands!
 * Custom letter stationery
+* Locating warping tile property, similar to BusLocation, but anywhere!
 
 # Pretty easy
 
