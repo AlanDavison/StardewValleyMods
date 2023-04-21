@@ -139,46 +139,46 @@ public class Parsers
     //     }
     // }
 
-    public static bool TryParse(string property, out SpawnPlaceableObject parsedProperty)
-    {
-        // Implementation of this property is on hold.
-        parsedProperty = new SpawnPlaceableObject();
-
-        // This is very simple for now. Just two arguments The BigCraftable ID, and a 1/0 depending on whether it's breakable or not.
-        string[] splitProperty = property.Split(" ");
-
-        // If we have fewer than one arguments, we immediately return false.
-        if (splitProperty.Length < 1)
-            return false;
-
-        // If we have more than two, we return false.
-        if (splitProperty.Length > 2)
-            return false;
-
-        // We know we have one or two arguments, so we can grab our BigCraftable instance first.
-        if (!int.TryParse(splitProperty[0], out int bigCraftableId))
-            return false;
-
-        try
-        {
-            parsedProperty.bigCraftable = ObjectFactory.getItemFromDescription(1, bigCraftableId, 1);
-        }
-        catch (Exception e)
-        {
-            Parsers.logger.Error("Could not get big craftable from property. Did you use the correct ID?");
-            parsedProperty.bigCraftable = null;
-            return false;
-        }
-
-        // If we have two arguments, we parse the breakable aspect.
-        if (!bool.TryParse(splitProperty[1], out bool breakable))
-            return false;
-
-        // Now we apply this to our parsed property.
-        parsedProperty.Breakable = breakable;
-
-        return true;
-    }
+    // public static bool TryParse(string property, out SpawnPlaceableObject parsedProperty)
+    // {
+    //     // Implementation of this property is on hold.
+    //     parsedProperty = new SpawnPlaceableObject();
+    //
+    //     // This is very simple for now. Just two arguments The BigCraftable ID, and a 1/0 depending on whether it's breakable or not.
+    //     string[] splitProperty = property.Split(" ");
+    //
+    //     // If we have fewer than one arguments, we immediately return false.
+    //     if (splitProperty.Length < 1)
+    //         return false;
+    //
+    //     // If we have more than two, we return false.
+    //     if (splitProperty.Length > 2)
+    //         return false;
+    //
+    //     // We know we have one or two arguments, so we can grab our BigCraftable instance first.
+    //     if (!int.TryParse(splitProperty[0], out int bigCraftableId))
+    //         return false;
+    //
+    //     try
+    //     {
+    //         parsedProperty.bigCraftable = ObjectFactory.getItemFromDescription(1, bigCraftableId, 1);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Parsers.logger.Error("Could not get big craftable from property. Did you use the correct ID?");
+    //         parsedProperty.bigCraftable = null;
+    //         return false;
+    //     }
+    //
+    //     // If we have two arguments, we parse the breakable aspect.
+    //     if (!bool.TryParse(splitProperty[1], out bool breakable))
+    //         return false;
+    //
+    //     // Now we apply this to our parsed property.
+    //     parsedProperty.Breakable = breakable;
+    //
+    //     return true;
+    // }
 
     public static bool TryParse(string property, out SetMailFlag parsedProperty)
     {
@@ -378,6 +378,92 @@ public class Parsers
         parsedProperty.SpriteHeight = npcSpriteHeight;
         parsedProperty.HasSpriteSizes = true;
 
+        return true;
+    }
+
+    public static bool TryParse(string property, out MapBackgroundImage parsedProperty)
+    {
+        // Very little validation to do at this point for this one.
+        parsedProperty = new MapBackgroundImage(property);
+
+        return true;
+    }
+
+    public static bool TryParse(string property, out MapBackgroundTileSize parsedProperty)
+    {
+        int width = 0;
+        int height = 0;
+
+        // Uniquely for this property, we want to split with an X-like character, instead of a space.
+        string[] splitProperty = property.Split(new char[]{'x', 'X', '*'});
+
+        /*
+         * For this, we need either:
+         * 1) Two values (e.g., 200x200)
+         * 2) One value (200, to be parsed into 200x200)
+         */
+
+        if (splitProperty.Length == 1)
+        {
+            if (int.TryParse(splitProperty[0], out int size))
+            {
+                width = size;
+                height = size;
+            }
+            else
+            {
+                Parsers.logger.Error($"Couldn't parse an integer from property: {property}");
+                parsedProperty = new MapBackgroundTileSize();
+                return false;
+            }
+        }
+        else if (splitProperty.Length == 2)
+        {
+            if (int.TryParse(splitProperty[0], out int parsedWidth))
+            {
+                width = parsedWidth;
+            }
+            else
+            {
+                Parsers.logger.Error($"Couldn't parse an integer from property: {property}");
+                parsedProperty = new MapBackgroundTileSize();
+                return false;
+            }
+
+            if (int.TryParse(splitProperty[0], out int parsedHeight))
+            {
+                height = parsedHeight;
+            }
+            else
+            {
+                Parsers.logger.Error($"Couldn't parse an integer from property: {property}");
+                parsedProperty = new MapBackgroundTileSize();
+                return false;
+            }
+        }
+
+        parsedProperty = new MapBackgroundTileSize(width, height);
+
+        return true;
+    }
+
+    public static bool TryParse(string property, out MapBackgroundTileVariation parsedProperty)
+    {
+        double variation = 0d;
+
+        if (double.TryParse(property, out double parsedVariation))
+        {
+            variation = parsedVariation;
+        }
+        else
+        {
+            Parsers.logger.Error($"Couldn't parse a double from property: {property}");
+            parsedProperty = new MapBackgroundTileVariation();
+
+            return false;
+        }
+
+        parsedProperty = new MapBackgroundTileVariation(variation);
         return true;
     }
 
