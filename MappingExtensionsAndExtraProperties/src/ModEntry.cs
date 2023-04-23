@@ -109,7 +109,7 @@ public class ModEntry : Mod
                     if (tile == null)
                         continue;
 
-                    if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out PropertyValue property))
+                    if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out string property))
                     {
                         if (Parsers.TryParse(property.ToString(),
                                 out DhFakeNpc fakeNpcProperty))
@@ -139,7 +139,8 @@ public class ModEntry : Mod
 
                             foreach (KeyValuePair<string, string> d in dialogue)
                             {
-                                character.CurrentDialogue.Push(new Dialogue(d.Value, character));
+                                // character.CurrentDialogue.Push(new Dialogue(d.Value, character));
+                                character.CurrentDialogue.Push(new Dialogue(character, $"{d.Key}:{d.Value}", d.Value));
                             }
 
                             // A safeguard for multiplayer.
@@ -167,33 +168,6 @@ public class ModEntry : Mod
         {
             // args.SpriteBatch.DrawString(Game1.dialogueFont, "AAAAAAAAAAAAAAAAAAA", Vector2.Zero,
             //     Color.Red, 0f, Vector2.Zero, new Vector2(10, 10), SpriteEffects.None, 0f);
-        };
-
-        helper.Events.Player.Warped += (sender, args) =>
-        {
-            // TODO: Finish MEEP background functionality.
-            string image = args.NewLocation.getMapProperty("MEEP_Background_Image");
-            string tile = args.NewLocation.getMapProperty("MEEP_Background_Tile_Size");
-            string variation = args.NewLocation.getMapProperty("MEEP_Background_Tile_Variation");
-
-            int mapWidth = args.NewLocation.map.DisplayWidth;
-            int mapHeight = args.NewLocation.map.DisplayHeight;
-
-            // I want all of these for this test.
-            if (image is null || tile is null || variation is null)
-                return;
-
-            bool imageParsed = Parsers.TryParse(image, out MapBackgroundImage backgroundImage);
-            bool sizeParsed = Parsers.TryParse(tile, out MapBackgroundTileSize tileSize);
-            bool variationParsed = Parsers.TryParse(variation, out MapBackgroundTileVariation tileVariation);
-
-            if (!imageParsed || !sizeParsed || !variationParsed)
-                return;
-
-            Texture2D texture = Game1.content.Load<Texture2D>(backgroundImage.ImagePath);
-            int numTiles = (texture.Width / tileSize.Width) * (texture.Height / tileSize.Height);
-            Game1.background = new Background(texture, 1, mapWidth / tileSize.Width, mapHeight / tileSize.Height,
-                tileSize.Width, tileSize.Height, 4f, 1, numTiles, 1d, Color.White);
         };
 
         helper.Events.Input.ButtonPressed += (sender, args) =>

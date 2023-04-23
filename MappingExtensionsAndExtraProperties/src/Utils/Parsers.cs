@@ -356,15 +356,15 @@ public class Parsers
         parsedProperty.NpcName = splitProperty[0];
 
         // Now we want to confirm that our first argument is an NPC name that is NOT taken.
-        Dictionary<string, string> dispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
-        foreach (string npc in dispositions.Keys)
-        {
-            if (npc.Equals(parsedProperty.NpcName, StringComparison.OrdinalIgnoreCase))
-                {
-                    Parsers.logger.Error($"There's an NPC in the dispositions with the same name ({parsedProperty.NpcName}) as your fake NPC. This is spooky, so the NPC won't be spawned.");
-                    return false; // If there's an NPC in the dispositions matching our fake NPC, we bail.
-                }
-        }
+        // Dictionary<string, string> dispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
+        // foreach (string npc in dispositions.Keys)
+        // {
+        //     if (npc.Equals(parsedProperty.NpcName, StringComparison.OrdinalIgnoreCase))
+        //         {
+        //             Parsers.logger.Error($"There's an NPC in the dispositions with the same name ({parsedProperty.NpcName}) as your fake NPC. This is spooky, so the NPC won't be spawned.");
+        //             return false; // If there's an NPC in the dispositions matching our fake NPC, we bail.
+        //         }
+        // }
 
         // We've gotten this far, so we check to see if we only have the one argument.
         if (splitProperty.Length == 1)

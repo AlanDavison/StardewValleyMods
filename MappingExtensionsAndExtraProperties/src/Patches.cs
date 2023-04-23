@@ -45,7 +45,7 @@ public static class Patches
 
             // Check for a CloseupInteraction property on the given tile.
             if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionImage.PropertyKey,
-                    out PropertyValue closeupInteractionProperty))
+                    out string closeupInteractionProperty))
             {
                 DoCloseupInteraction(__instance, tileX, tileY, closeupInteractionProperty);
             }
@@ -58,7 +58,7 @@ public static class Patches
 
                 // Now we check for a sound interaction property.
                 if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionSound.PropertyKey,
-                        out PropertyValue closeupSoundProperty))
+                        out string closeupSoundProperty))
                 {
                     if (Parsers.TryParse(closeupSoundProperty.ToString(),
                             out CloseupInteractionSound parsedSoundProperty))
@@ -71,14 +71,14 @@ public static class Patches
             }
             // There isn't a reel either, so we check for a letter property.
             else if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, LetterText.PropertyKey,
-                         out PropertyValue letterProperty))
+                         out string letterProperty))
             {
                 DoLetter(__instance, letterProperty, tileX, tileY);
             }
 
             // Check for the DHSetMailFlag property on a given tile.
             if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, SetMailFlag.PropertyKey,
-                    out PropertyValue dhSetMailFlagProperty))
+                    out string dhSetMailFlagProperty))
             {
                 DoMailFlag(dhSetMailFlagProperty);
             }
@@ -153,7 +153,7 @@ public static class Patches
         }
     }
 
-    private static void DoMailFlag(PropertyValue dhSetMailFlagProperty)
+    private static void DoMailFlag(string dhSetMailFlagProperty)
     {
 
         // It exists, so parse it.
@@ -168,14 +168,14 @@ public static class Patches
         }
     }
 
-    private static void DoLetter(GameLocation location, PropertyValue letterProperty, int tileX, int tileY)
+    private static void DoLetter(GameLocation location, string letterProperty, int tileX, int tileY)
     {
         if (Parsers.TryParse(letterProperty.ToString(), out LetterText letter))
         {
             LetterViewerMenu letterViewer = new LetterViewerMenu(letter.Text, "Test");
 
             if (tileProperties.TryGetBackProperty(tileX, tileY, location, LetterType.PropertyKey,
-                    out PropertyValue letterTypeProperty))
+                    out string letterTypeProperty))
             {
                 if (Parsers.TryParse(letterTypeProperty.ToString(), out LetterType letterType))
                 {
@@ -239,11 +239,11 @@ public static class Patches
     }
 
     private static void DoCloseupInteraction(GameLocation location, int tileX, int tileY,
-        PropertyValue closeupInteractionProperty)
+        string closeupInteractionProperty)
     {
         // We have our tile property. We need to check for the presence of an existing Action tile property.
         if (tileProperties.TryGetBuildingProperty(tileX, tileY, location, "Action",
-                out PropertyValue _))
+                out string _))
         {
             // We want to return so we don't conflict with opening a shop, going through a door, etc.
 
@@ -292,7 +292,7 @@ public static class Patches
 
         // Next, we want to see if there's a text tile property to display.
         if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
-                out PropertyValue closeupTextProperty))
+                out string closeupTextProperty))
         {
             // There is, so we try to parse it.
             if (Parsers.TryParse(closeupTextProperty.ToString(), out CloseupInteractionText parsedTextProperty))
@@ -319,7 +319,7 @@ public static class Patches
 
         // Now we check for a sound interaction property.
         if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
-                out PropertyValue closeupSoundProperty))
+                out string closeupSoundProperty))
         {
             if (Parsers.TryParse(closeupSoundProperty.ToString(), out CloseupInteractionSound parsedSoundProperty))
             {
@@ -416,18 +416,18 @@ public static class Patches
         int yTile = (int)Game1.currentCursorTile.Y;
 
         if (tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, SetMailFlag.PropertyKey,
-                out PropertyValue _) ||
+                out string _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, CloseupInteractionImage.PropertyKey,
-                out PropertyValue _) ||
+                out string _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation,
                 $"{CloseupInteractionImage.PropertyKey}_1",
-                out PropertyValue _) ||
+                out string _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, LetterType.PropertyKey,
-                out PropertyValue _) ||
+                out string _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, LetterText.PropertyKey,
-                out PropertyValue _) ||
+                out string _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, SetMailFlag.PropertyKey,
-                out PropertyValue _))
+                out string _))
         {
             Game1.mouseCursor = 5;
         }
