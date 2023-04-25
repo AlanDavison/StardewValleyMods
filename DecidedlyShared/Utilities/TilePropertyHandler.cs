@@ -23,18 +23,18 @@ public class TilePropertyHandler
     }
 
     public bool TryGetBackProperty(int x, int y, GameLocation location, string key,
-        out PropertyValue tileProperty)
+        out string tileProperty)
     {
         return this.TryGetTileProperty(x, y, location, "Back", key, out tileProperty);
     }
 
     public bool TryGetBuildingProperty(int x, int y, GameLocation location, string key,
-        out PropertyValue tileProperty)
+        out string tileProperty)
     {
         return this.TryGetTileProperty(x, y, location, "Buildings", key, out tileProperty);
     }
 
-    public bool TryGetPropertyFromString(string keyToCheck, string property, out PropertyValue stringProperty)
+    public bool TryGetPropertyFromString(string keyToCheck, string property, out string stringProperty)
     {
         stringProperty = null;
 
@@ -53,13 +53,13 @@ public class TilePropertyHandler
             args.Append($"{splitProperty[i]} ");
         }
 
-        stringProperty = new PropertyValue(args.ToString());
+        stringProperty = args.ToString();
 
         return true;
     }
 
     public bool TryGetTileProperty(int x, int y, GameLocation location, string layer, string key,
-        out PropertyValue tileProperty)
+        out string tileProperty)
     {
         // We need a default assignment.
         tileProperty = null;
