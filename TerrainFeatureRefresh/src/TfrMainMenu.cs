@@ -268,8 +268,7 @@ public class TfrMainMenu : IClickableMenu
             b,
             this.boxTexture,
             new Rectangle(0, 256, 60, 60),
-            this.titleBounds,
-            Color.White);
+            this.titleBounds);
 
         // DecidedlyShared.Ui.Utils.DrawBox(
         //     b,
@@ -286,8 +285,7 @@ public class TfrMainMenu : IClickableMenu
             b,
             this.boxTexture,
             new Rectangle(0, 256, 60, 60),
-            this.mainWindowBounds,
-            Color.White);
+            this.mainWindowBounds);
 
         base.draw(b);
 
