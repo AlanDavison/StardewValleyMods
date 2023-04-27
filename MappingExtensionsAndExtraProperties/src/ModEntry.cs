@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
@@ -23,6 +24,7 @@ public class ModEntry : Mod
     private TilePropertyHandler tileProperties;
     private MeepApi api;
     private List<FakeNpc> allNpcs;
+    private ISaveAnywhereApi saveAnywhereApi;
 
     public override void Entry(IModHelper helper)
     {
@@ -32,6 +34,8 @@ public class ModEntry : Mod
         this.allNpcs = new List<FakeNpc>();
         Patches.InitialisePatches(this.logger, this.tileProperties);
         Parsers.InitialiseParsers(this.logger, helper);
+
+        helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
 
         helper.Events.Player.Warped += (sender, args) =>
         {
@@ -75,92 +79,7 @@ public class ModEntry : Mod
         //     AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.performUseAction)),
         //     prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.SObject_PerformUseAction)));
 
-        helper.Events.Player.Warped += (sender, args) =>
-        {
-            // int mapWidth = args.NewLocation.Map.DisplayWidth / Game1.tileSize;
-            // int mapHeight = args.NewLocation.Map.DisplayHeight / Game1.tileSize;
-
-            int mapWidth = args.NewLocation.Map.GetLayer("Back").Tiles.Array.GetLength(0);
-            int mapHeight = args.NewLocation.Map.GetLayer("Back").Tiles.Array.GetLength(1);
-
-            if (mapWidth == 0 || mapHeight == 0)
-                return;
-
-            for (int x = 0; x < mapWidth; x++)
-            {
-                for (int y = 0; y < mapHeight; y++)
-                {
-                    // this.logger.Debug($"Processing tile {x}:{y} in map {args.NewLocation.Name}.");
-                    Tile tile;
-
-                    try
-                    {
-                        tile = args.NewLocation.Map.GetLayer("Back").Tiles.Array[x, y];
-                    }
-                    catch (Exception e)
-                    {
-                        this.logger.Error(
-                            $"Couldn't get tile {x}, {y} from map {args.NewLocation.Name}. Exception follows.");
-                        this.logger.Exception(e);
-
-                        continue;
-                    }
-
-                    if (tile == null)
-                        continue;
-
-                    if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out PropertyValue property))
-                    {
-                        if (Parsers.TryParse(property.ToString(),
-                                out DhFakeNpc fakeNpcProperty))
-                        {
-                            FakeNpc character = new FakeNpc(
-                                new AnimatedSprite($"Characters\\{fakeNpcProperty.NpcName}",
-                                    0,
-                                    fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteWidth : 16,
-                                    fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteHeight : 32),
-                                new Vector2(x, y) * 64f,
-                                2,
-                                fakeNpcProperty.NpcName,
-                                this.logger,
-                                args.NewLocation
-                            );
-                            if (fakeNpcProperty.HasSpriteSizes)
-                            {
-                                if (fakeNpcProperty.SpriteWidth > 16)
-                                    character.HideShadow = true;
-
-                                character.Breather = false;
-                            }
-
-                            Dictionary<string, string> dialogue =
-                                helper.GameContent.Load<Dictionary<string, string>>(
-                                    $"MEEP/FakeNPC/Dialogue/{fakeNpcProperty.NpcName}");
-
-                            foreach (KeyValuePair<string, string> d in dialogue)
-                            {
-                                character.CurrentDialogue.Push(new Dialogue(d.Value, character));
-                            }
-
-                            // A safeguard for multiplayer.
-                            if (!args.NewLocation.isTileOccupied(new Vector2(x, y)))
-                            {
-                                args.NewLocation.characters.Add(character);
-                                this.allNpcs.Add(character);
-                                this.logger.Log(
-                                    $"Fake NPC {character.Name} spawned in {args.NewLocation.Name} at X:{x}, Y:{y}.",
-                                    LogLevel.Trace);
-                            }
-                        }
-                        else
-                        {
-                            this.logger.Error($"Failed to parse property {property.ToString()}");
-                        }
-                    }
-                }
-            }
-
-        };
+        helper.Events.Player.Warped += this.PlayerOnWarped;
 
 #if DEBUG
         helper.Events.Display.RenderingWorld += (sender, args) =>
@@ -227,6 +146,131 @@ public class ModEntry : Mod
             // }
         };
 #endif
+    }
+
+    private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
+    {
+        if (this.Helper.ModRegistry.IsLoaded("Omegasis.SaveAnywhere"))
+        {
+            // Grab the Save Anywhere API so we can safely destroy our NPCs before it saves.
+            try
+            {
+                this.saveAnywhereApi = this.Helper.ModRegistry.GetApi<ISaveAnywhereApi>("Omegasis.SaveAnywhere");
+                this.saveAnywhereApi.BeforeSave += this.BeforeSaveAnywhereSave;
+                this.saveAnywhereApi.AfterLoad += this.AfterSaveAnywhereLoad;
+            }
+            catch (Exception e)
+            {
+                this.logger.Exception(e);
+            }
+        }
+    }
+
+    private void AfterSaveAnywhereLoad(object? sender, EventArgs e)
+    {
+        // This is hacky and terrible, but this is also a hotfix. I'll live.
+        this.logger.Log($"Save Anywhere fired its AfterLoad event. Processing our spawn map.", LogLevel.Info);
+
+        this.ProcessNewLocation(Game1.currentLocation, Game1.currentLocation, Game1.player);
+    }
+
+    private void BeforeSaveAnywhereSave(object? sender, EventArgs e)
+    {
+        this.logger.Log($"Save Anywhere fired its BeforeSave event. Killing NPCs early.", LogLevel.Info);
+
+        this.OnDayEnding(null, null);
+    }
+
+    private void PlayerOnWarped(object? sender, WarpedEventArgs args)
+    {
+        GameLocation oldLocation = args.OldLocation;
+        GameLocation newLocation = args.NewLocation;
+        Farmer player = args.Player;
+
+        this.ProcessNewLocation(newLocation, oldLocation, player);
+    }
+
+    private void ProcessNewLocation(GameLocation newLocation, GameLocation oldLocation, Farmer player)
+    {
+        int mapWidth = newLocation.Map.GetLayer("Back").Tiles.Array.GetLength(0);
+        int mapHeight = newLocation.Map.GetLayer("Back").Tiles.Array.GetLength(1);
+
+        if (mapWidth == 0 || mapHeight == 0)
+            return;
+
+        for (int x = 0; x < mapWidth; x++)
+        {
+            for (int y = 0; y < mapHeight; y++)
+            {
+                // this.logger.Debug($"Processing tile {x}:{y} in map {args.NewLocation.Name}.");
+                Tile tile;
+
+                try
+                {
+                    tile = newLocation.Map.GetLayer("Back").Tiles.Array[x, y];
+                }
+                catch (Exception e)
+                {
+                    this.logger.Error(
+                        $"Couldn't get tile {x}, {y} from map {newLocation.Name}. Exception follows.");
+                    this.logger.Exception(e);
+
+                    continue;
+                }
+
+                if (tile == null)
+                    continue;
+
+                if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out PropertyValue property))
+                {
+                    if (Parsers.TryParse(property.ToString(),
+                            out DhFakeNpc fakeNpcProperty))
+                    {
+                        FakeNpc character = new FakeNpc(
+                            new AnimatedSprite($"Characters\\{fakeNpcProperty.NpcName}",
+                                0,
+                                fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteWidth : 16,
+                                fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteHeight : 32),
+                            new Vector2(x, y) * 64f,
+                            2,
+                            fakeNpcProperty.NpcName,
+                            this.logger,
+                            newLocation
+                        );
+                        if (fakeNpcProperty.HasSpriteSizes)
+                        {
+                            if (fakeNpcProperty.SpriteWidth > 16)
+                                character.HideShadow = true;
+
+                            character.Breather = false;
+                        }
+
+                        Dictionary<string, string> dialogue =
+                            this.Helper.GameContent.Load<Dictionary<string, string>>(
+                                $"MEEP/FakeNPC/Dialogue/{fakeNpcProperty.NpcName}");
+
+                        foreach (KeyValuePair<string, string> d in dialogue)
+                        {
+                            character.CurrentDialogue.Push(new Dialogue(d.Value, character));
+                        }
+
+                        // A safeguard for multiplayer.
+                        if (!newLocation.isTileOccupied(new Vector2(x, y)))
+                        {
+                            newLocation.characters.Add(character);
+                            this.allNpcs.Add(character);
+                            this.logger.Log(
+                                $"Fake NPC {character.Name} spawned in {newLocation.Name} at X:{x}, Y:{y}.",
+                                LogLevel.Trace);
+                        }
+                    }
+                    else
+                    {
+                        this.logger.Error($"Failed to parse property {property.ToString()}");
+                    }
+                }
+            }
+        }
     }
 
     // This is just to ensure we come before as many other DayEnding events as possible.
