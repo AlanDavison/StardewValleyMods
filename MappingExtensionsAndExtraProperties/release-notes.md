@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 1.3.1
+  * Fixed Save Anywhere compatibility.
 * 1.3.0
   * `MEEP_Letter_Type` tile property updated to allow for custom letter backgrounds.
 * 1.2.0
