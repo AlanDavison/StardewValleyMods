@@ -36,7 +36,7 @@ public class TilePropertyHandler
 
     public bool TryGetPropertyFromString(string keyToCheck, string property, out string stringProperty)
     {
-        stringProperty = null;
+        stringProperty = "";
 
         string[] splitProperty = property.Split(" ");
 
@@ -62,7 +62,7 @@ public class TilePropertyHandler
         out string tileProperty)
     {
         // We need a default assignment.
-        tileProperty = null;
+        tileProperty = "";
 
         if (location == null)
             return false;

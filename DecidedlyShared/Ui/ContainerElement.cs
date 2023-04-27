@@ -9,6 +9,7 @@ public class ContainerElement : UiElement
 {
     internal List<UiElement> childElements = new List<UiElement>();
     internal int containerMargin;
+    internal MenuBase parentMenu;
 
     public ContainerElement(string name, Rectangle bounds, Logger logger, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null,
         Color? color = null,
@@ -67,7 +68,14 @@ public class ContainerElement : UiElement
         base.ReceiveRightClick(x, y);
     }
 
+    public void SetParent(MenuBase parent)
+    {
+        this.parentMenu = parent;
+        this.OrganiseChildren();
+    }
+
     internal override void OrganiseChildren()
     {
+        this.parentMenu?.UpdateCloseButton(base.TopRightCorner);
     }
 }

@@ -33,6 +33,8 @@ public class MenuBase : IClickableMenu
         this.menuName = name;
         this.openSound = openSound;
         this.logger = logger;
+
+        this.UpdateCloseButton(this.uiContainer.TopRightCorner);
     }
 
     public void SetOpenSound(string openSound)
@@ -49,6 +51,7 @@ public class MenuBase : IClickableMenu
     public override void draw(SpriteBatch b)
     {
         this.uiContainer.Draw(b);
+        base.upperRightCloseButton.draw(b);
         this.drawMouse(b);
     }
 
@@ -74,6 +77,11 @@ public class MenuBase : IClickableMenu
     public override void receiveScrollWheelAction(int direction)
     {
         this.uiContainer.ReceiveScrollWheel(direction);
+    }
+
+    public void UpdateCloseButton(Vector2 topRightCorner)
+    {
+        base.upperRightCloseButton = new ClickableTextureComponent(new Rectangle((int)topRightCorner.X, (int)topRightCorner.Y, 48, 48), Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 4f, false);
     }
 
     public override void releaseLeftClick(int x, int y)
