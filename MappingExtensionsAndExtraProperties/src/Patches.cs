@@ -28,6 +28,33 @@ public static class Patches
         Patches.propertyUtils = new Properties(logger);
     }
 
+    // public static void Event_CheckAction_Postfix(Event __instance, Location tileLocation,
+    // xTile.Dimensions.Rectangle viewport, Farmer who)
+    // {
+    //     // First, pull our tile co-ordinates from the location.
+    //     int tileX = tileLocation.X;
+    //     int tileY = tileLocation.Y;
+    //
+    //     // Check for our EndPlayerControl property.
+    //     if (tileProperties.TryGetBackProperty(tileX, tileY, Game1.currentLocation, EndPlayerControl.PropertyKey,
+    //             out PropertyValue endControl))
+    //     {
+    //         Game1.CurrentEvent.EndPlayerControlSequence();
+    //         Game1.CurrentEvent.currentCommand++;
+    //     }
+    // }
+    //
+    // public static void Event_ReceiveActionPress_Postfix(Event __instance, int xTile, int yTile)
+    // {
+    //     // Check for our EndPlayerControl property.
+    //     // if (tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, EndPlayerControl.PropertyKey,
+    //     //         out PropertyValue endControl))
+    //     // {
+    //         Game1.CurrentEvent.EndPlayerControlSequence();
+    //         Game1.CurrentEvent.currentCommand++;
+    //     // }
+    // }
+
     // This is complete and utter nesting hell. TODO: Clean this up at some point. After release is fine.
     public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
         xTile.Dimensions.Rectangle viewport, Farmer who)

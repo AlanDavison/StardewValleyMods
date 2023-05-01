@@ -69,6 +69,14 @@ public class ModEntry : Mod
             AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
             postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.GameLocation_CheckAction_Postfix)));
 
+        // harmony.Patch(
+        //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
+        //     postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.Event_CheckAction_Postfix)));
+        //
+        // harmony.Patch(
+        //     AccessTools.Method(typeof(Event), nameof(Event.receiveActionPress)),
+        //     postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.Event_ReceiveActionPress_Postfix)));
+
         // Our cursor draw patch for interaction highlights.
         harmony.Patch(
             AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
