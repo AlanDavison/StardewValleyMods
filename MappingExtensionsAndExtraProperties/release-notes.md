@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 1.3.2
+  * I did an oops. The UI close buttons work again, now!
 * 1.3.1
   * Fixed Save Anywhere compatibility.
 * 1.3.0
