@@ -32,8 +32,8 @@ namespace SmartBuilding
         public bool EnablePlantingCrops = false;
         public bool EnableReplacingFences = false;
         public bool EnableReplacingFloors = false;
-
         public bool EnableTreeTappers = false;
+        public bool CreativeMode = false;
 
         // Main keybinds
         public KeybindList EngageBuildMode = KeybindList.Parse("LeftShift+B");

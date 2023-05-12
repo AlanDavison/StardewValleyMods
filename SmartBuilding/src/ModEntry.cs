@@ -464,6 +464,13 @@ namespace SmartBuilding
         {
             configMenuApi.AddBoolOption(
                 this.ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_CreativeMode(),
+                getValue: () => config.CreativeMode,
+                setValue: value => config.CreativeMode = value
+            );
+
+            configMenuApi.AddBoolOption(
+                this.ModManifest,
                 name: () => I18n.SmartBuilding_Settings_CheatyOptions_CrabPotsInAnyWaterTile(),
                 getValue: () => config.CrabPotsInAnyWaterTile,
                 setValue: value => config.CrabPotsInAnyWaterTile = value
@@ -801,7 +808,7 @@ namespace SmartBuilding
             this.playerUtils = new PlayerUtils(this.logger);
             this.worldUtils = new WorldUtils(this.identificationUtils, this.placementUtils, this.playerUtils,
                 this.giantCropTapApi, config, this.logger, this.moreFertilizersApi, this.growBushesApi);
-            this.modState = new ModState(this.logger, this.playerUtils, this.identificationUtils, this.worldUtils,
+            this.modState = new ModState(this.logger, config, this.playerUtils, this.identificationUtils, this.worldUtils,
                 this.placementUtils);
             this.buttonActions = new ButtonActions(this, this.modState); // Ew, no. Fix this ugly nonsense later.
 

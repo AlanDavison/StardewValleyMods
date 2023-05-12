@@ -11,6 +11,7 @@ namespace SmartBuilding
 {
     public class ModState
     {
+        private readonly ModConfig config;
         private readonly IdentificationUtils identificationUtils;
         private readonly Logger logger;
         private readonly PlacementUtils placementUtils;
@@ -22,9 +23,10 @@ namespace SmartBuilding
         // All of our drawing variables.
         private Dictionary<Vector2, ItemInfo> tilesSelected = new();
 
-        public ModState(Logger logger, PlayerUtils playerUtils, IdentificationUtils identificationUtils,
+        public ModState(Logger logger, ModConfig config, PlayerUtils playerUtils, IdentificationUtils identificationUtils,
             WorldUtils worldUtils, PlacementUtils placementUtils)
         {
+            this.config = config;
             this.logger = logger;
             this.playerUtils = playerUtils;
             this.identificationUtils = identificationUtils;
@@ -164,7 +166,10 @@ namespace SmartBuilding
                 if (this.placementUtils.CanBePlacedHere(v, item))
                 {
                     this.tilesSelected.Add(v, itemInfo);
-                    Game1.player.reduceActiveItemByOne();
+
+                    // If we're not in creative mode, we reduce the item by one.
+                    if (!this.config.CreativeMode)
+                        Game1.player.reduceActiveItemByOne();
                 }
         }
 
