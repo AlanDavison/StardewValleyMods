@@ -1,9 +1,4 @@
-﻿# Mod Title
+﻿# UI Testbed
 
-All releases can be found on my [Nexus page](https://www.nexusmods.com/users/79440738?tab=user+files), and (if I
-remember to auto-sync them), my [ModDrop](https://www.moddrop.com/stardew-valley/profile/251772/mods) page.
-
-### What it does
-
-### Extra information
+This will not be released, and will probably not build. This is simply where I poke around, and experiment with various UI-related things for Stardew Valley.
 
