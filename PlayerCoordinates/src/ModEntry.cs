@@ -45,7 +45,7 @@ namespace PlayerCoordinates
             this._modDirectory = this.Helper.DirectoryPath;
 
             // The default source is the current mod folder, so we don't need to specify that here.
-            this._coordinateBox = helper.Content.Load<Texture2D>("assets/box.png");
+            this._coordinateBox = helper.ModContent.Load<Texture2D>("assets/box.png");
         }
 
         private void WindowResized(object sender, WindowResizedEventArgs e)

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Xml.Serialization;
 using BridgeOnTheWater;
+using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PortableBridges.TerrainFeatures;
-using DecidedlyShared.Constants;
 using StardewValley;
 
 namespace PortableBridges.Tool

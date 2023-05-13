@@ -2,7 +2,6 @@
 using BetterCrystalariums.Utilities;
 using StardewModdingAPI;
 using StardewValley;
-using Object = StardewValley.Object;
 
 namespace BetterCrystalariums
 {
@@ -21,7 +20,7 @@ namespace BetterCrystalariums
             _config = c;
         }
 
-        public static bool ObjectDropIn_Prefix(Object __instance, Item dropInItem, bool probe, Farmer who)
+        public static bool ObjectDropIn_Prefix(SObject __instance, Item dropInItem, bool probe, Farmer who)
         {
             if (_config.DebugMode)
             {

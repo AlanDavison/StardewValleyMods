@@ -18,7 +18,7 @@ namespace PortableBridges.TerrainFeatures
 
         public Bridge()
         {
-            this.whichFloor.Value = 2;
+            this.whichFloor.Value = "TODO: REPLACE ME";
         }
 
         //public override bool isPassable(Character c = null)

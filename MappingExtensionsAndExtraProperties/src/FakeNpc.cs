@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;

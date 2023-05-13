@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Minigames;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 

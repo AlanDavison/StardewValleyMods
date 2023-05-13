@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Mime;
-using System.Text;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

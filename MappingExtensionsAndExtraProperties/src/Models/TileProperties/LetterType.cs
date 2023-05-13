@@ -1,9 +1,4 @@
-﻿using System;
-using DecidedlyShared.Logging;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
-using StardewValley;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 

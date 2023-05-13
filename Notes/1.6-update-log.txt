@@ -1,0 +1,37 @@
+﻿Fully updated for 1.6:
+
+
+Successfully builds for 1.6:
+
+
+Released/Public Projects:
+    Better Crystalariums
+    Better Return Scepter
+    Default Window Size
+    Dialogue Tester
+    Give Me My Cursor Back
+    Player Coordinates
+    Save Loaded Notifier
+    Carry Your Pet
+    MEEP
+    Smart Building
+    Smart Cursor
+
+Active Development:
+    Mod File Dump
+    RPG Battles
+    SARDIS
+    Teleport Anywhere
+    Another Click Movement Experience
+    Farm In The Sky
+
+Experiments:
+    Terrain Feature Refresh
+
+Git Gud First:
+    Real Tunnels (to be merged into MEEP?)
+    Stardew Rituals (multiblock crafting recipes)
+
+Unreleased:
+    Bridge on the Water
+    Everyone Is Grandpa

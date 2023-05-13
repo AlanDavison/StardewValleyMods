@@ -1,8 +1,6 @@
 using System;
-using CarryYourPet.Patches;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
-using DecidedlyShared.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +8,6 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Characters;
-using StardewValley.GameData.HomeRenovations;
 
 namespace CarryYourPet
 {

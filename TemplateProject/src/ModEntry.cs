@@ -1,8 +1,5 @@
 ﻿using System;
-using DecidedlyShared.Ui;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewValley;
 
 namespace TemplateProject;
 

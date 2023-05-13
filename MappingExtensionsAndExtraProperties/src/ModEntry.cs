@@ -13,7 +13,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using xTile.ObjectModel;
 using xTile.Tiles;
 
 namespace MappingExtensionsAndExtraProperties;
@@ -229,9 +228,9 @@ public class ModEntry : Mod
                 if (tile == null)
                     continue;
 
-                if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out PropertyValue property))
+                if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out string property))
                 {
-                    if (Parsers.TryParse(property.ToString(),
+                    if (Parsers.TryParse(property,
                             out DhFakeNpc fakeNpcProperty))
                     {
                         FakeNpc character = new FakeNpc(
@@ -259,7 +258,7 @@ public class ModEntry : Mod
 
                         foreach (KeyValuePair<string, string> d in dialogue)
                         {
-                            character.CurrentDialogue.Push(new Dialogue(d.Value, character));
+                            character.CurrentDialogue.Push(new Dialogue(character, $"{d.Key}:{d.Value}", d.Value));
                         }
 
                         // A safeguard for multiplayer.

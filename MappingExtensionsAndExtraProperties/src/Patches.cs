@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using MappingExtensionsAndExtraProperties.Utils;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
+using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
-using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties;
 

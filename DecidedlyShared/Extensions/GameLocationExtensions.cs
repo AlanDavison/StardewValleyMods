@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DecidedlyShared.Constants;
+﻿using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.TerrainFeatures;

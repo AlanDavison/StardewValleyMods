@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
-using DecidedlyShared.APIs;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;

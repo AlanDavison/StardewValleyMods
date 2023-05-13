@@ -5,8 +5,6 @@ using DecidedlyShared.Utilities;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
 using StardewValley;
-using xTile.Layers;
-using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewValley;
-using StardewModdingAPI;
 using SpaceCore.UI;
+using StardewModdingAPI;
+using StardewValley;
 
 namespace UITestbed;
 
