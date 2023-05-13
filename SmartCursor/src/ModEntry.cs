@@ -13,7 +13,6 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
-using SObject = StardewValley.Object;
 
 namespace SmartCursor
 {
@@ -31,14 +30,15 @@ namespace SmartCursor
 
         public override void Entry(IModHelper helper)
         {
-            // Create our initial tool range values.
-            for (int i = 0; i < 8; i++)
-                this.toolRanges.Add(i, i + 1);
+            // Read our config.
+            this.config = helper.ReadConfig<SmartCursorConfig>();
+
+            // And get our tool ranges.
+            this.config.GetToolRanges(out this.toolRanges);
 
             this.breakableResources = new List<BreakableEntity>();
             this.targetedObject = new Vector2();
             this.logger = new Logger(this.Monitor, helper.Translation);
-            this.config = helper.ReadConfig<SmartCursorConfig>();
             I18n.Init(helper.Translation);
 
             helper.Events.Player.Warped += this.OnPlayerWarped;
@@ -50,15 +50,6 @@ namespace SmartCursor
             helper.Events.GameLoop.UpdateTicked += this.GameLoopOnUpdateTicked;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
         }
-
-        // private void WorldOnResourceClumpListChanged(object? sender, ResourceClumpListChangedEventArgs e)
-        // {
-        //     this.logger.Log("Resource clump event fired.", LogLevel.Info);
-        //     if (e.IsCurrentLocation)
-        //     {
-        //         this.GatherResources(e.Location);
-        //     }
-        // }
 
         /// <summary>
         /// For clearing our targeted object, and setting our hold bool appropriately.
@@ -118,7 +109,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierOneRange,
-                    setValue: i => { this.toolRanges[0] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[0] = i;
+                        this.config.TierOneRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier1Range(),
                     min: 1,
                     max: 20);
@@ -126,7 +121,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierTwoRange,
-                    setValue: i => { this.toolRanges[1] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[1] = i;
+                        this.config.TierTwoRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier2Range(),
                     min: 1,
                     max: 20);
@@ -134,7 +133,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierThreeRange,
-                    setValue: i => { this.toolRanges[2] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[2] = i;
+                        this.config.TierThreeRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier3Range(),
                     min: 1,
                     max: 20);
@@ -142,7 +145,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierFourRange,
-                    setValue: i => { this.toolRanges[3] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[3] = i;
+                        this.config.TierFourRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier4Range(),
                     min: 1,
                     max: 20);
@@ -150,7 +157,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierFiveRange,
-                    setValue: i => { this.toolRanges[4] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[4] = i;
+                        this.config.TierFiveRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier5Range(),
                     min: 1,
                     max: 20);
@@ -158,7 +169,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierSixRange,
-                    setValue: i => { this.toolRanges[5] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[5] = i;
+                        this.config.TierSixRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier6Range(),
                     min: 1,
                     max: 20);
@@ -166,7 +181,11 @@ namespace SmartCursor
                 configMenuApi.AddNumberOption(
                     mod: this.ModManifest,
                     getValue: () => this.config.TierSevenRange,
-                    setValue: i => { this.toolRanges[6] = i;},
+                    setValue: i =>
+                    {
+                        this.toolRanges[6] = i;
+                        this.config.TierSevenRange = i;
+                    },
                     name: () => I18n.Settings_Ranges_Tier7Range(),
                     min: 1,
                     max: 20);
@@ -236,7 +255,6 @@ namespace SmartCursor
             {
                 this.targetedObject = null;
             }
-                
         }
 
         /// <summary>
@@ -247,14 +265,14 @@ namespace SmartCursor
         {
             //TODO should we update GamePadState and MouseState before checking isHoldKeyDown?
             //TODO don't call this from GameLoopOnUpdateTicked
-            updateTargetedObject();
+            this.updateTargetedObject();
 
             GamePadState gamepadState = Game1.input.GetGamePadState();
             MouseState mouseState = Game1.input.GetMouseState();
 
             // Now, if our cooldown timer has passed and the correct keys are held, we want to hit again.
             if (this.isHoldKeyDown && (gamepadState.IsButtonDown(Buttons.X)
-                    || mouseState.LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
+                                       || mouseState.LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
             {
                 // if (Game1.player.UsingTool)
                 //     return;
@@ -320,7 +338,8 @@ namespace SmartCursor
                     break;
             }
 
-            return GetTileToTarget(playerTile, breakableType, this.breakableResources, this.toolRanges[player.CurrentTool.UpgradeLevel] + 1f);
+            return this.GetTileToTarget(playerTile, breakableType, this.breakableResources,
+                this.toolRanges[player.CurrentTool.UpgradeLevel] + 1f);
         }
 
         /// <summary>
@@ -331,7 +350,8 @@ namespace SmartCursor
         /// <param name="breakableType" The <see cref="BreakableEntity"> target type></param>
         /// <param name="resources" The <see cref="List<BreakableEntity>"> targets to consider></param>
         /// <param name="toolRange" The <see cref="float"> radius that the tool can reach></param>
-        private Vector2? GetTileToTarget_Old(Vector2 playerTile, BreakableType breakableType, List<BreakableEntity> resources, float toolRange)
+        private Vector2? GetTileToTarget_Old(Vector2 playerTile, BreakableType breakableType,
+            List<BreakableEntity> resources, float toolRange)
         {
             Dictionary<BreakableEntity, float> objectDistancesFromPlayer = new Dictionary<BreakableEntity, float>();
 
@@ -377,17 +397,18 @@ namespace SmartCursor
         /// This mod calculates range as a circle shape
         /// Calculating a Vector2.Distance uses Math.Sqrt which is slow.
         /// It is faster to compare Vector2.DistanceSquared to toolRangeSquared.
-        /// 
-        /// If we were to calculate range as a square shape like the base game 
+        ///
+        /// If we were to calculate range as a square shape like the base game
         /// We we would need Math.abs and/or more value comparisons
-        /// 
+        ///
         /// also creating and sorting a dictionary is slow, particularly when we only care about the nearest item result.
         /// </summary>
         /// <param name="playerTile">The <see cref="Vector2"> tile the player is standing on.</param>
         /// <param name="breakableType" The <see cref="BreakableEntity"> target type></param>
         /// <param name="resources" The <see cref="List<BreakableEntity>"> targets to consider></param>
         /// <param name="toolRange" The <see cref="float"> radius that the tool can reach></param>
-        private Vector2? GetTileToTarget(Vector2 playerTile, BreakableType breakableType, List<BreakableEntity> resources, float toolRange)
+        private Vector2? GetTileToTarget(Vector2 playerTile, BreakableType breakableType,
+            List<BreakableEntity> resources, float toolRange)
         {
             float nearestDistanceSquared = float.MaxValue;
             Vector2? nearestTile = null;
@@ -397,14 +418,15 @@ namespace SmartCursor
                 if (resource.Type == breakableType) //tile is valid
                 {
                     float distanceSquared = Vector2.DistanceSquared(resource.Tile, playerTile);
-                    if(distanceSquared < nearestDistanceSquared) //tile is the new closest
+                    if (distanceSquared < nearestDistanceSquared) //tile is the new closest
                     {
                         nearestDistanceSquared = distanceSquared;
                         nearestTile = resource.Tile;
                     }
                 }
             }
-            if(nearestDistanceSquared < toolRangeSquared)
+
+            if (nearestDistanceSquared < toolRangeSquared)
             {
                 return nearestTile;
             }
@@ -414,7 +436,6 @@ namespace SmartCursor
             }
         }
 
-        
 
         /// <summary>
         ///     Triggered when the world's object list changes, so the current location's resources can be
@@ -424,7 +445,7 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void WorldOnObjectListChanged(object? sender, ObjectListChangedEventArgs e)
         {
-            this.logger.Log("Object event fired.", LogLevel.Info);
+            // this.logger.Log("Object event fired.", LogLevel.Info);
             if (e.IsCurrentLocation)
             {
                 this.GatherResources(e.Location);
@@ -447,7 +468,7 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void WorldOnTerrainFeatureListChanged(object? sender, TerrainFeatureListChangedEventArgs e)
         {
-            this.logger.Log("Terrain feature event fired.", LogLevel.Info);
+            // this.logger.Log("Terrain feature event fired.", LogLevel.Info);
             if (e.IsCurrentLocation)
             {
                 this.GatherResources(e.Location);
@@ -490,7 +511,8 @@ namespace SmartCursor
             var dummy = new Farmer();
             this.isHoldKeyDown = e.IsDown(this.config.SmartCursorHold);
 
-            if ((e.Button == SButton.MouseLeft || e.Button == SButton.ControllerX || Game1.input.GetMouseState().LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
+            if ((e.Button == SButton.MouseLeft || e.Button == SButton.ControllerX ||
+                 Game1.input.GetMouseState().LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
             {
                 if (this.targetedObject.HasValue && Game1.player.CurrentTool != null)
                 {
@@ -551,7 +573,9 @@ namespace SmartCursor
             time.Stop();
 
             if (time.ElapsedMilliseconds > 10)
-                this.logger.Log($"Took {time.ElapsedMilliseconds}ms ({time.ElapsedTicks} ticks) to gather {location}'s breakable entities.", LogLevel.Debug);
+                this.logger.Log(
+                    $"Took {time.ElapsedMilliseconds}ms ({time.ElapsedTicks} ticks) to gather {location}'s breakable entities.",
+                    LogLevel.Debug);
         }
     }
 }

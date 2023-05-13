@@ -65,30 +65,36 @@ namespace SmartBuilding.UI
 
             if (this.modState.ActiveTool != ButtonId.None)
                 if (this.modState.ActiveTool == ButtonId.Erase)
-                    drawTextureBox(
+                {
+                    DecidedlyShared.Ui.Utils.DrawBox(
                         b,
                         Game1.menuTexture,
-                        new Rectangle(0, 256, 60, 60), this.xPositionOnScreen + 64, this.yPositionOnScreen,
+                        new Rectangle(0, 256, 60, 60),
+                        this.xPositionOnScreen + 64, this.yPositionOnScreen,
                         this.width + 32 + 8,
                         64 * 4 + 8 * 8 + 64,
-                        Color.White
+                        16, 12, 16, 12
                     );
 
-            drawTextureBox(
+                    DecidedlyShared.Ui.Utils.DrawBox(
+                        b,
+                        Game1.menuTexture,
+                        new Rectangle(0, 256, 60, 60),
+                        this.xPositionOnScreen + 64, this.yPositionOnScreen,
+                        this.width + 32 + 8,
+                        64 * 4 + 8 * 8 + 64,
+                        16, 12, 16, 12
+                    );
+                }
+
+            DecidedlyShared.Ui.Utils.DrawBox(
                 b,
                 Game1.menuTexture,
-                new Rectangle(0, 256, 60, 60), this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height,
-                Color.White
+                new Rectangle(0, 256, 60, 60),
+                this.xPositionOnScreen, this.yPositionOnScreen,
+                this.width, this.height,
+                16, 12, 16, 12
             );
-
-            // drawTextureBox(
-            //     b,
-            //     xPositionOnScreen,
-            //     yPositionOnScreen,
-            //     width,
-            //     height,
-            //     Color.White
-            // );
 
             foreach (var button in this.toolButtons) button.Draw(b);
 
@@ -203,7 +209,7 @@ namespace SmartBuilding.UI
             //             ModState.SelectedLayer = null;
             //             button.ButtonAction();
             //         }
-            //         
+            //
             //         // if (button.Type == ButtonType.Layer)
             //         // {
             //         //     if (ModState.ActiveTool.HasValue)
@@ -225,7 +231,7 @@ namespace SmartBuilding.UI
             //         // {
             //         //     if (button.Id == ButtonId.ConfirmBuild)
             //         //         confirmBuild();
-            //         //     
+            //         //
             //         //     if (button.Id == ButtonId.ClearBuild)
             //         //         clearBuild();
             //         // }
@@ -266,7 +272,7 @@ namespace SmartBuilding.UI
             //             ModState.SelectedLayer = null;
             //             button.ButtonAction();
             //         }
-            //         
+            //
             //         // if (button.Type == ButtonType.Layer)
             //         // {
             //         //     if (ModState.ActiveTool.HasValue)
@@ -288,7 +294,7 @@ namespace SmartBuilding.UI
             //         // {
             //         //     if (button.Id == ButtonId.ConfirmBuild)
             //         //         confirmBuild();
-            //         //     
+            //         //
             //         //     if (button.Id == ButtonId.ClearBuild)
             //         //         clearBuild();
             //         // }
@@ -312,7 +318,7 @@ namespace SmartBuilding.UI
         //                 ModState.SelectedLayer = null;
         //                 button.ButtonAction();
         //             }
-        //             
+        //
         //             // if (button.Type == ButtonType.Layer)
         //             // {
         //             //     if (ModState.ActiveTool.HasValue)
@@ -334,7 +340,7 @@ namespace SmartBuilding.UI
         //             // {
         //             //     if (button.Id == ButtonId.ConfirmBuild)
         //             //         confirmBuild();
-        //             //     
+        //             //
         //             //     if (button.Id == ButtonId.ClearBuild)
         //             //         clearBuild();
         //             // }

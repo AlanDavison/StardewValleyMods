@@ -1,4 +1,5 @@
 ﻿using StardewModdingAPI.Utilities;
+using StardewValley;
 
 namespace SmartBuilding
 {
@@ -8,6 +9,9 @@ namespace SmartBuilding
         public bool CanDestroyChests = false;
         public KeybindList CommitBuild = KeybindList.Parse("");
         public bool CrabPotsInAnyWaterTile = false;
+
+        // Item stowing
+        public bool ShouldControlItemStowing = false;
 
         // Optional layer hotkeys
         public KeybindList DrawnLayer = KeybindList.Parse("");
@@ -29,6 +33,8 @@ namespace SmartBuilding
         public bool EnableReplacingFences = false;
         public bool EnableReplacingFloors = false;
         public bool EnableTreeTappers = false;
+        public bool CreativeMode = false;
+
         // Main keybinds
         public KeybindList EngageBuildMode = KeybindList.Parse("LeftShift+B");
         public KeybindList EraseTool = KeybindList.Parse("");
@@ -39,6 +45,7 @@ namespace SmartBuilding
         public KeybindList HoldToMoveMenu = KeybindList.Parse("MouseMiddle");
         public KeybindList IdentifyItem = KeybindList.Parse("LeftControl+LeftShift+J");
         public KeybindList IdentifyProducer = KeybindList.Parse("LeftControl+LeftShift+K");
+
         public KeybindList InsertTool = KeybindList.Parse("");
         // public KeybindList HoldToDrawRectangle = KeybindList.Parse("LeftAlt");
         // public KeybindList HoldToErase = KeybindList.Parse("LeftShift");

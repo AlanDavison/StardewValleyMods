@@ -4,4 +4,5 @@ using StardewModdingAPI;
 
 namespace DecidedlyShared.Input;
 
-public record struct ButtonWatch(Buttons Button, KeyPressType Type, Action? Callback, Action<string, LogLevel>? LogCallback);
+public record struct ButtonWatch(Buttons Button, KeyPressType Type, Action? Callback,
+    Action<string, LogLevel>? LogCallback);

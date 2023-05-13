@@ -5,3 +5,5 @@
 Release/
 .idea/
 StardewValleyMods.sln.DotSettings.user
+manifest.json
+*.log

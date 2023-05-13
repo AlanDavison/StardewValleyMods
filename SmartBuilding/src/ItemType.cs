@@ -1,4 +1,4 @@
-﻿namespace SmartBuilding
+namespace SmartBuilding
 {
     /// <summary>
     ///     We have slightly different placement logic for each of these, so we need a way to identify them.
@@ -55,6 +55,11 @@
         ///     Tappers need slightly special logic.
         /// </summary>
         Tapper,
+
+        /// <summary>
+        /// Bushes from GrowableBushes.
+        /// </summary>
+        atravitaBush,
 
         /// <summary>
         ///     Stardew Valley Furniture. This is so we can apply special placement logic.
