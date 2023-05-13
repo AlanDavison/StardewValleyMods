@@ -5,7 +5,7 @@ using StardewModdingAPI.Events;
 
 namespace SmartBuildingRedux;
 
-public class ModEntry : Mod
+public class Mod : StardewModdingAPI.Mod
 {
     private Logger logger;
 
