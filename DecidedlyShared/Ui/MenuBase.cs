@@ -20,8 +20,6 @@ public class MenuBase : IClickableMenu
         get => this.menuName;
     }
 
-
-
     public MenuBase(ContainerElement uiContainer, string name, Logger logger, string openSound = "bigSelect")
     {
         this.uiContainer = uiContainer;
@@ -66,6 +64,9 @@ public class MenuBase : IClickableMenu
 
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
+        if (this.upperRightCloseButton.containsPoint(x, y))
+            this.exitThisMenu();
+
         this.uiContainer.ReceiveLeftClick(x, y);
     }
 

@@ -264,6 +264,11 @@ public class UiElement
 
     }
 
+    public void SetParent(UiElement parent)
+    {
+        this.parent = parent;
+    }
+
     internal virtual void OrganiseChildren()
     {
 

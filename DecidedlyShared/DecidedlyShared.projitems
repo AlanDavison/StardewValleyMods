@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGrowableBushes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IMoreFertilizersAPI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\ISaveAnywhereApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISpaceCoreApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ITapGiantCropsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IToolbarIconsApi.cs" />

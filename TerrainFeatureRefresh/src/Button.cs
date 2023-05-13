@@ -32,8 +32,7 @@ public class Button : ClickableComponent
             sb,
             this.texture,
             this.sourceRect,
-            this.bounds,
-            color);
+            this.bounds);
 
         Utility.drawTextWithShadow(
             sb,
