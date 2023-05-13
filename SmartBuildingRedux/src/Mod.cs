@@ -1,5 +1,4 @@
-﻿using System;
-using DecidedlyShared.Logging;
+﻿using DecidedlyShared.Logging;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
