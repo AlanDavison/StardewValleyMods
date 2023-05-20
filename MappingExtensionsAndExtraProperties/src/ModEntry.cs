@@ -7,6 +7,7 @@ using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using MappingExtensionsAndExtraProperties.Patches;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,7 +33,10 @@ public class ModEntry : Mod
         this.logger = new Logger(this.Monitor);
         this.tileProperties = new TilePropertyHandler(this.logger);
         this.allNpcs = new List<FakeNpc>();
-        Patches.InitialisePatches(this.logger, this.tileProperties);
+        EventPatches.InitialisePatches(this.logger, this.tileProperties);
+        Game1Patches.InitialisePatches(this.logger, this.tileProperties);
+        GameLocationPatches.InitialisePatches(this.logger, this.tileProperties);
+        SObjectPatches.InitialisePatches(this.logger, this.tileProperties);
         Parsers.InitialiseParsers(this.logger, helper);
 
         helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
@@ -67,7 +71,7 @@ public class ModEntry : Mod
         // Our patch for handling interactions.
         harmony.Patch(
             AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-            postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.GameLocation_CheckAction_Postfix)));
+            postfix: new HarmonyMethod(typeof(GameLocationPatches), nameof(GameLocationPatches.GameLocation_CheckAction_Postfix)));
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
@@ -80,7 +84,7 @@ public class ModEntry : Mod
         // Our cursor draw patch for interaction highlights.
         harmony.Patch(
             AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
-            prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
+            prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.Game1_drawMouseCursor_Prefix)));
 
         // We need this to handle items with integrated closeup interactions. Disabled for now.
         // harmony.Patch(
