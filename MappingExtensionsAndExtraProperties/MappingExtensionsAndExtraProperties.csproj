@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Build\SDV-1.5.6.targets"/>
-    <Import Project="..\Build\Common.csproj"/>
-    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+    <Import Project="..\Build\SDV-1.5.6.targets" />
+    <Import Project="..\Build\Common.csproj" />
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
     <PropertyGroup>
         <Name>Mapping Extensions and Extra Properties (MEEP)</Name>
@@ -16,10 +16,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <SMAPIDependency Include="spacechase0.SpaceCore" Version="1.11" Required="false"/>
+        <SMAPIDependency Include="spacechase0.SpaceCore" Version="1.13" Required="false" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 </Project>
