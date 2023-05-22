@@ -249,7 +249,7 @@ public static class Patches
         PaginatedMenu pagedMenu = new PaginatedMenu(
             "Interaction Reel",
             pages,
-            Utility.xTileToMicrosoftRectangle(Game1.uiViewport),
+            Geometry.RectToRect(Game1.uiViewport),
             Patches.logger,
             DrawableType.None,
             soundCue);
