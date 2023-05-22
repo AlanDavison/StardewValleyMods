@@ -28,4 +28,9 @@ public class Geometry
 
         return corners;
     }
+
+    public static Rectangle RectToRect(xTile.Dimensions.Rectangle xRect)
+    {
+        return new Rectangle(xRect.X, xRect.Y, xRect.Width, xRect.Height);
+    }
 }
