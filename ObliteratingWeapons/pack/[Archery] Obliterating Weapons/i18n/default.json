@@ -1,0 +1,17 @@
+﻿{
+    // Railgun
+    "DecidedlyHuman.ObliteratingWeapons.Railgun.DisplayName": "Railgun",
+    "DecidedlyHuman.ObliteratingWeapons.Railgun.Description": "It's a railgun.",
+
+    // Railgun ammo
+    "DecidedlyHuman.ObliteratingWeapons.Ammo.BatteryPack.DisplayName": "Ir-ion Battery Pack",
+    "DecidedlyHuman.ObliteratingWeapons.Ammo.BatteryPack.Description": "It's a very high output Ir-ion battery pack for the railgun.",
+
+    // Web gun
+    "DecidedlyHuman.ObliteratingWeapons.WebGun.DisplayName": "Web Gun",
+    "DecidedlyHuman.ObliteratingWeapons.WebGun.Description": "It's a railgun.",
+
+    // Web gun ammo
+    "DecidedlyHuman.ObliteratingWeapons.Ammo.WebFluid.DisplayName": "Web Fluid",
+    "DecidedlyHuman.ObliteratingWeapons.Ammo.WebFluid.Description": "Web fluid for the web gun."
+}

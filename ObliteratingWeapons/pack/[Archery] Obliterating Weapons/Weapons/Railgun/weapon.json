@@ -1,0 +1,401 @@
+﻿{
+    "Type": "Bow",
+    "Name": "DecidedlyHuman.ObliteratingWeapons.Railgun",
+    "DisplayName": "DecidedlyHuman.ObliteratingWeapons.Railgun.DisplayName",
+    "Description": "DecidedlyHuman.ObliteratingWeapons.Railgun.Description",
+    "Icon": {
+        "Source": {
+            "X": 0,
+            "Y": 0,
+            "Width": 16,
+            "Height": 16
+        },
+        "Scale": 4.0
+    },
+    "DamageRange": {
+        "Min": 80,
+        "Max": 100
+    },
+    "ProjectileSpeed": 100.0,
+    "ChargeTimeRequiredMilliseconds": 1000,
+
+    "Shop": {
+        "Owner": "Marlon",
+
+        // Using the value -1 tells the framework to use an infinite stock
+        "Stock": -1,
+        "Price": 100000
+    },
+
+    "Filter": [
+        "DecidedlyHuman.ObliteratingWeapons.Ammo.BatteryPack"
+    ],
+
+    // The following determines what bow and arm sprites to draw based on the direction and other given conditions
+    // (Thanks for this template, PeacefulEnd!)
+    "DirectionalSprites": {
+        // Start of upward facing sprites
+        "Up": [
+            {
+                "Source": {
+                    "X": 64,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "LessThan",
+                        "Value": 0.5
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 64,
+                            "Y": 0,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 0,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            },
+            {
+                "Source": {
+                    "X": 64,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "LessThan",
+                        "Value": 0.8
+                    },
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "GreaterThanOrEqualTo",
+                        "Value": 0.5
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 80,
+                            "Y": 0,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 0,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            },
+            {
+                "Source": {
+                    "X": 64,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "GreaterThanOrEqualTo",
+                        "Value": 0.8
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 96,
+                            "Y": 0,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 0,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            }
+        ],
+        // Start of downward facing sprites
+        "Down": [
+            {
+                "Source": {
+                    "X": 0,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "LessThan",
+                        "Value": 0.5
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 0,
+                            "Y": 0,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 0,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            },
+            {
+                "Source": {
+                    "X": 0,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "LessThan",
+                        "Value": 0.8
+                    },
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "GreaterThanOrEqualTo",
+                        "Value": 0.5
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 16,
+                            "Y": 0,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 0,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            },
+            {
+                "Source": {
+                    "X": 0,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "GreaterThanOrEqualTo",
+                        "Value": 0.8
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 32,
+                            "Y": 0,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 0,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            }
+        ],
+        // Start of left and right sprites
+        "Sideways": [
+            {
+                "AmmoOffset": {
+                    "X": 0,
+                    "Y": 0
+                },
+                "Source": {
+                    "X": 16,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Offset": {
+                    "X": 4,
+                    "Y": 0
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "LessThan",
+                        "Value": 0.5
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 48,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 64,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            },
+            {
+                "AmmoOffset": {
+                    "X": -1,
+                    "Y": 0
+                },
+                "Source": {
+                    "X": 32,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Offset": {
+                    "X": 4,
+                    "Y": 0
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "LessThan",
+                        "Value": 0.8
+                    },
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "GreaterThanOrEqualTo",
+                        "Value": 0.5
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 48,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 80,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            },
+            {
+                "AmmoOffset": {
+                    "X": -2,
+                    "Y": 0
+                },
+                "Source": {
+                    "X": 48,
+                    "Y": 32,
+                    "Width": 16,
+                    "Height": 32
+                },
+                "Offset": {
+                    "X": 4,
+                    "Y": 0
+                },
+                "Conditions": [
+                    {
+                        "Name": "CurrentChargingPercentage",
+                        "Operator": "GreaterThanOrEqualTo",
+                        "Value": 0.8
+                    }
+                ],
+                "Arms": [
+                    {
+                        "Type": "Back",
+                        "Source": {
+                            "X": 48,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    },
+                    {
+                        "Type": "Front",
+                        "Source": {
+                            "X": 96,
+                            "Y": 32,
+                            "Width": 16,
+                            "Height": 32
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
