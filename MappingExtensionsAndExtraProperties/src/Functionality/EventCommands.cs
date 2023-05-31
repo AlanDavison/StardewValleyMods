@@ -1,5 +1,7 @@
 ﻿using DecidedlyShared.Logging;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Functionality;
 
@@ -12,5 +14,10 @@ public class EventCommands
     {
         this.helper = h;
         this.logger = l;
+    }
+
+    public void PlaySound(Event e, GameLocation loc, GameTime time, string[] args)
+    {
+
     }
 }
