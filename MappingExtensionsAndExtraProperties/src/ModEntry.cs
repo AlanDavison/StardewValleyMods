@@ -7,6 +7,7 @@ using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Functionality;
+using MappingExtensionsAndExtraProperties.Models.EventCommands;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Patches;
 using MappingExtensionsAndExtraProperties.Utils;
@@ -118,6 +119,10 @@ public class ModEntry : Mod
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
+            // Event testing!
+
+
+
             // int cursorX = (int)Game1.currentCursorTile.X;
             // int cursorY = (int)Game1.currentCursorTile.Y;
             // GameLocation here = Game1.currentLocation;
@@ -172,7 +177,7 @@ public class ModEntry : Mod
         }
 
         if (this.Helper.ModRegistry.IsLoaded("spacechase0.SpaceCore") &&
-            !this.Helper.ModRegistry.Get("spacechase0.SpaceCore").Manifest.Version.IsOlderThan(new SemanticVersion(1, 11, 0)))
+            !this.Helper.ModRegistry.Get("spacechase0.SpaceCore").Manifest.Version.IsOlderThan(new SemanticVersion(1, 10, 0)))
         {
             // Get SpaceCore's API.
             try
@@ -186,7 +191,13 @@ public class ModEntry : Mod
             }
         }
         else
-            this.logger.Warn("SpaceCore was installed, but the minimum version for MEEP event commands to work is 1.11.0. Please update SpaceCore to enable custom event commands.");
+            this.logger.Warn("SpaceCore was installed, but the minimum version for MEEP event commands to work is 1.10.0. Please update SpaceCore to enable custom event commands.");
+
+        // Register our event commands through SpaceCore.
+        if (this.spaceCoreApi is not null)
+        {
+            this.spaceCoreApi.AddEventCommand(PlaySound.Command, AccessTools.Method(this.eventCommands.GetType(), PlaySound.Command));
+        }
     }
 
     private void AfterSaveAnywhereLoad(object? sender, EventArgs e)
