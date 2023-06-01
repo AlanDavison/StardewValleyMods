@@ -44,6 +44,7 @@ namespace CarryYourPet
 
             var harmony = new Harmony(this.ModManifest.UniqueID);
 
+            // Pet patches
             harmony.Patch(
                 AccessTools.Method(typeof(Pet), nameof(Pet.checkAction)),
                 postfix: new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.PetCheckAction_Postfix)));
@@ -53,6 +54,7 @@ namespace CarryYourPet
                     new[] { typeof(SpriteBatch) }),
                 new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.PetDraw_Prefix)));
 
+            // Animal patches
             harmony.Patch(
                 AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.pet)),
                 new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.FarmAnimalPet_Prefix)));
@@ -62,9 +64,20 @@ namespace CarryYourPet
                     new[] { typeof(SpriteBatch) }),
                 new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.FarmAnimalDraw_Prefix)));
 
+            // Carrying patches
             harmony.Patch(
                 AccessTools.Method(typeof(Farmer), nameof(Farmer.IsCarrying)),
                 postfix: new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.FarmerIsCarrying_Postfix)));
+
+            // Horse patches (disabled for now)
+            // harmony.Patch(
+            //     AccessTools.Method(typeof(Horse), nameof(Horse.checkAction)),
+            //     prefix: new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.HorseCheckAction_Prefix)));
+            //
+            // harmony.Patch(
+            //     AccessTools.Method(typeof(Horse), nameof(Horse.draw),
+            //         new[] { typeof(SpriteBatch) }),
+            //     new HarmonyMethod(typeof(Patches.Patches), nameof(Patches.Patches.HorseDraw_Prefix)));
 
             // If I do ever re-enable carrying NPCs, these are the patches.
             // harmony.Patch(
@@ -156,13 +169,21 @@ namespace CarryYourPet
                     animal.draw(e.SpriteBatch);
                     this.carriedCharacter.ShouldDraw = false;
                 }
+                // else if (this.carriedCharacter.Npc is Horse horse)
+                // {
+                //     this.LockCharacterToPlayer(horse);
+                //
+                //     this.carriedCharacter.ShouldDraw = true;
+                //     horse.draw(e.SpriteBatch);
+                //     this.carriedCharacter.ShouldDraw = false;
+                // }
             }
         }
 
         private void LockCharacterToPlayer(Character character)
         {
             // It should be impossible for this to be anything but a Pet or FarmAnimal.
-            if (character is not FarmAnimal && character is not Pet)
+            if (character is not FarmAnimal && character is not Pet/* && character is not Horse*/)
                 return;
 
             Vector2 characterOffset = new Vector2();
@@ -173,6 +194,8 @@ namespace CarryYourPet
             {
                 characterOffset = character.Position - boundsPosition + new Vector2(-16, 32f);
             }
+            // else if (character is Horse)
+            //     characterOffset = character.Position - boundsPosition + new Vector2(-16, 32f);
             else
                 characterOffset = character.Position - boundsPosition + new Vector2(8, 32f);
 
