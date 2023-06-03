@@ -18,11 +18,8 @@ namespace DecidedlyShared.APIs
         /// Must have [XmlType("Mods_SOMETHINGHERE")] attribute (required to start with "Mods_")
         void RegisterSerializerType(Type type);
 
-        void RegisterCustomProperty(Type declaringType, string name, Type propType, MethodInfo getter,
-            MethodInfo setter);
+        void RegisterCustomProperty( Type declaringType, string name, Type propType, MethodInfo getter, MethodInfo setter );
 
-        void RegisterCustomLocationContext(string name,
-            Func<Random, LocationWeather>
-                getLocationWeatherForTomorrowFunc /*, Func<Farmer, string> passoutWakeupLocationFunc, Func<Farmer, Point?> passoutWakeupPointFunc*/);
+        void RegisterCustomLocationContext( string name, Func<Random, LocationWeather> getLocationWeatherForTomorrowFunc/*, Func<Farmer, string> passoutWakeupLocationFunc, Func<Farmer, Point?> passoutWakeupPointFunc*/ );
     }
 }
