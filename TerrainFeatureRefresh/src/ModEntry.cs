@@ -85,60 +85,92 @@ public class ModEntry : Mod
                 }
             }
 
+            if (args.IsDown(SButton.End))
+            {
+                Vector2 tile = Game1.currentCursorTile;
+                GameLocation location = Game1.currentLocation;
+
+                if (location.Objects.ContainsKey(tile))
+                {
+                    this.logger.Error($"Found object at {tile}.");
+
+                    string objectId = location.Objects[tile].ItemId;
+
+                    this.logger.Error($"Item ID for SObject: {ItemRegistry.QualifyItemId(objectId)}");
+                    this.logger.Error($"SObject type: {ItemRegistry.GetData(objectId).ObjectType}");
+                    this.logger.Error($"SObject category: {ItemRegistry.GetMetadata().}");
+                    this.logger.Error($"SObject name: {ItemRegistry.GetData(objectId).DisplayName}");
+                }
+
+                if (location.terrainFeatures.ContainsKey(tile))
+                {
+                    this.logger.Error($"Found TerrainFeature at {tile}.");
+
+                    if (location.terrainFeatures[tile] is Flooring path)
+                    {
+                        string id = path.GetData().ItemId;
+
+                        this.logger.Error($"TerrainFeature category: {ItemRegistry.GetData(id).Category}");
+                        this.logger.Error($"Item ID for TerrainFeature: {ItemRegistry.QualifyItemId(id)}");
+                        this.logger.Error($"TerrainFeature name: {ItemRegistry.GetData(id).DisplayName}");
+                    }
+                }
+            }
+
             if (args.IsDown(SButton.Home))
             {
-                HBoxElement mainHBox =
-                    new HBoxElement("Main Box", Rectangle.Empty, this.logger, DrawableType.SlicedBox);
-                VBoxElement leftColumn = new VBoxElement("Left Column", new Rectangle(0, 0, 100, 400), this.logger,
-                    DrawableType.None);
-                VBoxElement rightColumn = new VBoxElement("Right Column", new Rectangle(0, 0, 100, 600), this.logger,
-                    DrawableType.None);
-
-                HBoxElement checkbox = new HBoxElement("Checkbox", Rectangle.Empty, this.logger, DrawableType.None);
-                UiElement checkboxImage = new UiElement(
-                    "Checkbox One Image",
-                    Rectangle.Empty,
-                    this.logger,
-                    DrawableType.Texture,
-                    Game1.mouseCursors,
-                    new Rectangle(227, 425, 9, 9));
-                TextElement checkboxLabel = new TextElement(
-                    "Checkbox One Label",
-                    Rectangle.Empty,
-                    this.logger,
-                    400,
-                    "Checkbox One",
-                    Game1.dialogueFont,
-                    DrawableType.None
-                );
-                checkbox.AddChild(checkboxImage);
-                checkbox.AddChild(checkboxLabel);
-
-                HBoxElement checkboxTwo = new HBoxElement("Checkbox Two", Rectangle.Empty, this.logger, DrawableType.None);
-                UiElement checkboxImageTwo = new UiElement(
-                    "Checkbox Two Image",
-                    Rectangle.Empty,
-                    this.logger,
-                    DrawableType.Texture,
-                    Game1.mouseCursors,
-                    new Rectangle(227, 425, 9, 9));
-                TextElement checkboxLabelTwo = new TextElement(
-                    "Checkbox Two Label",
-                    Rectangle.Empty,
-                    this.logger,
-                    400,
-                    "Checkbox Two",
-                    Game1.dialogueFont,
-                    DrawableType.None
-                );
-                checkboxTwo.AddChild(checkboxImageTwo);
-                checkboxTwo.AddChild(checkboxLabelTwo);
-
-                leftColumn.AddChild(checkbox);
-                rightColumn.AddChild(checkboxTwo);
-
-                mainHBox.AddChild(leftColumn);
-                mainHBox.AddChild(rightColumn);
+                // HBoxElement mainHBox =
+                //     new HBoxElement("Main Box", Rectangle.Empty, this.logger, DrawableType.SlicedBox);
+                // VBoxElement leftColumn = new VBoxElement("Left Column", new Rectangle(0, 0, 100, 400), this.logger,
+                //     DrawableType.None);
+                // VBoxElement rightColumn = new VBoxElement("Right Column", new Rectangle(0, 0, 100, 600), this.logger,
+                //     DrawableType.None);
+                //
+                // HBoxElement checkbox = new HBoxElement("Checkbox", Rectangle.Empty, this.logger, DrawableType.None);
+                // UiElement checkboxImage = new UiElement(
+                //     "Checkbox One Image",
+                //     Rectangle.Empty,
+                //     this.logger,
+                //     DrawableType.Texture,
+                //     Game1.mouseCursors,
+                //     new Rectangle(227, 425, 9, 9));
+                // TextElement checkboxLabel = new TextElement(
+                //     "Checkbox One Label",
+                //     Rectangle.Empty,
+                //     this.logger,
+                //     400,
+                //     "Checkbox One",
+                //     Game1.dialogueFont,
+                //     DrawableType.None
+                // );
+                // checkbox.AddChild(checkboxImage);
+                // checkbox.AddChild(checkboxLabel);
+                //
+                // HBoxElement checkboxTwo = new HBoxElement("Checkbox Two", Rectangle.Empty, this.logger, DrawableType.None);
+                // UiElement checkboxImageTwo = new UiElement(
+                //     "Checkbox Two Image",
+                //     Rectangle.Empty,
+                //     this.logger,
+                //     DrawableType.Texture,
+                //     Game1.mouseCursors,
+                //     new Rectangle(227, 425, 9, 9));
+                // TextElement checkboxLabelTwo = new TextElement(
+                //     "Checkbox Two Label",
+                //     Rectangle.Empty,
+                //     this.logger,
+                //     400,
+                //     "Checkbox Two",
+                //     Game1.dialogueFont,
+                //     DrawableType.None
+                // );
+                // checkboxTwo.AddChild(checkboxImageTwo);
+                // checkboxTwo.AddChild(checkboxLabelTwo);
+                //
+                // leftColumn.AddChild(checkbox);
+                // rightColumn.AddChild(checkboxTwo);
+                //
+                // mainHBox.AddChild(leftColumn);
+                // mainHBox.AddChild(rightColumn);
 
                 Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(640, 480);
                 TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 640, 380);

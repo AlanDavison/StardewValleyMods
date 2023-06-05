@@ -2,18 +2,20 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
+using TerrainFeatureRefresh.Framework;
 
 namespace TerrainFeatureRefresh;
 
-public class Checkbox : ClickableComponent
+public class TfrCheckbox : ClickableComponent
 {
     private Texture2D checkboxImage;
     private Rectangle checkedSourceRect;
     private Rectangle uncheckedSourceRect;
     private bool isChecked;
     private string checkboxLabel;
+    private TfrFeature associatedFeature;
 
-    public Checkbox(Rectangle bounds, string name) : base(bounds, name)
+    public TfrCheckbox(Rectangle bounds, string name, ref TfrFeature feature) : base(bounds, name)
     {
         this.checkboxImage = Game1.menuTexture;
         this.checkedSourceRect = new Rectangle(192, 768, 36, 36);
@@ -23,6 +25,8 @@ public class Checkbox : ClickableComponent
 
         this.bounds.Width = (int)labelBounds.X + 40;
         this.bounds.Height = (int)labelBounds.Y;
+
+        this.associatedFeature = feature;
     }
 
     public void Draw(SpriteBatch sb)
@@ -43,7 +47,13 @@ public class Checkbox : ClickableComponent
 
     public void ReceiveLeftClick()
     {
-        this.isChecked = !this.isChecked;
+        if (this.isChecked)
+        {
+            this.isChecked = false;
+            this.associatedFeature.actionToTake = TfrAction.None;
+        }
+        else
+            this.isChecked = true;
     }
 
     public override bool containsPoint(int x, int y)
