@@ -96,10 +96,13 @@ public class ModEntry : Mod
 
                     string objectId = location.Objects[tile].ItemId;
 
+                    this.logger.Error("SObject ---------------------------------------------------------------------");
                     this.logger.Error($"Item ID for SObject: {ItemRegistry.QualifyItemId(objectId)}");
                     this.logger.Error($"SObject type: {ItemRegistry.GetData(objectId).ObjectType}");
-                    this.logger.Error($"SObject category: {ItemRegistry.GetMetadata().}");
+                    this.logger.Error($"SObject category: {ItemRegistry.GetData(objectId).Category}");
                     this.logger.Error($"SObject name: {ItemRegistry.GetData(objectId).DisplayName}");
+                    this.logger.Error($"SObject name: {ItemRegistry.GetData(objectId).DisplayName}");
+                    this.logger.Error($"SObject is forage?: {location.Objects[tile].IsSpawnedObject}");
                 }
 
                 if (location.terrainFeatures.ContainsKey(tile))
@@ -110,6 +113,7 @@ public class ModEntry : Mod
                     {
                         string id = path.GetData().ItemId;
 
+                        this.logger.Error("TerrainFeature --------------------------------------------------------------");
                         this.logger.Error($"TerrainFeature category: {ItemRegistry.GetData(id).Category}");
                         this.logger.Error($"Item ID for TerrainFeature: {ItemRegistry.QualifyItemId(id)}");
                         this.logger.Error($"TerrainFeature name: {ItemRegistry.GetData(id).DisplayName}");

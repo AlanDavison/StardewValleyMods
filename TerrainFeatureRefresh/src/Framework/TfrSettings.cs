@@ -8,6 +8,7 @@ public struct TfrSettings
     public TfrFeature twigs = new TfrFeature();
     public TfrFeature stones = new TfrFeature();
     public TfrFeature forage = new TfrFeature();
+    public TfrFeature artifactSpots = new TfrFeature();
 
     // Terrain Features
     public TfrFeature grass = new TfrFeature();

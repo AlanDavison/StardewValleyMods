@@ -25,6 +25,7 @@ public class TfrMainMenu : IClickableMenu
     private TfrCheckbox twigs;
     private TfrCheckbox stones;
     private TfrCheckbox forage;
+    private TfrCheckbox artifactSpots;
 
     // Terrain Features
     private TfrCheckbox grass;
@@ -69,6 +70,7 @@ public class TfrMainMenu : IClickableMenu
         this.checkboxes.Add(this.twigs = new TfrCheckbox(Rectangle.Empty, "Twigs", ref this.settings.twigs));
         this.checkboxes.Add(this.stones = new TfrCheckbox(Rectangle.Empty, "Stones", ref this.settings.stones));
         this.checkboxes.Add(this.forage = new TfrCheckbox(Rectangle.Empty, "Forage", ref this.settings.forage));
+        this.checkboxes.Add(this.artifactSpots = new TfrCheckbox(Rectangle.Empty, "Artifact Spot", ref this.settings.artifactSpots));
 
         // Terrain Features
         this.checkboxes.Add(this.grass = new TfrCheckbox(Rectangle.Empty, "Grass", ref this.settings.grass));
@@ -107,7 +109,7 @@ public class TfrMainMenu : IClickableMenu
             this.xPositionOnScreen,
             this.yPositionOnScreen + 32,
             this.width,
-            this.height - 32);
+            this.height - 16);
 
         this.buttonPanelBounds = new Rectangle(
             this.xPositionOnScreen + this.width - 256 + 128 + 32 + 8,
@@ -164,6 +166,14 @@ public class TfrMainMenu : IClickableMenu
             objectY,
             this.fences.bounds.Width,
             this.fences.bounds.Height);
+
+        objectY += this.fences.bounds.Height + 6;
+
+        this.artifactSpots.bounds = new Rectangle(
+            this.xPositionOnScreen + 256 + 16,
+            objectY,
+            this.artifactSpots.bounds.Width,
+            this.artifactSpots.bounds.Height);
 
         #endregion
 
@@ -331,6 +341,7 @@ public class TfrMainMenu : IClickableMenu
         this.twigs.Draw(b);
         this.stones.Draw(b);
         this.forage.Draw(b);
+        this.artifactSpots.Draw(b);
 
         // Terrain Features
         this.wildTrees.Draw(b);
