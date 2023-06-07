@@ -1,4 +1,12 @@
 ﻿using System.Collections.Generic;
+using DecidedlyShared.Utilities;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
+using StardewValley.Menus;
+using TerrainFeatureRefresh.Framework;
+using System.Collections.Generic;
+using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -11,6 +19,8 @@ public class TfrMainMenu : IClickableMenu
 {
     private Button resetButton;
     private Texture2D boxTexture;
+    private Texture2D buttonTexture;
+    private Texture2D closeButtonTexture;
     // private Texture2D buttonPanelTexture;
     private Rectangle titleBounds;
     private Rectangle mainWindowBounds;
@@ -50,15 +60,15 @@ public class TfrMainMenu : IClickableMenu
     public TfrMainMenu(int screenX, int screenY, int width, int height)
         : base(screenX, screenY, width, height, true)
     {
-        this.boxTexture = Game1.menuTexture;
         // this.buttonPanelTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/ButtonPanel");
-        this.resetButton = new Button(
-            new Rectangle(
-                this.xPositionOnScreen + 64,
-                this.yPositionOnScreen + 64,
-                0,
-                0),
-            "Reset Selected");
+        this.buttonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/Button");
+        this.boxTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/WindowSkin");
+        this.closeButtonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/CloseButton");
+        this.upperRightCloseButton = new ClickableTextureComponent(
+            new Rectangle(this.xPositionOnScreen - 84 + this.width, this.yPositionOnScreen + 52, 16 * 4, 14 * 4),
+            this.closeButtonTexture,
+            new Rectangle(0, 0, 64, 56),
+            1f);
         this.checkboxes = new List<TfrCheckbox>();
         this.allClickableComponents = new List<ClickableComponent>();
 
@@ -87,6 +97,9 @@ public class TfrMainMenu : IClickableMenu
         this.checkboxes.Add(this.boulders = new TfrCheckbox(Rectangle.Empty, "Boulders", ref this.settings.boulders));
         this.checkboxes.Add(this.meteorites = new TfrCheckbox(Rectangle.Empty, "Spoiler Rocks", ref this.settings.meteorites));
 
+        this.resetButton = new Button(Rectangle.Empty, "Reset", this.buttonTexture,
+        new Rectangle(0, 0, 16, 16));
+
         foreach (TfrCheckbox box in this.checkboxes)
         {
             this.allClickableComponents.Add(box);
@@ -99,11 +112,11 @@ public class TfrMainMenu : IClickableMenu
 
     private void UpdateBounds()
     {
-        this.titleBounds = new Rectangle(
-            this.xPositionOnScreen,
-            this.yPositionOnScreen - 64 + 32 + 16 + 8,
-            this.width - 128,
-            128);
+        // this.titleBounds = new Rectangle(
+        //     this.xPositionOnScreen,
+        //     this.yPositionOnScreen - 64 + 32 + 16 + 8,
+        //     this.width - 128,
+        //     128);
 
         this.mainWindowBounds = new Rectangle(
             this.xPositionOnScreen,
@@ -111,12 +124,12 @@ public class TfrMainMenu : IClickableMenu
             this.width,
             this.height - 16);
 
-        this.buttonPanelBounds = new Rectangle(
-            this.xPositionOnScreen + this.width - 256 + 128 + 32 + 8,
-            this.yPositionOnScreen + this.height - 104,
-            this.width - 256 - 32,
-            128
-            );
+        // this.buttonPanelBounds = new Rectangle(
+        //     this.xPositionOnScreen + this.width - 256 + 128 + 32 + 8,
+        //     this.yPositionOnScreen + this.height - 104,
+        //     this.width - 256 - 32,
+        //     128
+        //     );
 
         this.resetButton.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.resetButton.bounds.Width - 16,
@@ -127,7 +140,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region Objects
 
-        int objectY = this.yPositionOnScreen + 64 + 24;
+        int objectY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
 
         this.fences.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -179,7 +192,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region TerrainFeatures
 
-        int terrainY = this.yPositionOnScreen + 64 + 24;
+        int terrainY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
 
         this.grass.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -239,7 +252,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region ResourceClumps
 
-        int clumpY = this.yPositionOnScreen + 64 + 24;
+        int clumpY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
 
         this.stumps.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -278,11 +291,11 @@ public class TfrMainMenu : IClickableMenu
     {
         this.UpdateBounds();
 
-        DecidedlyShared.Ui.Utils.DrawBox(
-            b,
-            this.boxTexture,
-            new Rectangle(0, 256, 60, 60),
-            this.titleBounds);
+        // DecidedlyShared.Ui.Utils.DrawBox(
+        //     b,
+        //     this.boxTexture,
+        //     new Rectangle(0, 0, 60, 60),
+        //     this.titleBounds);
 
         // DecidedlyShared.Ui.Utils.DrawBox(
         //     b,
@@ -298,40 +311,77 @@ public class TfrMainMenu : IClickableMenu
         DecidedlyShared.Ui.Utils.DrawBox(
             b,
             this.boxTexture,
-            new Rectangle(0, 256, 60, 60),
-            this.mainWindowBounds);
+            new Rectangle(0, 0, 9 * 4, 24 * 4),
+            this.mainWindowBounds,
+            21 * 4,
+            3 * 4,
+            3 * 4,
+            2 * 4
+            );
 
         base.draw(b);
 
         Vector2 stringWidth = Game1.smallFont.MeasureString("Terrain Feature Refresh");
 
-        Utility.drawTextWithShadow(
+        Drawing.DrawStringWithShadow(
             b,
+            Game1.dialogueFont,
             "Terrain Feature Refresh",
-            Game1.smallFont,
-            new Vector2(this.xPositionOnScreen + stringWidth.X / 2 - 32, this.yPositionOnScreen + 4),
-            Game1.textColor);
+            new Vector2(this.xPositionOnScreen + 32, this.yPositionOnScreen + 64 - 8),
+            Color.White,
+            Color.Transparent);
 
-        Utility.drawTextWithShadow(
+        // Utility.drawTextWithShadow(
+        //     b,
+        //     "Terrain Feature Refresh",
+        //     Game1.smallFont,
+        //     new Vector2(this.xPositionOnScreen + stringWidth.X / 2 - 32, this.yPositionOnScreen + 4),
+        //     Game1.textColor);
+
+        Drawing.DrawStringWithShadow(
             b,
+            Game1.smallFont,
             this.terrainFeatureHeader,
-            Game1.smallFont,
-            new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8),
-            Game1.textColor);
+            new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 32 + 64 + 20),
+            Color.Black,
+            Color.Gray);
 
-        Utility.drawTextWithShadow(
+        // Utility.drawTextWithShadow(
+        //     b,
+        //     this.terrainFeatureHeader,
+        //     Game1.smallFont,
+        //     new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8),
+        //     Game1.textColor);
+
+        Drawing.DrawStringWithShadow(
             b,
+            Game1.smallFont,
             this.objectHeader,
-            Game1.smallFont,
-            new Vector2(this.xPositionOnScreen + 256 + 16, this.yPositionOnScreen + 64 - 8),
-            Game1.textColor);
+            new Vector2(this.xPositionOnScreen + 256 + 16, this.yPositionOnScreen + 32 + 64 + 20),
+            Color.Black,
+            Color.Gray);
 
-        Utility.drawTextWithShadow(
+        // Utility.drawTextWithShadow(
+        //     b,
+        //     this.objectHeader,
+        //     Game1.smallFont,
+        //     new Vector2(this.xPositionOnScreen + 256 + 16, this.yPositionOnScreen + 64 - 8),
+        //     Game1.textColor);
+
+        Drawing.DrawStringWithShadow(
             b,
-            this.clumpHeader,
             Game1.smallFont,
-            new Vector2(this.xPositionOnScreen + 256 + 128 + 32, this.yPositionOnScreen + 64 - 8),
-            Game1.textColor);
+            this.clumpHeader,
+            new Vector2(this.xPositionOnScreen + 256 + 128 + 32, this.yPositionOnScreen + 32 + 64 + 20),
+            Color.Black,
+            Color.Gray);
+
+        // Utility.drawTextWithShadow(
+        //     b,
+        //     this.clumpHeader,
+        //     Game1.smallFont,
+        //     new Vector2(this.xPositionOnScreen + 256 + 128 + 32, this.yPositionOnScreen + 64 - 8),
+        //     Game1.textColor);
 
         this.resetButton.Draw(b);
 
@@ -384,6 +434,7 @@ public class TfrMainMenu : IClickableMenu
     {
         base.gameWindowSizeChanged(oldBounds, newBounds);
         this.UpdateBounds();
-        this.upperRightCloseButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width - 36, this.yPositionOnScreen - 8, 48, 48), Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 4f);
+        this.upperRightCloseButton.bounds = new Rectangle(this.xPositionOnScreen - 84 + this.width,
+            this.yPositionOnScreen + 52, 16 * 4, 14 * 4);
     }
 }

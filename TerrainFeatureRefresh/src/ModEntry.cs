@@ -177,7 +177,7 @@ public class ModEntry : Mod
                 // mainHBox.AddChild(rightColumn);
 
                 Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(640, 480);
-                TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 640, 380);
+                TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 640, 440);
 
                 Game1.activeClickableMenu = menu;
             }
@@ -186,9 +186,19 @@ public class ModEntry : Mod
 
     private void ContentOnAssetRequested(object? sender, AssetRequestedEventArgs e)
     {
-        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/ButtonPanel"))
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/WindowSkin"))
         {
-            e.LoadFromModFile<Texture2D>("assets/button-panel.png", AssetLoadPriority.Low);
+            e.LoadFromModFile<Texture2D>("assets/window.png", AssetLoadPriority.Low);
+        }
+
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/CloseButton"))
+        {
+            e.LoadFromModFile<Texture2D>("assets/close-button.png", AssetLoadPriority.Low);
+        }
+
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/Button"))
+        {
+            e.LoadFromModFile<Texture2D>("assets/button.png", AssetLoadPriority.Low);
         }
     }
 }

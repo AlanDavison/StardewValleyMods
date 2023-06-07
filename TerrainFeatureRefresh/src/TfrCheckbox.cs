@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DecidedlyShared.Utilities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
@@ -37,12 +38,20 @@ public class TfrCheckbox : ClickableComponent
             this.isChecked ? this.checkedSourceRect : this.uncheckedSourceRect,
             Color.White);
 
-        Utility.drawTextWithShadow(
+        Drawing.DrawStringWithShadow(
             sb,
-            this.name,
             Game1.smallFont,
+            this.name,
             new Vector2(this.bounds.X + 36 + 4, this.bounds.Y + 4),
-            Game1.textColor);
+            Color.Black,
+            Color.Gray);
+
+        // Utility.drawTextWithShadow(
+        //     sb,
+        //     this.name,
+        //     Game1.smallFont,
+        //     new Vector2(this.bounds.X + 36 + 4, this.bounds.Y + 4),
+        //     Game1.textColor);
     }
 
     public void ReceiveLeftClick()
