@@ -1,4 +1,4 @@
-﻿using DecidedlyShared.Utilities;
+using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -13,14 +13,13 @@ public class TfrCheckbox : ClickableComponent
     private Rectangle checkedSourceRect;
     private Rectangle uncheckedSourceRect;
     private bool isChecked;
-    private string checkboxLabel;
     private TfrFeature associatedFeature;
 
-    public TfrCheckbox(Rectangle bounds, string name, ref TfrFeature feature) : base(bounds, name)
+    public TfrCheckbox(Rectangle bounds, string name, Texture2D texture, ref TfrFeature feature) : base(bounds, name)
     {
-        this.checkboxImage = Game1.menuTexture;
-        this.checkedSourceRect = new Rectangle(192, 768, 36, 36);
-        this.uncheckedSourceRect = new Rectangle(128, 768, 36, 36);
+        this.checkboxImage = texture;
+        this.uncheckedSourceRect = new Rectangle(0, 0, 47, 47);
+        this.checkedSourceRect = new Rectangle(52, 0, 47, 47);
 
         Vector2 labelBounds = Game1.smallFont.MeasureString(name);
 
@@ -62,7 +61,10 @@ public class TfrCheckbox : ClickableComponent
             this.associatedFeature.actionToTake = TfrAction.None;
         }
         else
+        {
             this.isChecked = true;
+            this.associatedFeature.actionToTake = TfrAction.Regenerate;
+        }
     }
 
     public override bool containsPoint(int x, int y)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using Microsoft.Xna.Framework;
@@ -186,19 +186,16 @@ public class ModEntry : Mod
 
     private void ContentOnAssetRequested(object? sender, AssetRequestedEventArgs e)
     {
-        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/WindowSkin"))
-        {
-            e.LoadFromModFile<Texture2D>("assets/window.png", AssetLoadPriority.Low);
-        }
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/WindowSkin"))        
+            e.LoadFromModFile<Texture2D>("assets/window.png", AssetLoadPriority.Low);        
 
-        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/CloseButton"))
-        {
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/CloseButton"))       
             e.LoadFromModFile<Texture2D>("assets/close-button.png", AssetLoadPriority.Low);
-        }
-
+        
         if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/Button"))
-        {
-            e.LoadFromModFile<Texture2D>("assets/button.png", AssetLoadPriority.Low);
-        }
+            e.LoadFromModFile<Texture2D>("assets/button.png", AssetLoadPriority.Low);        
+
+        if (e.NameWithoutLocale.IsEquivalentTo("Mods/DecidedlyHuman/TFR/Checkbox"))
+            e.LoadFromModFile<Texture2D>("assets/checkbox.png", AssetLoadPriority.Low);
     }
 }

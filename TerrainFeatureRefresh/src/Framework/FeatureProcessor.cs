@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using Force.DeepCloner;
 using StardewValley;
 
@@ -75,7 +76,7 @@ public class FeatureProcessor
 
             foreach (SObject obj in this.location.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Weeds"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Weeds"))
                     continue;
 
                 // We know it's a fence, so we add it to our list of things to be destroyed.
@@ -91,7 +92,10 @@ public class FeatureProcessor
             // Now we copy over to the main location.
             foreach (SObject obj in this.generatedLocation.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Weeds"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Weeds"))
+                    continue;
+
+                if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
                 this.location.Objects.Add(obj.TileLocation, obj);
@@ -107,7 +111,7 @@ public class FeatureProcessor
 
             foreach (SObject obj in this.location.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Twig"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
                     continue;
 
                 // We know it's a fence, so we add it to our list of things to be destroyed.
@@ -123,7 +127,10 @@ public class FeatureProcessor
             // Now we copy over to the main location.
             foreach (SObject obj in this.generatedLocation.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Twig"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
+                    continue;
+
+                if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
                 this.location.Objects.Add(obj.TileLocation, obj);
@@ -139,7 +146,7 @@ public class FeatureProcessor
 
             foreach (SObject obj in this.location.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Stone"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Stone"))
                     continue;
 
                 // We know it's a fence, so we add it to our list of things to be destroyed.
@@ -155,7 +162,10 @@ public class FeatureProcessor
             // Now we copy over to the main location.
             foreach (SObject obj in this.generatedLocation.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Stone"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Stone"))
+                    continue;
+
+                if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
                 this.location.Objects.Add(obj.TileLocation, obj);
@@ -165,13 +175,13 @@ public class FeatureProcessor
 
     private void DoForage()
     {
-        if (this.settings.fences.actionToTake == TfrAction.Regenerate)
+        if (this.settings.forage.actionToTake == TfrAction.Regenerate)
         {
             List<SObject> objectsToDestroy = new List<SObject>();
 
             foreach (SObject obj in this.location.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Twig"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
                     continue;
 
                 // We know it's a fence, so we add it to our list of things to be destroyed.
@@ -187,7 +197,10 @@ public class FeatureProcessor
             // Now we copy over to the main location.
             foreach (SObject obj in this.generatedLocation.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") && !obj.Name.Equals("Twig"))
+                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
+                    continue;
+
+                if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
                 this.location.Objects.Add(obj.TileLocation, obj);
@@ -196,7 +209,6 @@ public class FeatureProcessor
     }
 
     #endregion
-
 
     #region TerrainFeatures
     private void DoGrass()
