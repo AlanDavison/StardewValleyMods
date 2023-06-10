@@ -73,20 +73,53 @@ public class FeatureProcessor
         return objects;
     }
 
+    private void RemoveSObjects(GameLocation location, Func<SObject, bool> predicate)
+    {
+        List<SObject> objectsToDestroy = this.GetSObjects(this.location, predicate);
+
+        // Now, we destroy.
+        foreach (SObject obj in objectsToDestroy)
+        {
+            this.LogRemoval(obj);
+            this.location.Objects.Remove(obj.TileLocation);
+        }
+    }
+
+    private void RemoveTerrainFeatures(GameLocation location, Func<TerrainFeature, bool> predicate)
+    {
+
+    }
+
+    private void GenerateNewTerrainFeatures(GameLocation location, Func<TerrainFeature, bool> predicate)
+    {
+
+    }
+
+    private void GenerateNewSObjects(GameLocation location, Func<SObject, bool> predicate)
+    {
+        // Now we copy over to the main location.
+        foreach (SObject obj in this.generatedLocation.Objects.Values)
+        {
+            // If our predicate isn't matched, we don't care about this SObject.
+            if (!predicate.Invoke(obj))
+                continue;
+
+            if (this.location.Objects.ContainsKey(obj.TileLocation))
+                continue;
+
+            this.LogAddition(obj, obj.TileLocation);
+            this.location.Objects.Add(obj.TileLocation, obj);
+        }
+    }
+
     #region SObjects
 
     private void DoFences()
     {
         if (this.settings.fences.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = this.GetSObjects(this.location, (SObject o) => o is Fence);;
-
-            // Now, we destroy.
-            foreach (SObject obj in objectsToDestroy)
-            {
-                this.LogRemoval(obj);
-                this.location.Objects.Remove(obj.TileLocation);
-            }
+            Func<SObject, bool> predicate = (SObject o) => o is Fence;
+            this.RemoveSObjects(this.location, predicate);
 
             // And there's no need to regenerate new fences, so we're done.
         }
@@ -96,28 +129,9 @@ public class FeatureProcessor
     {
         if (this.settings.weeds.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
-                (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds"));
-
-            // Now, we destroy.
-            foreach (SObject obj in objectsToDestroy)
-            {
-                this.LogRemoval(obj);
-                this.location.Objects.Remove(obj.TileLocation);
-            }
-
-            // Now we copy over to the main location.
-            foreach (SObject obj in this.generatedLocation.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Weeds"))
-                    continue;
-
-                if (this.location.Objects.ContainsKey(obj.TileLocation))
-                    continue;
-
-                this.LogAddition(obj, obj.TileLocation);
-                this.location.Objects.Add(obj.TileLocation, obj);
-            }
+            Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds");
+            this.RemoveSObjects(this.location, predicate);
+            this.GenerateNewSObjects(this.location, predicate);
         }
     }
 
@@ -125,28 +139,9 @@ public class FeatureProcessor
     {
         if (this.settings.twigs.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
-                (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig"));
-
-            // Now, we destroy.
-            foreach (SObject obj in objectsToDestroy)
-            {
-                this.LogRemoval(obj);
-                this.location.Objects.Remove(obj.TileLocation);
-            }
-
-            // Now we copy over to the main location.
-            foreach (SObject obj in this.generatedLocation.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
-                    continue;
-
-                if (this.location.Objects.ContainsKey(obj.TileLocation))
-                    continue;
-
-                this.LogAddition(obj, obj.TileLocation);
-                this.location.Objects.Add(obj.TileLocation, obj);
-            }
+            Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig");
+            this.RemoveSObjects(this.location, predicate);
+            this.GenerateNewSObjects(this.location, predicate);
         }
     }
 
@@ -154,28 +149,9 @@ public class FeatureProcessor
     {
         if (this.settings.stones.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
-                (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Stone"));
-
-            // Now, we destroy.
-            foreach (SObject obj in objectsToDestroy)
-            {
-                this.LogRemoval(obj);
-                this.location.Objects.Remove(obj.TileLocation);
-            }
-
-            // Now we copy over to the main location.
-            foreach (SObject obj in this.generatedLocation.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Stone"))
-                    continue;
-
-                if (this.location.Objects.ContainsKey(obj.TileLocation))
-                    continue;
-
-                this.LogAddition(obj, obj.TileLocation);
-                this.location.Objects.Add(obj.TileLocation, obj);
-            }
+            Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Stone");
+            this.RemoveSObjects(this.location, predicate);
+            this.GenerateNewSObjects(this.location, predicate);
         }
     }
 
@@ -183,28 +159,9 @@ public class FeatureProcessor
     {
         if (this.settings.forage.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
-                (SObject o) => o.IsSpawnedObject);
-
-            // Now, we destroy.
-            foreach (SObject obj in objectsToDestroy)
-            {
-                this.LogRemoval(obj);
-                this.location.Objects.Remove(obj.TileLocation);
-            }
-
-            // Now we copy over to the main location.
-            foreach (SObject obj in this.generatedLocation.Objects.Values)
-            {
-                if (!obj.IsSpawnedObject)
-                    continue;
-
-                if (this.location.Objects.ContainsKey(obj.TileLocation))
-                    continue;
-
-                this.LogAddition(obj, obj.TileLocation);
-                this.location.Objects.Add(obj.TileLocation, obj);
-            }
+            Func<SObject, bool> predicate = (SObject o) => o.IsSpawnedObject;
+            this.RemoveSObjects(this.location, predicate);
+            this.GenerateNewSObjects(this.location, predicate);
         }
     }
 
