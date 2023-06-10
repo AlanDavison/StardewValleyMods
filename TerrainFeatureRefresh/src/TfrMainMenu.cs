@@ -6,6 +6,7 @@ using StardewValley;
 using StardewValley.Menus;
 using TerrainFeatureRefresh.Framework;
 using System.Collections.Generic;
+using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,6 +18,7 @@ namespace TerrainFeatureRefresh;
 
 public class TfrMainMenu : IClickableMenu
 {
+    private Logger logger;
     private Button resetButton;
     private Texture2D boxTexture;
     private Texture2D buttonTexture;
@@ -58,9 +60,10 @@ public class TfrMainMenu : IClickableMenu
     private string objectHeader = "Objects";
     private string clumpHeader = "Resource Clumps";
 
-    public TfrMainMenu(int screenX, int screenY, int width, int height)
+    public TfrMainMenu(int screenX, int screenY, int width, int height, Logger logger)
         : base(screenX, screenY, width, height, true)
     {
+        this.logger = logger;
         // this.buttonPanelTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/ButtonPanel");
         this.buttonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/Button");
         this.boxTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/WindowSkin");
@@ -424,9 +427,9 @@ public class TfrMainMenu : IClickableMenu
         if (this.resetButton.containsPoint(x, y))
         {
             // Do the clicky.
-            FeatureProcessor processor = new FeatureProcessor(this.settings);
+            FeatureProcessor processor = new FeatureProcessor(this.settings, this.logger);
             processor.Execute();
-        }    
+        }
 
         // TODO: Rig up close button click!
     }

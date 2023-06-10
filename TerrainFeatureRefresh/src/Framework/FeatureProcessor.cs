@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using DecidedlyShared.Logging;
 using Force.DeepCloner;
+using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 
 namespace TerrainFeatureRefresh.Framework;
 
@@ -11,10 +16,12 @@ public class FeatureProcessor
     private TfrSettings settings;
     private GameLocation location;
     private GameLocation generatedLocation;
+    private Logger logger;
 
-    public FeatureProcessor(TfrSettings settings)
+    public FeatureProcessor(TfrSettings settings, Logger logger)
     {
         this.settings = settings;
+        this.logger = logger;
     }
 
     public void Execute()
@@ -41,26 +48,43 @@ public class FeatureProcessor
         this.DoMeteorites();
     }
 
+    private void LogRemoval(SObject obj)
+    {
+        this.logger.Log($"Removed {obj.Name}:{obj.DisplayName} in current map.", LogLevel.Info);
+    }
+
+    private void LogAddition(SObject obj, Vector2 tile)
+    {
+        this.logger.Log($"Adding {obj.Name}:{obj.DisplayName} to {tile} in current map.", LogLevel.Info);
+    }
+
+    private void LogRemoval(TerrainFeature tf)
+    {
+
+    }
+
+    private List<SObject> GetSObjects(GameLocation location, Func<SObject, bool> predicate)
+    {
+        List<SObject> objects = new List<SObject>();
+
+        foreach (SObject obj in location.Objects.Values.Where(predicate))
+            objects.Add(obj);
+
+        return objects;
+    }
+
     #region SObjects
 
     private void DoFences()
     {
         if (this.settings.fences.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = new List<SObject>();
-
-            foreach (SObject obj in this.location.Objects.Values)
-            {
-                if (obj is not Fence)
-                    continue;
-
-                // We know it's a fence, so we add it to our list of things to be destroyed.
-                objectsToDestroy.Add(obj);
-            }
+            List<SObject> objectsToDestroy = this.GetSObjects(this.location, (SObject o) => o is Fence);;
 
             // Now, we destroy.
             foreach (SObject obj in objectsToDestroy)
             {
+                this.LogRemoval(obj);
                 this.location.Objects.Remove(obj.TileLocation);
             }
 
@@ -72,20 +96,13 @@ public class FeatureProcessor
     {
         if (this.settings.weeds.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = new List<SObject>();
-
-            foreach (SObject obj in this.location.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Weeds"))
-                    continue;
-
-                // We know it's a fence, so we add it to our list of things to be destroyed.
-                objectsToDestroy.Add(obj);
-            }
+            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
+                (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds"));
 
             // Now, we destroy.
             foreach (SObject obj in objectsToDestroy)
             {
+                this.LogRemoval(obj);
                 this.location.Objects.Remove(obj.TileLocation);
             }
 
@@ -98,6 +115,7 @@ public class FeatureProcessor
                 if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
+                this.LogAddition(obj, obj.TileLocation);
                 this.location.Objects.Add(obj.TileLocation, obj);
             }
         }
@@ -107,20 +125,13 @@ public class FeatureProcessor
     {
         if (this.settings.twigs.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = new List<SObject>();
-
-            foreach (SObject obj in this.location.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
-                    continue;
-
-                // We know it's a fence, so we add it to our list of things to be destroyed.
-                objectsToDestroy.Add(obj);
-            }
+            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
+                (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig"));
 
             // Now, we destroy.
             foreach (SObject obj in objectsToDestroy)
             {
+                this.LogRemoval(obj);
                 this.location.Objects.Remove(obj.TileLocation);
             }
 
@@ -133,6 +144,7 @@ public class FeatureProcessor
                 if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
+                this.LogAddition(obj, obj.TileLocation);
                 this.location.Objects.Add(obj.TileLocation, obj);
             }
         }
@@ -142,20 +154,13 @@ public class FeatureProcessor
     {
         if (this.settings.stones.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = new List<SObject>();
-
-            foreach (SObject obj in this.location.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Stone"))
-                    continue;
-
-                // We know it's a fence, so we add it to our list of things to be destroyed.
-                objectsToDestroy.Add(obj);
-            }
+            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
+                (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Stone"));
 
             // Now, we destroy.
             foreach (SObject obj in objectsToDestroy)
             {
+                this.LogRemoval(obj);
                 this.location.Objects.Remove(obj.TileLocation);
             }
 
@@ -168,6 +173,7 @@ public class FeatureProcessor
                 if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
+                this.LogAddition(obj, obj.TileLocation);
                 this.location.Objects.Add(obj.TileLocation, obj);
             }
         }
@@ -177,32 +183,26 @@ public class FeatureProcessor
     {
         if (this.settings.forage.actionToTake == TfrAction.Regenerate)
         {
-            List<SObject> objectsToDestroy = new List<SObject>();
-
-            foreach (SObject obj in this.location.Objects.Values)
-            {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
-                    continue;
-
-                // We know it's a fence, so we add it to our list of things to be destroyed.
-                objectsToDestroy.Add(obj);
-            }
+            List<SObject> objectsToDestroy = this.GetSObjects(this.location,
+                (SObject o) => o.IsSpawnedObject);
 
             // Now, we destroy.
             foreach (SObject obj in objectsToDestroy)
             {
+                this.LogRemoval(obj);
                 this.location.Objects.Remove(obj.TileLocation);
             }
 
             // Now we copy over to the main location.
             foreach (SObject obj in this.generatedLocation.Objects.Values)
             {
-                if (!obj.Type.Equals("Litter") || !obj.Name.Equals("Twig"))
+                if (!obj.IsSpawnedObject)
                     continue;
 
                 if (this.location.Objects.ContainsKey(obj.TileLocation))
                     continue;
 
+                this.LogAddition(obj, obj.TileLocation);
                 this.location.Objects.Add(obj.TileLocation, obj);
             }
         }
@@ -211,6 +211,7 @@ public class FeatureProcessor
     #endregion
 
     #region TerrainFeatures
+
     private void DoGrass()
     {
         if (this.settings.grass.actionToTake == TfrAction.Regenerate)
