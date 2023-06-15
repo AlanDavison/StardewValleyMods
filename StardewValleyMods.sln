@@ -19,13 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartBuilding", "SmartBuild
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarryYourPet", "CarryYourPet\CarryYourPet.csproj", "{E6C8517E-9125-4649-95ED-F6E941F36651}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterReturnScepter", "BetterReturnScepter\BetterReturnScepter.csproj", "{5A84543F-C413-48D8-9625-B1D0CD65DD5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterReturnScepter", "BetterReturnScepter\BetterReturnScepter.csproj", "{5A84543F-C413-48D8-9625-B1D0CD65DD5A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EveryoneIsGrandpa", "EveryoneIsGrandpa\EveryoneIsGrandpa.csproj", "{CF36CB73-3FD9-47F6-BCB9-EEDA5EFB73D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BridgeOnTheWater", "BridgeOnTheWater\BridgeOnTheWater.csproj", "{FCD3D60C-F509-4C41-AD90-9E88F9B92531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveLoadedNotifier", "SaveLoadedNotifier\SaveLoadedNotifier.csproj", "{69AF8818-CF20-45AD-A765-57C1AC9E9B39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaveLoadedNotifier", "SaveLoadedNotifier\SaveLoadedNotifier.csproj", "{69AF8818-CF20-45AD-A765-57C1AC9E9B39}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SARDIS", "SARDIS\SARDIS.csproj", "{B09AD28B-CE9C-40F0-82C6-0395048E117B}"
 EndProject
@@ -246,20 +246,26 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DecidedlyShared\DecidedlyShared.projitems*{0c825a82-5391-41b3-b5fe-c7e6f6c68faf}*SharedItemsImports = 5
+		DecidedlyShared\DecidedlyShared.projitems*{21fb831f-fe78-49c2-8021-f1daa2412f6b}*SharedItemsImports = 5
+		DecidedlyShared\DecidedlyShared.projitems*{22032773-4558-4ffb-aa77-a12e3c91bb7a}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{299882b5-ac42-420d-8747-a33dca1f991f}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{3cb4161a-062c-41c6-8376-4800d9064f3b}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{3dbd6f4c-2841-4fae-9c79-b3c071276f03}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{4023c62a-75d3-4025-8c07-b43dbce13a2d}*SharedItemsImports = 13
+		DecidedlyShared\DecidedlyShared.projitems*{4183a8c4-29c8-4e04-bc21-e0cdcac6909b}*SharedItemsImports = 5
+		DecidedlyShared\DecidedlyShared.projitems*{5a84543f-c413-48d8-9625-b1d0cd65dd5a}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{62962075-acd4-4b15-ae27-452ef2d8220a}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{66e0aa61-a368-4b62-bd37-c1e40f423be7}*SharedItemsImports = 5
+		DecidedlyShared\DecidedlyShared.projitems*{696fe4a5-8016-4124-9b2d-88345aa6dd4a}*SharedItemsImports = 5
+		DecidedlyShared\DecidedlyShared.projitems*{69af8818-cf20-45ad-a765-57c1ac9e9b39}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{6bc01533-4a22-4e97-b230-853e60126e44}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{b09ad28b-ce9c-40f0-82c6-0395048e117b}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{b5788bda-6137-4471-85fc-325565e45636}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{bc400663-e35b-4004-a45d-02c6acc461e3}*SharedItemsImports = 5
-		DecidedlyShared\DecidedlyShared.projitems*{c1ec3265-4d58-4959-aa56-3faba9fa9140}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{c2c13b19-8a13-44cb-93bb-cec39690bb63}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{e6c8517e-9125-4649-95ed-f6e941f36651}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{ef597c9b-9b78-4aa4-9808-cf1bb911fd38}*SharedItemsImports = 5
+		DecidedlyShared\DecidedlyShared.projitems*{f364508b-0872-49eb-8138-1f3823fe8615}*SharedItemsImports = 5
 		DecidedlyShared\DecidedlyShared.projitems*{fcd3d60c-f509-4c41-ad90-9e88f9b92531}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
