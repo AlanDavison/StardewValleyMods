@@ -8,20 +8,23 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+using TerrainFeatureRefresh.src.Framework;
 
 namespace TerrainFeatureRefresh.Framework;
 
 public class FeatureProcessor
 {
     private TfrSettings settings;
+    private ProcessorAction action;
     private GameLocation location;
     private GameLocation generatedLocation;
     private Logger logger;
 
-    public FeatureProcessor(TfrSettings settings, Logger logger)
+    public FeatureProcessor(TfrSettings settings, ProcessorAction action, Logger logger)
     {
         this.settings = settings;
         this.logger = logger;
+        this.action = action;
     }
 
     public void Execute()
@@ -30,11 +33,14 @@ public class FeatureProcessor
         this.generatedLocation =
             new GameLocation(Game1.currentLocation.mapPath.Value, Game1.currentLocation.Name);
 
+        this.logger.Log($"Removal settings: \n{this.settings.ToString()}", LogLevel.Info);
+
         this.DoFences();
         this.DoWeeds();
         this.DoTwigs();
         this.DoStones();
         this.DoForage();
+        this.DoArtifactSpots();
         this.DoGrass();
         this.DoWildTrees();
         this.DoFruitTrees();
@@ -50,7 +56,7 @@ public class FeatureProcessor
 
     private void LogRemoval(SObject obj)
     {
-        this.logger.Log($"Removed {obj.Name}:{obj.DisplayName} in current map.", LogLevel.Info);
+        this.logger.Log($"Removed {obj.Name}:{obj.DisplayName} from tile {obj.TileLocation} in current map.", LogLevel.Info);
     }
 
     private void LogAddition(SObject obj, Vector2 tile)
@@ -58,9 +64,14 @@ public class FeatureProcessor
         this.logger.Log($"Adding {obj.Name}:{obj.DisplayName} to {tile} in current map.", LogLevel.Info);
     }
 
+    private void LogAddition(TerrainFeature tf, Vector2 tile)
+    {
+        this.logger.Log($"Adding TerrainFeature to {tile} in current map.", LogLevel.Info);
+    }
+
     private void LogRemoval(TerrainFeature tf)
     {
-
+        this.logger.Log($"Removed TerrainFeature at tile {tf.currentTileLocation} in current map.", LogLevel.Info);
     }
 
     private List<SObject> GetSObjects(GameLocation location, Func<SObject, bool> predicate)
@@ -69,6 +80,36 @@ public class FeatureProcessor
 
         foreach (SObject obj in location.Objects.Values.Where(predicate))
             objects.Add(obj);
+
+        return objects;
+    }
+
+    private List<TerrainFeature> GetTerrainFeatures(GameLocation location, Func<TerrainFeature, bool> predicate)
+    {
+        List<TerrainFeature> objects = new List<TerrainFeature>();
+
+        foreach (TerrainFeature tf in location.terrainFeatures.Values.Where(predicate))
+            objects.Add(tf);
+
+        return objects;
+    }
+
+    private List<LargeTerrainFeature> GetLargeTerrainFeatures(GameLocation location, Func<LargeTerrainFeature, bool> predicate)
+    {
+        List<LargeTerrainFeature> objects = new List<LargeTerrainFeature>();
+
+        foreach (LargeTerrainFeature tf in location.largeTerrainFeatures.Where(predicate))
+            objects.Add(tf);
+
+        return objects;
+    }
+
+    private List<ResourceClump> GetResourceClumps(GameLocation location, Func<ResourceClump, bool> predicate)
+    {
+        List<ResourceClump> objects = new List<ResourceClump>();
+
+        foreach (ResourceClump rc in location.resourceClumps.Where(predicate))
+            objects.Add(rc);
 
         return objects;
     }
@@ -87,12 +128,89 @@ public class FeatureProcessor
 
     private void RemoveTerrainFeatures(GameLocation location, Func<TerrainFeature, bool> predicate)
     {
+        List<TerrainFeature> terrainFeaturesToDestroy = this.GetTerrainFeatures(this.location, predicate);
 
+        // Destroy.
+        foreach (TerrainFeature tf in terrainFeaturesToDestroy)
+        {
+            this.LogRemoval(tf);
+            this.location.terrainFeatures.Remove(tf.currentTileLocation);
+        }
+    }
+
+    private void RemoveLargeTerrainFeatures(GameLocation location, Func<LargeTerrainFeature, bool> predicate)
+    {
+        List<LargeTerrainFeature> terrainFeaturesToDestroy = this.GetLargeTerrainFeatures(this.location, predicate);
+
+        // Destroy.
+        foreach (LargeTerrainFeature tf in terrainFeaturesToDestroy)
+        {
+            this.LogRemoval(tf);
+            this.location.largeTerrainFeatures.Remove(tf);
+        }
+    }
+
+    private void RemoveResourceClumps(GameLocation location, Func<ResourceClump, bool> predicate)
+    {
+        List<ResourceClump> resourceClumpsToDestroy = this.GetResourceClumps(this.location, predicate);
+
+        // Destroy.
+        foreach (ResourceClump rc in resourceClumpsToDestroy)
+        {
+            this.LogRemoval(rc);
+            this.location.resourceClumps.Remove(rc);
+        }
     }
 
     private void GenerateNewTerrainFeatures(GameLocation location, Func<TerrainFeature, bool> predicate)
     {
+        // Now we copy over to the main location.
+        foreach (TerrainFeature tf in this.generatedLocation.terrainFeatures.Values)
+        {
+            // If our predicate isn't matched, we don't care about this TerrainFeature.
+            if (!predicate.Invoke(tf))
+                continue;
 
+            if (this.location.terrainFeatures.ContainsKey(tf.currentTileLocation))
+                continue;
+
+            this.LogAddition(tf, tf.currentTileLocation);
+            this.location.terrainFeatures.Add(tf.currentTileLocation, tf);
+        }
+    }
+
+    private void GenerateNewLargeTerrainFeatures(GameLocation location, Func<LargeTerrainFeature, bool> predicate)
+    {
+        // Now we copy over to the main location.
+        foreach (LargeTerrainFeature tf in this.generatedLocation.largeTerrainFeatures)
+        {
+            // If our predicate isn't matched, we don't care about this SObject.
+            if (!predicate.Invoke(tf))
+                continue;
+
+            if (this.location.largeTerrainFeatures.Contains(tf))
+                continue;
+
+            this.LogAddition(tf, tf.currentTileLocation);
+            this.location.largeTerrainFeatures.Add(tf);
+        }
+    }
+
+    private void GenerateNewResourceClumps(GameLocation location, Func<ResourceClump, bool> predicate)
+    {
+        // Now we copy over to the main location.
+        foreach (ResourceClump rc in this.generatedLocation.resourceClumps)
+        {
+            // If our predicate isn't matched, we don't care about this SObject.
+            if (!predicate.Invoke(rc))
+                continue;
+
+            if (this.location.resourceClumps.Contains(rc))
+                continue;
+
+            this.LogAddition(rc, rc.currentTileLocation);
+            this.location.resourceClumps.Add(rc);
+        }
     }
 
     private void GenerateNewSObjects(GameLocation location, Func<SObject, bool> predicate)
@@ -116,53 +234,81 @@ public class FeatureProcessor
 
     private void DoFences()
     {
-        if (this.settings.fences.actionToTake == TfrAction.Regenerate)
-        {
-            Func<SObject, bool> predicate = (SObject o) => o is Fence;
-            this.RemoveSObjects(this.location, predicate);
+        if (this.settings.fences.actionToTake == TfrAction.Ignore)
+            return;
 
-            // And there's no need to regenerate new fences, so we're done.
-        }
+        Func<SObject, bool> predicate = (SObject o) => o is Fence;
+        this.RemoveSObjects(this.location, predicate);
+
     }
 
     private void DoWeeds()
     {
-        if (this.settings.weeds.actionToTake == TfrAction.Regenerate)
-        {
-            Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds");
-            this.RemoveSObjects(this.location, predicate);
+        if (this.settings.weeds.actionToTake == TfrAction.Ignore)
+            return;
+
+        Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds");
+        this.RemoveSObjects(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-        }
+
     }
 
     private void DoTwigs()
     {
-        if (this.settings.twigs.actionToTake == TfrAction.Regenerate)
-        {
-            Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig");
-            this.RemoveSObjects(this.location, predicate);
+        if (this.settings.twigs.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig");
+        this.RemoveSObjects(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-        }
+
     }
 
     private void DoStones()
     {
-        if (this.settings.stones.actionToTake == TfrAction.Regenerate)
-        {
-            Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Stone");
-            this.RemoveSObjects(this.location, predicate);
+        if (this.settings.stones.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Stone");
+        this.RemoveSObjects(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-        }
+
     }
 
     private void DoForage()
     {
-        if (this.settings.forage.actionToTake == TfrAction.Regenerate)
-        {
-            Func<SObject, bool> predicate = (SObject o) => o.IsSpawnedObject;
-            this.RemoveSObjects(this.location, predicate);
+        if (this.settings.forage.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<SObject, bool> predicate = (SObject o) => o.IsSpawnedObject;
+        this.RemoveSObjects(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-        }
+
+    }
+
+    private void DoArtifactSpots()
+    {
+        if (this.settings.artifactSpots.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<SObject, bool> predicate = (SObject o) => o.Name.Equals("Artifact Spot");
+        this.RemoveSObjects(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewSObjects(this.location, predicate);
+
     }
 
     #endregion
@@ -171,59 +317,101 @@ public class FeatureProcessor
 
     private void DoGrass()
     {
-        if (this.settings.grass.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.grass.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is Grass;
+        this.RemoveTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewTerrainFeatures(this.location, predicate);
+
     }
 
     private void DoWildTrees()
     {
-        if (this.settings.wildTrees.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.wildTrees.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is Tree && (o is not FruitTree);
+        this.RemoveTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewTerrainFeatures(this.location, predicate);
+
     }
 
     private void DoFruitTrees()
     {
-        if (this.settings.fruitTrees.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.fruitTrees.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is FruitTree;
+        this.RemoveTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewTerrainFeatures(this.location, predicate);
+
     }
 
     private void DoPaths()
     {
-        if (this.settings.paths.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.paths.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is Flooring;
+        this.RemoveTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewTerrainFeatures(this.location, predicate);
+
     }
 
     private void DoHoeDirt()
     {
-        if (this.settings.hoeDirt.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.hoeDirt.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is HoeDirt hoeDirt && (hoeDirt.crop is null);
+        this.RemoveTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewTerrainFeatures(this.location, predicate);
+
     }
 
     private void DoCrops()
     {
+        if (this.settings.crops.actionToTake == TfrAction.Ignore)
+            return;
+
         // For crops, I think I want to give the player back any seeds/fertiliser that was in the soil?
-        if (this.settings.crops.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+
+        Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is HoeDirt hoeDirt && (hoeDirt.crop is not null);
+        this.RemoveTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewTerrainFeatures(this.location, predicate);
+
     }
 
     private void DoBushes()
     {
-        if (this.settings.bushes.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.bushes.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<LargeTerrainFeature, bool> predicate = (LargeTerrainFeature o) => o is Bush;
+        this.RemoveLargeTerrainFeatures(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewLargeTerrainFeatures(this.location, predicate);
+
     }
 
     #endregion
@@ -232,34 +420,58 @@ public class FeatureProcessor
 
     private void DoStumps()
     {
-        if (this.settings.stumps.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.stumps.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(600);
+        this.RemoveResourceClumps(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewResourceClumps(this.location, predicate);
+
     }
 
     private void DoLogs()
     {
-        if (this.settings.logs.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.logs.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(602);
+        this.RemoveResourceClumps(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewResourceClumps(this.location, predicate);
+
     }
 
     private void DoBoulders()
     {
-        if (this.settings.boulders.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.boulders.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(672);
+        this.RemoveResourceClumps(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewResourceClumps(this.location, predicate);
+
     }
 
     private void DoMeteorites()
     {
-        if (this.settings.meteorites.actionToTake == TfrAction.Regenerate)
-        {
-            // Do the thing.
-        }
+        if (this.settings.meteorites.actionToTake == TfrAction.Ignore)
+            return;
+
+
+        Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(622);
+        this.RemoveResourceClumps(this.location, predicate);
+
+        if (this.action == ProcessorAction.Regenerate)
+            this.GenerateNewResourceClumps(this.location, predicate);
+
     }
 
     #endregion

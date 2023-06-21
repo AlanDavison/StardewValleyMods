@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
 using TerrainFeatureRefresh.Framework;
+using TerrainFeatureRefresh.src.Framework;
 
 namespace TerrainFeatureRefresh;
 
@@ -20,6 +21,7 @@ public class TfrMainMenu : IClickableMenu
 {
     private Logger logger;
     private Button resetButton;
+    private Button clearButton;
     private Texture2D boxTexture;
     private Texture2D buttonTexture;
     private Texture2D closeButtonTexture;
@@ -102,7 +104,9 @@ public class TfrMainMenu : IClickableMenu
         this.checkboxes.Add(this.boulders = new TfrCheckbox(Rectangle.Empty, "Boulders", this.checkboxTexture, ref this.settings.boulders));
         this.checkboxes.Add(this.meteorites = new TfrCheckbox(Rectangle.Empty, "Spoiler Rocks", this.checkboxTexture, ref this.settings.meteorites));
 
-        this.resetButton = new Button(Rectangle.Empty, "Reset", this.buttonTexture,
+        this.resetButton = new Button(Rectangle.Empty, "Reset Selected", this.buttonTexture,
+        new Rectangle(0, 0, 16, 16));
+        this.clearButton = new Button(Rectangle.Empty, "Clear Selected", this.buttonTexture,
         new Rectangle(0, 0, 16, 16));
 
         foreach (TfrCheckbox box in this.checkboxes)
@@ -141,6 +145,13 @@ public class TfrMainMenu : IClickableMenu
             this.mainWindowBounds.Bottom - this.resetButton.bounds.Height - 16,
             this.resetButton.bounds.Width,
             this.resetButton.bounds.Height);
+        new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
+
+        this.clearButton.bounds = new Rectangle(
+            this.mainWindowBounds.Right - this.clearButton.bounds.Width - this.resetButton.bounds.Width - 32,
+            this.mainWindowBounds.Bottom - this.clearButton.bounds.Height - 16,
+            this.clearButton.bounds.Width,
+            this.clearButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
 
         #region Objects
@@ -389,6 +400,7 @@ public class TfrMainMenu : IClickableMenu
         //     Game1.textColor);
 
         this.resetButton.Draw(b);
+        this.clearButton.Draw(b);
 
         // Objects
         this.fences.Draw(b);
@@ -427,7 +439,13 @@ public class TfrMainMenu : IClickableMenu
         if (this.resetButton.containsPoint(x, y))
         {
             // Do the clicky.
-            FeatureProcessor processor = new FeatureProcessor(this.settings, this.logger);
+            FeatureProcessor processor = new FeatureProcessor(this.settings, ProcessorAction.Regenerate, this.logger);
+            processor.Execute();
+        }
+        else if (this.clearButton.containsPoint(x, y))
+        {
+            // Do the clicky.
+            FeatureProcessor processor = new FeatureProcessor(this.settings, ProcessorAction.ClearOnly, this.logger);
             processor.Execute();
         }
 

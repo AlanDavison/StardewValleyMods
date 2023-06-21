@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -17,7 +17,7 @@ public class Button : ClickableComponent
 
     public Button(Rectangle bounds, string name, Texture2D texture, Rectangle sourceRect) : base(bounds, name)
     {
-        this.buttonLabel = "Reset Selected";
+        this.buttonLabel = name;
         int textWidth = (int)Game1.smallFont.MeasureString(this.buttonLabel).X;
         this.bounds = new Rectangle(0, 0, textWidth + 32, 32 + 16);
         this.texture = texture;

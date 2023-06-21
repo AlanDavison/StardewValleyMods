@@ -58,12 +58,12 @@ public class TfrCheckbox : ClickableComponent
         if (this.isChecked)
         {
             this.isChecked = false;
-            this.associatedFeature.actionToTake = TfrAction.None;
+            this.associatedFeature.actionToTake = TfrAction.Ignore;
         }
         else
         {
             this.isChecked = true;
-            this.associatedFeature.actionToTake = TfrAction.Regenerate;
+            this.associatedFeature.actionToTake = TfrAction.Process;
         }
     }
 
