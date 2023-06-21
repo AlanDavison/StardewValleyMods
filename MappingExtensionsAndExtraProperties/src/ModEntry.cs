@@ -262,7 +262,8 @@ public class ModEntry : Mod
                         }
 
                         // A safeguard for multiplayer.
-                        if (!newLocation.isTileOccupied(new Vector2(x, y)))
+                        // TODO: Ensure this is the same logically as the previous method for full release.
+                        if (newLocation.isTilePlaceable(new Vector2(x, y)))
                         {
                             newLocation.characters.Add(character);
                             this.allNpcs.Add(character);
