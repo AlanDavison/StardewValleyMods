@@ -4,6 +4,8 @@ namespace TerrainFeatureRefresh.Framework;
 
 public struct TfrSettings
 {
+    // TODO for later: Store the predicate in each individual TfrFeature in order to tidy up FeatureProcessor.cs.
+
     // Objects
     public TfrFeature fences = new TfrFeature();
     public TfrFeature weeds = new TfrFeature();

@@ -22,6 +22,7 @@ public class TfrMainMenu : IClickableMenu
     private Logger logger;
     private Button resetButton;
     private Button clearButton;
+    private Button generateButton;
     private Texture2D boxTexture;
     private Texture2D buttonTexture;
     private Texture2D closeButtonTexture;
@@ -66,7 +67,6 @@ public class TfrMainMenu : IClickableMenu
         : base(screenX, screenY, width, height, true)
     {
         this.logger = logger;
-        // this.buttonPanelTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/ButtonPanel");
         this.buttonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/Button");
         this.boxTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/WindowSkin");
         this.closeButtonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/CloseButton");
@@ -108,6 +108,8 @@ public class TfrMainMenu : IClickableMenu
         new Rectangle(0, 0, 16, 16));
         this.clearButton = new Button(Rectangle.Empty, "Clear Selected", this.buttonTexture,
         new Rectangle(0, 0, 16, 16));
+        this.generateButton = new Button(Rectangle.Empty, "Generate Selected", this.buttonTexture,
+            new Rectangle(0, 0, 16, 16));
 
         foreach (TfrCheckbox box in this.checkboxes)
         {
@@ -140,16 +142,29 @@ public class TfrMainMenu : IClickableMenu
         //     128
         //     );
 
+        int buttonY = this.mainWindowBounds.Bottom - 64;
+
+        this.generateButton.bounds = new Rectangle(
+            this.mainWindowBounds.Right - this.generateButton.bounds.Width - 16,
+            buttonY,
+            this.generateButton.bounds.Width,
+            this.generateButton.bounds.Height);
+        new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
+
+        buttonY -= this.clearButton.bounds.Height + 8;
+
         this.resetButton.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.resetButton.bounds.Width - 16,
-            this.mainWindowBounds.Bottom - this.resetButton.bounds.Height - 16,
+            buttonY,
             this.resetButton.bounds.Width,
             this.resetButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
 
+        buttonY -= this.resetButton.bounds.Height + 8;
+
         this.clearButton.bounds = new Rectangle(
-            this.mainWindowBounds.Right - this.clearButton.bounds.Width - this.resetButton.bounds.Width - 32,
-            this.mainWindowBounds.Bottom - this.clearButton.bounds.Height - 16,
+            this.mainWindowBounds.Right - this.clearButton.bounds.Width - 16,
+            buttonY,
             this.clearButton.bounds.Width,
             this.clearButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
@@ -399,6 +414,7 @@ public class TfrMainMenu : IClickableMenu
         //     new Vector2(this.xPositionOnScreen + 256 + 128 + 32, this.yPositionOnScreen + 64 - 8),
         //     Game1.textColor);
 
+        this.generateButton.Draw(b);
         this.resetButton.Draw(b);
         this.clearButton.Draw(b);
 
@@ -447,6 +463,15 @@ public class TfrMainMenu : IClickableMenu
             // Do the clicky.
             FeatureProcessor processor = new FeatureProcessor(this.settings, ProcessorAction.ClearOnly, this.logger);
             processor.Execute();
+        }
+        else if (this.generateButton.containsPoint(x, y))
+        {
+            // Do the clicky.
+            for (int i = 0; i < 1; i++)
+            {
+                FeatureProcessor processor = new FeatureProcessor(this.settings, ProcessorAction.Generate, this.logger);
+                processor.Execute();
+            }
         }
 
         // TODO: Rig up close button click!

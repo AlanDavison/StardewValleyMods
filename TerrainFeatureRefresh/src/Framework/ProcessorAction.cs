@@ -8,6 +8,7 @@ namespace TerrainFeatureRefresh.src.Framework
 {
     public enum ProcessorAction
     {
+        Generate,
         Regenerate,
         ClearOnly
     }

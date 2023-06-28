@@ -33,6 +33,8 @@ public class FeatureProcessor
         this.generatedLocation =
             new GameLocation(Game1.currentLocation.mapPath.Value, Game1.currentLocation.Name);
 
+        // this.generatedLocation.DayUpdate(Game1.dayOfMonth - 2);
+
         this.logger.Log($"Removal settings: \n{this.settings.ToString()}", LogLevel.Info);
 
         this.DoFences();
@@ -216,7 +218,7 @@ public class FeatureProcessor
     private void GenerateNewSObjects(GameLocation location, Func<SObject, bool> predicate)
     {
         // Now we copy over to the main location.
-        foreach (SObject obj in this.generatedLocation.Objects.Values)
+        foreach (SObject obj in this.generatedLocation.Objects.Values.Where(predicate))
         {
             // If our predicate isn't matched, we don't care about this SObject.
             if (!predicate.Invoke(obj))
@@ -237,7 +239,11 @@ public class FeatureProcessor
         if (this.settings.fences.actionToTake == TfrAction.Ignore)
             return;
 
+        if (this.action == ProcessorAction.Generate) // Fences just don't get generated, so we skip this.
+            return;
+
         Func<SObject, bool> predicate = (SObject o) => o is Fence;
+
         this.RemoveSObjects(this.location, predicate);
 
     }
@@ -248,11 +254,14 @@ public class FeatureProcessor
             return;
 
         Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds");
-        this.RemoveSObjects(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveSObjects(this.location, predicate);
+
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-
     }
 
     private void DoTwigs()
@@ -260,13 +269,15 @@ public class FeatureProcessor
         if (this.settings.twigs.actionToTake == TfrAction.Ignore)
             return;
 
-
         Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig");
-        this.RemoveSObjects(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveSObjects(this.location, predicate);
+
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-
     }
 
     private void DoStones()
@@ -276,9 +287,13 @@ public class FeatureProcessor
 
 
         Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Stone");
-        this.RemoveSObjects(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveSObjects(this.location, predicate);
+
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
 
     }
@@ -288,13 +303,15 @@ public class FeatureProcessor
         if (this.settings.forage.actionToTake == TfrAction.Ignore)
             return;
 
-
         Func<SObject, bool> predicate = (SObject o) => o.IsSpawnedObject;
-        this.RemoveSObjects(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveSObjects(this.location, predicate);
+
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-
     }
 
     private void DoArtifactSpots()
@@ -302,13 +319,15 @@ public class FeatureProcessor
         if (this.settings.artifactSpots.actionToTake == TfrAction.Ignore)
             return;
 
-
         Func<SObject, bool> predicate = (SObject o) => o.Name.Equals("Artifact Spot");
-        this.RemoveSObjects(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveSObjects(this.location, predicate);
+
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewSObjects(this.location, predicate);
-
     }
 
     #endregion
@@ -322,11 +341,13 @@ public class FeatureProcessor
 
 
         Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is Grass;
-        this.RemoveTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewTerrainFeatures(this.location, predicate);
-
     }
 
     private void DoWildTrees()
@@ -336,9 +357,12 @@ public class FeatureProcessor
 
 
         Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is Tree && (o is not FruitTree);
-        this.RemoveTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewTerrainFeatures(this.location, predicate);
 
     }
@@ -350,9 +374,12 @@ public class FeatureProcessor
 
 
         Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is FruitTree;
-        this.RemoveTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewTerrainFeatures(this.location, predicate);
 
     }
@@ -364,9 +391,12 @@ public class FeatureProcessor
 
 
         Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is Flooring;
-        this.RemoveTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewTerrainFeatures(this.location, predicate);
 
     }
@@ -378,9 +408,12 @@ public class FeatureProcessor
 
 
         Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is HoeDirt hoeDirt && (hoeDirt.crop is null);
-        this.RemoveTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewTerrainFeatures(this.location, predicate);
 
     }
@@ -393,11 +426,13 @@ public class FeatureProcessor
         // For crops, I think I want to give the player back any seeds/fertiliser that was in the soil?
 
         Func<TerrainFeature, bool> predicate = (TerrainFeature o) => o is HoeDirt hoeDirt && (hoeDirt.crop is not null);
-        this.RemoveTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewTerrainFeatures(this.location, predicate);
-
     }
 
     private void DoBushes()
@@ -407,9 +442,12 @@ public class FeatureProcessor
 
 
         Func<LargeTerrainFeature, bool> predicate = (LargeTerrainFeature o) => o is Bush;
-        this.RemoveLargeTerrainFeatures(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveLargeTerrainFeatures(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewLargeTerrainFeatures(this.location, predicate);
 
     }
@@ -425,9 +463,12 @@ public class FeatureProcessor
 
 
         Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(600);
-        this.RemoveResourceClumps(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveResourceClumps(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewResourceClumps(this.location, predicate);
 
     }
@@ -439,9 +480,12 @@ public class FeatureProcessor
 
 
         Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(602);
-        this.RemoveResourceClumps(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveResourceClumps(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewResourceClumps(this.location, predicate);
 
     }
@@ -453,9 +497,12 @@ public class FeatureProcessor
 
 
         Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(672);
-        this.RemoveResourceClumps(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveResourceClumps(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewResourceClumps(this.location, predicate);
 
     }
@@ -467,9 +514,12 @@ public class FeatureProcessor
 
 
         Func<ResourceClump, bool> predicate = (ResourceClump o) => o.parentSheetIndex.Equals(622);
-        this.RemoveResourceClumps(this.location, predicate);
+        // If we're regenerating or clearing, we strip the location.
+        if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
+            this.RemoveResourceClumps(this.location, predicate);
 
-        if (this.action == ProcessorAction.Regenerate)
+        // And, if we're generating or regenerating, we generate and copy over new items.
+        if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
             this.GenerateNewResourceClumps(this.location, predicate);
 
     }
