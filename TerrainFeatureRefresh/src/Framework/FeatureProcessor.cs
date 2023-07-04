@@ -29,13 +29,24 @@ public class FeatureProcessor
 
     public void Execute()
     {
-        this.location = Game1.currentLocation;
+        if (this.settings.AffectAllLocations.On)
+        {
+            foreach (GameLocation location in Game1.locations)
+            {
+                this.ProcessLocation(location);
+            }
+        }
+        else
+            this.ProcessLocation(Game1.currentLocation);
+    }
+
+    private void ProcessLocation(GameLocation location)
+    {
+        this.location = location;
         this.generatedLocation =
-            new GameLocation(Game1.currentLocation.mapPath.Value, Game1.currentLocation.Name);
+            new GameLocation(location.mapPath.Value, location.Name);
 
-        // this.generatedLocation.DayUpdate(Game1.dayOfMonth - 2);
-
-        this.logger.Log($"Removal settings: \n{this.settings.ToString()}", LogLevel.Info);
+        this.logger.Log($"Removal settings: \n{this.settings.ToString()}", LogLevel.Trace);
 
         this.DoFences();
         this.DoWeeds();
@@ -58,22 +69,22 @@ public class FeatureProcessor
 
     private void LogRemoval(SObject obj)
     {
-        this.logger.Log($"Removed {obj.Name}:{obj.DisplayName} from tile {obj.TileLocation} in current map.", LogLevel.Info);
+        this.logger.Log($"Removed {obj.Name}:{obj.DisplayName} from tile {obj.TileLocation} in {this.location.Name}.", LogLevel.Trace);
     }
 
     private void LogAddition(SObject obj, Vector2 tile)
     {
-        this.logger.Log($"Adding {obj.Name}:{obj.DisplayName} to {tile} in current map.", LogLevel.Info);
+        this.logger.Log($"Adding {obj.Name}:{obj.DisplayName} to {tile} in {this.location.Name}.", LogLevel.Trace);
     }
 
     private void LogAddition(TerrainFeature tf, Vector2 tile)
     {
-        this.logger.Log($"Adding TerrainFeature to {tile} in current map.", LogLevel.Info);
+        this.logger.Log($"Adding TerrainFeature to {tile} in {this.location.Name}.", LogLevel.Trace);
     }
 
     private void LogRemoval(TerrainFeature tf)
     {
-        this.logger.Log($"Removed TerrainFeature at tile {tf.currentTileLocation} in current map.", LogLevel.Info);
+        this.logger.Log($"Removed TerrainFeature at tile {tf.currentTileLocation} in {this.location.Name}.", LogLevel.Trace);
     }
 
     private List<SObject> GetSObjects(GameLocation location, Func<SObject, bool> predicate)
@@ -236,7 +247,7 @@ public class FeatureProcessor
 
     private void DoFences()
     {
-        if (this.settings.fences.actionToTake == TfrAction.Ignore)
+        if (this.settings.Fences.actionToTake == TfrAction.Ignore)
             return;
 
         if (this.action == ProcessorAction.Generate) // Fences just don't get generated, so we skip this.
@@ -250,7 +261,7 @@ public class FeatureProcessor
 
     private void DoWeeds()
     {
-        if (this.settings.weeds.actionToTake == TfrAction.Ignore)
+        if (this.settings.Weeds.actionToTake == TfrAction.Ignore)
             return;
 
         Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Weeds");
@@ -266,7 +277,7 @@ public class FeatureProcessor
 
     private void DoTwigs()
     {
-        if (this.settings.twigs.actionToTake == TfrAction.Ignore)
+        if (this.settings.Twigs.actionToTake == TfrAction.Ignore)
             return;
 
         Func<SObject, bool> predicate = (SObject o) => o.Type.Equals("Litter") && o.Name.Equals("Twig");
@@ -282,7 +293,7 @@ public class FeatureProcessor
 
     private void DoStones()
     {
-        if (this.settings.stones.actionToTake == TfrAction.Ignore)
+        if (this.settings.Stones.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -300,7 +311,7 @@ public class FeatureProcessor
 
     private void DoForage()
     {
-        if (this.settings.forage.actionToTake == TfrAction.Ignore)
+        if (this.settings.Forage.actionToTake == TfrAction.Ignore)
             return;
 
         Func<SObject, bool> predicate = (SObject o) => o.IsSpawnedObject;
@@ -316,7 +327,7 @@ public class FeatureProcessor
 
     private void DoArtifactSpots()
     {
-        if (this.settings.artifactSpots.actionToTake == TfrAction.Ignore)
+        if (this.settings.ArtifactSpots.actionToTake == TfrAction.Ignore)
             return;
 
         Func<SObject, bool> predicate = (SObject o) => o.Name.Equals("Artifact Spot");
@@ -336,7 +347,7 @@ public class FeatureProcessor
 
     private void DoGrass()
     {
-        if (this.settings.grass.actionToTake == TfrAction.Ignore)
+        if (this.settings.Grass.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -352,7 +363,7 @@ public class FeatureProcessor
 
     private void DoWildTrees()
     {
-        if (this.settings.wildTrees.actionToTake == TfrAction.Ignore)
+        if (this.settings.WildTrees.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -369,7 +380,7 @@ public class FeatureProcessor
 
     private void DoFruitTrees()
     {
-        if (this.settings.fruitTrees.actionToTake == TfrAction.Ignore)
+        if (this.settings.FruitTrees.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -386,7 +397,7 @@ public class FeatureProcessor
 
     private void DoPaths()
     {
-        if (this.settings.paths.actionToTake == TfrAction.Ignore)
+        if (this.settings.Paths.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -403,7 +414,7 @@ public class FeatureProcessor
 
     private void DoHoeDirt()
     {
-        if (this.settings.hoeDirt.actionToTake == TfrAction.Ignore)
+        if (this.settings.HoeDirt.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -420,7 +431,7 @@ public class FeatureProcessor
 
     private void DoCrops()
     {
-        if (this.settings.crops.actionToTake == TfrAction.Ignore)
+        if (this.settings.Crops.actionToTake == TfrAction.Ignore)
             return;
 
         // For crops, I think I want to give the player back any seeds/fertiliser that was in the soil?
@@ -437,7 +448,7 @@ public class FeatureProcessor
 
     private void DoBushes()
     {
-        if (this.settings.bushes.actionToTake == TfrAction.Ignore)
+        if (this.settings.Bushes.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -458,7 +469,7 @@ public class FeatureProcessor
 
     private void DoStumps()
     {
-        if (this.settings.stumps.actionToTake == TfrAction.Ignore)
+        if (this.settings.Stumps.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -475,7 +486,7 @@ public class FeatureProcessor
 
     private void DoLogs()
     {
-        if (this.settings.logs.actionToTake == TfrAction.Ignore)
+        if (this.settings.Logs.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -492,7 +503,7 @@ public class FeatureProcessor
 
     private void DoBoulders()
     {
-        if (this.settings.boulders.actionToTake == TfrAction.Ignore)
+        if (this.settings.Boulders.actionToTake == TfrAction.Ignore)
             return;
 
 
@@ -509,7 +520,7 @@ public class FeatureProcessor
 
     private void DoMeteorites()
     {
-        if (this.settings.meteorites.actionToTake == TfrAction.Ignore)
+        if (this.settings.Meteorites.actionToTake == TfrAction.Ignore)
             return;
 
 

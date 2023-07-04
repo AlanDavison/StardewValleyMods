@@ -3,19 +3,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
-using TerrainFeatureRefresh.Framework;
 
-namespace TerrainFeatureRefresh;
+namespace TerrainFeatureRefresh.Framework.Ui;
 
-public class TfrCheckbox : ClickableComponent
+public class Checkbox : ClickableComponent
 {
-    private Texture2D checkboxImage;
-    private Rectangle checkedSourceRect;
-    private Rectangle uncheckedSourceRect;
-    private bool isChecked;
-    private TfrFeature associatedFeature;
+    internal Texture2D checkboxImage;
+    internal Rectangle checkedSourceRect;
+    internal Rectangle uncheckedSourceRect;
+    internal bool isChecked;
 
-    public TfrCheckbox(Rectangle bounds, string name, Texture2D texture, ref TfrFeature feature) : base(bounds, name)
+    public Checkbox(Rectangle bounds, string name, Texture2D texture) : base(bounds, name)
     {
         this.checkboxImage = texture;
         this.uncheckedSourceRect = new Rectangle(0, 0, 47, 47);
@@ -25,8 +23,6 @@ public class TfrCheckbox : ClickableComponent
 
         this.bounds.Width = (int)labelBounds.X + 40;
         this.bounds.Height = (int)labelBounds.Y;
-
-        this.associatedFeature = feature;
     }
 
     public void Draw(SpriteBatch sb)
@@ -53,18 +49,9 @@ public class TfrCheckbox : ClickableComponent
         //     Game1.textColor);
     }
 
-    public void ReceiveLeftClick()
+    public virtual void ReceiveLeftClick()
     {
-        if (this.isChecked)
-        {
-            this.isChecked = false;
-            this.associatedFeature.actionToTake = TfrAction.Ignore;
-        }
-        else
-        {
-            this.isChecked = true;
-            this.associatedFeature.actionToTake = TfrAction.Process;
-        }
+        this.isChecked = !this.isChecked;
     }
 
     public override bool containsPoint(int x, int y)

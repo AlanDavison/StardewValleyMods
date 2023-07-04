@@ -1,11 +1,11 @@
 using System;
+using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
-using DecidedlyShared.Utilities;
 
-namespace TerrainFeatureRefresh;
+namespace TerrainFeatureRefresh.Framework.Ui;
 
 public class Button : ClickableComponent
 {

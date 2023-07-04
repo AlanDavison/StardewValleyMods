@@ -10,9 +10,11 @@ using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using TerrainFeatureRefresh.Framework;
+using TerrainFeatureRefresh.Framework.Ui;
 using TerrainFeatureRefresh.src.Framework;
 
 namespace TerrainFeatureRefresh;
@@ -33,30 +35,32 @@ public class TfrMainMenu : IClickableMenu
     private Rectangle buttonPanelBounds;
     private TfrSettings settings;
 
-    private List<TfrCheckbox> checkboxes;
+    private List<Checkbox> checkboxes;
+
+    private Checkbox affectAllLocations;
 
     // Objects
-    private TfrCheckbox fences;
-    private TfrCheckbox weeds;
-    private TfrCheckbox twigs;
-    private TfrCheckbox stones;
-    private TfrCheckbox forage;
-    private TfrCheckbox artifactSpots;
+    private Checkbox fences;
+    private Checkbox weeds;
+    private Checkbox twigs;
+    private Checkbox stones;
+    private Checkbox forage;
+    private Checkbox artifactSpots;
 
     // Terrain Features
-    private TfrCheckbox grass;
-    private TfrCheckbox wildTrees;
-    private TfrCheckbox fruitTrees;
-    private TfrCheckbox paths;
-    private TfrCheckbox hoeDirt;
-    private TfrCheckbox crops;
-    private TfrCheckbox bushes;
+    private Checkbox grass;
+    private Checkbox wildTrees;
+    private Checkbox fruitTrees;
+    private Checkbox paths;
+    private Checkbox hoeDirt;
+    private Checkbox crops;
+    private Checkbox bushes;
 
     // Resource Clumps
-    private TfrCheckbox stumps;
-    private TfrCheckbox logs;
-    private TfrCheckbox boulders;
-    private TfrCheckbox meteorites;
+    private Checkbox stumps;
+    private Checkbox logs;
+    private Checkbox boulders;
+    private Checkbox meteorites;
 
     private string resetButtonText;
     private string terrainFeatureHeader = "Terrain Features";
@@ -76,33 +80,35 @@ public class TfrMainMenu : IClickableMenu
             this.closeButtonTexture,
             new Rectangle(0, 0, 64, 56),
             1f);
-        this.checkboxes = new List<TfrCheckbox>();
+        this.checkboxes = new List<Checkbox>();
         this.allClickableComponents = new List<ClickableComponent>();
 
         this.settings = new TfrSettings();
 
+        this.checkboxes.Add(this.affectAllLocations = new AllLocationsCheckbox(Rectangle.Empty, "All Maps", this.checkboxTexture, ref this.settings.AffectAllLocations));
+
         // Objects
-        this.checkboxes.Add(this.fences = new TfrCheckbox(Rectangle.Empty, "Fences", this.checkboxTexture, ref this.settings.fences));
-        this.checkboxes.Add(this.weeds = new TfrCheckbox(Rectangle.Empty, "Weeds", this.checkboxTexture, ref this.settings.weeds));
-        this.checkboxes.Add(this.twigs = new TfrCheckbox(Rectangle.Empty, "Twigs", this.checkboxTexture, ref this.settings.twigs));
-        this.checkboxes.Add(this.stones = new TfrCheckbox(Rectangle.Empty, "Stones", this.checkboxTexture, ref this.settings.stones));
-        this.checkboxes.Add(this.forage = new TfrCheckbox(Rectangle.Empty, "Forage", this.checkboxTexture, ref this.settings.forage));
-        this.checkboxes.Add(this.artifactSpots = new TfrCheckbox(Rectangle.Empty, "Artifact Spot", this.checkboxTexture, ref this.settings.artifactSpots));
+        this.checkboxes.Add(this.fences = new TfrCheckbox(Rectangle.Empty, "Fences", this.checkboxTexture, ref this.settings.Fences));
+        this.checkboxes.Add(this.weeds = new TfrCheckbox(Rectangle.Empty, "Weeds", this.checkboxTexture, ref this.settings.Weeds));
+        this.checkboxes.Add(this.twigs = new TfrCheckbox(Rectangle.Empty, "Twigs", this.checkboxTexture, ref this.settings.Twigs));
+        this.checkboxes.Add(this.stones = new TfrCheckbox(Rectangle.Empty, "Stones", this.checkboxTexture, ref this.settings.Stones));
+        this.checkboxes.Add(this.forage = new TfrCheckbox(Rectangle.Empty, "Forage", this.checkboxTexture, ref this.settings.Forage));
+        this.checkboxes.Add(this.artifactSpots = new TfrCheckbox(Rectangle.Empty, "Artifact Spot", this.checkboxTexture, ref this.settings.ArtifactSpots));
 
         // Terrain Features
-        this.checkboxes.Add(this.grass = new TfrCheckbox(Rectangle.Empty, "Grass", this.checkboxTexture, ref this.settings.grass));
-        this.checkboxes.Add(this.wildTrees = new TfrCheckbox(Rectangle.Empty, "Wild Trees", this.checkboxTexture, ref this.settings.wildTrees));
-        this.checkboxes.Add(this.fruitTrees = new TfrCheckbox(Rectangle.Empty, "Fruit Trees", this.checkboxTexture, ref this.settings.fruitTrees));
-        this.checkboxes.Add(this.paths = new TfrCheckbox(Rectangle.Empty, "Paths", this.checkboxTexture, ref this.settings.paths));
-        this.checkboxes.Add(this.hoeDirt = new TfrCheckbox(Rectangle.Empty, "Hoed Dirt", this.checkboxTexture, ref this.settings.hoeDirt));
-        this.checkboxes.Add(this.crops = new TfrCheckbox(Rectangle.Empty, "Crops", this.checkboxTexture, ref this.settings.crops));
-        this.checkboxes.Add(this.bushes = new TfrCheckbox(Rectangle.Empty, "Bushes", this.checkboxTexture, ref this.settings.bushes));
+        this.checkboxes.Add(this.grass = new TfrCheckbox(Rectangle.Empty, "Grass", this.checkboxTexture, ref this.settings.Grass));
+        this.checkboxes.Add(this.wildTrees = new TfrCheckbox(Rectangle.Empty, "Wild Trees", this.checkboxTexture, ref this.settings.WildTrees));
+        this.checkboxes.Add(this.fruitTrees = new TfrCheckbox(Rectangle.Empty, "Fruit Trees", this.checkboxTexture, ref this.settings.FruitTrees));
+        this.checkboxes.Add(this.paths = new TfrCheckbox(Rectangle.Empty, "Paths", this.checkboxTexture, ref this.settings.Paths));
+        this.checkboxes.Add(this.hoeDirt = new TfrCheckbox(Rectangle.Empty, "Hoed Dirt", this.checkboxTexture, ref this.settings.HoeDirt));
+        this.checkboxes.Add(this.crops = new TfrCheckbox(Rectangle.Empty, "Crops", this.checkboxTexture, ref this.settings.Crops));
+        this.checkboxes.Add(this.bushes = new TfrCheckbox(Rectangle.Empty, "Bushes", this.checkboxTexture, ref this.settings.Bushes));
 
         // Resource Clumps
-        this.checkboxes.Add(this.stumps = new TfrCheckbox(Rectangle.Empty, "Stumps", this.checkboxTexture, ref this.settings.stumps));
-        this.checkboxes.Add(this.logs = new TfrCheckbox(Rectangle.Empty, "Logs", this.checkboxTexture, ref this.settings.logs));
-        this.checkboxes.Add(this.boulders = new TfrCheckbox(Rectangle.Empty, "Boulders", this.checkboxTexture, ref this.settings.boulders));
-        this.checkboxes.Add(this.meteorites = new TfrCheckbox(Rectangle.Empty, "Spoiler Rocks", this.checkboxTexture, ref this.settings.meteorites));
+        this.checkboxes.Add(this.stumps = new TfrCheckbox(Rectangle.Empty, "Stumps", this.checkboxTexture, ref this.settings.Stumps));
+        this.checkboxes.Add(this.logs = new TfrCheckbox(Rectangle.Empty, "Logs", this.checkboxTexture, ref this.settings.Logs));
+        this.checkboxes.Add(this.boulders = new TfrCheckbox(Rectangle.Empty, "Boulders", this.checkboxTexture, ref this.settings.Boulders));
+        this.checkboxes.Add(this.meteorites = new TfrCheckbox(Rectangle.Empty, "Spoiler Rocks", this.checkboxTexture, ref this.settings.Meteorites));
 
         this.resetButton = new Button(Rectangle.Empty, "Reset Selected", this.buttonTexture,
         new Rectangle(0, 0, 16, 16));
@@ -111,7 +117,7 @@ public class TfrMainMenu : IClickableMenu
         this.generateButton = new Button(Rectangle.Empty, "Generate Selected", this.buttonTexture,
             new Rectangle(0, 0, 16, 16));
 
-        foreach (TfrCheckbox box in this.checkboxes)
+        foreach (Checkbox box in this.checkboxes)
         {
             this.allClickableComponents.Add(box);
         }
@@ -141,6 +147,14 @@ public class TfrMainMenu : IClickableMenu
         //     this.width - 256 - 32,
         //     128
         //     );
+
+        int allMapsY = this.yPositionOnScreen + 64 + 24 + 64 + 64 + 8;
+
+        this.affectAllLocations.bounds = new Rectangle(
+            this.mainWindowBounds.Right - this.affectAllLocations.bounds.Width - 32,
+            allMapsY,
+            this.fences.bounds.Width,
+            this.fences.bounds.Height);
 
         int buttonY = this.mainWindowBounds.Bottom - 64;
 
@@ -417,6 +431,7 @@ public class TfrMainMenu : IClickableMenu
         this.generateButton.Draw(b);
         this.resetButton.Draw(b);
         this.clearButton.Draw(b);
+        this.affectAllLocations.Draw(b);
 
         // Objects
         this.fences.Draw(b);
@@ -446,11 +461,13 @@ public class TfrMainMenu : IClickableMenu
 
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
-        foreach (TfrCheckbox box in this.checkboxes)
+        // this.logger.Log($"Before clicking: {this.settings}", LogLevel.Info);
+        foreach (Checkbox box in this.checkboxes)
         {
             if (box.containsPoint(x, y))
                 box.ReceiveLeftClick();
         }
+        // this.logger.Log($"After clicking: {this.settings}", LogLevel.Info);
 
         if (this.resetButton.containsPoint(x, y))
         {
@@ -467,11 +484,8 @@ public class TfrMainMenu : IClickableMenu
         else if (this.generateButton.containsPoint(x, y))
         {
             // Do the clicky.
-            for (int i = 0; i < 1; i++)
-            {
-                FeatureProcessor processor = new FeatureProcessor(this.settings, ProcessorAction.Generate, this.logger);
-                processor.Execute();
-            }
+            FeatureProcessor processor = new FeatureProcessor(this.settings, ProcessorAction.Generate, this.logger);
+            processor.Execute();
         }
 
         // TODO: Rig up close button click!
