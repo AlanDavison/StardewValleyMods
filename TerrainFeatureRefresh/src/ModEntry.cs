@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using Microsoft.Xna.Framework;
