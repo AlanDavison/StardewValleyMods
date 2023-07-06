@@ -1,23 +1,13 @@
 using System.Collections.Generic;
-using DecidedlyShared.Utilities;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
-using StardewValley.Menus;
-using TerrainFeatureRefresh.Framework;
-using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
-using TerrainFeatureRefresh.Framework;
-using TerrainFeatureRefresh.Framework.Ui;
 using TerrainFeatureRefresh.src.Framework;
 
-namespace TerrainFeatureRefresh;
+namespace TerrainFeatureRefresh.Framework.Ui;
 
 public class TfrMainMenu : IClickableMenu
 {
