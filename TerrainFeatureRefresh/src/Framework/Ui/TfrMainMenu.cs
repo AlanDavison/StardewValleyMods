@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
@@ -57,8 +58,8 @@ public class TfrMainMenu : IClickableMenu
     private string objectHeader = "Objects";
     private string clumpHeader = "Resource Clumps";
 
-    public TfrMainMenu(int screenX, int screenY, int width, int height, Logger logger)
-        : base(screenX, screenY, width, height, true)
+    public TfrMainMenu(Logger logger)
+        : base(0, 0, 0, 0, true)
     {
         this.logger = logger;
         this.buttonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/Button");
@@ -125,11 +126,19 @@ public class TfrMainMenu : IClickableMenu
         //     this.width - 128,
         //     128);
 
+        int verticalElementSpacing = 16;
+        int verticalOffset = 64 + 24 + 32 + 32;
+        int widestCheckbox = this.GetWidestCheckbox(this.checkboxes);
+
         this.mainWindowBounds = new Rectangle(
             this.xPositionOnScreen,
             this.yPositionOnScreen + 32,
             this.width,
-            this.height - 16);
+            this.height);
+
+        // int i =
+        //     "Completely rework element positioning, and have window height and width be " +
+        //     "automatic in order to allow for compatibility with languages other than English.";
 
         // this.buttonPanelBounds = new Rectangle(
         //     this.xPositionOnScreen + this.width - 256 + 128 + 32 + 8,
@@ -138,7 +147,8 @@ public class TfrMainMenu : IClickableMenu
         //     128
         //     );
 
-        int allMapsY = this.yPositionOnScreen + 64 + 24 + 64 + 64 + 8;
+        int allMapsY = this.yPositionOnScreen + verticalOffset;
+        allMapsY = this.yPositionOnScreen + 152;
 
         this.affectAllLocations.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.affectAllLocations.bounds.Width - 32,
@@ -155,7 +165,7 @@ public class TfrMainMenu : IClickableMenu
             this.generateButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
 
-        buttonY -= this.clearButton.bounds.Height + 8;
+        buttonY -= this.clearButton.bounds.Height + verticalElementSpacing;
 
         this.resetButton.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.resetButton.bounds.Width - 16,
@@ -164,7 +174,7 @@ public class TfrMainMenu : IClickableMenu
             this.resetButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
 
-        buttonY -= this.resetButton.bounds.Height + 8;
+        buttonY -= this.resetButton.bounds.Height + verticalElementSpacing;
 
         this.clearButton.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.clearButton.bounds.Width - 16,
@@ -175,7 +185,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region Objects
 
-        int objectY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
+        int objectY = this.yPositionOnScreen + verticalOffset;
 
         this.fences.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -183,7 +193,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + 6;
+        objectY += this.fences.bounds.Height + verticalElementSpacing;
 
         this.weeds.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -191,7 +201,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + 6;
+        objectY += this.fences.bounds.Height + verticalElementSpacing;
 
         this.stones.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -199,7 +209,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + 6;
+        objectY += this.fences.bounds.Height + verticalElementSpacing;
 
         this.twigs.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -207,7 +217,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + 6;
+        objectY += this.fences.bounds.Height + verticalElementSpacing;
 
         this.forage.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -215,7 +225,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + 6;
+        objectY += this.fences.bounds.Height + verticalElementSpacing;
 
         this.artifactSpots.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -227,7 +237,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region TerrainFeatures
 
-        int terrainY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
+        int terrainY = this.yPositionOnScreen + verticalOffset;
 
         this.grass.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -235,7 +245,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + 6;
+        terrainY += this.grass.bounds.Height + verticalElementSpacing;
 
         this.wildTrees.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -243,7 +253,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + 6;
+        terrainY += this.grass.bounds.Height + verticalElementSpacing;
 
         this.fruitTrees.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -251,7 +261,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + 6;
+        terrainY += this.grass.bounds.Height + verticalElementSpacing;
 
         this.hoeDirt.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -259,7 +269,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + 6;
+        terrainY += this.grass.bounds.Height + verticalElementSpacing;
 
         this.crops.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -267,7 +277,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + 6;
+        terrainY += this.grass.bounds.Height + verticalElementSpacing;
 
         this.bushes.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -275,7 +285,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + 6;
+        terrainY += this.grass.bounds.Height + verticalElementSpacing;
 
         this.paths.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -287,7 +297,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region ResourceClumps
 
-        int clumpY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
+        int clumpY = this.yPositionOnScreen + verticalOffset;
 
         this.stumps.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -295,7 +305,7 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Width,
             this.stumps.bounds.Height);
 
-        clumpY += this.stumps.bounds.Height + 6;
+        clumpY += this.stumps.bounds.Height + verticalElementSpacing;
 
         this.logs.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -303,7 +313,7 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Width,
             this.stumps.bounds.Height);
 
-        clumpY += this.stumps.bounds.Height + 6;
+        clumpY += this.stumps.bounds.Height + verticalElementSpacing;
 
         this.boulders.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -311,7 +321,7 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Width,
             this.stumps.bounds.Height);
 
-        clumpY += this.stumps.bounds.Height + 6;
+        clumpY += this.stumps.bounds.Height + verticalElementSpacing;
 
         this.meteorites.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -320,6 +330,50 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Height);
 
         #endregion
+
+        int widestButton =
+            this.GetWidestButton(new Button[] { this.clearButton, this.resetButton, this.generateButton });
+
+        int windowHeight = 16 * 6 + verticalOffset;
+        int windowWidth = this.GetWidestCheckbox(this.checkboxes);
+        this.height = windowHeight * 2;
+        this.width = (windowWidth + 16) * 4 + widestButton;
+
+        Vector2 centrePos = Utility.getTopLeftPositionForCenteringOnScreen(this.width, this.height);
+        this.xPositionOnScreen = (int)centrePos.X;
+        this.yPositionOnScreen = (int)centrePos.Y;
+
+        this.upperRightCloseButton = new ClickableTextureComponent(
+            new Rectangle(this.xPositionOnScreen - 84 + this.width, this.yPositionOnScreen + 52, 16 * 4, 14 * 4),
+            this.closeButtonTexture,
+            new Rectangle(0, 0, 64, 56),
+            1f);
+    }
+
+    private int GetWidestCheckbox(List<Checkbox> list)
+    {
+        int widest = 0;
+
+        foreach (Checkbox cb in this.checkboxes)
+        {
+            if (cb.bounds.Width > widest)
+                widest = cb.bounds.Width;
+        }
+
+        return widest;
+    }
+
+    private int GetWidestButton(Button[] buttons)
+    {
+        int widest = 0;
+
+        foreach (Button b in buttons)
+        {
+            if (b.bounds.Width > widest)
+                widest = b.bounds.Width;
+        }
+
+        return widest;
     }
 
     public override void draw(SpriteBatch b)

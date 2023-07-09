@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using Microsoft.Xna.Framework;
@@ -67,8 +68,7 @@ public class ModEntry : Mod
 
             if (e.IsDown(this.config.uiKey))
             {
-                Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(860, 432);
-                TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 860, 432, this.logger);
+                TfrMainMenu menu = new TfrMainMenu(this.logger);
 
                 Game1.activeClickableMenu = menu;
             }
