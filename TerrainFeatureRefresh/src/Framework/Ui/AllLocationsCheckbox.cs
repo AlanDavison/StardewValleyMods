@@ -7,7 +7,7 @@ public class AllLocationsCheckbox : Checkbox
 {
     private TfrToggle toggle;
 
-    public AllLocationsCheckbox(Rectangle bounds, string name, Texture2D texture, ref TfrToggle toggle) : base(bounds, name, texture)
+    public AllLocationsCheckbox(Rectangle bounds, string name, Texture2D texture, SpriteFont font, ref TfrToggle toggle) : base(bounds, name, texture, font)
     {
         this.toggle = toggle;
     }

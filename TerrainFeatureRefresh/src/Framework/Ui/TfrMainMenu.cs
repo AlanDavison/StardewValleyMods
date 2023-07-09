@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using TerrainFeatureRefresh.src.Framework;
@@ -20,6 +20,7 @@ public class TfrMainMenu : IClickableMenu
     private Texture2D buttonTexture;
     private Texture2D closeButtonTexture;
     private Texture2D checkboxTexture;
+    private SpriteFont font;
     // private Texture2D buttonPanelTexture;
     private Rectangle titleBounds;
     private Rectangle mainWindowBounds;
@@ -58,10 +59,11 @@ public class TfrMainMenu : IClickableMenu
     private string objectHeader = "Objects";
     private string clumpHeader = "Resource Clumps";
 
-    public TfrMainMenu(Logger logger)
-        : base(0, 0, 0, 0, true)
+    public TfrMainMenu(int screenX, int screenY, int width, int height, Logger logger, IModHelper helper)
+        : base(screenX, screenY, width, height, true)
     {
         this.logger = logger;
+        this.font = helper.ModContent.Load<SpriteFont>("assets/DejaVu-20pt.xnb");
         this.buttonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/Button");
         this.boxTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/WindowSkin");
         this.closeButtonTexture = Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/TFR/CloseButton");
@@ -76,36 +78,36 @@ public class TfrMainMenu : IClickableMenu
 
         this.settings = new TfrSettings();
 
-        this.checkboxes.Add(this.affectAllLocations = new AllLocationsCheckbox(Rectangle.Empty, "All Maps", this.checkboxTexture, ref this.settings.AffectAllLocations));
+        this.checkboxes.Add(this.affectAllLocations = new AllLocationsCheckbox(Rectangle.Empty, "All Maps", this.checkboxTexture, this.font, ref this.settings.AffectAllLocations));
 
         // Objects
-        this.checkboxes.Add(this.fences = new TfrCheckbox(Rectangle.Empty, "Fences", this.checkboxTexture, ref this.settings.Fences));
-        this.checkboxes.Add(this.weeds = new TfrCheckbox(Rectangle.Empty, "Weeds", this.checkboxTexture, ref this.settings.Weeds));
-        this.checkboxes.Add(this.twigs = new TfrCheckbox(Rectangle.Empty, "Twigs", this.checkboxTexture, ref this.settings.Twigs));
-        this.checkboxes.Add(this.stones = new TfrCheckbox(Rectangle.Empty, "Stones", this.checkboxTexture, ref this.settings.Stones));
-        this.checkboxes.Add(this.forage = new TfrCheckbox(Rectangle.Empty, "Forage", this.checkboxTexture, ref this.settings.Forage));
-        this.checkboxes.Add(this.artifactSpots = new TfrCheckbox(Rectangle.Empty, "Artifact Spot", this.checkboxTexture, ref this.settings.ArtifactSpots));
+        this.checkboxes.Add(this.fences = new TfrCheckbox(Rectangle.Empty, "Fences", this.checkboxTexture, this.font, ref this.settings.Fences));
+        this.checkboxes.Add(this.weeds = new TfrCheckbox(Rectangle.Empty, "Weeds", this.checkboxTexture, this.font, ref this.settings.Weeds));
+        this.checkboxes.Add(this.twigs = new TfrCheckbox(Rectangle.Empty, "Twigs", this.checkboxTexture, this.font, ref this.settings.Twigs));
+        this.checkboxes.Add(this.stones = new TfrCheckbox(Rectangle.Empty, "Stones", this.checkboxTexture, this.font, ref this.settings.Stones));
+        this.checkboxes.Add(this.forage = new TfrCheckbox(Rectangle.Empty, "Forage", this.checkboxTexture, this.font, ref this.settings.Forage));
+        this.checkboxes.Add(this.artifactSpots = new TfrCheckbox(Rectangle.Empty, "Artifact Spot", this.checkboxTexture, this.font, ref this.settings.ArtifactSpots));
 
         // Terrain Features
-        this.checkboxes.Add(this.grass = new TfrCheckbox(Rectangle.Empty, "Grass", this.checkboxTexture, ref this.settings.Grass));
-        this.checkboxes.Add(this.wildTrees = new TfrCheckbox(Rectangle.Empty, "Wild Trees", this.checkboxTexture, ref this.settings.WildTrees));
-        this.checkboxes.Add(this.fruitTrees = new TfrCheckbox(Rectangle.Empty, "Fruit Trees", this.checkboxTexture, ref this.settings.FruitTrees));
-        this.checkboxes.Add(this.paths = new TfrCheckbox(Rectangle.Empty, "Paths", this.checkboxTexture, ref this.settings.Paths));
-        this.checkboxes.Add(this.hoeDirt = new TfrCheckbox(Rectangle.Empty, "Hoed Dirt", this.checkboxTexture, ref this.settings.HoeDirt));
-        this.checkboxes.Add(this.crops = new TfrCheckbox(Rectangle.Empty, "Crops", this.checkboxTexture, ref this.settings.Crops));
-        this.checkboxes.Add(this.bushes = new TfrCheckbox(Rectangle.Empty, "Bushes", this.checkboxTexture, ref this.settings.Bushes));
+        this.checkboxes.Add(this.grass = new TfrCheckbox(Rectangle.Empty, "Grass", this.checkboxTexture, this.font, ref this.settings.Grass));
+        this.checkboxes.Add(this.wildTrees = new TfrCheckbox(Rectangle.Empty, "Wild Trees", this.checkboxTexture, this.font, ref this.settings.WildTrees));
+        this.checkboxes.Add(this.fruitTrees = new TfrCheckbox(Rectangle.Empty, "Fruit Trees", this.checkboxTexture, this.font, ref this.settings.FruitTrees));
+        this.checkboxes.Add(this.paths = new TfrCheckbox(Rectangle.Empty, "Paths", this.checkboxTexture, this.font, ref this.settings.Paths));
+        this.checkboxes.Add(this.hoeDirt = new TfrCheckbox(Rectangle.Empty, "Hoed Dirt", this.checkboxTexture, this.font, ref this.settings.HoeDirt));
+        this.checkboxes.Add(this.crops = new TfrCheckbox(Rectangle.Empty, "Crops", this.checkboxTexture, this.font, ref this.settings.Crops));
+        this.checkboxes.Add(this.bushes = new TfrCheckbox(Rectangle.Empty, "Bushes", this.checkboxTexture, this.font, ref this.settings.Bushes));
 
         // Resource Clumps
-        this.checkboxes.Add(this.stumps = new TfrCheckbox(Rectangle.Empty, "Stumps", this.checkboxTexture, ref this.settings.Stumps));
-        this.checkboxes.Add(this.logs = new TfrCheckbox(Rectangle.Empty, "Logs", this.checkboxTexture, ref this.settings.Logs));
-        this.checkboxes.Add(this.boulders = new TfrCheckbox(Rectangle.Empty, "Boulders", this.checkboxTexture, ref this.settings.Boulders));
-        this.checkboxes.Add(this.meteorites = new TfrCheckbox(Rectangle.Empty, "Spoiler Rocks", this.checkboxTexture, ref this.settings.Meteorites));
+        this.checkboxes.Add(this.stumps = new TfrCheckbox(Rectangle.Empty, "Stumps", this.checkboxTexture, this.font, ref this.settings.Stumps));
+        this.checkboxes.Add(this.logs = new TfrCheckbox(Rectangle.Empty, "Logs", this.checkboxTexture, this.font, ref this.settings.Logs));
+        this.checkboxes.Add(this.boulders = new TfrCheckbox(Rectangle.Empty, "Boulders", this.checkboxTexture, this.font, ref this.settings.Boulders));
+        this.checkboxes.Add(this.meteorites = new TfrCheckbox(Rectangle.Empty, "Spoiler Rocks", this.checkboxTexture, this.font, ref this.settings.Meteorites));
 
-        this.resetButton = new Button(Rectangle.Empty, "Reset Selected", this.buttonTexture,
+        this.resetButton = new Button(Rectangle.Empty, "Reset Selected", this.buttonTexture, this.font,
         new Rectangle(0, 0, 16, 16));
-        this.clearButton = new Button(Rectangle.Empty, "Clear Selected", this.buttonTexture,
+        this.clearButton = new Button(Rectangle.Empty, "Clear Selected", this.buttonTexture, this.font,
         new Rectangle(0, 0, 16, 16));
-        this.generateButton = new Button(Rectangle.Empty, "Generate Selected", this.buttonTexture,
+        this.generateButton = new Button(Rectangle.Empty, "Generate Selected", this.buttonTexture, this.font,
             new Rectangle(0, 0, 16, 16));
 
         foreach (Checkbox box in this.checkboxes)
@@ -126,19 +128,11 @@ public class TfrMainMenu : IClickableMenu
         //     this.width - 128,
         //     128);
 
-        int verticalElementSpacing = 16;
-        int verticalOffset = 64 + 24 + 32 + 32;
-        int widestCheckbox = this.GetWidestCheckbox(this.checkboxes);
-
         this.mainWindowBounds = new Rectangle(
             this.xPositionOnScreen,
             this.yPositionOnScreen + 32,
             this.width,
-            this.height);
-
-        // int i =
-        //     "Completely rework element positioning, and have window height and width be " +
-        //     "automatic in order to allow for compatibility with languages other than English.";
+            this.height - 16);
 
         // this.buttonPanelBounds = new Rectangle(
         //     this.xPositionOnScreen + this.width - 256 + 128 + 32 + 8,
@@ -147,12 +141,9 @@ public class TfrMainMenu : IClickableMenu
         //     128
         //     );
 
-        int allMapsY = this.yPositionOnScreen + verticalOffset;
-        allMapsY = this.yPositionOnScreen + 152;
-
         this.affectAllLocations.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.affectAllLocations.bounds.Width - 32,
-            allMapsY,
+            this.mainWindowBounds.Bottom - this.resetButton.bounds.Height * 4 - 8 * 3,
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
@@ -165,7 +156,7 @@ public class TfrMainMenu : IClickableMenu
             this.generateButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
 
-        buttonY -= this.clearButton.bounds.Height + verticalElementSpacing;
+        buttonY -= this.clearButton.bounds.Height + 8;
 
         this.resetButton.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.resetButton.bounds.Width - 16,
@@ -174,7 +165,7 @@ public class TfrMainMenu : IClickableMenu
             this.resetButton.bounds.Height);
         new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 64 - 8);
 
-        buttonY -= this.resetButton.bounds.Height + verticalElementSpacing;
+        buttonY -= this.resetButton.bounds.Height + 8;
 
         this.clearButton.bounds = new Rectangle(
             this.mainWindowBounds.Right - this.clearButton.bounds.Width - 16,
@@ -185,7 +176,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region Objects
 
-        int objectY = this.yPositionOnScreen + verticalOffset;
+        int objectY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
 
         this.fences.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -193,7 +184,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + verticalElementSpacing;
+        objectY += this.fences.bounds.Height + 6;
 
         this.weeds.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -201,7 +192,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + verticalElementSpacing;
+        objectY += this.fences.bounds.Height + 6;
 
         this.stones.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -209,7 +200,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + verticalElementSpacing;
+        objectY += this.fences.bounds.Height + 6;
 
         this.twigs.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -217,7 +208,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + verticalElementSpacing;
+        objectY += this.fences.bounds.Height + 6;
 
         this.forage.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -225,7 +216,7 @@ public class TfrMainMenu : IClickableMenu
             this.fences.bounds.Width,
             this.fences.bounds.Height);
 
-        objectY += this.fences.bounds.Height + verticalElementSpacing;
+        objectY += this.fences.bounds.Height + 6;
 
         this.artifactSpots.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 16,
@@ -237,7 +228,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region TerrainFeatures
 
-        int terrainY = this.yPositionOnScreen + verticalOffset;
+        int terrainY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
 
         this.grass.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -245,7 +236,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + verticalElementSpacing;
+        terrainY += this.grass.bounds.Height + 6;
 
         this.wildTrees.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -253,7 +244,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + verticalElementSpacing;
+        terrainY += this.grass.bounds.Height + 6;
 
         this.fruitTrees.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -261,7 +252,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + verticalElementSpacing;
+        terrainY += this.grass.bounds.Height + 6;
 
         this.hoeDirt.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -269,7 +260,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + verticalElementSpacing;
+        terrainY += this.grass.bounds.Height + 6;
 
         this.crops.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -277,7 +268,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + verticalElementSpacing;
+        terrainY += this.grass.bounds.Height + 6;
 
         this.bushes.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -285,7 +276,7 @@ public class TfrMainMenu : IClickableMenu
             this.grass.bounds.Width,
             this.grass.bounds.Height);
 
-        terrainY += this.grass.bounds.Height + verticalElementSpacing;
+        terrainY += this.grass.bounds.Height + 6;
 
         this.paths.bounds = new Rectangle(
             this.xPositionOnScreen + 16,
@@ -297,7 +288,7 @@ public class TfrMainMenu : IClickableMenu
 
         #region ResourceClumps
 
-        int clumpY = this.yPositionOnScreen + verticalOffset;
+        int clumpY = this.yPositionOnScreen + 64 + 24 + 32 + 32;
 
         this.stumps.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -305,7 +296,7 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Width,
             this.stumps.bounds.Height);
 
-        clumpY += this.stumps.bounds.Height + verticalElementSpacing;
+        clumpY += this.stumps.bounds.Height + 6;
 
         this.logs.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -313,7 +304,7 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Width,
             this.stumps.bounds.Height);
 
-        clumpY += this.stumps.bounds.Height + verticalElementSpacing;
+        clumpY += this.stumps.bounds.Height + 6;
 
         this.boulders.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -321,7 +312,7 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Width,
             this.stumps.bounds.Height);
 
-        clumpY += this.stumps.bounds.Height + verticalElementSpacing;
+        clumpY += this.stumps.bounds.Height + 6;
 
         this.meteorites.bounds = new Rectangle(
             this.xPositionOnScreen + 256 + 128 + 32,
@@ -330,50 +321,6 @@ public class TfrMainMenu : IClickableMenu
             this.stumps.bounds.Height);
 
         #endregion
-
-        int widestButton =
-            this.GetWidestButton(new Button[] { this.clearButton, this.resetButton, this.generateButton });
-
-        int windowHeight = 16 * 6 + verticalOffset;
-        int windowWidth = this.GetWidestCheckbox(this.checkboxes);
-        this.height = windowHeight * 2;
-        this.width = (windowWidth + 16) * 4 + widestButton;
-
-        Vector2 centrePos = Utility.getTopLeftPositionForCenteringOnScreen(this.width, this.height);
-        this.xPositionOnScreen = (int)centrePos.X;
-        this.yPositionOnScreen = (int)centrePos.Y;
-
-        this.upperRightCloseButton = new ClickableTextureComponent(
-            new Rectangle(this.xPositionOnScreen - 84 + this.width, this.yPositionOnScreen + 52, 16 * 4, 14 * 4),
-            this.closeButtonTexture,
-            new Rectangle(0, 0, 64, 56),
-            1f);
-    }
-
-    private int GetWidestCheckbox(List<Checkbox> list)
-    {
-        int widest = 0;
-
-        foreach (Checkbox cb in this.checkboxes)
-        {
-            if (cb.bounds.Width > widest)
-                widest = cb.bounds.Width;
-        }
-
-        return widest;
-    }
-
-    private int GetWidestButton(Button[] buttons)
-    {
-        int widest = 0;
-
-        foreach (Button b in buttons)
-        {
-            if (b.bounds.Width > widest)
-                widest = b.bounds.Width;
-        }
-
-        return widest;
     }
 
     public override void draw(SpriteBatch b)
@@ -410,13 +357,13 @@ public class TfrMainMenu : IClickableMenu
 
         base.draw(b);
 
-        Vector2 stringWidth = Game1.smallFont.MeasureString("Terrain Feature Refresh");
+        Vector2 stringWidth = this.font.MeasureString("Terrain Feature Refresh");
 
         Drawing.DrawStringWithShadow(
             b,
-            Game1.dialogueFont,
+            this.font,
             "Terrain Feature Refresh",
-            new Vector2(this.xPositionOnScreen + 32, this.yPositionOnScreen + 64 - 8),
+            new Vector2(this.xPositionOnScreen + 32, this.yPositionOnScreen + 64 - 4),
             Color.White,
             Color.Transparent);
 
@@ -429,7 +376,7 @@ public class TfrMainMenu : IClickableMenu
 
         Drawing.DrawStringWithShadow(
             b,
-            Game1.smallFont,
+            this.font,
             this.terrainFeatureHeader,
             new Vector2(this.xPositionOnScreen + 16, this.yPositionOnScreen + 32 + 64 + 20),
             Color.Black,
@@ -444,7 +391,7 @@ public class TfrMainMenu : IClickableMenu
 
         Drawing.DrawStringWithShadow(
             b,
-            Game1.smallFont,
+            this.font,
             this.objectHeader,
             new Vector2(this.xPositionOnScreen + 256 + 16, this.yPositionOnScreen + 32 + 64 + 20),
             Color.Black,
@@ -459,7 +406,7 @@ public class TfrMainMenu : IClickableMenu
 
         Drawing.DrawStringWithShadow(
             b,
-            Game1.smallFont,
+            this.font,
             this.clumpHeader,
             new Vector2(this.xPositionOnScreen + 256 + 128 + 32, this.yPositionOnScreen + 32 + 64 + 20),
             Color.Black,
