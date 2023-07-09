@@ -7,7 +7,7 @@ public class TfrCheckbox : Checkbox
 {
     private TfrFeature associatedFeature;
 
-    public TfrCheckbox(Rectangle bounds, string name, Texture2D texture, ref TfrFeature feature) : base(bounds, name, texture)
+    public TfrCheckbox(Rectangle bounds, string name, Texture2D texture, SpriteFont font, ref TfrFeature feature) : base(bounds, name, texture, font)
     {
         this.associatedFeature = feature;
     }

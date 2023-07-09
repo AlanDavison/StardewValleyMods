@@ -67,8 +67,8 @@ public class ModEntry : Mod
 
             if (e.IsDown(this.config.uiKey))
             {
-                Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(860, 432);
-                TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 860, 432, this.logger);
+                Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(980, 410);
+                TfrMainMenu menu = new TfrMainMenu((int)topLeft.X, (int)topLeft.Y, 980, 410, this.logger, this.Helper);
 
                 Game1.activeClickableMenu = menu;
             }

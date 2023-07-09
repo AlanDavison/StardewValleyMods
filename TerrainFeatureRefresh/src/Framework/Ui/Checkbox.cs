@@ -11,18 +11,21 @@ public class Checkbox : ClickableComponent
     internal Texture2D checkboxImage;
     internal Rectangle checkedSourceRect;
     internal Rectangle uncheckedSourceRect;
+    internal Vector2 labelBounds;
+    internal SpriteFont font;
     internal bool isChecked;
 
-    public Checkbox(Rectangle bounds, string name, Texture2D texture) : base(bounds, name)
+    public Checkbox(Rectangle bounds, string name, Texture2D texture, SpriteFont font) : base(bounds, name)
     {
         this.checkboxImage = texture;
+        this.font = font;
         this.uncheckedSourceRect = new Rectangle(0, 0, 47, 47);
         this.checkedSourceRect = new Rectangle(52, 0, 47, 47);
 
-        Vector2 labelBounds = Game1.smallFont.MeasureString(name);
+        this.labelBounds = this.font.MeasureString(name);
 
-        this.bounds.Width = (int)labelBounds.X + 40;
-        this.bounds.Height = (int)labelBounds.Y;
+        this.bounds.Width = (int)this.labelBounds.X + 40;
+        this.bounds.Height = (int)this.labelBounds.Y;
     }
 
     public void Draw(SpriteBatch sb)
@@ -35,7 +38,7 @@ public class Checkbox : ClickableComponent
 
         Drawing.DrawStringWithShadow(
             sb,
-            Game1.smallFont,
+            this.font,
             this.name,
             new Vector2(this.bounds.X + 36 + 4, this.bounds.Y + 4),
             Color.Black,
