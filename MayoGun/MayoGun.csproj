@@ -4,11 +4,12 @@
     <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
     <PropertyGroup>
-        <Name>ObliteratingWeapons</Name>
-        <Description>Obliterate your enemies.</Description>
+        <Name>MayoGun</Name>
+        <Description>Cover your enemies in mayo.</Description>
         <MinimumApiVersion>3.15.0</MinimumApiVersion>
         <UpdateKeys>Nexus:16858</UpdateKeys>
         <Version>1.0.0-alpha</Version>
+        <RootNamespace>MayoGun</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup>

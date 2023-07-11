@@ -1,0 +1,9 @@
+﻿{
+    // Web gun
+    "DecidedlyHuman.MayoGun.DisplayName": "Mayo Gun",
+    "DecidedlyHuman.MayoGun.Description": "It's a mayo gun.",
+
+    // Web gun ammo
+    "DecidedlyHuman.MayoGun.Ammo.DisplayName": "Mayo Ammo",
+    "DecidedlyHuman.MayoGun.Ammo.Description": "Mayo for the mayo gun. Isn't this just a jar of mayo?"
+}

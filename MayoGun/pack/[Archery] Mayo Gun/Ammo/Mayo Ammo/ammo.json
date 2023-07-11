@@ -1,14 +1,14 @@
 ﻿{
     "Type": "Arrow",
-    "Name": "DecidedlyHuman.ObliteratingWeapons.Ammo.BatteryPack",
-    "DisplayName": "DecidedlyHuman.ObliteratingWeapons.Ammo.BatteryPack.DisplayName",
-    "Description": "DecidedlyHuman.ObliteratingWeapons.Ammo.BatteryPack.Description",
+    "Name": "DecidedlyHuman.MayoGun.Ammo",
+    "DisplayName": "DecidedlyHuman.MayoGun.Ammo.DisplayName",
+    "Description": "DecidedlyHuman.MayoGun.Ammo.Description",
 
     "BreakChance": 1,
     "Damage": 10,
 
     "Filter": [
-        "DecidedlyHuman.ObliteratingWeapons.Railgun"
+        "DecidedlyHuman.MayoGun.WebGun"
     ],
 
     "Shop": {
@@ -28,10 +28,10 @@
 
     "ProjectileSprite": {
         "Source": {
-            "X": 20,
-            "Y": 7,
-            "Width": 8,
-            "Height": 1
+            "X": 16,
+            "Y": 3,
+            "Width": 16,
+            "Height": 9
         }
     },
     "CollisionBox": {

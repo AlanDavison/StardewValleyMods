@@ -89,7 +89,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.6", "1.6", "{55387993-C2D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherClickMovementExperience", "AnotherClickMovementExperience\AnotherClickMovementExperience.csproj", "{3CB4161A-062C-41C6-8376-4800D9064F3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObliteratingWeapons", "ObliteratingWeapons\ObliteratingWeapons.csproj", "{12A67EE1-FC6E-4516-9297-4BD125598FCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MayoGun", "MayoGun\MayoGun.csproj", "{12A67EE1-FC6E-4516-9297-4BD125598FCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

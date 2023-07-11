@@ -1,8 +1,8 @@
 ﻿{
     "Type": "Bow",
-    "Name": "DecidedlyHuman.ObliteratingWeapons.WebGun",
-    "DisplayName": "DecidedlyHuman.ObliteratingWeapons.WebGun.DisplayName",
-    "Description": "DecidedlyHuman.ObliteratingWeapons.WebGun.Description",
+    "Name": "DecidedlyHuman.MayoGun.WebGun",
+    "DisplayName": "DecidedlyHuman.MayoGun.DisplayName",
+    "Description": "DecidedlyHuman.MayoGun.Description",
     "Icon": {
         "Source": {
             "X": 0,
@@ -16,7 +16,7 @@
         "Min": 80,
         "Max": 100
     },
-    "ProjectileSpeed": 2.0,
+    "ProjectileSpeed": 20.0,
     "ChargeTimeRequiredMilliseconds": 1000,
 
     "Shop": {
@@ -26,7 +26,7 @@
     },
 
     "Filter": [
-        "DecidedlyHuman.ObliteratingWeapons.Ammo.WebFluid"
+        "DecidedlyHuman.MayoGun.Ammo"
     ],
 
     // The following determines what bow and arm sprites to draw based on the direction and other given conditions

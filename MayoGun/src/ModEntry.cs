@@ -6,16 +6,15 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
-namespace ObliteratingWeapons;
+namespace MayoGun;
 
 public class ModEntry : Mod
 {
     private Logger logger;
     private IModHelper helper;
 
-
     public override void Entry(IModHelper helper)
     {
-
+        Game1.getAchievement();
     }
 }
