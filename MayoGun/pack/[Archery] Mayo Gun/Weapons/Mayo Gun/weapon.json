@@ -13,16 +13,16 @@
         "Scale": 4.0
     },
     "DamageRange": {
-        "Min": 80,
-        "Max": 100
+        "Min": 0,
+        "Max": 0
     },
     "ProjectileSpeed": 20.0,
-    "ChargeTimeRequiredMilliseconds": 1000,
+    "ChargeTimeRequiredMilliseconds": 10,
 
     "Shop": {
         "Owner": "Marlon",
         "Stock": -1,
-        "Price": 100000
+        "Price": 100
     },
 
     "Filter": [

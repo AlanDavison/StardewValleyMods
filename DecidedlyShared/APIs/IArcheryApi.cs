@@ -9,180 +9,165 @@ using System.Collections.Generic;
 
 namespace DecidedlyShared.APIs;
 
-public interface IApi
-{
-    Item CreateWeapon(IManifest callerManifest, string weaponModelId);
-    Item CreateAmmo(IManifest callerManifest, string ammoModelId);
-    bool PlaySound(IManifest callerManifest, ISound sound, Vector2 position);
-    int? GetSpecialAttackCooldown(IManifest callerManifest, Slingshot slingshot);
-    IWeaponData GetWeaponData(IManifest callerManifest, Slingshot slingshot);
-    IProjectileData GetProjectileData(IManifest callerManifest, BasicProjectile projectile);
-    bool SetProjectileData(IManifest callerManifest, BasicProjectile projectile, IProjectileData data);
-    bool SetChargePercentage(IManifest callerManifest, Slingshot slingshot, float percentage);
+public interface IArcheryApi
+    {
+        Item CreateWeapon(IManifest callerManifest, string weaponModelId);
+        Item CreateAmmo(IManifest callerManifest, string ammoModelId);
+        bool PlaySound(IManifest callerManifest, ISound sound, Vector2 position);
+        int? GetSpecialAttackCooldown(IManifest callerManifest, Slingshot slingshot);
+        int GetCooldownRemaining(IManifest callerManifest);
+        void SetCooldownRemaining(IManifest callerManifest, int cooldownInMilliseconds);
+        IWeaponData GetWeaponData(IManifest callerManifest, Slingshot slingshot);
+        IProjectileData GetProjectileData(IManifest callerManifest, BasicProjectile projectile);
+        bool SetProjectileData(IManifest callerManifest, BasicProjectile projectile, IProjectileData data);
+        bool SetChargePercentage(IManifest callerManifest, Slingshot slingshot, float percentage);
+        BasicProjectile PerformFire(IManifest callerManifest, BasicProjectile projectile, Slingshot slingshot, GameLocation location, Farmer who, bool suppressFiringSound = false);
+        BasicProjectile PerformFire(IManifest callerManifest, string ammoId, Slingshot slingshot, GameLocation location, Farmer who, bool suppressFiringSound = false);
+        BasicProjectile PerformFire(IManifest callerManifest, Slingshot slingshot, GameLocation location, Farmer who, bool suppressFiringSound = false);
+        bool RegisterSpecialAttack(IManifest callerManifest, string name, WeaponType whichWeaponTypeCanUse, Func<List<object>, string> getDisplayName, Func<List<object>, string> getDescription, Func<List<object>, int> getCooldownMilliseconds, Func<ISpecialAttack, bool> specialAttackHandler);
+        bool DeregisterSpecialAttack(IManifest callerManifest, string name);
+        bool RegisterEnchantment(IManifest callerManifest, string name, AmmoType whichAmmoTypeCanUse, TriggerType triggerType, Func<List<object>, string> getDisplayName, Func<List<object>, string> getDescription, Func<IEnchantment, bool> enchantmentHandler);
+        bool DeregisterEnchantment(IManifest callerManifest, string name);
 
-    BasicProjectile PerformFire(IManifest callerManifest, BasicProjectile projectile, Slingshot slingshot,
-        GameLocation location, Farmer who, bool suppressFiringSound = false);
+        event EventHandler<IWeaponFiredEventArgs> OnWeaponFired;
+        event EventHandler<IWeaponChargeEventArgs> OnWeaponCharging;
+        event EventHandler<IWeaponChargeEventArgs> OnWeaponCharged;
+        event EventHandler<ICrossbowLoadedEventArgs> OnCrossbowLoaded;
+        event EventHandler<IAmmoChangedEventArgs> OnAmmoChanged;
+        event EventHandler<IAmmoHitMonsterEventArgs> OnAmmoHitMonster;
+    }
 
-    BasicProjectile PerformFire(IManifest callerManifest, string ammoId, Slingshot slingshot, GameLocation location,
-        Farmer who, bool suppressFiringSound = false);
+    #region Interface objects
+    public interface ISpecialAttack
+    {
+        public Slingshot Slingshot { get; init; }
+        public GameTime Time { get; init; }
+        public GameLocation Location { get; init; }
+        public Farmer Farmer { get; init; }
 
-    BasicProjectile PerformFire(IManifest callerManifest, Slingshot slingshot, GameLocation location, Farmer who,
-        bool suppressFiringSound = false);
+        public List<object> Arguments { get; init; }
+    }
 
-    bool RegisterSpecialAttack(IManifest callerManifest, string name, WeaponType whichWeaponTypeCanUse,
-        Func<List<object>, string> getDisplayName, Func<List<object>, string> getDescription,
-        Func<List<object>, int> getCooldownMilliseconds, Func<ISpecialAttack, bool> specialAttackHandler);
+    public interface IEnchantment
+    {
+        public BasicProjectile Projectile { get; init; }
+        public GameTime Time { get; init; }
+        public GameLocation Location { get; init; }
+        public Farmer Farmer { get; init; }
+        public Monster? Monster { get; init; }
+        public int? DamageDone { get; init; }
 
-    bool DeregisterSpecialAttack(IManifest callerManifest, string name);
+        public List<object> Arguments { get; init; }
+    }
 
-    bool RegisterEnchantment(IManifest callerManifest, string name, AmmoType whichAmmoTypeCanUse,
-        TriggerType triggerType, Func<List<object>, string> getDisplayName, Func<List<object>, string> getDescription,
-        Func<IEnchantment, bool> enchantmentHandler);
+    public interface IProjectileData
+    {
+        public string AmmoId { get; init; }
+        public Vector2? Position { get; set; }
+        public Vector2? Velocity { get; set; }
+        public float? InitialSpeed { get; init; }
+        public float? Rotation { get; set; }
+        public int? BaseDamage { get; set; }
+        public float? BreakChance { get; set; }
+        public float? CriticalChance { get; set; }
+        public float? CriticalDamageMultiplier { get; set; }
+        public float? Knockback { get; set; }
 
-    bool DeregisterEnchantment(IManifest callerManifest, string name);
+        public bool? DoesExplodeOnImpact { get; set; }
+        public int? ExplosionRadius { get; set; }
+        public int? ExplosionDamage { get; set; }
+    }
 
-    event EventHandler<IWeaponFiredEventArgs> OnWeaponFired;
-    event EventHandler<IWeaponChargeEventArgs> OnWeaponCharging;
-    event EventHandler<IWeaponChargeEventArgs> OnWeaponCharged;
-    event EventHandler<ICrossbowLoadedEventArgs> OnCrossbowLoaded;
-    event EventHandler<IAmmoChangedEventArgs> OnAmmoChanged;
-    event EventHandler<IAmmoHitMonsterEventArgs> OnAmmoHitMonster;
-}
+    public interface IWeaponData
+    {
+        public string WeaponId { get; init; }
+        public WeaponType WeaponType { get; init; }
+        public int? MagazineSize { get; init; }
+        public int? AmmoInMagazine { get; set; }
+        public float ChargeTimeRequiredMilliseconds { get; init; }
+        public float ProjectileSpeed { get; init; }
+        public IRandomRange DamageRange { get; init; }
+    }
 
-#region Interface objects
+    public interface ISound
+    {
+        public string Name { get; set; }
+        public int Pitch { get; set; }
+        public IRandomRange PitchRandomness { get; set; }
+        public float Volume { get; set; }
+        public float MaxDistance { get; set; }
+    }
 
-public interface ISpecialAttack
-{
-    public Slingshot Slingshot { get; init; }
-    public GameTime Time { get; init; }
-    public GameLocation Location { get; init; }
-    public Farmer Farmer { get; init; }
+    public interface IRandomRange
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
 
-    public List<object> Arguments { get; init; }
-}
+        public int Get(Random random, int minOffset = 0, int maxOffset = 0);
+    }
+    #endregion
 
-public interface IEnchantment
-{
-    public BasicProjectile Projectile { get; init; }
-    public GameTime Time { get; init; }
-    public GameLocation Location { get; init; }
-    public Farmer Farmer { get; init; }
-    public Monster? Monster { get; init; }
-    public int? DamageDone { get; init; }
+    #region Enums
+    public enum WeaponType
+    {
+        Any,
+        [Obsolete("Not currently used")]
+        Slingshot,
+        Bow,
+        Crossbow
+    }
 
-    public List<object> Arguments { get; init; }
-}
+    public enum AmmoType
+    {
+        Any,
+        [Obsolete("Not currently used")]
+        Pellet,
+        Arrow,
+        Bolt
+    }
 
-public interface IProjectileData
-{
-    public string AmmoId { get; init; }
-    public Vector2? Position { get; set; }
-    public Vector2? Velocity { get; set; }
-    public float? InitialSpeed { get; init; }
-    public float? Rotation { get; set; }
-    public int? BaseDamage { get; set; }
-    public float? BreakChance { get; set; }
-    public float? CriticalChance { get; set; }
-    public float? CriticalDamageMultiplier { get; set; }
-    public float? Knockback { get; set; }
+    public enum TriggerType
+    {
+        Unknown,
+        OnFire,
+        OnImpact
+    }
+    #endregion
 
-    public bool? DoesExplodeOnImpact { get; set; }
-    public int? ExplosionRadius { get; set; }
-    public int? ExplosionDamage { get; set; }
-}
+    #region Events
+    public interface IBaseEventArgs
+    {
+        public Vector2 Origin { get; init; }
+    }
 
-public interface IWeaponData
-{
-    public string WeaponId { get; init; }
-    public WeaponType WeaponType { get; init; }
-    public int? MagazineSize { get; init; }
-    public int? AmmoInMagazine { get; set; }
-}
+    public interface IWeaponFiredEventArgs : IBaseEventArgs
+    {
+        public string WeaponId { get; init; }
+        public string AmmoId { get; init; }
+        public BasicProjectile Projectile { get; init; }
+    }
 
-public interface ISound
-{
-    public string Name { get; set; }
-    public int Pitch { get; set; }
-    public IRandomRange PitchRandomness { get; set; }
-    public float Volume { get; set; }
-    public float MaxDistance { get; set; }
-}
+    public interface IWeaponChargeEventArgs : IBaseEventArgs
+    {
+        public string WeaponId { get; init; }
+        public float ChargePercentage { get; init; }
+    }
 
-public interface IRandomRange
-{
-    public int Min { get; set; }
-    public int Max { get; set; }
+    public interface ICrossbowLoadedEventArgs : IBaseEventArgs
+    {
+        public string WeaponId { get; init; }
+        public string AmmoId { get; init; }
+    }
 
-    public int Get(Random random, int minOffset = 0, int maxOffset = 0);
-}
+    public interface IAmmoChangedEventArgs : IBaseEventArgs
+    {
+        public string WeaponId { get; init; }
+        public string AmmoId { get; init; }
+    }
 
-#endregion
-
-#region Enums
-
-public enum WeaponType
-{
-    Any,
-    [Obsolete("Not currently used")]
-    Slingshot,
-    Bow,
-    Crossbow
-}
-
-public enum AmmoType
-{
-    Any,
-    [Obsolete("Not currently used")]
-    Pellet,
-    Arrow,
-    Bolt
-}
-
-public enum TriggerType
-{
-    Unknown,
-    OnFire,
-    OnImpact
-}
-
-#endregion
-
-#region Events
-
-public interface IBaseEventArgs
-{
-    public Vector2 Origin { get; init; }
-}
-
-public interface IWeaponFiredEventArgs : IBaseEventArgs
-{
-    public string WeaponId { get; init; }
-    public string AmmoId { get; init; }
-    public BasicProjectile Projectile { get; init; }
-}
-
-public interface IWeaponChargeEventArgs : IBaseEventArgs
-{
-    public string WeaponId { get; init; }
-    public float ChargePercentage { get; init; }
-}
-
-public interface ICrossbowLoadedEventArgs : IBaseEventArgs
-{
-    public string WeaponId { get; init; }
-    public string AmmoId { get; init; }
-}
-
-public interface IAmmoChangedEventArgs : IBaseEventArgs
-{
-    public string WeaponId { get; init; }
-    public string AmmoId { get; init; }
-}
-
-public interface IAmmoHitMonsterEventArgs : IWeaponFiredEventArgs
-{
-    public Monster Monster { get; init; }
-    public int DamageDone { get; init; }
-}
-
-#endregion
+    public interface IAmmoHitMonsterEventArgs : IWeaponFiredEventArgs
+    {
+        public Monster Monster { get; init; }
+        public int DamageDone { get; init; }
+    }
+    #endregion

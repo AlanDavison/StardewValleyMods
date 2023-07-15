@@ -5,7 +5,7 @@
     "Description": "DecidedlyHuman.MayoGun.Ammo.Description",
 
     "BreakChance": 1,
-    "Damage": 10,
+    "Damage": 0,
 
     "Filter": [
         "DecidedlyHuman.MayoGun.WebGun"
@@ -14,7 +14,7 @@
     "Shop": {
         "Owner": "Marlon",
         "Stock": -1,
-        "Price": 1000
+        "Price": 10
     },
 
     "Icon": {
