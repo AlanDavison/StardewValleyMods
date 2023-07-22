@@ -25,6 +25,8 @@ public class FeatureProcessor
         this.settings = settings;
         this.logger = logger;
         this.action = action;
+
+        int i = "Remember to fix up current spawned objects count on each map after processing.";
     }
 
     public void Execute()
@@ -127,7 +129,7 @@ public class FeatureProcessor
         return objects;
     }
 
-    private void RemoveSObjects(GameLocation location, Func<SObject, bool> predicate)
+    private int RemoveSObjects(GameLocation location, Func<SObject, bool> predicate)
     {
         List<SObject> objectsToDestroy = this.GetSObjects(this.location, predicate);
 
@@ -137,6 +139,8 @@ public class FeatureProcessor
             this.LogRemoval(obj);
             this.location.Objects.Remove(obj.TileLocation);
         }
+
+        return objectsToDestroy.Count;
     }
 
     private void RemoveTerrainFeatures(GameLocation location, Func<TerrainFeature, bool> predicate)
@@ -226,8 +230,10 @@ public class FeatureProcessor
         }
     }
 
-    private void GenerateNewSObjects(GameLocation location, Func<SObject, bool> predicate)
+    private int GenerateNewSObjects(GameLocation location, Func<SObject, bool> predicate)
     {
+        int spawnCount = default;
+
         // Now we copy over to the main location.
         foreach (SObject obj in this.generatedLocation.Objects.Values.Where(predicate))
         {
@@ -240,7 +246,10 @@ public class FeatureProcessor
 
             this.LogAddition(obj, obj.TileLocation);
             this.location.Objects.Add(obj.TileLocation, obj);
+            spawnCount++;
         }
+
+        return spawnCount;
     }
 
     #region SObjects
@@ -315,14 +324,16 @@ public class FeatureProcessor
             return;
 
         Func<SObject, bool> predicate = (SObject o) => o.IsSpawnedObject;
+        int removalCount;
+        int spawnCount;
 
         // If we're regenerating or clearing, we strip the location.
         if (this.action == ProcessorAction.ClearOnly || this.action == ProcessorAction.Regenerate)
-            this.RemoveSObjects(this.location, predicate);
+            removalCount = this.RemoveSObjects(this.location, predicate);
 
         // And, if we're generating or regenerating, we generate and copy over new items.
         if (this.action == ProcessorAction.Generate || this.action == ProcessorAction.Regenerate)
-            this.GenerateNewSObjects(this.location, predicate);
+            spawnCount = this.GenerateNewSObjects(this.location, predicate);
     }
 
     private void DoArtifactSpots()
