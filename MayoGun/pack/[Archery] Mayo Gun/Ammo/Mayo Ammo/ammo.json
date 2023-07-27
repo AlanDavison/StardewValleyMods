@@ -5,7 +5,7 @@
     "Description": "DecidedlyHuman.MayoGun.Ammo.Description",
 
     "BreakChance": 1,
-    "Damage": 0,
+    "Damage": -1,
 
     "Filter": [
         "DecidedlyHuman.MayoGun.WebGun"

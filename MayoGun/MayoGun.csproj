@@ -8,7 +8,7 @@
         <Description>Cover your enemies in mayo.</Description>
         <MinimumApiVersion>3.15.0</MinimumApiVersion>
         <UpdateKeys>Nexus:16858</UpdateKeys>
-        <Version>1.0.0-alpha2</Version>
+        <Version>1.0.0-alpha3</Version>
         <RootNamespace>MayoGun</RootNamespace>
     </PropertyGroup>
 
@@ -16,6 +16,10 @@
         <EnableHarmony>true</EnableHarmony>
         <GameModsPath>$(GameModsPath)/$(AssemblyName)</GameModsPath>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="assets\" />
+    </ItemGroup>
 
     <Target Name="DeployPack" AfterTargets="Build">
         <Message Text="Running DeployPack target..." />

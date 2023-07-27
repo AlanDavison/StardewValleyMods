@@ -1,0 +1,22 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Format": "1.28.0",
+    "CustomLocations": [ 
+        {
+          "Name": "Custom_MEEP_Station",
+          "FromMapFile": "assets/Map/Custom_MEEP_Station.tmx"
+        }
+      ],
+    "Changes": [
+        { 
+            // Patch in out fake NPC.
+            "Action": "Include",
+            "FromFile": "fake-npcs.json"
+        },
+        { 
+            // Our map patches.
+            "Action": "Include",
+            "FromFile": "maps.json"
+        }
+    ]
+}

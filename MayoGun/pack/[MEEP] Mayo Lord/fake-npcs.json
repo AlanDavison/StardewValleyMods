@@ -1,0 +1,22 @@
+{
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Portraits/MassiveBoi",
+            "FromFile": "assets/MassiveBoi/MassiveBoiPortrait.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Characters/MassiveBoi",
+            "FromFile": "assets/MassiveBoi/MassiveBoi.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FakeNPC/Dialogue/MassiveBoi",
+            "Entries": {
+                "DialogueOne": "Hello!",
+                "DialogueTwo": "How are you today, @? I hope you're as good as I am!"
+            }
+        }
+    ]
+}
