@@ -4,6 +4,7 @@ using StardewValley;
 using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
+using xTile.ObjectModel;
 using xTile.Tiles;
 
 namespace DecidedlyShared.Utilities;
@@ -18,20 +19,20 @@ public class TilePropertyHandler
     }
 
     public bool TryGetBackProperty(int x, int y, GameLocation location, string key,
-        out string tileProperty)
+        out PropertyValue tileProperty)
     {
         return this.TryGetTileProperty(x, y, location, "Back", key, out tileProperty);
     }
 
     public bool TryGetBuildingProperty(int x, int y, GameLocation location, string key,
-        out string tileProperty)
+        out PropertyValue tileProperty)
     {
         return this.TryGetTileProperty(x, y, location, "Buildings", key, out tileProperty);
     }
 
-    public bool TryGetPropertyFromString(string keyToCheck, string property, out string stringProperty)
+    public bool TryGetPropertyFromString(string keyToCheck, string property, out PropertyValue tileProperty)
     {
-        stringProperty = "";
+        tileProperty = "";
 
         string[] splitProperty = property.Split(" ");
 
@@ -48,13 +49,13 @@ public class TilePropertyHandler
             args.Append($"{splitProperty[i]} ");
         }
 
-        stringProperty = args.ToString();
+        tileProperty = args.ToString();
 
         return true;
     }
 
     public bool TryGetTileProperty(int x, int y, GameLocation location, string layer, string key,
-        out string tileProperty)
+        out PropertyValue tileProperty)
     {
         // We need a default assignment.
         tileProperty = "";

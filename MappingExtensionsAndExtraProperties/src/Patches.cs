@@ -11,6 +11,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
+using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -71,7 +72,7 @@ public static class Patches
 
             // Check for a CloseupInteraction property on the given tile.
             if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionImage.PropertyKey,
-                    out string closeupInteractionProperty))
+                    out PropertyValue closeupInteractionProperty))
             {
                 DoCloseupInteraction(__instance, tileX, tileY, closeupInteractionProperty);
             }
@@ -84,7 +85,7 @@ public static class Patches
 
                 // Now we check for a sound interaction property.
                 if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionSound.PropertyKey,
-                        out string closeupSoundProperty))
+                        out PropertyValue closeupSoundProperty))
                 {
                     if (Parsers.TryParse(closeupSoundProperty.ToString(),
                             out CloseupInteractionSound parsedSoundProperty))
@@ -97,14 +98,14 @@ public static class Patches
             }
             // There isn't a reel either, so we check for a letter property.
             else if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, LetterText.PropertyKey,
-                         out string letterProperty))
+                         out PropertyValue letterProperty))
             {
                 DoLetter(__instance, letterProperty, tileX, tileY);
             }
 
             // Check for the DHSetMailFlag property on a given tile.
             if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, SetMailFlag.PropertyKey,
-                    out string dhSetMailFlagProperty))
+                    out PropertyValue dhSetMailFlagProperty))
             {
                 DoMailFlag(dhSetMailFlagProperty);
             }
@@ -201,7 +202,7 @@ public static class Patches
             LetterViewerMenu letterViewer = new LetterViewerMenu(letter.Text, "Test");
 
             if (tileProperties.TryGetBackProperty(tileX, tileY, location, LetterType.PropertyKey,
-                    out string letterTypeProperty))
+                    out PropertyValue letterTypeProperty))
             {
                 if (Parsers.TryParse(letterTypeProperty.ToString(), out LetterType letterType))
                 {
@@ -269,7 +270,7 @@ public static class Patches
     {
         // We have our tile property. We need to check for the presence of an existing Action tile property.
         if (tileProperties.TryGetBuildingProperty(tileX, tileY, location, "Action",
-                out string _))
+                out PropertyValue _))
         {
             // We want to return so we don't conflict with opening a shop, going through a door, etc.
 
@@ -318,7 +319,7 @@ public static class Patches
 
         // Next, we want to see if there's a text tile property to display.
         if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
-                out string closeupTextProperty))
+                out PropertyValue closeupTextProperty))
         {
             // There is, so we try to parse it.
             if (Parsers.TryParse(closeupTextProperty.ToString(), out CloseupInteractionText parsedTextProperty))
@@ -345,7 +346,7 @@ public static class Patches
 
         // Now we check for a sound interaction property.
         if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
-                out string closeupSoundProperty))
+                out PropertyValue closeupSoundProperty))
         {
             if (Parsers.TryParse(closeupSoundProperty.ToString(), out CloseupInteractionSound parsedSoundProperty))
             {
@@ -442,18 +443,18 @@ public static class Patches
         int yTile = (int)Game1.currentCursorTile.Y;
 
         if (tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, SetMailFlag.PropertyKey,
-                out string _) ||
+                out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, CloseupInteractionImage.PropertyKey,
-                out string _) ||
+                out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation,
                 $"{CloseupInteractionImage.PropertyKey}_1",
-                out string _) ||
+                out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, LetterType.PropertyKey,
-                out string _) ||
+                out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, LetterText.PropertyKey,
-                out string _) ||
+                out PropertyValue _) ||
             tileProperties.TryGetBackProperty(xTile, yTile, Game1.currentLocation, SetMailFlag.PropertyKey,
-                out string _))
+                out PropertyValue _))
         {
             Game1.mouseCursor = 5;
         }

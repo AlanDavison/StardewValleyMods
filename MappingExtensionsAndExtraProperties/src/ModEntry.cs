@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using xTile.ObjectModel;
 using xTile.Tiles;
 
 namespace MappingExtensionsAndExtraProperties;
@@ -228,7 +229,7 @@ public class ModEntry : Mod
                 if (tile == null)
                     continue;
 
-                if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out string property))
+                if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out PropertyValue property))
                 {
                     if (Parsers.TryParse(property,
                             out DhFakeNpc fakeNpcProperty))
