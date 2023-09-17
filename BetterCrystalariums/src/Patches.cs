@@ -42,12 +42,12 @@ namespace BetterCrystalariums
                 }
             }
 
-            // Firstly, if the item the player is holding isn't a mineral, we don't want to do anything.
-            if (dropInItem.Category != -2)
+            // Firstly, if the object isn't a crystalarium, we do nothing.
+            if (!__instance.Name.Equals("Crystalarium"))
                 return true;
 
-            // Secondly, if the object isn't a crystalarium, we do nothing.
-            if (!__instance.Name.Equals("Crystalarium"))
+            // Secondly, if the item the player is holding isn't a mineral, we don't want to do anything.
+            if (dropInItem.Category != -2 && dropInItem.Category != -12)
                 return true;
 
             // At this point, we know the player is holding a crystalarium-able item, and is interacting with a crystalarium.
