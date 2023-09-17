@@ -1,5 +1,5 @@
 ﻿using System;
-using BetterCrystalariums.Utilities;
+using DecidedlyShared.Logging;
 using StardewModdingAPI;
 using StardewValley;
 using Object = StardewValley.Object;
@@ -8,37 +8,37 @@ namespace BetterCrystalariums
 {
     public class Patches
     {
-        private static IMonitor _monitor;
-        private static IModHelper _helper;
-        private static Logger _logger;
-        private static ModConfig _config;
+        private static IMonitor monitor;
+        private static IModHelper helper;
+        private static Logger logger;
+        private static ModConfig config;
 
-        public Patches(IMonitor m, IModHelper h, Logger l, ModConfig c)
+        public static void Initialise(IMonitor m, IModHelper h, Logger l, ModConfig c)
         {
-            _monitor = m;
-            _helper = h;
-            _logger = l;
-            _config = c;
+            monitor = m;
+            helper = h;
+            logger = l;
+            config = c;
         }
 
         public static bool ObjectDropIn_Prefix(Object __instance, Item dropInItem, bool probe, Farmer who)
         {
-            if (_config.DebugMode)
+            if (config.DebugMode)
             {
                 // We're debugging, so we want to spit out as much information as possible.
                 Item objectInMachine = __instance.heldObject;
 
                 if (objectInMachine != null)
                 {
-                    _logger.Log("Debug output:\tVariable\t\t\t\tDetails");
-                    _logger.Log($"\t\tFarmer.Name: \t\t\t\t{who.Name}");
-                    _logger.Log($"\t\t__instance.Name \t\t\t{__instance.Name}");
-                    _logger.Log($"\t\tdropInItem.Name \t\t\t{dropInItem.Name}");
-                    _logger.Log($"\t\tdropInItem.Category \t\t\t{dropInItem.Category}");
+                    logger.Log("Debug output:\tVariable\t\t\t\tDetails");
+                    logger.Log($"\t\tFarmer.Name: \t\t\t\t{who.Name}");
+                    logger.Log($"\t\t__instance.Name \t\t\t{__instance.Name}");
+                    logger.Log($"\t\tdropInItem.Name \t\t\t{dropInItem.Name}");
+                    logger.Log($"\t\tdropInItem.Category \t\t\t{dropInItem.Category}");
 
-                    _logger.Log($"\t\tName of object in machine \t\t{objectInMachine.Name}");
-                    _logger.Log($"\t\tCategory of object in machine \t\t{objectInMachine.Category}");
-                    _logger.Log($"{Environment.NewLine}");
+                    logger.Log($"\t\tName of object in machine \t\t{objectInMachine.Name}");
+                    logger.Log($"\t\tCategory of object in machine \t\t{objectInMachine.Category}");
+                    logger.Log($"{Environment.NewLine}");
                 }
             }
 
@@ -59,7 +59,7 @@ namespace BetterCrystalariums
                 // Then, if the object in the crystalarium doesn't match what the playe's holding, we display our warning, and stop the replacement.
                 if (!heldObject.Name.Equals(dropInItem.Name))
                 {
-                    Game1.showRedMessage($"{_helper.Translation.Get("bettercrystalariums.wrong-mineral")}");
+                    Game1.showRedMessage($"{helper.Translation.Get("bettercrystalariums.wrong-mineral")}");
                     return false;
                 }
 

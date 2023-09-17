@@ -1,6 +1,7 @@
 ﻿using System;
-using BetterCrystalariums.Helpers;
-using BetterCrystalariums.Utilities;
+using System.Net.Http.Headers;
+using DecidedlyShared.Logging;
+using DecidedlyShared.APIs;
 using HarmonyLib;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -11,19 +12,18 @@ namespace BetterCrystalariums
 {
     public class BetterCrystalariumEntry : Mod
     {
-        private ModConfig _config;
-        private IModHelper _helper;
-        private Logger _logger;
-        private IMonitor _monitor;
-        private Patches _patches;
+        private ModConfig config;
+        private IModHelper helper;
+        private Logger logger;
+        private IMonitor monitor;
 
         public override void Entry(IModHelper helper)
         {
-            this._helper = helper;
-            this._monitor = this.Monitor;
-            this._logger = new Logger(this._monitor);
-            this._config = this._helper.ReadConfig<ModConfig>();
-            this._patches = new Patches(this._monitor, this._helper, this._logger, this._config);
+            this.helper = helper;
+            this.monitor = this.Monitor;
+            this.logger = new Logger(this.monitor);
+            this.config = this.helper.ReadConfig<ModConfig>();
+            Patches.Initialise(this.monitor, this.helper, this.logger, this.config);
 
             Harmony harmony = new(this.ModManifest.UniqueID);
 
@@ -35,7 +35,7 @@ namespace BetterCrystalariums
                     nameof(Patches.ObjectDropIn_Prefix))
             );
 
-            this._helper.Events.GameLoop.GameLaunched += this.GameLaunched;
+            this.helper.Events.GameLoop.GameLaunched += this.GameLaunched;
         }
 
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -46,24 +46,26 @@ namespace BetterCrystalariums
             }
             catch (Exception ex)
             {
-                this._logger.Log(this._helper.Translation.Get("bettercrystalariums.no-gmcm"));
+                this.logger.Log(this.helper.Translation.Get("bettercrystalariums.no-gmcm"));
             }
         }
 
         private void RegisterWithGmcm()
         {
             var configMenuApi =
-                this.Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+                this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
 
-            configMenuApi.RegisterModConfig(this.ModManifest,
-                () => this._config = new ModConfig(),
-                () => this.Helper.WriteConfig(this._config));
+            configMenuApi.Register(
+                mod: this.ModManifest,
+                reset: () => this.config = new ModConfig(),
+                save: () => this.Helper.WriteConfig(this.config));
 
-            configMenuApi.RegisterSimpleOption(this.ModManifest,
-                this._helper.Translation.Get("bettercrystalariums.debug-setting-title"),
-                this._helper.Translation.Get("bettercrystalariums.debug-setting-description"),
-                () => this._config.DebugMode,
-                value => this._config.DebugMode = value);
+            configMenuApi.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => this.helper.Translation.Get("bettercrystalariums.debug-setting-title"),
+                tooltip: () => this.helper.Translation.Get("bettercrystalariums.debug-setting-description"),
+                getValue: () => this.config.DebugMode,
+                setValue: value => this.config.DebugMode = value);
         }
     }
 }
