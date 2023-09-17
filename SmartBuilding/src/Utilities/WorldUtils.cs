@@ -67,21 +67,7 @@ namespace SmartBuilding.Utilities
                 if (itemInfo.ItemType == ItemType.Floor)
                 {
                     // We're specifically dealing with a floor/path.
-
-                    int? floorType = this.identificationUtils.GetFlooringIdFromName(itemToPlace.Name);
-                    Flooring floor;
-
-                    if (floorType.HasValue)
-                        floor = new Flooring(floorType.Value);
-                    else
-                    {
-                        // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
-                        this.playerUtils.RefundItem(itemToPlace,
-                            I18n.SmartBuilding_Error_TerrainFeature_Flooring_CouldNotIdentifyFloorType(),
-                            LogLevel.Error);
-
-                        return;
-                    }
+                    Flooring floor = new Flooring(this.identificationUtils.GetFlooringIdFromName(itemToPlace.Name));
 
                     // At this point, we *need* there to be no TerrainFeature present.
                     if (!here.terrainFeatures.ContainsKey(targetTile))
@@ -119,19 +105,7 @@ namespace SmartBuilding.Utilities
                 else if (itemInfo.ItemType == ItemType.Chest)
                 {
                     // We're dealing with a chest.
-                    int? chestType = this.identificationUtils.GetChestType(itemToPlace.Name);
-                    Chest chest;
-
-                    if (chestType.HasValue)
-                        chest = new Chest(true, chestType.Value);
-                    else
-                    {
-                        // At this point, something is very wrong, so we want to refund the item to the player's inventory, and print an error.
-                        this.playerUtils.RefundItem(itemToPlace, I18n.SmartBuilding_Error_Chest_CouldNotIdentifyChest(),
-                            LogLevel.Error);
-
-                        return;
-                    }
+                    Chest chest = new Chest(true, targetTile, itemToPlace.ItemId);
 
                     // We do our second placement possibility check, just in case something was placed in the meantime.
                     if (this.placementUtils.CanBePlacedHere(targetTile, itemToPlace))
@@ -198,7 +172,7 @@ namespace SmartBuilding.Utilities
                 }
                 else if (itemInfo.ItemType == ItemType.CrabPot)
                 {
-                    var pot = new CrabPot(targetTile);
+                    var pot = new CrabPot();
 
                     if (this.placementUtils.CanBePlacedHere(targetTile, itemToPlace))
                         itemToPlace.placementAction(Game1.currentLocation, (int)targetTile.X * 64,
@@ -227,8 +201,7 @@ namespace SmartBuilding.Utilities
                                     successfullyPlaced = itemToPlace.placementAction(here, (int)targetTile.X * 64,
                                         (int)targetTile.Y * 64, Game1.player);
                                 else
-                                    successfullyPlaced = hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X,
-                                        (int)targetTile.Y, Game1.player, false, Game1.currentLocation);
+                                    successfullyPlaced = hd.plant(itemToPlace.ItemId, Game1.player, false);
                             }
                         }
 
@@ -261,7 +234,7 @@ namespace SmartBuilding.Utilities
                             var hd = (HoeDirt)here.terrainFeatures[targetTile];
 
                             // 0 here means no fertilizer. This is a known change in 1.6.
-                            if (hd.fertilizer.Value == 0)
+                            if (!hd.HasFertilizer())
                             {
                                 // Next, we want to check if there's already a crop here.
                                 if (hd.crop != null)
@@ -270,13 +243,11 @@ namespace SmartBuilding.Utilities
 
                                     if (cropToCheck.currentPhase.Value == 0)
                                         // If the current crop phase is zero, we can plant the fertilizer here.
-                                        hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y,
-                                            Game1.player, true, Game1.currentLocation);
+                                        hd.plant(itemToPlace.ItemId, Game1.player, true);
                                 }
                                 else
                                     // If there is no crop here, we can plant the fertilizer with reckless abandon.
-                                    hd.plant(itemToPlace.ParentSheetIndex, (int)targetTile.X, (int)targetTile.Y,
-                                        Game1.player, true, Game1.currentLocation);
+                                    hd.plant(itemToPlace.ItemId, Game1.player, true);
                             }
                             else
                                 // If there is already a fertilizer here, we want to refund the item.
@@ -284,7 +255,7 @@ namespace SmartBuilding.Utilities
                                     I18n.SmartBuilding_Error_Fertiliser_AlreadyFertilised(), LogLevel.Warn);
 
                             // Now, we want to run the final check to see if the fertilization was successful.
-                            if (hd.fertilizer.Value == 0)
+                            if (!hd.HasFertilizer())
                                 // If there's still no fertilizer here, we need to refund the item.
                                 this.playerUtils.RefundItem(itemToPlace,
                                     I18n.SmartBuilding_Error_Fertiliser_IneligibleForFertilisation(), LogLevel.Warn);
@@ -301,7 +272,7 @@ namespace SmartBuilding.Utilities
 
                             // If it's already fertilised, there's no need for us to want to place tree fertiliser on it.
                             if (!tree.fertilized.Value)
-                                tree.fertilize(here);
+                                tree.fertilize();
                         }
                 }
                 else if (itemInfo.ItemType == ItemType.Tapper)
@@ -374,7 +345,7 @@ namespace SmartBuilding.Utilities
                         bool placedSuccessfully = false;
 
                         // We need to create a new instance of StorageFurniture.
-                        var storage = new StorageFurniture(itemToPlace.ParentSheetIndex, targetTile);
+                        var storage = new StorageFurniture(itemToPlace.ItemId, targetTile);
 
                         // A quick bool to avoid an unnecessary log to console later.
                         bool anyItemsAdded = false;
@@ -417,7 +388,7 @@ namespace SmartBuilding.Utilities
                     // We need to determine which we we're placing this TV based upon the furniture placement restriction option.
                     if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                     {
-                        tv = new TV(itemToPlace.ParentSheetIndex, targetTile);
+                        tv = new TV(itemToPlace.ItemId, targetTile);
                         here.furniture.Add(tv);
                     }
                     else
@@ -437,7 +408,7 @@ namespace SmartBuilding.Utilities
                     // We decide exactly how we're placing the furniture based upon the less restrictive setting.
                     if (this.config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
                     {
-                        bed = new BedFurniture(itemToPlace.ParentSheetIndex, targetTile);
+                        bed = new BedFurniture(itemToPlace.ItemId, targetTile);
                         here.furniture.Add(bed);
                     }
                     else
@@ -458,7 +429,7 @@ namespace SmartBuilding.Utilities
                     // Determine exactly how we're placing this furniture.
                     if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                     {
-                        furniture = new Furniture(itemToPlace.ParentSheetIndex, targetTile);
+                        furniture = new Furniture(itemToPlace.ItemId, targetTile);
                         furniture.currentRotation.Value = (itemToPlace as Furniture).currentRotation.Value;
                         here.furniture.Add(furniture);
                     }
@@ -542,7 +513,7 @@ namespace SmartBuilding.Utilities
         public void DemolishOnTile(Vector2 tile, TileFeature feature)
         {
             var here = Game1.currentLocation;
-            var playerTile = Game1.player.getTileLocation();
+            var playerTile = Game1.player.Tile;
             Item itemToDestroy;
             ItemType type;
 
@@ -578,9 +549,9 @@ namespace SmartBuilding.Utilities
                             if (this.config.CanDestroyChests)
                             {
                                 // This is fairly fragile, but it's fine with vanilla chests, at least.
-                                var chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
+                                Chest chest = new Chest(true, tile);
 
-                                (o as Chest).destroyAndDropContents(tile * 64, here);
+                                (o as Chest).destroyAndDropContents(tile * 64);
                                 Game1.player.addItemByMenuIfNecessary(chest.getOne());
                                 here.objects.Remove(tile);
                             }
@@ -598,9 +569,9 @@ namespace SmartBuilding.Utilities
                             if (this.config.CanDestroyChests)
                             {
                                 // This is fairly fragile, but it's fine with vanilla chests, at least.
-                                var chest = new Chest(o.ParentSheetIndex, tile, 0, 1);
+                                var chest = new Chest(true, tile);
 
-                                (o as Chest).destroyAndDropContents(tile * 64, here);
+                                (o as Chest).destroyAndDropContents(tile * 64);
                                 Game1.player.addItemByMenuIfNecessary(chest.getOne());
                                 here.objects.Remove(tile);
                             }
@@ -621,10 +592,10 @@ namespace SmartBuilding.Utilities
                             // We remove its light source from the location, and refund the torch.
                             here.removeLightSource(o.heldObject.Value.lightSource.identifier);
 
-                            this.playerUtils.RefundItem(o.heldObject, "No error. Do not log.");
+                            this.playerUtils.RefundItem(o.heldObject.Value, "No error. Do not log.");
                         }
 
-                        fenceToRemove.performRemoveAction(tile * 64, here);
+                        fenceToRemove.performRemoveAction();
                         here.objects.Remove(tile);
 
                         // And, if the fence had enough health remaining, we refund it.
@@ -641,7 +612,7 @@ namespace SmartBuilding.Utilities
                                 // After double checking there's a tree here, we grab a reference to it.
                                 treeToUntap.tapped.Value = false;
 
-                            o.performRemoveAction(tile * 64, here);
+                            o.performRemoveAction();
                             Game1.player.addItemByMenuIfNecessary(o.getOne());
 
                             here.objects.Remove(tile);
@@ -660,8 +631,8 @@ namespace SmartBuilding.Utilities
                             if (o.heldObject.Value is Chest)
                             {
                                 // It's a chest, so we want to force it to drop all of its items.
-                                if ((o.heldObject.Value as Chest).items.Count > 0)
-                                    (o.heldObject.Value as Chest).destroyAndDropContents(tile * 64, here);
+                                if ((o.heldObject.Value as Chest).Items.Count > 0)
+                                    (o.heldObject.Value as Chest).destroyAndDropContents(tile * 64); // TODO: THIS COULD BE A PROBLEM FOR EMBEDDED CHESTS. CHECK THIS WITH PATHOS.
                             }
                             else
                             {
@@ -685,7 +656,7 @@ namespace SmartBuilding.Utilities
                                         if (o.heldObject.Value.heldObject.Value is Chest enricherChest)
                                         {
                                             // And it is definitely a chest, so we want the chest to drop its items.
-                                            enricherChest.destroyAndDropContents(tile * 64, here);
+                                            enricherChest.destroyAndDropContents(tile * 64); // TODO: THIS COULD BE A PROBLEM FOR EMBEDDED CHESTS. CHECK THIS WITH PATHOS.
                                         }
                                     }
 
@@ -695,7 +666,7 @@ namespace SmartBuilding.Utilities
                             }
                         }
 
-                        o.performRemoveAction(tile * 64, here);
+                        o.performRemoveAction();
                         Game1.player.addItemByMenuIfNecessary(o.getOne());
 
                         here.objects.Remove(tile);
@@ -719,19 +690,14 @@ namespace SmartBuilding.Utilities
                     {
                         var floor = (Flooring)tf;
 
-                        int? floorType = floor.whichFloor.Value;
-                        string? floorName = this.identificationUtils.GetFlooringNameFromId(floorType.Value);
-                        SObject finalFloor;
+                        string? floorType = floor.whichFloor;
+                        string? floorName = this.identificationUtils.GetFlooringNameFromId(floorType);
+                        SObject? finalFloor = null;
 
-                        if (floorType.HasValue)
-                        {
-                            floorName = this.identificationUtils.GetFlooringNameFromId(floorType.Value);
+                        if (floorName is not null)
                             finalFloor = (SObject)Utility.fuzzyItemSearch(floorName);
-                        }
-                        else
-                            finalFloor = null;
 
-                        if (finalFloor != null)
+                        if (finalFloor is not null)
                             Game1.player.addItemByMenuIfNecessary(finalFloor);
 
                         // Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
@@ -803,7 +769,7 @@ namespace SmartBuilding.Utilities
                 if (o.heldObject.Value != null && o.heldObject.Value is Torch)
                 {
                     // It's a torch, so we grab a reference to it.
-                    var torch = (Torch)o.heldObject;
+                    var torch = (Torch)o.heldObject.Value;
 
                     // Now we check to see if the torch is already coloured.
                     if (torch.modData.ContainsKey("aedenthorn.PrismaticFire") &&
