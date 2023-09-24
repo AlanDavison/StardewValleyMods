@@ -1,13 +1,12 @@
 ﻿using System;
 using StardewModdingAPI;
 
-namespace FarmInTheSky
+namespace FarmInTheSky;
+
+public class ModEntry : Mod
 {
-    public class ModEntry : Mod
+    public override void Entry(IModHelper helper)
     {
-        public override void Entry(IModHelper helper)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }
