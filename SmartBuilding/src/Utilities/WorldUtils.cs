@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
+using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -51,13 +52,15 @@ namespace SmartBuilding.Utilities
             if (itemToPlace is not null && itemInfo.ItemType == ItemType.atravitaBush)
             {
                 // try to place the bush.
-                if (this.growableBushesAPI?.TryPlaceBush(itemToPlace, here, targetTile, this.config.LessRestrictiveObjectPlacement) != true)
+                if (this.growableBushesAPI?.TryPlaceBush(itemToPlace, here, targetTile,
+                        this.config.LessRestrictiveObjectPlacement) != true)
                 {
                     // refund the bush.
                     this.playerUtils.RefundItem(itemToPlace,
                         $"{I18n.SmartBuilding_Integrations_GrowableBushes_InvalidBushPosition()}: {itemToPlace.Name} @ {targetTile}",
                         LogLevel.Debug, true);
                 }
+
                 return;
             }
 
@@ -67,7 +70,11 @@ namespace SmartBuilding.Utilities
                 if (itemInfo.ItemType == ItemType.Floor)
                 {
                     // We're specifically dealing with a floor/path.
-                    Flooring floor = new Flooring(this.identificationUtils.GetFlooringIdFromName(itemToPlace.Name));
+                    if (!Items.TryGetFlooringFromItemId(itemInfo.Item.ItemId, out Flooring floor))
+                    {
+                        this.playerUtils.RefundItem(item.Value.Item,
+                            I18n.SmartBuilding_Error_TerrainFeature_CouldNotFindFlooringWithItemId(), LogLevel.Error);
+                    }
 
                     // At this point, we *need* there to be no TerrainFeature present.
                     if (!here.terrainFeatures.ContainsKey(targetTile))
@@ -590,7 +597,7 @@ namespace SmartBuilding.Utilities
                         {
                             // There's an item there, so we can relatively safely assume it's a torch.
                             // We remove its light source from the location, and refund the torch.
-                            here.removeLightSource(o.heldObject.Value.lightSource.identifier);
+                            here.removeLightSource(o.heldObject.Value.lightSource.Identifier);
 
                             this.playerUtils.RefundItem(o.heldObject.Value, "No error. Do not log.");
                         }
@@ -632,7 +639,9 @@ namespace SmartBuilding.Utilities
                             {
                                 // It's a chest, so we want to force it to drop all of its items.
                                 if ((o.heldObject.Value as Chest).Items.Count > 0)
-                                    (o.heldObject.Value as Chest).destroyAndDropContents(tile * 64); // TODO: THIS COULD BE A PROBLEM FOR EMBEDDED CHESTS. CHECK THIS WITH PATHOS.
+                                    (o.heldObject.Value as Chest)
+                                        .destroyAndDropContents(tile *
+                                                                64); // TODO: THIS COULD BE A PROBLEM FOR EMBEDDED CHESTS. CHECK THIS WITH PATHOS.
                             }
                             else
                             {
@@ -656,7 +665,9 @@ namespace SmartBuilding.Utilities
                                         if (o.heldObject.Value.heldObject.Value is Chest enricherChest)
                                         {
                                             // And it is definitely a chest, so we want the chest to drop its items.
-                                            enricherChest.destroyAndDropContents(tile * 64); // TODO: THIS COULD BE A PROBLEM FOR EMBEDDED CHESTS. CHECK THIS WITH PATHOS.
+                                            enricherChest
+                                                .destroyAndDropContents(tile *
+                                                                        64); // TODO: THIS COULD BE A PROBLEM FOR EMBEDDED CHESTS. CHECK THIS WITH PATHOS.
                                         }
                                     }
 
@@ -686,23 +697,17 @@ namespace SmartBuilding.Utilities
                         return;
 
                     // We only really want to be handling flooring when removing TerrainFeatures.
-                    if (tf is Flooring)
-                    {
-                        var floor = (Flooring)tf;
+                    if (tf is not Flooring floor)
+                        return;
 
-                        string? floorType = floor.whichFloor;
-                        string? floorName = this.identificationUtils.GetFlooringNameFromId(floorType);
-                        SObject? finalFloor = null;
+                    if (Items.TryGetItemFromFlooring(floor, out Item finalFloor))
+                        Game1.player.addItemByMenuIfNecessary(finalFloor);
+                    else
+                        this.logger.Error(
+                            $"Couldn't get flooring item from floor with type {floor.whichFloor.Value}. Cannot safely remove.");
 
-                        if (floorName is not null)
-                            finalFloor = (SObject)Utility.fuzzyItemSearch(floorName);
-
-                        if (finalFloor is not null)
-                            Game1.player.addItemByMenuIfNecessary(finalFloor);
-
-                        // Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
-                        here.terrainFeatures.Remove(tile);
-                    }
+                    // Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
+                    here.terrainFeatures.Remove(tile);
                 }
 
             // handle picking up growable bushes.
