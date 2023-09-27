@@ -109,10 +109,6 @@ namespace SARDIS.CustomObjects
             );
         }
 
-        public override void farmerAdjacentAction(GameLocation location)
-        {
-        }
-
         public override bool clicked(Farmer who)
         {
             return false;

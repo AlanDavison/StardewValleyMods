@@ -21,11 +21,9 @@ namespace PortableBridges.Tool
         {
         }
 
-        public override Item getOne()
+        protected override Item GetOneNew()
         {
-            Item tool = new BridgePlacementTool();
-
-            return tool;
+            throw new NotImplementedException();
         }
 
         protected override string loadDisplayName()

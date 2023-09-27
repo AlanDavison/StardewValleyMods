@@ -16,7 +16,7 @@ namespace PortableBridges.TerrainFeatures
             this.Type = "TODO: REPLACE ME";
         }
 
-        public override void actionOnPlayerEntry(GameLocation location)
+        public override void actionOnPlayerEntry()
         {
             Game1.player.ignoreCollisions = true;
         }

@@ -29,12 +29,12 @@ namespace PortableBridges.TerrainFeatures
         //    return false;
         //}
 
-        public override void draw(SpriteBatch spriteBatch, Vector2 tileLocation)
+        public override void draw(SpriteBatch spriteBatch)
         {
-            base.draw(spriteBatch, tileLocation);
+            base.draw(spriteBatch);
         }
 
-        public override void performPlayerEntryAction(Vector2 tileLocation)
+        public override void performPlayerEntryAction()
         {
             Game1.player.ignoreCollisions = true;
         }
@@ -69,7 +69,7 @@ namespace PortableBridges.TerrainFeatures
         //}
 
         public override void doCollisionAction(Rectangle positionOfCollider, int speedOfCollision, Vector2 tileLocation,
-            Character who, GameLocation location)
+            Character who)
         {
             Game1.player.ignoreCollisions = true;
         }
