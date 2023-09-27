@@ -31,7 +31,7 @@ namespace BetterReturnScepter.HarmonyPatches
             if (!who.currentLocation.isStructure)
             {
                 previousPoint.Location = who.currentLocation;
-                previousPoint.Tile = who.getTileLocation();
+                previousPoint.Tile = who.Tile;
             }
             else
             {

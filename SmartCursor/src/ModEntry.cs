@@ -311,7 +311,7 @@ namespace SmartCursor
         private Vector2? GetTileToTargetForPlayer(Farmer player)
         {
             // Grab a reference for our player tile.
-            Vector2 playerTile = Game1.player.getTileLocation();
+            Vector2 playerTile = Game1.player.Tile;
 
             if (player.CurrentTool == null)
             {
@@ -552,7 +552,7 @@ namespace SmartCursor
             // First, we loop through the location's objects and add them to our breakable resources list.
             foreach (KeyValuePair<Vector2, SObject> pair in location.Objects.Pairs)
             {
-                if (pair.Value.Category == 0)
+                if (pair.Value.Type.Equals("Litter"))
                     this.breakableResources.Add(new BreakableEntity(pair.Value, this.config));
             }
 
@@ -575,15 +575,6 @@ namespace SmartCursor
             {
                 this.breakableResources.Add(new BreakableEntity(clump, this.config));
                 // this.logger.Log($"Clump parentSheetIndex: {clump.parentSheetIndex}");
-            }
-
-            // And, in case we're in the Secret Woods...
-            if (location is Woods)
-            {
-                foreach (var clump in (location as Woods).stumps)
-                {
-                    this.breakableResources.Add((new BreakableEntity(clump, this.config)));
-                }
             }
 
             time.Stop();

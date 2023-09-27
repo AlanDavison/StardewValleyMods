@@ -20,7 +20,7 @@ namespace SmartCursor
         {
             this.config = config;
             this.Type = this.GetBreakableType(feature);
-            this.Tile = feature.currentTileLocation;
+            this.Tile = feature.Tile;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SmartCursor
         {
             this.config = config;
             this.Type = this.GetBreakableType(clump);
-            this.Tile = clump.tile.Value;
+            this.Tile = clump.Tile;
         }
 
         /// <summary>
