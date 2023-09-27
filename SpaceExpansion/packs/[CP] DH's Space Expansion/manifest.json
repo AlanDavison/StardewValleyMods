@@ -1,0 +1,10 @@
+﻿{
+    "Name": "DH's Space Expansion",
+    "Author": "DecidedlyHuman",
+    "Description": "We in space now.",
+    "UniqueID": "DecidedlyHuman.SpaceExpansion",
+    "Version": "1.0.0-alpha",
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    }
+}

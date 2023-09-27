@@ -1,0 +1,20 @@
+{
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "UniqueID": "DecidedlyHuman.StardewScheduleCreator",
+  "Name": "Stardew Schedule Creator",
+  "Author": "DecidedlyHuman",
+  "Version": "1.0.0-alpha.Debug",
+  "Description": "A mod to help you create schedules for your NPCs significantly more simply.",
+  "MinimumApiVersion": "3.15.0",
+  "EntryDll": "StardewScheduleCreator.dll",
+  "UpdateKeys": [
+    "Nexus:00000"
+  ]
+}

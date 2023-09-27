@@ -1,0 +1,20 @@
+{
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "UniqueID": "DecidedlyHuman.FarmInTheSky",
+  "Name": "Farm in the Sky",
+  "Author": "DecidedlyHuman",
+  "Version": "1.0.0-alpha",
+  "Description": "A farm high, high up in the clouds. Maybe the altitude will affect your farming?",
+  "MinimumApiVersion": "3.15.0",
+  "EntryDll": "FarmInTheSky.dll",
+  "UpdateKeys": [
+    "Nexus:00000"
+  ]
+}

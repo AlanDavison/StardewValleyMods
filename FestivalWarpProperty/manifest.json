@@ -1,0 +1,20 @@
+{
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "UniqueID": "DecidedlyHuman.FestivalWarpProperty",
+  "Name": "Festival Warp Property",
+  "Author": "DecidedlyHuman",
+  "Version": "1.0.0-alpha",
+  "Description": "Lets mod authors warp you places in festivals with a custom tile property.",
+  "MinimumApiVersion": "3.15.0",
+  "EntryDll": "FestivalWarpProperty.dll",
+  "UpdateKeys": [
+    "Nexus:00000"
+  ]
+}

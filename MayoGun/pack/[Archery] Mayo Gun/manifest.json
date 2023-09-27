@@ -1,0 +1,12 @@
+﻿{
+    "Name": "Mayo Gun",
+    "Author": "DecidedlyHuman, art by Fellowclown",
+    "Version": "1.0.0",
+    "Description": "A gun which shoots mayo, slowing down enemies..",
+    "UniqueID": "DecidedlyHuman.MayoGun.ArcheryPack",
+    "UpdateKeys": [],
+    "ContentPackFor": {
+        "UniqueID": "PeacefulEnd.Archery",
+        "MinimumVersion": "1.0.0"
+    }
+}

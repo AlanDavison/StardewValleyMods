@@ -1,0 +1,20 @@
+{
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "UniqueID": "DecidedlyHuman.ScreenTearingFix",
+  "Name": "Screen Tearing Test",
+  "Author": "DecidedlyHuman",
+  "Version": "1.0.0-alpha.Debug",
+  "Description": "A small mod to test screen tearing.",
+  "MinimumApiVersion": "3.15.0",
+  "EntryDll": "ScreenTearingFix.dll",
+  "UpdateKeys": [
+    "Nexus:00000"
+  ]
+}
