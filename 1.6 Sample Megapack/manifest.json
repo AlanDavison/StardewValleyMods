@@ -1,3 +1,13 @@
 {
-    
+    "Name": "Stardew Valley 1.6 Feature Showcase",
+    "Author": "DecidedlyHuman, JayJayDub",
+    "Version": "1.0.0",
+    "Description": "A pack that hopefully showcases every major modding change/addition in Stardew Valley 1.6.",
+    "UniqueID": "OneSixMegapackTeam.Megapack",
+    "UpdateKeys": [
+        "Nexus:18438"
+    ],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    }
 }
