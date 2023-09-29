@@ -26,7 +26,7 @@ public class FeatureProcessor
         this.logger = logger;
         this.action = action;
 
-        int i = "Remember to fix up current spawned objects count on each map after processing.";
+        // int i = "Remember to fix up current spawned objects count on each map after processing.";
     }
 
     public void Execute()
@@ -49,6 +49,7 @@ public class FeatureProcessor
             new GameLocation(location.mapPath.Value, location.Name);
 
         this.logger.Log($"Removal settings: \n{this.settings.ToString()}", LogLevel.Trace);
+        this.logger.Log($"Spawned objects prior to processing: {location.numberOfSpawnedObjectsOnMap}", LogLevel.Trace);
 
         this.DoFences();
         this.DoWeeds();
@@ -67,6 +68,8 @@ public class FeatureProcessor
         this.DoLogs();
         this.DoBoulders();
         this.DoMeteorites();
+
+        this.logger.Log($"Spawned objects after processing: {location.numberOfSpawnedObjectsOnMap}", LogLevel.Trace);
     }
 
     private void LogRemoval(SObject obj)
@@ -138,6 +141,9 @@ public class FeatureProcessor
         {
             this.LogRemoval(obj);
             this.location.Objects.Remove(obj.TileLocation);
+
+            if (obj.IsSpawnedObject)
+                location.numberOfSpawnedObjectsOnMap--;
         }
 
         return objectsToDestroy.Count;
@@ -246,6 +252,10 @@ public class FeatureProcessor
 
             this.LogAddition(obj, obj.TileLocation);
             this.location.Objects.Add(obj.TileLocation, obj);
+
+            if (obj.IsSpawnedObject)
+                location.numberOfSpawnedObjectsOnMap++;
+
             spawnCount++;
         }
 
