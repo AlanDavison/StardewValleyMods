@@ -4,6 +4,7 @@
         <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
         <Nullable>enable</Nullable>
         <Authors>DecidedlyHuman</Authors>
+        <Author>DecidedlyHuman</Author>
         <UniqueId>$(Author).$(AssemblyName)</UniqueId>
         <EntryDll>$(AssemblyName)</EntryDll>
         <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
