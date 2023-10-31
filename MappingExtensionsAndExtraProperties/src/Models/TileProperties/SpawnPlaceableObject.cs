@@ -1,4 +1,8 @@
-﻿using StardewValley;
+﻿using System;
+using Microsoft.Win32.SafeHandles;
+using StardewValley;
+using StardewValley.Characters;
+using StardewValley.Objects;
 
 namespace MappingExtensionsAndExtraProperties.Models.TileProperties;
 

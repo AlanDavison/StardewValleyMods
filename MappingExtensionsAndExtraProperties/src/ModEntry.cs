@@ -6,7 +6,10 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
+using MappingExtensionsAndExtraProperties.Functionality;
+using MappingExtensionsAndExtraProperties.Models.EventCommands;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using MappingExtensionsAndExtraProperties.Patches;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,6 +28,8 @@ public class ModEntry : Mod
     private MeepApi api;
     private List<FakeNpc> allNpcs;
     private ISaveAnywhereApi saveAnywhereApi;
+    private ISpaceCoreApi spaceCoreApi;
+    private EventCommands eventCommands;
 
     public override void Entry(IModHelper helper)
     {
@@ -32,25 +37,14 @@ public class ModEntry : Mod
         this.logger = new Logger(this.Monitor);
         this.tileProperties = new TilePropertyHandler(this.logger);
         this.allNpcs = new List<FakeNpc>();
-        Patches.InitialisePatches(this.logger, this.tileProperties);
+        EventPatches.InitialisePatches(this.logger, this.tileProperties);
+        Game1Patches.InitialisePatches(this.logger, this.tileProperties);
+        GameLocationPatches.InitialisePatches(this.logger, this.tileProperties);
+        SObjectPatches.InitialisePatches(this.logger, this.tileProperties);
         Parsers.InitialiseParsers(this.logger, helper);
+        this.eventCommands = new EventCommands(this.Helper, this.logger);
 
         helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
-
-        helper.Events.Player.Warped += (sender, args) =>
-        {
-            // We need to ensure we can kill relevant UIs if the player is warping.
-            if (Game1.activeClickableMenu is MenuBase menu)
-            {
-                // If it's one of our menus, we close it.
-                // This should be refactored use an owned-menu system at some point.
-                if (menu.MenuName.Equals(CloseupInteractionImage.PropertyKey))
-                    Game1.exitActiveMenu();
-            }
-
-            // Then remove our fake NPCs from the previous map.
-            // Utils.Locations.RemoveFakeNpcs(args.OldLocation);
-        };
 
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
         helper.Events.GameLoop.DayEnding += this.OnDayEnding;
@@ -67,7 +61,7 @@ public class ModEntry : Mod
         // Our patch for handling interactions.
         harmony.Patch(
             AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-            postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.GameLocation_CheckAction_Postfix)));
+            postfix: new HarmonyMethod(typeof(GameLocationPatches), nameof(GameLocationPatches.GameLocation_CheckAction_Postfix)));
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
@@ -80,7 +74,7 @@ public class ModEntry : Mod
         // Our cursor draw patch for interaction highlights.
         harmony.Patch(
             AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
-            prefix: new HarmonyMethod(typeof(Patches), nameof(Patches.Game1_drawMouseCursor_Prefix)));
+            prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.Game1_drawMouseCursor_Prefix)));
 
         // We need this to handle items with integrated closeup interactions. Disabled for now.
         // harmony.Patch(
@@ -156,6 +150,11 @@ public class ModEntry : Mod
 #endif
     }
 
+    private void InitialiseModIntegrations()
+    {
+
+    }
+
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
     {
         if (this.Helper.ModRegistry.IsLoaded("Omegasis.SaveAnywhere"))
@@ -171,6 +170,29 @@ public class ModEntry : Mod
             {
                 this.logger.Exception(e);
             }
+        }
+
+        if (this.Helper.ModRegistry.IsLoaded("spacechase0.SpaceCore") &&
+            !this.Helper.ModRegistry.Get("spacechase0.SpaceCore").Manifest.Version.IsOlderThan(new SemanticVersion(1, 13, 0)))
+        {
+            // Get SpaceCore's API.
+            try
+            {
+                this.spaceCoreApi = this.Helper.ModRegistry.GetApi<ISpaceCoreApi>("spacechase0.SpaceCore");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        else
+            this.logger.Warn("SpaceCore was installed, but the minimum version for MEEP event commands to work is 1.13.0. Please update SpaceCore to enable custom event commands.");
+
+        // Register our event commands through SpaceCore.
+        if (this.spaceCoreApi is not null)
+        {
+            this.spaceCoreApi.AddEventCommand(PlaySound.Command, AccessTools.Method(this.eventCommands.GetType(), nameof(EventCommands.PlaySound)));
         }
     }
 
@@ -191,11 +213,17 @@ public class ModEntry : Mod
 
     private void PlayerOnWarped(object? sender, WarpedEventArgs args)
     {
-        GameLocation oldLocation = args.OldLocation;
-        GameLocation newLocation = args.NewLocation;
-        Farmer player = args.Player;
+        // We need to ensure we can kill relevant UIs if the player is warping.
+        if (Game1.activeClickableMenu is MenuBase menu)
+        {
+            // If it's one of our menus, we close it.
+            // This should be refactored use an owned-menu system at some point.
+            if (menu.MenuName.Equals(CloseupInteractionImage.PropertyKey))
+                Game1.exitActiveMenu();
+        }
 
-        this.ProcessNewLocation(newLocation, oldLocation, player);
+        // And process our new location.
+        this.ProcessNewLocation(args.NewLocation, args.OldLocation, args.Player);
     }
 
     private void ProcessNewLocation(GameLocation newLocation, GameLocation oldLocation, Farmer player)
@@ -210,7 +238,6 @@ public class ModEntry : Mod
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                // this.logger.Debug($"Processing tile {x}:{y} in map {args.NewLocation.Name}.");
                 Tile tile;
 
                 try
@@ -231,7 +258,7 @@ public class ModEntry : Mod
 
                 if (tile.Properties.TryGetValue(DhFakeNpc.PropertyKey, out PropertyValue property))
                 {
-                    if (Parsers.TryParse(property,
+                    if (Parsers.TryParse(property.ToString(),
                             out DhFakeNpc fakeNpcProperty))
                     {
                         FakeNpc character = new FakeNpc(
@@ -263,7 +290,6 @@ public class ModEntry : Mod
                         }
 
                         // A safeguard for multiplayer.
-                        // TODO: Ensure this is the same logically as the previous method for full release.
                         if (newLocation.isTilePlaceable(new Vector2(x, y)))
                         {
                             newLocation.characters.Add(character);

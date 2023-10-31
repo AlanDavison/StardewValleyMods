@@ -29,8 +29,13 @@ public class Geometry
         return corners;
     }
 
-    public static Rectangle RectToRect(xTile.Dimensions.Rectangle xRect)
+    /// <summary>
+    /// Takes in an xTile Rectangle, and returns an XNA Rectangle.
+    /// </summary>
+    /// <param name="xRect"></param>
+    /// <returns></returns>
+    public static Microsoft.Xna.Framework.Rectangle RectToRect(xTile.Dimensions.Rectangle xRect)
     {
-        return new Rectangle(xRect.X, xRect.Y, xRect.Width, xRect.Height);
+        return new Microsoft.Xna.Framework.Rectangle(xRect.X, xRect.Y, xRect.Width, xRect.Height);
     }
 }
