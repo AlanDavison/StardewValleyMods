@@ -16,6 +16,8 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.GameData.Shops;
+using StardewValley.Menus;
 using xTile.ObjectModel;
 using xTile.Tiles;
 
@@ -45,6 +47,8 @@ public class ModEntry : Mod
         this.eventCommands = new EventCommands(this.Helper, this.logger);
 
         helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
+
+        this.LoadContentPacks();
 
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
         helper.Events.GameLoop.DayEnding += this.OnDayEnding;
@@ -119,6 +123,16 @@ public class ModEntry : Mod
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
+            if (args.IsDown(SButton.OemSemicolon))
+            {
+                // Game1.currentLocation.ShowAnimalShopMenu(this.OnMenuOpened);
+                List<SObject> animals = new List<SObject>();
+                animals.Add(new StardewValley.Object(){Name = "Fellowclown.TAG_Movoraptor"});
+                animals.Add(new StardewValley.Object(){Name = "Fellowclown.TAG_Warthog"});
+                PurchaseAnimalsMenu shop = new PurchaseAnimalsMenu(animals, Game1.currentLocation);
+                Game1.activeClickableMenu = shop;
+            }
+
             // int cursorX = (int)Game1.currentCursorTile.X;
             // int cursorY = (int)Game1.currentCursorTile.Y;
             // GameLocation here = Game1.currentLocation;
@@ -148,6 +162,22 @@ public class ModEntry : Mod
             // }
         };
 #endif
+    }
+
+    // private void OnMenuOpened(PurchaseAnimalsMenu obj)
+    // {
+    //     obj.
+    // }
+
+    private void LoadContentPacks()
+    {
+        foreach (var mod in this.Helper.ModRegistry.GetAll())
+        {
+            if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP"))
+            {
+
+            }
+        }
     }
 
     private void InitialiseModIntegrations()

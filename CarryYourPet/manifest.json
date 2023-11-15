@@ -7,10 +7,10 @@
    | 
    */
   "$schema": "https://smapi.io/schemas/manifest.json",
-  "UniqueID": ".CarryYourPet",
+  "UniqueID": "DecidedlyHuman.CarryYourPet",
   "Name": "Carry Your Pet",
   "Author": "DecidedlyHuman",
-  "Version": "1.2.1-alpha-23270",
+  "Version": "1.2.1-alpha-23270.Debug",
   "Description": "Allows you to carry your pet around.",
   "MinimumApiVersion": "3.15.0",
   "EntryDll": "CarryYourPet.dll",
