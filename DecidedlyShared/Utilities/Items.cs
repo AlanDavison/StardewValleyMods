@@ -32,7 +32,7 @@ namespace DecidedlyShared.Utilities
             if (floorItem is null)
                 return false;
 
-            return false;
+            return true;
         }
 
         public static bool TryGetFlooringFromItemId(string id, out Flooring floor)

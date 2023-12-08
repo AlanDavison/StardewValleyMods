@@ -701,13 +701,13 @@ namespace SmartBuilding.Utilities
                         return;
 
                     if (Items.TryGetItemFromFlooring(floor, out Item finalFloor))
+                    {
                         Game1.player.addItemByMenuIfNecessary(finalFloor);
+                        here.terrainFeatures.Remove(tile);
+                    }
                     else
                         this.logger.Error(
                             $"Couldn't get flooring item from floor with type {floor.whichFloor.Value}. Cannot safely remove.");
-
-                    // Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
-                    here.terrainFeatures.Remove(tile);
                 }
 
             // handle picking up growable bushes.

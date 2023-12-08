@@ -150,9 +150,11 @@ namespace SmartBuilding.Utilities
 
         public bool DoesTerrainFeatureContainModData(TerrainFeature tf, string search)
         {
+#if DEBUG
             var timer = new Stopwatch();
-
             timer.Start();
+#endif
+
             if (tf != null && tf.modData != null)
                 foreach (SerializableDictionary<string, string>? modData in tf.modData)
                 foreach (string? key in modData.Keys)
@@ -160,9 +162,10 @@ namespace SmartBuilding.Utilities
                     if (key.Contains(search) || value.Contains(search))
                         return true;
 
+#if DEBUG
             timer.Stop();
-
             this.logger.Log($"Took {timer.ElapsedMilliseconds}ms to search modData.", LogLevel.Trace);
+#endif
 
             return false;
         }
