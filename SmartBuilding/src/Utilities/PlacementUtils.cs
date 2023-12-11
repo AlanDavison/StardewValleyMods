@@ -11,7 +11,6 @@ namespace SmartBuilding.Utilities
 {
     public class PlacementUtils
     {
-        private readonly ModConfig config;
         private readonly ITapGiantCropsAPI? giantCropTapApi;
         private readonly IGrowableBushesAPI? growableBushesApi;
         private readonly IModHelper helper;
@@ -19,11 +18,10 @@ namespace SmartBuilding.Utilities
         private readonly Logger logger;
         private readonly IMoreFertilizersAPI? moreFertilizersApi;
 
-        public PlacementUtils(ModConfig config, IdentificationUtils identificationUtils,
+        public PlacementUtils(IdentificationUtils identificationUtils,
             IMoreFertilizersAPI? moreFertilizersApi, ITapGiantCropsAPI? giantCropTapApi, IGrowableBushesAPI? growableBushesApi,
             Logger logger, IModHelper helper)
         {
-            this.config = config;
             this.identificationUtils = identificationUtils;
             this.moreFertilizersApi = moreFertilizersApi;
             this.giantCropTapApi = giantCropTapApi;
@@ -35,7 +33,7 @@ namespace SmartBuilding.Utilities
         public bool HasAdjacentNonWaterTile(Vector2 v)
         {
             // Right now, this is only applicable for crab pots.
-            if (this.config.CrabPotsInAnyWaterTile)
+            if (ModEntry.Config.CrabPotsInAnyWaterTile)
                 return true;
             this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_CrabPotsInAnyWaterTile_Disabled(), LogLevel.Trace,
                 true);
@@ -122,7 +120,7 @@ namespace SmartBuilding.Utilities
                             // We now know we're dealing with flooring, so if the floor replacement
                             // setting is enabled, we move on to our other checks.
 
-                            if (this.config.EnableReplacingFloors)
+                            if (ModEntry.Config.EnableReplacingFloors)
                             {
                                 // If the names aren't the same, we return true, because we want to replace. Otherwise, false.
                                 if (!this.identificationUtils.GetFlooringNameFromId(floor.whichFloor).Equals(i.Name))
@@ -153,12 +151,12 @@ namespace SmartBuilding.Utilities
                     }
 
                     // Here, we want to display a message if the floor COULD be placed if the appropriate setting were enabled.
-                    if (!here.isTileLocationOpen(v) && !this.config.LessRestrictiveFloorPlacement)
+                    if (!here.isTileLocationOpen(v) && !ModEntry.Config.LessRestrictiveFloorPlacement)
                         this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_MoreLaxFloorPlacement_Disabled(),
                             LogLevel.Trace, true);
 
                     // At this point, we return appropriately with vanilla logic, or true depending on the placement setting.
-                    return this.config.LessRestrictiveFloorPlacement || here.isTileLocationOpen(v);
+                    return ModEntry.Config.LessRestrictiveFloorPlacement || here.isTileLocationOpen(v);
                 case ItemType.Chest:
                     // We want to be extra safe here, so we confirm it is in fact of type Chest.
                     if (i is Chest)
@@ -174,7 +172,7 @@ namespace SmartBuilding.Utilities
                     goto case ItemType.Generic;
                 case ItemType.Fertilizer:
                     // If the setting to enable fertilizers is off, return false to ensure they can't be added to the queue.
-                    if (!this.config.EnableFertilizers)
+                    if (!ModEntry.Config.EnableFertilizers)
                     {
                         this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableFertilisers_Disabled(),
                             LogLevel.Trace, true);
@@ -214,7 +212,7 @@ namespace SmartBuilding.Utilities
                     return false;
                 case ItemType.TreeFertilizer:
                     // If the setting to enable tree fertilizers is off, return false to ensure they can't be added to the queue.
-                    if (!this.config.EnableFertilizers)
+                    if (!ModEntry.Config.EnableFertilizers)
                     {
                         this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableFertilisers_Disabled(),
                             LogLevel.Trace, true);
@@ -238,7 +236,7 @@ namespace SmartBuilding.Utilities
                     return false;
                 case ItemType.Seed:
                     // If the setting to enable crops is off, return false to ensure they can't be added to the queue.
-                    if (!this.config.EnablePlantingCrops)
+                    if (!ModEntry.Config.EnablePlantingCrops)
                     {
                         this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnablePlantingCrops_Disabled(),
                             LogLevel.Trace, true);
@@ -288,7 +286,7 @@ namespace SmartBuilding.Utilities
                     return false;
                 case ItemType.Tapper:
                     // If the setting to enable tree tappers is off, we return false here to ensure nothing further happens.
-                    if (!this.config.EnableTreeTappers)
+                    if (!ModEntry.Config.EnableTreeTappers)
                     {
                         this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_EnableTreeTappers_Disabled(),
                             LogLevel.Trace, true);
@@ -336,7 +334,7 @@ namespace SmartBuilding.Utilities
                     if (this.growableBushesApi is null)
                         return false; // this should be impossible.
 
-                    return this.growableBushesApi.CanPlaceBush(bush, here, v, this.config.LessRestrictiveObjectPlacement);
+                    return this.growableBushesApi.CanPlaceBush(bush, here, v, ModEntry.Config.LessRestrictiveObjectPlacement);
 
                 case ItemType.Fence:
                     // We want to deal with fences specifically in order to handle fence replacements.
@@ -349,7 +347,7 @@ namespace SmartBuilding.Utilities
                         if (this.identificationUtils.IsTypeOfObject(o, ItemType.Fence))
                         {
                             // If it is, we only need to continue if the fence replacement setting is on.
-                            if (!this.config.EnableReplacingFences)
+                            if (!ModEntry.Config.EnableReplacingFences)
                             {
                                 // And create our notification.
                                 this.logger.Log(I18n.SmartBuilding_Message_CheatyOptions_FenceReplacement_Disabled(),
@@ -389,20 +387,20 @@ namespace SmartBuilding.Utilities
                         return false;
 
                     // If the setting for allowing storage furniture is off, we get the hell out.
-                    if (!this.config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
+                    if (!ModEntry.Config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
                     {
                         this.logger.Log(I18n.SmartBuilding_Error_StorageFurniture_SettingIsOff(), LogLevel.Trace, true);
 
                         return false;
                     }
 
-                    if (this.config.LessRestrictiveFurniturePlacement)
+                    if (ModEntry.Config.LessRestrictiveFurniturePlacement)
                         return true;
                     return (i as StorageFurniture).canBePlacedHere(here, v);
 
                     break;
                 case ItemType.TvFurniture:
-                    if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                    if (ModEntry.Config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                         return true;
                     if (!(i as TV).canBePlacedHere(here, v))
                     {
@@ -413,7 +411,7 @@ namespace SmartBuilding.Utilities
 
                     return true;
                 case ItemType.BedFurniture:
-                    if (this.config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
+                    if (ModEntry.Config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
                         return true;
                     if (!(i as BedFurniture).canBePlacedHere(here, v))
                     {
@@ -425,7 +423,7 @@ namespace SmartBuilding.Utilities
                     return true;
                 case ItemType.GenericFurniture:
                     // In this place, we play fast and loose, and return true.
-                    if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                    if (ModEntry.Config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                         return true;
                     if (!(i as Furniture).canBePlacedHere(here, v))
                     {
@@ -439,7 +437,7 @@ namespace SmartBuilding.Utilities
                     GenericPlaceable
                         : // A goto, I know, gross, but... it works, and is fine for now, until I split out detection logic into methods.
 
-                    if (this.config.LessRestrictiveObjectPlacement)
+                    if (ModEntry.Config.LessRestrictiveObjectPlacement)
                     {
                         // If the less restrictive object placement setting is enabled, we first want to check if vanilla logic dictates the object be placeable.
                         if (Game1.currentLocation.isTileLocationOpen(v))

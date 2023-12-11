@@ -28,6 +28,11 @@ namespace SmartBuilding
             this.identificationUtils = identificationUtils;
         }
 
+        public void ReloadConfig(string command, string[] args)
+        {
+            this.mod.LoadConfig();
+        }
+
         public void IdentifyItemsCommand(string command, string[] args)
         {
             if (Game1.player.Items != null && Game1.player.Items.Count > 0)

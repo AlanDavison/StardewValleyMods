@@ -13,17 +13,15 @@ namespace SmartBuilding.Utilities
         private readonly IDynamicGameAssetsApi? dgaApi;
         private readonly IModHelper helper;
         private readonly Logger logger;
-        private ModConfig config;
         private IMoreFertilizersAPI? moreFertilizersApi;
         private IGrowableBushesAPI? growableBushesApi;
         private PlacementUtils placementUtils;
 
-        public IdentificationUtils(IModHelper helper, Logger logger, ModConfig config, IDynamicGameAssetsApi? dgaApi,
+        public IdentificationUtils(IModHelper helper, Logger logger, IDynamicGameAssetsApi? dgaApi,
             IMoreFertilizersAPI? moreFertilizersApi, IGrowableBushesAPI? growableBushesAPI, PlacementUtils placementUtils)
         {
             this.helper = helper;
             this.logger = logger;
-            this.config = config;
             this.dgaApi = dgaApi;
             this.moreFertilizersApi = moreFertilizersApi;
             this.growableBushesApi = growableBushesAPI;

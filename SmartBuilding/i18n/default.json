@@ -98,6 +98,7 @@
     "smart-building.error.furniture.placement-failed": "F-01: There was a problem placing the furniture.",
     "smart-building.error.refunding.generic-refund-message": "R-01: Something went wrong.",
     "smart-building.error.refunding.refunding-item-to-player-inventory": "R-02: Refunding item to player inventory: ",
+    "smart-building.error.removal.removing-item-failed-to-identify": "Re-01: Smart Building couldn't identify what kind of item this is. Please send me a log!",
     "smart-building.warning.gmcm-not-installed": "GMCM-01: The user doesn't have GMCM installed. This is not an error.",
     // Messages
     "smart-building.message.item-name": "Item name",

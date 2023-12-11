@@ -384,3 +384,59 @@ Checklist
 ### Torches — "torches"
 
 ### Rectangle drawing — "rectangle"
+
+# 1.8.0 — Updated to Stardew Valley 1.6
+
+### UI
+
+### Interaction blocking
+
+### Misc
+* Leftover debug gubbins
+
+### I18n Translations
+
+### Mod Integration
+
+* More Fertilizers — "morefertilisers"
+  * Cannot test without More Fertilizers. I trust Atravita to ensure things work as intended, though.
+
+### Known prior bugs. Ensure no regression — "regression"
+
+### Object and producer identification — "identification"
+
+* Difficult to test modded right now, since 1.6 isn't out yet, and so most mods that add custom items aren't updated.
+
+### Flooring — "flooring"
+
+### Furniture — "furniture"
+
+### TV Furniture — "tv"
+
+### Storage furniture — "storage"
+
+### Bed furniture — "bed"
+
+### Furniture catalogue?
+
+### Chests — "chests"
+
+### Trees — "trees"
+
+### Crops — "crops"
+
+* Cannot test DGA crops currently.
+
+### Fences — "fences"
+
+### Modded objects — "modded"
+
+* Cannot test modded objects currently.
+
+### Item insertion — "insertion"
+
+### Item insertion (modded; PFM)
+
+### Torches — "torches"
+
+### Rectangle drawing — "rectangle"
