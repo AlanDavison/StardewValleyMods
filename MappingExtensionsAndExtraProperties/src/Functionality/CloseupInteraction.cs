@@ -58,6 +58,8 @@ public class CloseupInteraction
                 out CloseupInteractionImage closeupInteractionParsed))
         {
             // If the parsing failed, we want to nope out.
+
+            return;
         }
 
         // At this point, we have our correctly-parsed tile property, so we create our image container.

@@ -175,7 +175,11 @@ public class ModEntry : Mod
         {
             if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP"))
             {
-
+                // Current thought: Have each feature (e.g., closeup interactions, mail flag alterations, backgrounds, etc.)
+                // be a "Feature" in code that only becomes active if a pack that uses said feature is loaded.
+                // This could be done via a FeatureManager that could have features added to its active list. When added
+                // to the list, the Feature which inherits IFeature runs its patching logic where necessary, and exposes
+                // the methods it uses to perform the functionality where required.
             }
         }
     }
