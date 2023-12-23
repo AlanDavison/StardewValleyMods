@@ -63,9 +63,7 @@ public class ModEntry : Mod
         };
 
         // Our patch for handling interactions.
-        harmony.Patch(
-            AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-            postfix: new HarmonyMethod(typeof(GameLocationPatches), nameof(GameLocationPatches.GameLocation_CheckAction_Postfix)));
+        // TODO: REPLACE HERE WITH FEATURE INITIALISATION.
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
