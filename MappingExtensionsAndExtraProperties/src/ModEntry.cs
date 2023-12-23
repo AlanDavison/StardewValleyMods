@@ -6,6 +6,7 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
+using MappingExtensionsAndExtraProperties.Features;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.EventCommands;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
@@ -27,21 +28,25 @@ public class ModEntry : Mod
 {
     private Logger logger;
     private TilePropertyHandler tileProperties;
+    private Properties propertyUtils;
     private MeepApi api;
     private List<FakeNpc> allNpcs;
     private ISaveAnywhereApi saveAnywhereApi;
     private ISpaceCoreApi spaceCoreApi;
     private EventCommands eventCommands;
+    private FeatureManager features;
 
     public override void Entry(IModHelper helper)
     {
         var harmony = new Harmony(this.ModManifest.UniqueID);
         this.logger = new Logger(this.Monitor);
         this.tileProperties = new TilePropertyHandler(this.logger);
+        this.propertyUtils = new Properties(this.logger);
         this.allNpcs = new List<FakeNpc>();
+        this.features = new FeatureManager();
         EventPatches.InitialisePatches(this.logger, this.tileProperties);
         Game1Patches.InitialisePatches(this.logger, this.tileProperties);
-        GameLocationPatches.InitialisePatches(this.logger, this.tileProperties);
+        // GameLocationPatches.InitialisePatches(this.logger, this.tileProperties);
         SObjectPatches.InitialisePatches(this.logger, this.tileProperties);
         Parsers.InitialiseParsers(this.logger, helper);
         this.eventCommands = new EventCommands(this.Helper, this.logger);
@@ -63,7 +68,10 @@ public class ModEntry : Mod
         };
 
         // Our patch for handling interactions.
-        // TODO: REPLACE HERE WITH FEATURE INITIALISATION.
+        CloseupInteractionFeature closeupInteractions = new CloseupInteractionFeature(
+            harmony, "DH.CloseupInteractions", this.logger, this.tileProperties, this.propertyUtils);
+        this.features.AddFeature(closeupInteractions);
+        this.features.EnableFeatures();
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
