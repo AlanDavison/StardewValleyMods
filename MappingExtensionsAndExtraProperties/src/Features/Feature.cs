@@ -3,15 +3,36 @@ using DecidedlyShared.Constants;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
 public abstract class Feature
 {
     /// <summary>
+    /// The ID of this feature for pack loading purposes.
+    /// </summary>
+    public abstract string FeatureId { get; init; }
+
+    /// <summary>
+    /// The <see cref="FeatureManager"/> this <see cref="Feature"/> belongs to.
+    /// </summary>
+    internal abstract FeatureManager ParentManager { get; init; }
+
+    /// <summary>
     /// The <see cref="Harmony">Harmony</see> reference used to apply this feature's patches.
     /// </summary>
     public abstract Harmony HarmonyPatcher { get; init; }
+
+    /// <summary>
+    /// Whether this feature has a position in the world, or will otherwise respond to cursor position.
+    /// </summary>
+    public abstract bool AffectsCursorIcon { get; init; }
+
+    /// <summary>
+    /// If <see cref="AffectsCursorIcon"/> is true, the feature will expose the cursor ID to be used here.
+    /// </summary>
+    public abstract int CursorId { get; init; }
 
     /// <summary>
     /// Whether or not this feature has been enabled.
@@ -19,9 +40,9 @@ public abstract class Feature
     public abstract bool Enabled { get; internal set; }
 
     /// <summary>
-    /// The ID of this feature for pack loading purposes.
+    /// The tile properties this feature uses.
     /// </summary>
-    public abstract string FeatureId { get; init; }
+    public static string[] tileProperties;
 
     /// <summary>
     /// Performs any actions this feature requires to be enabled. This often involves applying some Harmony patches.
@@ -33,4 +54,12 @@ public abstract class Feature
     /// Disable this feature and all of its functionality.
     /// </summary>
     public abstract void Disable();
+
+    /// <summary>
+    /// Whether the game's cursor should be changed when hovering over a given tile.
+    /// </summary>
+    /// <param name="tile">The in-world tile to check against.</param>
+    /// <param name="cursorId">The cursor ID to change the cursor to.</param>
+    /// <returns></returns>
+    public abstract bool ShouldChangeCursor(Vector2 tile, out int cursorId);
 }

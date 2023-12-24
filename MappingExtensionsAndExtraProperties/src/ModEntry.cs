@@ -69,9 +69,21 @@ public class ModEntry : Mod
 
         // Our patch for handling interactions.
         CloseupInteractionFeature closeupInteractions = new CloseupInteractionFeature(
-            harmony, "DH.CloseupInteractions", this.logger, this.tileProperties, this.propertyUtils);
+            harmony, "DH.CloseupInteractions", this.features, this.logger, this.tileProperties, this.propertyUtils);
+        LetterFeature letter = new LetterFeature(
+            harmony, "DH.Letter", this.features, this.logger, this.tileProperties);
         this.features.AddFeature(closeupInteractions);
+        this.features.AddFeature(letter);
+        // Add cursor feature
         this.features.EnableFeatures();
+
+        helper.Events.Input.ButtonPressed += (sender, args) =>
+        {
+            if (args.Button == SButton.OemSemicolon)
+            {
+                this.features.DisableFeature("DH.Letter");
+            }
+        };
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
@@ -82,9 +94,7 @@ public class ModEntry : Mod
         //     postfix: new HarmonyMethod(typeof(Patches), nameof(Patches.Event_ReceiveActionPress_Postfix)));
 
         // Our cursor draw patch for interaction highlights.
-        harmony.Patch(
-            AccessTools.Method(typeof(Game1), nameof(Game1.drawMouseCursor)),
-            prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.Game1_drawMouseCursor_Prefix)));
+
 
         // We need this to handle items with integrated closeup interactions. Disabled for now.
         // harmony.Patch(
@@ -132,11 +142,11 @@ public class ModEntry : Mod
             if (args.IsDown(SButton.OemSemicolon))
             {
                 // Game1.currentLocation.ShowAnimalShopMenu(this.OnMenuOpened);
-                List<SObject> animals = new List<SObject>();
-                animals.Add(new StardewValley.Object(){Name = "Fellowclown.TAG_Movoraptor"});
-                animals.Add(new StardewValley.Object(){Name = "Fellowclown.TAG_Warthog"});
-                PurchaseAnimalsMenu shop = new PurchaseAnimalsMenu(animals, Game1.currentLocation);
-                Game1.activeClickableMenu = shop;
+                // List<SObject> animals = new List<SObject>();
+                // animals.Add(new StardewValley.Object(){Name = "Fellowclown.TAG_Movoraptor"});
+                // animals.Add(new StardewValley.Object(){Name = "Fellowclown.TAG_Warthog"});
+                // PurchaseAnimalsMenu shop = new PurchaseAnimalsMenu(animals, Game1.currentLocation);
+                // Game1.activeClickableMenu = shop;
             }
 
             // int cursorX = (int)Game1.currentCursorTile.X;

@@ -1,10 +1,15 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
 public class FeatureManager
 {
     private HashSet<Feature> features;
+    internal event EventHandler GameTickCallback;
 
     public FeatureManager()
     {
@@ -24,6 +29,16 @@ public class FeatureManager
         }
     }
 
+    public void DisableFeature(string featureId)
+    {
+        Feature feature = this.features.FirstOrDefault(f => f.FeatureId.Equals(featureId));
+
+        if (feature is not null)
+        {
+            feature.Disable();
+        }
+    }
+
     /// <summary>
     ///
     /// </summary>
@@ -38,5 +53,26 @@ public class FeatureManager
         }
 
         return false;
+    }
+
+    public bool TryGetCursorIdForTile(GameLocation location, Vector2 tile, out int id)
+    {
+        id = default;
+
+        Feature f = this.features.FirstOrDefault((f) => (f.AffectsCursorIcon && f.Enabled) == true);
+
+        if (f is not null)
+        {
+            id = f.CursorId;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void TickFeatures()
+    {
+        this.GameTickCallback.Invoke(this, null);
     }
 }

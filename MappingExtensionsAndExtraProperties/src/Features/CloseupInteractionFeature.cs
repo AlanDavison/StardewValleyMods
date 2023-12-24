@@ -8,6 +8,7 @@ using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using xTile.Dimensions;
@@ -17,21 +18,33 @@ namespace MappingExtensionsAndExtraProperties.Features;
 
 public class CloseupInteractionFeature : Feature
 {
+    internal override FeatureManager ParentManager { get; init; }
     public sealed override Harmony HarmonyPatcher { get; init; }
-    public sealed override bool Enabled { get; internal set; }
+    public sealed override bool AffectsCursorIcon { get; init; }
+    public sealed override int CursorId { get; init; }
+
+    private static bool enabled;
+    public sealed override bool Enabled
+    {
+        get => enabled;
+        internal set => enabled = value;
+    }
     public sealed override string FeatureId { get; init; }
     private static TilePropertyHandler tileProperties;
     private static Properties propertyUtils;
     private static Logger logger;
 
-    public CloseupInteractionFeature(Harmony harmony, string id, Logger logger, TilePropertyHandler tilePropertyHandler, Properties propertyUtils)
+    public CloseupInteractionFeature(Harmony harmony, string id, FeatureManager manager, Logger logger, TilePropertyHandler tilePropertyHandler, Properties propertyUtils)
     {
         this.Enabled = false;
         this.HarmonyPatcher = harmony;
         this.FeatureId = id;
+        this.ParentManager = manager;
         CloseupInteractionFeature.logger = logger;
         CloseupInteractionFeature.tileProperties = tilePropertyHandler;
         CloseupInteractionFeature.propertyUtils = propertyUtils;
+        this.AffectsCursorIcon = true;
+        this.CursorId = 5;
     }
 
     public override bool Enable()
@@ -54,7 +67,7 @@ public class CloseupInteractionFeature : Feature
 
     public override void Disable()
     {
-        throw new NotImplementedException();
+        this.Enabled = false;
     }
 
     public override int GetHashCode()
@@ -62,9 +75,17 @@ public class CloseupInteractionFeature : Feature
         return this.FeatureId.GetHashCode();
     }
 
+    public override bool ShouldChangeCursor(Vector2 tile, out int cursorId)
+    {
+        throw new NotImplementedException();
+    }
+
     public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
         xTile.Dimensions.Rectangle viewport, Farmer who)
     {
+        if (!enabled)
+            return;
+
 #if DEBUG
         Stopwatch timer = new Stopwatch();
         timer.Start();
