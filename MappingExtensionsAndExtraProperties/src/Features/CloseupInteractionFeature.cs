@@ -18,10 +18,14 @@ namespace MappingExtensionsAndExtraProperties.Features;
 
 public class CloseupInteractionFeature : Feature
 {
-    internal override FeatureManager ParentManager { get; init; }
     public sealed override Harmony HarmonyPatcher { get; init; }
     public sealed override bool AffectsCursorIcon { get; init; }
     public sealed override int CursorId { get; init; }
+    private string[] tilePropertiesControlled = [
+        "MEEP_CloseupInteraction_Image",
+        "MEEP_CloseupInteraction_Image_1",
+        "MEEP_CloseupInteraction_Text",
+        "MEEP_CloseupInteraction_Sound"];
 
     private static bool enabled;
     public sealed override bool Enabled
@@ -29,17 +33,17 @@ public class CloseupInteractionFeature : Feature
         get => enabled;
         internal set => enabled = value;
     }
+
     public sealed override string FeatureId { get; init; }
     private static TilePropertyHandler tileProperties;
     private static Properties propertyUtils;
     private static Logger logger;
 
-    public CloseupInteractionFeature(Harmony harmony, string id, FeatureManager manager, Logger logger, TilePropertyHandler tilePropertyHandler, Properties propertyUtils)
+    public CloseupInteractionFeature(Harmony harmony, string id, Logger logger, TilePropertyHandler tilePropertyHandler, Properties propertyUtils)
     {
         this.Enabled = false;
         this.HarmonyPatcher = harmony;
         this.FeatureId = id;
-        this.ParentManager = manager;
         CloseupInteractionFeature.logger = logger;
         CloseupInteractionFeature.tileProperties = tilePropertyHandler;
         CloseupInteractionFeature.propertyUtils = propertyUtils;
@@ -75,9 +79,21 @@ public class CloseupInteractionFeature : Feature
         return this.FeatureId.GetHashCode();
     }
 
-    public override bool ShouldChangeCursor(Vector2 tile, out int cursorId)
+    public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
-        throw new NotImplementedException();
+        cursorId = default;
+
+        for (int i = 0; i < this.tilePropertiesControlled.Length; i++)
+        {
+            if (tileProperties.TryGetBackProperty(tileX, tileY, Game1.currentLocation, this.tilePropertiesControlled[i],
+                    out PropertyValue _))
+            {
+                cursorId = this.CursorId;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,

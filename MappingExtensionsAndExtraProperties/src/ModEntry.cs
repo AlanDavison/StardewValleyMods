@@ -34,7 +34,6 @@ public class ModEntry : Mod
     private ISaveAnywhereApi saveAnywhereApi;
     private ISpaceCoreApi spaceCoreApi;
     private EventCommands eventCommands;
-    private FeatureManager features;
 
     public override void Entry(IModHelper helper)
     {
@@ -43,9 +42,7 @@ public class ModEntry : Mod
         this.tileProperties = new TilePropertyHandler(this.logger);
         this.propertyUtils = new Properties(this.logger);
         this.allNpcs = new List<FakeNpc>();
-        this.features = new FeatureManager();
         EventPatches.InitialisePatches(this.logger, this.tileProperties);
-        Game1Patches.InitialisePatches(this.logger, this.tileProperties);
         // GameLocationPatches.InitialisePatches(this.logger, this.tileProperties);
         SObjectPatches.InitialisePatches(this.logger, this.tileProperties);
         Parsers.InitialiseParsers(this.logger, helper);
@@ -67,21 +64,22 @@ public class ModEntry : Mod
             }
         };
 
-        // Our patch for handling interactions.
         CloseupInteractionFeature closeupInteractions = new CloseupInteractionFeature(
-            harmony, "DH.CloseupInteractions", this.features, this.logger, this.tileProperties, this.propertyUtils);
+            harmony, "DH.CloseupInteractions", this.logger, this.tileProperties, this.propertyUtils);
         LetterFeature letter = new LetterFeature(
-            harmony, "DH.Letter", this.features, this.logger, this.tileProperties);
-        this.features.AddFeature(closeupInteractions);
-        this.features.AddFeature(letter);
-        // Add cursor feature
-        this.features.EnableFeatures();
+            harmony, "DH.Letter", this.logger, this.tileProperties);
+        CursorIconFeature cursorIcons = new CursorIconFeature(
+            harmony, "DH.Internal.CursorIconFeature", this.logger, this.tileProperties);
+        FeatureManager.AddFeature(closeupInteractions);
+        FeatureManager.AddFeature(letter);
+        FeatureManager.AddFeature(cursorIcons);
+        FeatureManager.EnableFeatures();
 
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
             if (args.Button == SButton.OemSemicolon)
             {
-                this.features.DisableFeature("DH.Letter");
+                FeatureManager.DisableFeature("DH.Letter");
             }
         };
 

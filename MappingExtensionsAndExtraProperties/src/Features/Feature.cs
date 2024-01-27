@@ -4,6 +4,7 @@ using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
@@ -13,11 +14,6 @@ public abstract class Feature
     /// The ID of this feature for pack loading purposes.
     /// </summary>
     public abstract string FeatureId { get; init; }
-
-    /// <summary>
-    /// The <see cref="FeatureManager"/> this <see cref="Feature"/> belongs to.
-    /// </summary>
-    internal abstract FeatureManager ParentManager { get; init; }
 
     /// <summary>
     /// The <see cref="Harmony">Harmony</see> reference used to apply this feature's patches.
@@ -40,11 +36,6 @@ public abstract class Feature
     public abstract bool Enabled { get; internal set; }
 
     /// <summary>
-    /// The tile properties this feature uses.
-    /// </summary>
-    public static string[] tileProperties;
-
-    /// <summary>
     /// Performs any actions this feature requires to be enabled. This often involves applying some Harmony patches.
     /// <returns>True if the feature was initialised successfully, and false if something failed.</returns>
     /// </summary>
@@ -61,5 +52,5 @@ public abstract class Feature
     /// <param name="tile">The in-world tile to check against.</param>
     /// <param name="cursorId">The cursor ID to change the cursor to.</param>
     /// <returns></returns>
-    public abstract bool ShouldChangeCursor(Vector2 tile, out int cursorId);
+    public abstract bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId);
 }

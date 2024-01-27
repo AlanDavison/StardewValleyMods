@@ -9,12 +9,10 @@ namespace MappingExtensionsAndExtraProperties.Functionality;
 
 public class MailFlag
 {
-    public static void DoMailFlag(PropertyValue dhSetMailFlagProperty, Logger logger)
+    public static void SetMailFlag(PropertyValue dhSetMailFlagProperty, Logger logger)
     {
-        // It exists, so parse it.
         if (Parsers.TryParse(dhSetMailFlagProperty.ToString(), out SetMailFlag parsedProperty))
         {
-            // We've parsed it, so we try setting the mail flag appropriately.
             Player.TryAddMailFlag(parsedProperty.MailFlag, Game1.player);
         }
         else

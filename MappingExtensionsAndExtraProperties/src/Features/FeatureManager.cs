@@ -1,37 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using MappingExtensionsAndExtraProperties.Models.EventArgs;
 using Microsoft.Xna.Framework;
 using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
-public class FeatureManager
+public static class FeatureManager
 {
-    private HashSet<Feature> features;
-    internal event EventHandler GameTickCallback;
+    private static HashSet<Feature> features = new HashSet<Feature>();
+    internal static event EventHandler GameTickCallback;
+    internal static event EventHandler<OnLocationChangeEventArgs> OnLocationChangeCallback;
 
-    public FeatureManager()
+    public static void AddFeature(Feature f)
     {
-        this.features = new HashSet<Feature>();
+        features.Add(f);
     }
 
-    public void AddFeature(Feature f)
+    public static void EnableFeatures()
     {
-        this.features.Add(f);
-    }
-
-    public void EnableFeatures()
-    {
-        foreach (var feature in this.features)
+        foreach (var feature in features)
         {
             feature.Enable();
         }
     }
 
-    public void DisableFeature(string featureId)
+    public static void DisableFeature(string featureId)
     {
-        Feature feature = this.features.FirstOrDefault(f => f.FeatureId.Equals(featureId));
+        Feature feature = features.FirstOrDefault(f => f.FeatureId.Equals(featureId));
 
         if (feature is not null)
         {
@@ -44,9 +42,9 @@ public class FeatureManager
     /// </summary>
     /// <param name="featureId"></param>
     /// <returns>True if the feature is found and enabled, and false if the feature doesn't exist/hasn't been added.</returns>
-    public bool IsFeatureEnabled(string featureId)
+    public static bool IsFeatureEnabled(string featureId)
     {
-        foreach (var feature in this.features)
+        foreach (var feature in features)
         {
             if (feature.FeatureId.Equals(featureId))
                 return feature.Enabled;
@@ -55,24 +53,40 @@ public class FeatureManager
         return false;
     }
 
-    public bool TryGetCursorIdForTile(GameLocation location, Vector2 tile, out int id)
+    public static bool TryGetCursorIdForTile(GameLocation location, int tileX, int tileY, out int id)
     {
         id = default;
 
-        Feature f = this.features.FirstOrDefault((f) => (f.AffectsCursorIcon && f.Enabled) == true);
+        Stopwatch watch = new Stopwatch();
+        watch.Start();
+        Feature[] f = features.Where((f) => (f.AffectsCursorIcon && f.Enabled) == true).ToArray();
+        bool shouldChangeCursor = false;
 
-        if (f is not null)
+        for (int i = 0; i < f.Length; i++)
         {
-            id = f.CursorId;
-
-            return true;
+            if (!shouldChangeCursor)
+                shouldChangeCursor = f[i].ShouldChangeCursor(location, tileX, tileY, out id);
+            else
+                f[i].ShouldChangeCursor(location, tileX, tileY, out _);
         }
 
-        return false;
+        watch.Stop();
+        return shouldChangeCursor;
     }
 
-    public void TickFeatures()
+    public static void TickFeatures()
     {
-        this.GameTickCallback.Invoke(this, null);
+        GameTickCallback.Invoke(null, null);
+    }
+
+    public static void OnLocationChange(GameLocation oldLocation, GameLocation newLocation, Farmer player)
+    {
+        OnLocationChangeCallback.Invoke(null,
+            new OnLocationChangeEventArgs()
+            {
+                OldLocation =  oldLocation,
+                NewLocation = newLocation,
+                Player = player
+            });
     }
 }
