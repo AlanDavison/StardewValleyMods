@@ -22,12 +22,12 @@ public class LetterFeature : Feature
     public sealed override int CursorId { get; init; }
     private string[] tilePropertiesControlled = [
         "MEEP_Letter"];
-    private static bool enabled;
-    public override bool Enabled
+    public sealed override bool Enabled
     {
         get => enabled;
         internal set => enabled = value;
     }
+    private static bool enabled;
 
     public override string FeatureId { get; init; }
     private static TilePropertyHandler tileProperties;
@@ -70,6 +70,9 @@ public class LetterFeature : Feature
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
         cursorId = default;
+
+        if (!enabled)
+            return false;
 
         for (int i = 0; i < this.tilePropertiesControlled.Length; i++)
         {

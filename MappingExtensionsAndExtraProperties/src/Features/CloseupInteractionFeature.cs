@@ -27,12 +27,12 @@ public class CloseupInteractionFeature : Feature
         "MEEP_CloseupInteraction_Text",
         "MEEP_CloseupInteraction_Sound"];
 
-    private static bool enabled;
     public sealed override bool Enabled
     {
         get => enabled;
         internal set => enabled = value;
     }
+    private static bool enabled;
 
     public sealed override string FeatureId { get; init; }
     private static TilePropertyHandler tileProperties;
@@ -82,6 +82,9 @@ public class CloseupInteractionFeature : Feature
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
         cursorId = default;
+
+        if (!enabled)
+            return false;
 
         for (int i = 0; i < this.tilePropertiesControlled.Length; i++)
         {

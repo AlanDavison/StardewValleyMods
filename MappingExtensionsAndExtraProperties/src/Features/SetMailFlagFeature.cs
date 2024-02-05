@@ -5,6 +5,7 @@ using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StardewModdingAPI;
 using StardewValley;
 using xTile.Dimensions;
@@ -20,7 +21,12 @@ public class SetMailFlagFeature : Feature
     public sealed override int CursorId { get; init; }
     private static TilePropertyHandler tileProperties;
     private static Logger logger;
-    public sealed override bool Enabled { get; internal set; }
+    public sealed override bool Enabled
+    {
+        get => enabled;
+        internal set => enabled = value;
+    }
+    private static bool enabled;
 
     public SetMailFlagFeature(Harmony harmony, string id, Logger logger, TilePropertyHandler tilePropertyHandler)
     {
@@ -53,7 +59,7 @@ public class SetMailFlagFeature : Feature
 
     public override void Disable()
     {
-        throw new System.NotImplementedException();
+        this.Enabled = false;
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
@@ -66,6 +72,9 @@ public class SetMailFlagFeature : Feature
     public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
         xTile.Dimensions.Rectangle viewport, Farmer who)
     {
+        if (!enabled)
+            return;
+
 #if DEBUG
         Stopwatch timer = new Stopwatch();
         timer.Start();

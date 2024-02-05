@@ -16,7 +16,12 @@ public class CursorIconFeature : Feature
     public sealed override bool AffectsCursorIcon { get; init; }
     public sealed override int CursorId { get; init; }
     private static string[] tilePropertiesControlled;
-    public override bool Enabled { get; internal set; }
+    public sealed override bool Enabled
+    {
+        get => enabled;
+        internal set => enabled = value;
+    }
+    private static bool enabled;
     private static TilePropertyHandler tileProperties;
     private static Logger logger;
 
@@ -50,22 +55,23 @@ public class CursorIconFeature : Feature
 
     public override void Disable()
     {
-        throw new System.NotImplementedException();
+        this.Enabled = false;
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
-        throw new System.NotImplementedException();
+        cursorId = default;
+        return false;
     }
 
     public static void Game1_drawMouseCursor_Prefix(Game1 __instance)
     {
-        // int tileX = (int)Game1.currentCursorTile.X;
-        // int tileY = (int)Game1.currentCursorTile.Y;
-        //
-        // if (FeatureManager.TryGetCursorIdForTile(Game1.currentLocation, tileX, tileY, out int id))
-        // {
-        //     Game1.mouseCursor = id;
-        // }
+        int tileX = (int)Game1.currentCursorTile.X;
+        int tileY = (int)Game1.currentCursorTile.Y;
+
+        if (FeatureManager.TryGetCursorIdForTile(Game1.currentLocation, tileX, tileY, out int id))
+        {
+            Game1.mouseCursor = id;
+        }
     }
 }
