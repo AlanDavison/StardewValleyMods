@@ -31,6 +31,11 @@ public class FakeNpc : NPC
 #endif
     }
 
+    public FakeNpc()
+    {
+
+    }
+
     // Vanilla method does centre the shadow correctly.
     // public override Vector2 GetShadowOffset()
     // {
