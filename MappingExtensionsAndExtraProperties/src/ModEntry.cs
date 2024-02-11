@@ -19,6 +19,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.Shops;
 using StardewValley.Menus;
+using StardewValley.Pathfinding;
 using xTile.ObjectModel;
 using xTile.Tiles;
 
@@ -34,6 +35,7 @@ public class ModEntry : Mod
     private ISaveAnywhereApi saveAnywhereApi;
     private ISpaceCoreApi spaceCoreApi;
     private EventCommands eventCommands;
+    private FarmAnimal? cow;
 
     public override void Entry(IModHelper helper)
     {
@@ -75,13 +77,33 @@ public class ModEntry : Mod
         FeatureManager.AddFeature(cursorIcons);
         FeatureManager.EnableFeatures();
 
+#if DEBUG
         helper.Events.Input.ButtonPressed += (sender, args) =>
         {
             if (args.Button == SButton.OemSemicolon)
             {
-                FeatureManager.DisableFeature("DH.Letter");
+                Multiplayer multiplayer = this.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+
+                GameLocation location = Game1.currentLocation;
+                this.cow = new FarmAnimal("White Cow", multiplayer.getNewID(), -1L);
+
+                harmony.Patch(
+                    AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.farmerPushing)),
+                    postfix: new HarmonyMethod(typeof(ModEntry),
+                        nameof(ModEntry.AnimalFarmerCollision)));
+
+                location.Animals.Add(this.cow.myID.Value, this.cow);
             }
         };
+
+        helper.Events.GameLoop.UpdateTicked += (sender, args) =>
+        {
+            if (this.cow == null)
+                return;
+
+            this.cow.controller = new PathFindController(this.cow, this.cow.currentLocation, Game1.player.TilePoint, 0);
+        };
+#endif
 
         // harmony.Patch(
         //     AccessTools.Method(typeof(Event), nameof(Event.checkAction)),
@@ -178,6 +200,12 @@ public class ModEntry : Mod
 #endif
     }
 
+    public static void AnimalFarmerCollision()
+    {
+        Game1.player.jump(6f);
+        Game1.player.LerpPosition(Game1.player.Position, Game1.player.Position + new Vector2(64, 64), 0.1f);
+    }
+
     // private void OnMenuOpened(PurchaseAnimalsMenu obj)
     // {
     //     obj.
@@ -200,7 +228,6 @@ public class ModEntry : Mod
 
     private void InitialiseModIntegrations()
     {
-
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
@@ -221,7 +248,8 @@ public class ModEntry : Mod
         }
 
         if (this.Helper.ModRegistry.IsLoaded("spacechase0.SpaceCore") &&
-            !this.Helper.ModRegistry.Get("spacechase0.SpaceCore").Manifest.Version.IsOlderThan(new SemanticVersion(1, 13, 0)))
+            !this.Helper.ModRegistry.Get("spacechase0.SpaceCore").Manifest.Version
+                .IsOlderThan(new SemanticVersion(1, 13, 0)))
         {
             // Get SpaceCore's API.
             try
@@ -235,12 +263,14 @@ public class ModEntry : Mod
             }
         }
         else
-            this.logger.Warn("SpaceCore was installed, but the minimum version for MEEP event commands to work is 1.13.0. Please update SpaceCore to enable custom event commands.");
+            this.logger.Warn(
+                "SpaceCore was installed, but the minimum version for MEEP event commands to work is 1.13.0. Please update SpaceCore to enable custom event commands.");
 
         // Register our event commands through SpaceCore.
         if (this.spaceCoreApi is not null)
         {
-            this.spaceCoreApi.AddEventCommand(PlaySound.Command, AccessTools.Method(this.eventCommands.GetType(), nameof(EventCommands.PlaySound)));
+            this.spaceCoreApi.AddEventCommand(PlaySound.Command,
+                AccessTools.Method(this.eventCommands.GetType(), nameof(EventCommands.PlaySound)));
         }
     }
 
