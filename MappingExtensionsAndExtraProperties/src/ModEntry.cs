@@ -340,6 +340,7 @@ public class ModEntry : Mod
                             out DhFakeNpc fakeNpcProperty))
                     {
                         FakeNpc character = new FakeNpc(
+                            property.ToString(),
                             new AnimatedSprite($"Characters\\{fakeNpcProperty.NpcName}",
                                 0,
                                 fakeNpcProperty.HasSpriteSizes ? fakeNpcProperty.SpriteWidth : 16,
@@ -370,6 +371,17 @@ public class ModEntry : Mod
                         // A safeguard for multiplayer.
                         if (newLocation.isTilePlaceable(new Vector2(x, y)))
                         {
+                            foreach (Character npc in newLocation.characters)
+                            {
+                                if (npc is FakeNpc fake)
+                                {
+                                    if (fake.InternalId is null)
+                                        return;
+
+                                    if (fake.InternalId.Equals(character.InternalId))
+                                        return;
+                                }
+                            }
                             newLocation.characters.Add(character);
                             this.allNpcs.Add(character);
                             this.logger.Log(
