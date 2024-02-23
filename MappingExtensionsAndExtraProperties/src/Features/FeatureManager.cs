@@ -12,8 +12,10 @@ public static class FeatureManager
 {
     private static HashSet<Feature> features = new HashSet<Feature>();
     private static Feature[] cursorAffectingFeatures;
-    internal static event EventHandler GameTickCallback;
-    internal static event EventHandler<OnLocationChangeEventArgs> OnLocationChangeCallback;
+    internal static event EventHandler? GameTickCallback;
+    internal static event EventHandler? EarlyDayEndingCallback;
+    internal static event EventHandler? LateDayEndingCallback;
+    internal static event EventHandler<OnLocationChangeEventArgs>? OnLocationChangeCallback;
 
     public static void AddFeature(Feature f)
     {
@@ -24,11 +26,15 @@ public static class FeatureManager
         cursorAffectingFeatures = features.Where((f) => (f.AffectsCursorIcon) == true).ToArray();
     }
 
+    /// <summary>
+    /// This should be called only after all intended features have been added.
+    /// </summary>
     public static void EnableFeatures()
     {
         foreach (var feature in features)
         {
             feature.Enable();
+            feature.RegisterCallbacks();
         }
     }
 
@@ -76,18 +82,33 @@ public static class FeatureManager
 
     public static void TickFeatures()
     {
-        GameTickCallback.Invoke(null, null);
+        GameTickCallback?.Invoke(null, null);
 
+    }
+
+    public static void EarlyOnDayEnding()
+    {
+        EarlyDayEndingCallback?.Invoke(null, EventArgs.Empty);
+    }
+
+    public static void LateOnDayEnding()
+    {
+        LateDayEndingCallback?.Invoke(null, EventArgs.Empty);
     }
 
     public static void OnLocationChange(GameLocation oldLocation, GameLocation newLocation, Farmer player)
     {
-        OnLocationChangeCallback.Invoke(null,
+        OnLocationChangeCallback?.Invoke(null,
             new OnLocationChangeEventArgs()
             {
                 OldLocation =  oldLocation,
                 NewLocation = newLocation,
                 Player = player
             });
+    }
+
+    private static void GroupFeatures()
+    {
+
     }
 }

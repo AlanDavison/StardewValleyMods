@@ -6,6 +6,7 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
+using MappingExtensionsAndExtraProperties.Models.EventArgs;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
@@ -51,7 +52,7 @@ public class CloseupInteractionFeature : Feature
         this.CursorId = 5;
     }
 
-    public override bool Enable()
+    public override void Enable()
     {
         try
         {
@@ -66,7 +67,6 @@ public class CloseupInteractionFeature : Feature
         }
 
         this.Enabled = true;
-        return true;
     }
 
     public override void Disable()
@@ -74,9 +74,11 @@ public class CloseupInteractionFeature : Feature
         this.Enabled = false;
     }
 
-    public override int GetHashCode()
+    public override void RegisterCallbacks() {}
+
+    private void OnLocationChange(object? sender, OnLocationChangeEventArgs e)
     {
-        return this.FeatureId.GetHashCode();
+
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)

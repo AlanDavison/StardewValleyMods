@@ -39,12 +39,19 @@ public abstract class Feature
     /// Performs any actions this feature requires to be enabled. This often involves applying some Harmony patches.
     /// <returns>True if the feature was initialised successfully, and false if something failed.</returns>
     /// </summary>
-    public abstract bool Enable();
+    public abstract void Enable();
 
     /// <summary>
     /// Disable this feature and all of its functionality.
     /// </summary>
     public abstract void Disable();
+
+    /// <summary>
+    /// This is where the feature should register any callbacks it requires with the feature manager.
+    ///
+    /// Called once when the feature is added to the manager.
+    /// </summary>
+    public abstract void RegisterCallbacks();
 
     /// <summary>
     /// Whether the game's cursor should be changed when hovering over a given tile.
@@ -53,4 +60,9 @@ public abstract class Feature
     /// <param name="cursorId">The cursor ID to change the cursor to.</param>
     /// <returns></returns>
     public abstract bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId);
+
+    public override int GetHashCode()
+    {
+        return this.FeatureId.GetHashCode();
+    }
 }

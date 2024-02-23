@@ -44,7 +44,7 @@ public class LetterFeature : Feature
         this.CursorId = 5;
     }
 
-    public override bool Enable()
+    public override void Enable()
     {
         try
         {
@@ -59,13 +59,14 @@ public class LetterFeature : Feature
         }
 
         this.Enabled = true;
-        return true;
     }
 
     public override void Disable()
     {
         this.Enabled = false;
     }
+
+    public override void RegisterCallbacks() {}
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
