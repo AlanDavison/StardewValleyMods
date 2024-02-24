@@ -50,22 +50,50 @@ public class CloseupInteractionFeature : Feature
         CloseupInteractionFeature.propertyUtils = propertyUtils;
         this.AffectsCursorIcon = true;
         this.CursorId = 5;
+
+        GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Image", this.DoCloseupInteraction);
+        GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Reel", this.DoCloseupReel);
+    }
+
+    private bool DoCloseupReel(GameLocation location, string[] propertyArgs, Farmer player, Point tile)
+    {
+        string joinedArgs = propertyArgs.Join(delimiter: " ");
+
+        if (propertyUtils.TryGetInteractionReel(tile.X, tile.Y, location,
+                CloseupInteractionImage.PropertyKey,
+                out List<MenuPage> pages))
+        {
+            string cueName = "bigSelect";
+
+            // Now we check for a sound interaction property.
+            if (tileProperties.TryGetBackProperty(tile.X, tile.Y, location, CloseupInteractionSound.PropertyKey,
+                    out PropertyValue closeupSoundProperty))
+            {
+                if (Parsers.TryParse(closeupSoundProperty.ToString(),
+                        out CloseupInteractionSound parsedSoundProperty))
+                {
+                    cueName = parsedSoundProperty.CueName;
+                }
+            }
+
+            CloseupInteraction.DoCloseupReel(pages, logger, cueName);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool DoCloseupInteraction(GameLocation location, string[] propertyArgs, Farmer player, Point tile)
+    {
+        string joinedArgs = propertyArgs.Join(delimiter: " ");
+        CloseupInteraction.DoCloseupInteraction(location, tile.X, tile.Y, joinedArgs, logger);
+
+        return true;
     }
 
     public override void Enable()
     {
-        try
-        {
-            this.HarmonyPatcher.Patch(
-                AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-                postfix: new HarmonyMethod(typeof(CloseupInteractionFeature),
-                    nameof(CloseupInteractionFeature.GameLocation_CheckAction_Postfix)));
-        }
-        catch (Exception e)
-        {
-            logger.Exception(e);
-        }
-
         this.Enabled = true;
     }
 
@@ -75,11 +103,6 @@ public class CloseupInteractionFeature : Feature
     }
 
     public override void RegisterCallbacks() {}
-
-    private void OnLocationChange(object? sender, OnLocationChangeEventArgs e)
-    {
-
-    }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
@@ -99,61 +122,5 @@ public class CloseupInteractionFeature : Feature
         }
 
         return false;
-    }
-
-    public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
-        xTile.Dimensions.Rectangle viewport, Farmer who)
-    {
-        if (!enabled)
-            return;
-
-#if DEBUG
-        Stopwatch timer = new Stopwatch();
-        timer.Start();
-#endif
-        // Consider removing this try/catch.
-        try
-        {
-            // First, pull our tile co-ordinates from the location.
-            int tileX = tileLocation.X;
-            int tileY = tileLocation.Y;
-
-            // Check for a CloseupInteraction property on the given tile.
-            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionImage.PropertyKey,
-                    out PropertyValue closeupInteractionProperty))
-            {
-                CloseupInteraction.DoCloseupInteraction(__instance, tileX, tileY, closeupInteractionProperty, logger);
-            }
-            // If there isn't a single interaction property, we want to look for the start of a reel.
-            else if (propertyUtils.TryGetInteractionReel(tileX, tileY, __instance,
-                         CloseupInteractionImage.PropertyKey,
-                         out List<MenuPage> pages))
-            {
-                string cueName = "bigSelect";
-
-                // Now we check for a sound interaction property.
-                if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, CloseupInteractionSound.PropertyKey,
-                        out PropertyValue closeupSoundProperty))
-                {
-                    if (Parsers.TryParse(closeupSoundProperty.ToString(),
-                            out CloseupInteractionSound parsedSoundProperty))
-                    {
-                        cueName = parsedSoundProperty.CueName;
-                    }
-                }
-
-                CloseupInteraction.DoCloseupReel(pages, logger, cueName);
-            }
-        }
-        catch (Exception e)
-        {
-            logger.Error("Caught exception handling GameLocation.checkAction in a postfix. Details follow:");
-            logger.Exception(e);
-        }
-#if DEBUG
-        timer.Stop();
-
-        logger.Log($"Took {timer.ElapsedMilliseconds} to process in CheckAction patch.", LogLevel.Info);
-#endif
     }
 }

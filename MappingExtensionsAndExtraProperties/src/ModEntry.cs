@@ -55,14 +55,11 @@ public class ModEntry : Mod
             harmony, "DH.CloseupInteractions", this.logger, this.tileProperties, this.propertyUtils);
         LetterFeature letter = new LetterFeature(
             harmony, "DH.Letter", this.logger, this.tileProperties);
-        CursorIconFeature cursorIcons = new CursorIconFeature(
-            harmony, "DH.Internal.CursorIconFeature", this.logger, this.tileProperties);
         FakeNpcFeature fakeNpc = new FakeNpcFeature(harmony, "DH.FakeNPC", this.logger, this.tileProperties,
             this.propertyUtils, this.Helper);
         CleanupFeature cleanup = new CleanupFeature("DH.Internal.CleanupFeature");
         FeatureManager.AddFeature(closeupInteractions);
         FeatureManager.AddFeature(letter);
-        FeatureManager.AddFeature(cursorIcons);
         FeatureManager.AddFeature(fakeNpc);
         FeatureManager.AddFeature(cleanup);
         FeatureManager.EnableFeatures();

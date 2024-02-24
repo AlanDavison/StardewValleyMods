@@ -39,22 +39,8 @@ public class CloseupInteraction
     {
         TilePropertyHandler handler = new TilePropertyHandler(logger);
 
-        // We have our tile property. We need to check for the presence of an existing Action tile property.
-        if (handler.TryGetBuildingProperty(tileX, tileY, location, "Action",
-                out PropertyValue _))
-        {
-            // We want to return so we don't conflict with opening a shop, going through a door, etc.
-
-            logger.Warn(
-                $"Found CloseupInteraction_Image tile property on {tileX}, {tileY} in {location.Name}. Interaction with it was blocked due to there being an Action tile property on the same tile.");
-            logger.Warn(
-                $"It's recommended that you contact the author of the mod that added the tile property to let them know.");
-
-            return;
-        }
-
         // Next, we try to parse our tile property.
-        if (!Parsers.TryParse(closeupInteractionProperty.ToString(),
+        if (!Parsers.TryParseIncludingKey(closeupInteractionProperty.ToString(),
                 out CloseupInteractionImage closeupInteractionParsed))
         {
             // If the parsing failed, we want to nope out.
@@ -91,7 +77,7 @@ public class CloseupInteraction
             Color.White));
 
         // Next, we want to see if there's a text tile property to display.
-        if (handler.TryGetBackProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
+        if (handler.TryGetBuildingProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
                 out PropertyValue closeupTextProperty))
         {
             // There is, so we try to parse it.
@@ -118,7 +104,7 @@ public class CloseupInteraction
         vBox.SetParent(menu);
 
         // Now we check for a sound interaction property.
-        if (handler.TryGetBackProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
+        if (handler.TryGetBuildingProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
                 out PropertyValue closeupSoundProperty))
         {
             if (Parsers.TryParse(closeupSoundProperty.ToString(), out CloseupInteractionSound parsedSoundProperty))
@@ -179,26 +165,6 @@ public class CloseupInteraction
         {
             soundCue = closeupInteractionSound.Value.CueName;
         }
-
-        // // Next, we want to see if there's a text tile property to display.
-        // if (tileProperties.TryGetBackProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
-        //         out PropertyValue closeupTextProperty))
-        // {
-        //     // There is, so we try to parse it.
-        //     if (Parsers.TryParse(closeupTextProperty.ToString(), out CloseupInteractionText parsedTextProperty))
-        //     {
-        //         // It parsed successfully, so we create a text element, and add it to our image container.
-        //         vBox.AddChild(new TextElement(
-        //             "Popup Text Box",
-        //             Microsoft.Xna.Framework.Rectangle.Empty,
-        //             600,
-        //             parsedTextProperty.Text));
-        //     }
-        //     else
-        //     {
-        //         logger.Error($"Failed to parse property {closeupTextProperty.ToString()}");
-        //     }
-        // }
 
         // Finally, we create our menu, and set it to be the current, active menu.
         MenuBase menu = new MenuBase(vBox, $"{CloseupInteractionImage.PropertyKey}", logger, soundCue);

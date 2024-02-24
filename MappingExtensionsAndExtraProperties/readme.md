@@ -22,9 +22,9 @@ Click on the link to go to the mini-docs for each one
 
 ## Using the tile properties
 Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
-1) The basics of creating a Content Patcher pack. See [here](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide.md).
-2) How to load an image asset using Content Patcher. See [here](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-load.md).
-3) How to patch tile properties using Content Patcher (see [here](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-editmap.md#edit-map-tiles)), or how to add tile properties to your map directly using Tiled (see [here](https://stardewvalleywiki.com/Modding:Maps#Tile_properties)).
+1) The basics of creating a Content Patcher pack. See [the Content Patcher docs](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide.md).
+2) How to load an image asset using Content Patcher. See [documentation for the `Load` action](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-load.md).
+3) How to patch tile properties using Content Patcher (see [documentation for the `EditMap` action](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-editmap.md#edit-map-tiles)), or how to add tile properties to your map (see [directly using Tiled here](https://stardewvalleywiki.com/Modding:Maps#Tile_properties)).
 
 ### Using the CloseupInteraction tile properties
 The basic format for `CloseupInteraction` is in the following snippet of an `EditMap` patch using Content Patcher.
