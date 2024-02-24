@@ -42,22 +42,37 @@ public class LetterFeature : Feature
         LetterFeature.tileProperties = tilePropertyHandler;
         this.AffectsCursorIcon = true;
         this.CursorId = 5;
+
+        GameLocation.RegisterTileAction("MEEP_Letter", this.DoLetter);
+    }
+
+    private bool DoLetter(GameLocation location, string[] args, Farmer player, Point tile)
+    {
+        if (!enabled)
+            return false;
+
+        // Consider removing this try/catch.
+        try
+        {
+            int tileX = tile.X;
+            int tileY = tile.Y;
+            string combinedArgs = args.Join(delimiter: " ");
+
+            Letter.DoLetter(location, combinedArgs, tileX, tileY, logger);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.Error("Caught exception handling MEEP_Letter Action property. Details follow:");
+            logger.Exception(e);
+        }
+
+        return false;
     }
 
     public override void Enable()
     {
-        try
-        {
-            this.HarmonyPatcher.Patch(
-                AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-                postfix: new HarmonyMethod(typeof(LetterFeature),
-                    nameof(LetterFeature.GameLocation_CheckAction_Postfix)));
-        }
-        catch (Exception e)
-        {
-            logger.Exception(e);
-        }
-
         this.Enabled = true;
     }
 
@@ -86,40 +101,5 @@ public class LetterFeature : Feature
         }
 
         return false;
-    }
-
-    public static void GameLocation_CheckAction_Postfix(GameLocation __instance, Location tileLocation,
-        xTile.Dimensions.Rectangle viewport, Farmer who)
-    {
-        if (!enabled)
-            return;
-
-#if DEBUG
-        Stopwatch timer = new Stopwatch();
-        timer.Start();
-#endif
-        // Consider removing this try/catch.
-        try
-        {
-            // First, pull our tile co-ordinates from the location.
-            int tileX = tileLocation.X;
-            int tileY = tileLocation.Y;
-
-            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, LetterText.PropertyKey,
-                         out PropertyValue letterProperty))
-            {
-                Letter.DoLetter(__instance, letterProperty, tileX, tileY, logger);
-            }
-        }
-        catch (Exception e)
-        {
-            logger.Error("Caught exception handling GameLocation.checkAction in a postfix. Details follow:");
-            logger.Exception(e);
-        }
-#if DEBUG
-        timer.Stop();
-
-        logger.Log($"Took {timer.ElapsedMilliseconds} to process in CheckAction patch.", LogLevel.Info);
-#endif
     }
 }

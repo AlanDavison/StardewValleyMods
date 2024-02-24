@@ -15,11 +15,11 @@ public class Letter
     {
         TilePropertyHandler handler = new TilePropertyHandler(logger);
 
-        if (Parsers.TryParse(letterProperty.ToString(), out LetterText letter))
+        if (Parsers.TryParseIncludingKey(letterProperty.ToString(), out LetterText letter))
         {
             LetterViewerMenu letterViewer = new LetterViewerMenu(letter.Text, "Test");
 
-            if (handler.TryGetBackProperty(tileX, tileY, location, LetterType.PropertyKey,
+            if (handler.TryGetBuildingProperty(tileX, tileY, location, LetterType.PropertyKey,
                     out PropertyValue letterTypeProperty))
             {
                 if (Parsers.TryParse(letterTypeProperty.ToString(), out LetterType letterType))

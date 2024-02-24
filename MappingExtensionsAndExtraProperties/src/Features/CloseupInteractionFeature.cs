@@ -57,7 +57,8 @@ public class CloseupInteractionFeature : Feature
 
     private bool DoCloseupReel(GameLocation location, string[] propertyArgs, Farmer player, Point tile)
     {
-        string joinedArgs = propertyArgs.Join(delimiter: " ");
+        if (!enabled)
+            return false;
 
         if (propertyUtils.TryGetInteractionReel(tile.X, tile.Y, location,
                 CloseupInteractionImage.PropertyKey,
@@ -86,6 +87,9 @@ public class CloseupInteractionFeature : Feature
 
     private bool DoCloseupInteraction(GameLocation location, string[] propertyArgs, Farmer player, Point tile)
     {
+        if (!enabled)
+            return false;
+
         string joinedArgs = propertyArgs.Join(delimiter: " ");
         CloseupInteraction.DoCloseupInteraction(location, tile.X, tile.Y, joinedArgs, logger);
 
