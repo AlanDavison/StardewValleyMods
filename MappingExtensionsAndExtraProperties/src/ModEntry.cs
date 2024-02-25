@@ -8,10 +8,13 @@ using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Features;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.EventCommands;
+using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using xTile.Dimensions;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -21,6 +24,7 @@ public class ModEntry : Mod
     private TilePropertyHandler tileProperties;
     private Properties propertyUtils;
     private MeepApi api;
+    private Harmony harmony;
 
     private ISaveAnywhereApi saveAnywhereApi;
     private ISpaceCoreApi spaceCoreApi;
@@ -28,7 +32,7 @@ public class ModEntry : Mod
 
     public override void Entry(IModHelper helper)
     {
-        var harmony = new Harmony(this.ModManifest.UniqueID);
+        this.harmony = new Harmony(this.ModManifest.UniqueID);
         this.logger = new Logger(this.Monitor);
         this.tileProperties = new TilePropertyHandler(this.logger);
         this.propertyUtils = new Properties(this.logger);
@@ -47,39 +51,76 @@ public class ModEntry : Mod
         {
             if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FakeNPC/Dialogue"))
             {
-                args.LoadFrom(() => { return new Dictionary<string, string>(); }, AssetLoadPriority.Low);
+                args.LoadFrom(() => new Dictionary<string, string>(), AssetLoadPriority.Low);
             }
         };
-
-        CloseupInteractionFeature closeupInteractions = new CloseupInteractionFeature(
-            harmony, "DH.CloseupInteractions", this.logger, this.tileProperties, this.propertyUtils);
-        LetterFeature letter = new LetterFeature(
-            harmony, "DH.Letter", this.logger, this.tileProperties);
-        FakeNpcFeature fakeNpc = new FakeNpcFeature(harmony, "DH.FakeNPC", this.logger, this.tileProperties,
-            this.propertyUtils, this.Helper);
-        CleanupFeature cleanup = new CleanupFeature("DH.Internal.CleanupFeature");
-        FeatureManager.AddFeature(closeupInteractions);
-        FeatureManager.AddFeature(letter);
-        FeatureManager.AddFeature(fakeNpc);
-        FeatureManager.AddFeature(cleanup);
-        FeatureManager.EnableFeatures();
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
     }
 
     private void LoadContentPacks()
     {
+        bool interactionsUsed = false;
+        bool fakeNpcsUsed = false;
+        bool vanillaLettersUsed = false;
+        bool setMailFlagUsed = false;
+
+
         foreach (var mod in this.Helper.ModRegistry.GetAll())
         {
             if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP"))
             {
-                // Current thought: Have each feature (e.g., closeup interactions, mail flag alterations, backgrounds, etc.)
-                // be a "Feature" in code that only becomes active if a pack that uses said feature is loaded.
-                // This could be done via a FeatureManager that could have features added to its active list. When added
-                // to the list, the Feature which inherits IFeature runs its patching logic where necessary, and exposes
-                // the methods it uses to perform the functionality where required.
+                // This mod uses MEEP, so we want to check for the features.
+
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.CloseupInteractions"))
+                    interactionsUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.FakeNPCs"))
+                    fakeNpcsUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.VanillaLetters"))
+                    vanillaLettersUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.SetMailFlag"))
+                    setMailFlagUsed = true;
             }
         }
+
+        // We've figured out all of our feature usage, so now we create and enable the appropriate features.
+        // TODO: Make this more elegant in future. For now, this is 100% functionally fine.
+
+        if (interactionsUsed)
+        {
+            CloseupInteractionFeature closeupInteractions = new CloseupInteractionFeature(
+                this.harmony, "DH.CloseupInteractions", this.logger, this.tileProperties, this.propertyUtils);
+            FeatureManager.AddFeature(closeupInteractions);
+        }
+
+        if (fakeNpcsUsed)
+        {
+            FakeNpcFeature fakeNpc = new FakeNpcFeature(this.harmony, "DH.FakeNPC", this.logger, this.tileProperties,
+                this.propertyUtils, this.Helper);
+            FeatureManager.AddFeature(fakeNpc);
+        }
+
+        if (vanillaLettersUsed)
+        {
+            LetterFeature letter = new LetterFeature(
+                this.harmony, "DH.Letter", this.logger, this.tileProperties);
+            FeatureManager.AddFeature(letter);
+        }
+
+        if (setMailFlagUsed)
+        {
+            SetMailFlagFeature setMailFlag =
+                new SetMailFlagFeature(this.harmony, "DH.SetMailFlag", this.logger, this.tileProperties);
+            FeatureManager.AddFeature(setMailFlag);
+        }
+
+        if (FeatureManager.FeatureCount > 0)
+        {
+            CleanupFeature cleanup = new CleanupFeature("DH.Internal.CleanupFeature");
+            FeatureManager.AddFeature(cleanup);
+        }
+
+        FeatureManager.EnableFeatures();
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
@@ -128,7 +169,6 @@ public class ModEntry : Mod
 
     private void AfterSaveAnywhereLoad(object? sender, EventArgs e)
     {
-        // This is hacky and terrible, but this is also a hotfix. I'll live.
         this.logger.Log($"Save Anywhere fired its AfterLoad event. Processing our spawn map.", LogLevel.Info);
 
         FeatureManager.OnLocationChange(Game1.currentLocation, Game1.currentLocation, Game1.player);
@@ -151,12 +191,6 @@ public class ModEntry : Mod
     private void OnDayEndingEarly(object? sender, DayEndingEventArgs e)
     {
         FeatureManager.EarlyOnDayEnding();
-    }
-
-    [EventPriority((EventPriority)int.MinValue)]
-    private void OnDayEndingLate(object? sender, DayEndingEventArgs e)
-    {
-        FeatureManager.LateOnDayEnding();
     }
 
     public override object? GetApi()

@@ -16,6 +16,10 @@ public static class FeatureManager
     internal static event EventHandler? EarlyDayEndingCallback;
     internal static event EventHandler? LateDayEndingCallback;
     internal static event EventHandler<OnLocationChangeEventArgs>? OnLocationChangeCallback;
+    public static int FeatureCount
+    {
+        get => features.Count;
+    }
 
     public static void AddFeature(Feature f)
     {
