@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using DecidedlyShared.Logging;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
 
@@ -125,57 +129,6 @@ public class Parsers
         return true;
     }
 
-    // public static bool TryParseDictionaryFromHashSet(HashSet<string> hashSet, string key, out Dictionary<string, string> dict)
-    // {
-    //     dict = new Dictionary<string, string>();
-    //
-    //     foreach (string propertySet in hashSet)
-    //     {
-    //
-    //     }
-    // }
-
-    // public static bool TryParse(string property, out SpawnPlaceableObject parsedProperty)
-    // {
-    //     // Implementation of this property is on hold.
-    //     parsedProperty = new SpawnPlaceableObject();
-    //
-    //     // This is very simple for now. Just two arguments The BigCraftable ID, and a 1/0 depending on whether it's breakable or not.
-    //     string[] splitProperty = property.Split(" ");
-    //
-    //     // If we have fewer than one arguments, we immediately return false.
-    //     if (splitProperty.Length < 1)
-    //         return false;
-    //
-    //     // If we have more than two, we return false.
-    //     if (splitProperty.Length > 2)
-    //         return false;
-    //
-    //     // We know we have one or two arguments, so we can grab our BigCraftable instance first.
-    //     if (!int.TryParse(splitProperty[0], out int bigCraftableId))
-    //         return false;
-    //
-    //     try
-    //     {
-    //         parsedProperty.bigCraftable = ObjectFactory.getItemFromDescription(1, bigCraftableId, 1);
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         Parsers.logger.Error("Could not get big craftable from property. Did you use the correct ID?");
-    //         parsedProperty.bigCraftable = null;
-    //         return false;
-    //     }
-    //
-    //     // If we have two arguments, we parse the breakable aspect.
-    //     if (!bool.TryParse(splitProperty[1], out bool breakable))
-    //         return false;
-    //
-    //     // Now we apply this to our parsed property.
-    //     parsedProperty.Breakable = breakable;
-    //
-    //     return true;
-    // }
-
     public static bool TryParse(string property, out SetMailFlag parsedProperty)
     {
         // There isn't really anything to parse here.
@@ -258,29 +211,6 @@ public class Parsers
             Parsers.logger.Error("Couldn't parse this letter type property. Check that it has the correct number of parameters.");
         }
 
-        // // It's not an int, so we need to assume it's an asset name.
-        // try
-        // {
-        //     letterTexture = helper.GameContent.Load<Texture2D>(splitProperty[0]);
-        // }
-        // catch
-        // {
-        //     logger.Error("First parameter of property wasn't a valid asset name. Is it spelled correctly?");
-        //     logger.Error($"Asset name: {splitProperty[0]}");
-        //
-        //     return false;
-        // }
-        //
-        // // At this point, we have everything but the source rect sorted out. We need to check to see if args 1 and 2 parse.
-        // if (!int.TryParse(splitProperty[1], out rectX) | !int.TryParse(splitProperty[2], out rectY))
-        // {
-        //     logger.Error("Couldn't parse the source rect X or Y co-ordinates.");
-        // }
-        //
-        // // Now we can create our source rect, and assign everything.
-        // sourceRect = new Rectangle(rectX, rectY, 320, 180);
-        // parsedProperty = new LetterType(letterTexture, sourceRect);
-
         return false;
     }
 
@@ -306,7 +236,7 @@ public class Parsers
         catch (Exception e)
         {
             Parsers.logger.Error($"Couldn't load texture {splitProperty[0]} from property {property}.");
-            Parsers.logger.Error("Did you load the image correctly?");
+            Parsers.logger.Error("Did you load the image correctly, or is spelled incorrectly in the patch?");
             return false;
         }
 
@@ -350,17 +280,6 @@ public class Parsers
             return false;
 
         parsedProperty.NpcName = splitProperty[0];
-
-        // Now we want to confirm that our first argument is an NPC name that is NOT taken.
-        // Dictionary<string, string> dispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
-        // foreach (string npc in dispositions.Keys)
-        // {
-        //     if (npc.Equals(parsedProperty.NpcName, StringComparison.OrdinalIgnoreCase))
-        //         {
-        //             Parsers.logger.Error($"There's an NPC in the dispositions with the same name ({parsedProperty.NpcName}) as your fake NPC. This is spooky, so the NPC won't be spawned.");
-        //             return false; // If there's an NPC in the dispositions matching our fake NPC, we bail.
-        //         }
-        // }
 
         // We've gotten this far, so we check to see if we only have the one argument.
         if (splitProperty.Length == 1)
@@ -462,6 +381,4 @@ public class Parsers
         parsedProperty = new MapBackgroundTileVariation(variation);
         return true;
     }
-
-    // public static bool TryParse(string property, out )
 }

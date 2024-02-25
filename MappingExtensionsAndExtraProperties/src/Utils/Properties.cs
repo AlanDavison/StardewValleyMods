@@ -5,6 +5,7 @@ using DecidedlyShared.Utilities;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using xTile.Layers;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
@@ -37,7 +38,7 @@ public class Properties
         int propertyNumber = 1;
 
         // We're trying to find multiple properties, and we know our syntax for multiple is PropertyName_1, etc.
-        while (this.properties.TryGetTileProperty(x, y, location, "Back", $"{key}_{propertyNumber}", out PropertyValue property))
+        while (this.properties.TryGetTileProperty(x, y, location, "Buildings", $"{key}_{propertyNumber}", out PropertyValue property))
         {
             if (Parsers.TryParse(property.ToString(),
                     out CloseupInteractionImage parsedImageProperty))
@@ -45,7 +46,7 @@ public class Properties
                 TextElement textElement = null;
 
                 // We've successfully parsed an image reel element, so we want to check for a corresponding description.
-                if (this.properties.TryGetBackProperty(x, y, location, $"{CloseupInteractionText.PropertyKey}_{propertyNumber}",
+                if (this.properties.TryGetBuildingProperty(x, y, location, $"{CloseupInteractionText.PropertyKey}_{propertyNumber}",
                         out PropertyValue closeupTextProperty))
                 {
                     // We found a property, so we parse it.

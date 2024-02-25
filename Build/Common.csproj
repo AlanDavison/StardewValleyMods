@@ -8,7 +8,7 @@
         <UniqueId>$(Author).$(AssemblyName)</UniqueId>
         <EntryDll>$(AssemblyName)</EntryDll>
         <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
-        <LangVersion>10</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

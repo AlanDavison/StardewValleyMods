@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
@@ -11,12 +12,23 @@ public class FakeNpc : NPC
     private List<string> dialogueLines;
     private Logger logger;
     private GameLocation npcLocation;
+    private string internalId;
 
-    public FakeNpc(AnimatedSprite sprite, Vector2 tile, int facingDirection, string name, Logger logger, GameLocation npcLocation)
+    /// <summary>
+    /// Warning: This can be null if the NPC is serialised over the network.
+    /// </summary>
+    public string InternalId
+    {
+        get => this.internalId;
+    }
+
+    public FakeNpc(string interalId, AnimatedSprite sprite, Vector2 tile, int facingDirection, string name, Logger logger, GameLocation npcLocation)
         : base(sprite, tile, facingDirection, name)
     {
+        this.internalId = interalId;
         this.logger = logger;
         this.npcLocation = npcLocation;
+        base.currentLocation = this.npcLocation;
         this.logger.Log($"{name} of type {nameof(FakeNpc)} created in {npcLocation.Name}.", LogLevel.Trace);
 
 #if DEBUG
@@ -28,6 +40,11 @@ public class FakeNpc : NPC
             this.logger.Log($"{player.Name}:{player.userID}:{player.UniqueMultiplayerID.ToString()}", LogLevel.Info);
         }
 #endif
+    }
+
+    public FakeNpc()
+    {
+
     }
 
     // Vanilla method does centre the shadow correctly.
