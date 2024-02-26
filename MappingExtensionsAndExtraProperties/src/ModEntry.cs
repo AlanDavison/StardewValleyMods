@@ -64,6 +64,7 @@ public class ModEntry : Mod
         bool fakeNpcsUsed = false;
         bool vanillaLettersUsed = false;
         bool setMailFlagUsed = false;
+        bool farmAnimalSpawningUsed = false;
 
 
         foreach (var mod in this.Helper.ModRegistry.GetAll())
@@ -80,6 +81,8 @@ public class ModEntry : Mod
                     vanillaLettersUsed = true;
                 if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.SetMailFlag"))
                     setMailFlagUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.FarmAnimalSpawns"))
+                    farmAnimalSpawningUsed = true;
             }
         }
 
