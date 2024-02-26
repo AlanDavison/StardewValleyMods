@@ -139,32 +139,6 @@ public class ModEntry : Mod
                 this.logger.Exception(e);
             }
         }
-
-        if (this.Helper.ModRegistry.IsLoaded("spacechase0.SpaceCore") &&
-            !this.Helper.ModRegistry.Get("spacechase0.SpaceCore").Manifest.Version
-                .IsOlderThan(new SemanticVersion(1, 13, 0)))
-        {
-            // Get SpaceCore's API.
-            try
-            {
-                this.spaceCoreApi = this.Helper.ModRegistry.GetApi<ISpaceCoreApi>("spacechase0.SpaceCore");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-        else
-            this.logger.Warn(
-                "SpaceCore was installed, but the minimum version for MEEP event commands to work is 1.13.0. Please update SpaceCore to enable custom event commands.");
-
-        // Register our event commands through SpaceCore.
-        if (this.spaceCoreApi is not null)
-        {
-            this.spaceCoreApi.AddEventCommand(PlaySound.Command,
-                AccessTools.Method(this.eventCommands.GetType(), nameof(EventCommands.PlaySound)));
-        }
     }
 
     private void AfterSaveAnywhereLoad(object? sender, EventArgs e)
