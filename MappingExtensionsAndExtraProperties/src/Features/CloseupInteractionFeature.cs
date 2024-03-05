@@ -52,7 +52,7 @@ public class CloseupInteractionFeature : Feature
         this.CursorId = 5;
 
         GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Image", this.DoCloseupInteraction);
-        GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Reel", this.DoCloseupReel);
+        GameLocation.RegisterTileAction("MEEP_CloseupInteractionReel", this.DoCloseupReel);
     }
 
     private bool DoCloseupReel(GameLocation location, string[] propertyArgs, Farmer player, Point tile)

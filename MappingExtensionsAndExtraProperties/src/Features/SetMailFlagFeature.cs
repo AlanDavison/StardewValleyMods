@@ -45,7 +45,7 @@ public class SetMailFlagFeature : Feature
         {
             this.HarmonyPatcher.Patch(
                 AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-                postfix: new HarmonyMethod(typeof(LetterFeature),
+                postfix: new HarmonyMethod(typeof(SetMailFlagFeature),
                     nameof(SetMailFlagFeature.GameLocation_CheckAction_Postfix)));
         }
         catch (Exception e)
@@ -88,7 +88,7 @@ public class SetMailFlagFeature : Feature
             int tileY = tileLocation.Y;
 
             // Check for the DHSetMailFlag property on a given tile.
-            if (tileProperties.TryGetBackProperty(tileX, tileY, __instance, SetMailFlag.PropertyKey,
+            if (tileProperties.TryGetBuildingProperty(tileX, tileY, __instance, SetMailFlag.PropertyKey,
                     out PropertyValue dhSetMailFlagProperty))
             {
                 MailFlag.SetMailFlag(dhSetMailFlagProperty, logger);
