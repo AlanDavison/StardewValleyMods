@@ -117,6 +117,13 @@ public class ModEntry : Mod
             FeatureManager.AddFeature(setMailFlag);
         }
 
+        if (farmAnimalSpawningUsed)
+        {
+            FarmAnimalSpawnsFeature farmAnimals =
+                new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.logger, this.Helper);
+            FeatureManager.AddFeature(farmAnimals);
+        }
+
         if (FeatureManager.FeatureCount > 0)
         {
             CleanupFeature cleanup = new CleanupFeature("DH.Internal.CleanupFeature");

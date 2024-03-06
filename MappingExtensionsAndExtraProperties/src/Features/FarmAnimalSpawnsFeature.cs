@@ -6,7 +6,7 @@ using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
-public class FarmAnimalSpawns : Feature
+public class FarmAnimalSpawnsFeature : Feature
 {
     public override string FeatureId { get; init; }
     public override Harmony HarmonyPatcher { get; init; }
@@ -23,11 +23,12 @@ public class FarmAnimalSpawns : Feature
     private static Harmony harmony;
     private static IModHelper helper;
 
-    public FarmAnimalSpawns(Harmony harmony, Logger logger, IModHelper helper)
+    public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
     {
-        FarmAnimalSpawns.logger = logger;
-        FarmAnimalSpawns.helper = helper;
-        FarmAnimalSpawns.harmony = harmony;
+        this.FeatureId = id;
+        FarmAnimalSpawnsFeature.logger = logger;
+        FarmAnimalSpawnsFeature.helper = helper;
+        FarmAnimalSpawnsFeature.harmony = harmony;
     }
 
     public override void Enable()
