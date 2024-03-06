@@ -54,6 +54,18 @@ public class FakeNpcFeature : Feature
 
     public override void Enable()
     {
+        try
+        {
+            this.HarmonyPatcher.Patch(
+                AccessTools.Method(typeof(NPC), nameof(NPC.tryToReceiveActiveObject)),
+                postfix: new HarmonyMethod(typeof(FakeNpcFeature),
+                    nameof(FakeNpcFeature.Npc_TryToReceiveActiveObject_Postfix)));
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+        }
+
         this.Enabled = true;
     }
 
@@ -81,6 +93,17 @@ public class FakeNpcFeature : Feature
         cursorId = default;
 
         return false;
+    }
+
+    public static void Npc_TryToReceiveActiveObject_Postfix(NPC __instance, Farmer who, bool probe)
+    {
+        if (__instance is not FakeNpc)
+            return;
+
+        HUDMessage message = new HUDMessage("This NPC can't receive gifts.", whatType: 3);
+
+        if (!Game1.doesHUDMessageExist(message.message))
+            Game1.addHUDMessage(message);
     }
 
     public void ProcessNewLocation(object _, OnLocationChangeEventArgs args)
