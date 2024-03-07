@@ -1,5 +1,13 @@
 # MEEP Release Notes
 
+* 2.0.4-beta
+  * Added a HUD message to make it clear you can't gift fake NPCs.
+* 2.0.3-beta
+  * Fixed a problem with the letter tile property.
+* 2.0.2-beta
+  * Fixed SpaceCore error.
+* 2.0.0-beta
+  * Release for 1.6 compatibility.
 * 1.3.2
   * I did an oops. The UI close buttons work again, now!
 * 1.3.1
