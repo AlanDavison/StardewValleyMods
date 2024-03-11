@@ -7,14 +7,11 @@ using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Features;
 using MappingExtensionsAndExtraProperties.Functionality;
-using MappingExtensionsAndExtraProperties.Models.EventCommands;
-using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
 using MappingExtensionsAndExtraProperties.Utils;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using xTile.Dimensions;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -52,6 +49,11 @@ public class ModEntry : Mod
             if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FakeNPC/Dialogue"))
             {
                 args.LoadFrom(() => new Dictionary<string, string>(), AssetLoadPriority.Low);
+            }
+
+            if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FarmAnimals/SpawnData"))
+            {
+                args.LoadFrom(() => new List<Animal>(), AssetLoadPriority.Low);
             }
         };
 
