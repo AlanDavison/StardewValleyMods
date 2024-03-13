@@ -7,26 +7,28 @@ All releases can be found on my [Nexus page](https://www.nexusmods.com/users/794
 ## What it does
 This mod does nothing on its own. Its primary purpose is to allow map authors to spice up their maps with the new custom tile properties, extra features, etc., that this mod adds.
 
-## Current tile properties
+## Current features
 Click on the link to go to the mini-docs for each one
 
-| Updated in version | **Tile Property**                                                                     | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
-|:-------------------|---------------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2.0.0              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)                | Buildings | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
-| 2.0.0              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)           | Buildings | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
-| 2.0.0              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties)      | Buildings | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
+| Updated in version | **Detailed Description**                                                    | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
+|:-------------------|-----------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2.0.0              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)      | Buildings | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
+| 2.0.0              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties) | Buildings | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
+| 2.0.0              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Buildings | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
 | 2.0.0              | [*Closeup Interaction Sound*](#Using-the-MEEP_CloseupInteraction_Sound-tile-property) | Buildings | This is a tile property you can use alongside any of the other Closeup Interaction properties. When you specify a game sound cue using it, the sound will play when the player opens the interaction, or turns the page in the case of a reel.                                                                                    |
-| 2.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                          | Buildings | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
-| 2.0.0              | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                                   | Back         | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
-| 2.0.0              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                                      | Buildings | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
-| 2.0.0              | [*Letter Type*](#MEEP_Letter_Type)                                                    | Buildings | This property allows you to specify a vanilla letter background, *or* a custom letter background image.                                                                                                                                                                                                                           |
+| 2.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                | Buildings | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
+| 2.0.0              | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                         | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
+| 2.0.0              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                            | Buildings | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
+| 2.0.0              | [*Letter Type*](#MEEP_Letter_Type)                                          | Buildings | This property allows you to specify a vanilla letter background, *or* a custom letter background image.                                                                                                                                                                                                                           |
+| **2.1.0**          | [Farm Animal Spawning](#Spawning-farm-animals)                              | N/A       | MEEP lets you spawn any farm animal in the game (including custom ones added with 1.6's new custom farm animal feature) on a map of your choosing. Farm animals spawned by MEEP can't be milked/sheared/sold, and can display a custom message when you chat with them.
 
-## Using the tile properties
-Using the tile properties is fairly simple. There are a few things you'll need to know that I won't be covering here:
+## Using the features
+Using the features is fairly simple. There are a few things you'll need to know that I won't be covering here:
 1) The basics of creating a Content Patcher pack. See [the Content Patcher docs](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide.md).
 2) How to load an image asset using Content Patcher. See [documentation for the `Load` action](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-load.md).
 3) How to patch tile properties using Content Patcher (see [documentation for the `EditMap` action](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-editmap.md#edit-map-tiles)), or how to add tile properties to your map [directly using Tiled here](https://stardewvalleywiki.com/Modding:Maps#Tile_properties).
-4) Add the appropriate keys to your mod's manifest to tell MEEP you're using certain features (see the [first section here](#Adding-meep-feature-keys-to-your-manifest)).
+4) How to patch data models using Content Patcher (see [the documentation for the `EditData` action here](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-editdata.md)).
+5) Add the appropriate keys to your mod's manifest to tell MEEP you're using certain features (see the [first section here](#Adding-meep-feature-keys-to-your-manifest)).
 
 ### Adding MEEP feature keys to your manifest
 This part is simple, but important. In order for MEEP to know which features to enable, it needs to know
@@ -433,3 +435,51 @@ Then, as seen the example below, specify the loaded image in the property.
     }
 }
 ```
+
+### Spawning farm animals
+
+To spawn farm animals with MEEP, you'll be editing one of MEEP's data models using CP's `EditData` property. If you're unsure of how to do this, you can find a link to the `EditData` section of CP's documentation near the top of the readme.
+
+Here's an example of an edit that will spawn two farm animals. One in the submarine, and one in Alex's house respectively:
+
+```json
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FarmAnimals/SpawnData",
+            "Entries": {
+                "Animals":[
+                    {
+                        "Id": "DH.TilePropertyTestMod.WhiteChickenSubmarine",
+                        "AnimalId": "White Chicken",
+                        "LocationId": "Submarine",
+                        "DisplayName": "Animal One Name",
+                        "PetMessage": [
+                            "UwU",
+                            "I'm a baby chicken!"
+                        ],
+                        "HomeTileX": 13,
+                        "HomeTileY": 5
+                    },
+                    {
+                        "Id": "DH.TilePropertyTestMod.BrownCowJoshHouse",
+                        "AnimalId": "Brown Cow",
+                        "LocationId": "JoshHouse",
+                        "DisplayName": "Animal Two Name",
+                        "PetMessage": [
+                            "MUwU",
+                            "What? I'm a cow, what else would I say?",
+                            "Certainly not \"moo\"!"
+                        ],
+                        "HomeTileX": 9,
+                        "HomeTileY": 20
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+
+There's one entry in the data model, which is `Animals`.
