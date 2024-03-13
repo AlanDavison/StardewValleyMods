@@ -499,11 +499,10 @@ Let's look at one in isolation.
 },
 ```
 
-Here, `"DH.TilePropertyTestMod.WhiteChickenSubmarine"` is the spawn ID for the animal. This needs to be 100% unique per animal spawn, so it's recommended that you use the format `YourName.YourMod.AnimalType`. You can also do, for example, `YourName.YourMod.Animal1` if you plan on spawning multiple of the same animal. Just increment the number at the end!
-
-`"AnimalId": "White Chicken"`: This is the internal animal ID of the animal. In this case, we're spawning a vanilla white chicken, and its internal ID is `White Chicken`.
-`"LocationId": "Submarine"`: This is the location name. For example, `SeedShop` is Pierre's shop, `JoshHouse` is Alex's house, and `ScienceHouse` is Robin's house.
-`"DisplayName": "Animal One Name"`: This is currently unused, but feel free to add it for the future when the name will be displayed alongside the pet message.
+* `"DH.TilePropertyTestMod.WhiteChickenSubmarine"` is the spawn ID for the animal. This needs to be 100% unique per animal spawn, so it's recommended that you use the format `YourName.YourMod.AnimalType`. You can also do, for example, `YourName.YourMod.Animal1` if you plan on spawning multiple of the same animal. Just increment the number at the end!
+* `"AnimalId": "White Chicken"`: This is the internal animal ID of the animal. In this case, we're spawning a vanilla white chicken, and its internal ID is `White Chicken`.
+* `"LocationId": "Submarine"`: This is the location name. For example, `SeedShop` is Pierre's shop, `JoshHouse` is Alex's house, and `ScienceHouse` is Robin's house.
+* `"DisplayName": "Animal One Name"`: This is currently unused, but feel free to add it for the future when the name will be displayed alongside the pet message.
 ```json
 "PetMessage": [
         "UwU",
