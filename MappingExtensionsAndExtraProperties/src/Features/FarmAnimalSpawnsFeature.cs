@@ -28,7 +28,7 @@ public class FarmAnimalSpawnsFeature : Feature
     private static Logger logger;
     private static Harmony harmony;
     private static IModHelper helper;
-    private static AnimalModel animalData;
+    private static Dictionary<string, Animal> animalData;
     private static Dictionary<FarmAnimal, Animal> spawnedAnimals = new Dictionary<FarmAnimal, Animal>();
 
     public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
@@ -73,7 +73,7 @@ public class FarmAnimalSpawnsFeature : Feature
             return;
 
         // We technically only need to run this once, but this will be a super fast operation because it's cached.
-        animalData = helper.GameContent.Load<AnimalModel>("MEEP/FarmAnimals/SpawnData");
+        animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
 
         // We need access to Game1.multiplayer. This is critical.
         Multiplayer multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
@@ -86,7 +86,7 @@ public class FarmAnimalSpawnsFeature : Feature
             return;
         }
 
-        foreach (Animal animal in animalData.Animals)
+        foreach (Animal animal in animalData.Values)
         {
             if (!GameStateQuery.CheckConditions(animal.Condition))
             {

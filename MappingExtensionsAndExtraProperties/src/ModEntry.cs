@@ -53,7 +53,7 @@ public class ModEntry : Mod
 
             if (args.NameWithoutLocale.IsEquivalentTo("MEEP/FarmAnimals/SpawnData"))
             {
-                args.LoadFrom(() => new AnimalModel(), AssetLoadPriority.Low);
+                args.LoadFrom(() => new Dictionary<string, Animal>(), AssetLoadPriority.Low);
             }
         };
 
