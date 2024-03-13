@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 2.1.0-beta
+  * Added the ability to spawn farm animals!
 * 2.0.4-beta
   * Added a HUD message to make it clear you can't gift fake NPCs.
 * 2.0.3-beta

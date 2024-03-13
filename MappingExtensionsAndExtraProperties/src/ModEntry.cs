@@ -7,14 +7,11 @@ using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Features;
 using MappingExtensionsAndExtraProperties.Functionality;
-using MappingExtensionsAndExtraProperties.Models.EventCommands;
-using MappingExtensionsAndExtraProperties.Models.TileProperties;
+using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
 using MappingExtensionsAndExtraProperties.Utils;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using xTile.Dimensions;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -53,9 +50,15 @@ public class ModEntry : Mod
             {
                 args.LoadFrom(() => new Dictionary<string, string>(), AssetLoadPriority.Low);
             }
+
+            if (args.NameWithoutLocale.IsEquivalentTo("MEEP/FarmAnimals/SpawnData"))
+            {
+                args.LoadFrom(() => new Dictionary<string, Animal>(), AssetLoadPriority.Low);
+            }
         };
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
+        helper.Events.GameLoop.DayStarted += this.OnDayStarted;
     }
 
     private void LoadContentPacks()
@@ -64,6 +67,7 @@ public class ModEntry : Mod
         bool fakeNpcsUsed = false;
         bool vanillaLettersUsed = false;
         bool setMailFlagUsed = false;
+        bool farmAnimalSpawningUsed = false;
 
 
         foreach (var mod in this.Helper.ModRegistry.GetAll())
@@ -80,6 +84,8 @@ public class ModEntry : Mod
                     vanillaLettersUsed = true;
                 if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.SetMailFlag"))
                     setMailFlagUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.FarmAnimalSpawns"))
+                    farmAnimalSpawningUsed = true;
             }
         }
 
@@ -112,6 +118,13 @@ public class ModEntry : Mod
             SetMailFlagFeature setMailFlag =
                 new SetMailFlagFeature(this.harmony, "DH.SetMailFlag", this.logger, this.tileProperties);
             FeatureManager.AddFeature(setMailFlag);
+        }
+
+        if (farmAnimalSpawningUsed)
+        {
+            FarmAnimalSpawnsFeature farmAnimals =
+                new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.logger, this.Helper);
+            FeatureManager.AddFeature(farmAnimals);
         }
 
         if (FeatureManager.FeatureCount > 0)
@@ -165,6 +178,11 @@ public class ModEntry : Mod
     private void OnDayEndingEarly(object? sender, DayEndingEventArgs e)
     {
         FeatureManager.EarlyOnDayEnding();
+    }
+
+    private void OnDayStarted(object? sender, DayStartedEventArgs e)
+    {
+        FeatureManager.OnDayStart();
     }
 
     public override object? GetApi()

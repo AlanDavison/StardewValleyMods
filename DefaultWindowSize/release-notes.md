@@ -1,9 +1,5 @@
 ﻿# Default Window Size Changelog
 
-## 1.1.0
-#### Fixes
-* Updated for 1.6 support.
-
 ## 1.0.1
 #### Fixes
 * Fixed build errors for 1.6.

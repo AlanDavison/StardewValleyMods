@@ -1,7 +1,7 @@
 # Smart Building release notes
 ## 1.8.0
 #### Fixes
-* Updated for 1.6 support.
+* Fixed build errors for 1.6.
 ## 1.7.12
 Fixed some GMCM naming issues that made things look terrible.
 ## 1.7.11

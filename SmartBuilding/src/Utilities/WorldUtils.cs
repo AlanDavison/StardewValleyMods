@@ -12,6 +12,7 @@ namespace SmartBuilding.Utilities
 {
     public class WorldUtils
     {
+        private readonly ModConfig config;
         private readonly ITapGiantCropsAPI? giantCropTapApi;
         private readonly IdentificationUtils identificationUtils;
         private readonly Logger logger;
@@ -21,17 +22,17 @@ namespace SmartBuilding.Utilities
         private readonly PlayerUtils playerUtils;
 
         public WorldUtils(IdentificationUtils identificationUtils, PlacementUtils placementutils,
-            PlayerUtils playerUtils, ITapGiantCropsAPI? giantCropTapApi, Logger logger,
+            PlayerUtils playerUtils, ITapGiantCropsAPI? giantCropTapApi, ModConfig config, Logger logger,
             IMoreFertilizersAPI? moreFertilizersApi, IGrowableBushesAPI? growableBushesAPI)
         {
             this.identificationUtils = identificationUtils;
             this.placementUtils = placementutils;
             this.playerUtils = playerUtils;
+            this.config = config;
             this.logger = logger;
             this.moreFertilizersApi = moreFertilizersApi;
             this.growableBushesAPI = growableBushesAPI;
             this.giantCropTapApi = giantCropTapApi;
-
         }
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace SmartBuilding.Utilities
             {
                 // try to place the bush.
                 if (this.growableBushesAPI?.TryPlaceBush(itemToPlace, here, targetTile,
-                        ModEntry.Config.LessRestrictiveObjectPlacement) != true)
+                        this.config.LessRestrictiveObjectPlacement) != true)
                 {
                     // refund the bush.
                     this.playerUtils.RefundItem(itemToPlace,
@@ -81,7 +82,7 @@ namespace SmartBuilding.Utilities
                     else
                     {
                         // At this point, we know there's a terrain feature here.
-                        if (ModEntry.Config.EnableReplacingFloors)
+                        if (this.config.EnableReplacingFloors)
                         {
                             var tf = here.terrainFeatures[targetTile];
 
@@ -137,7 +138,7 @@ namespace SmartBuilding.Utilities
                             // We try to identify what kind of object is placed here.
                             if (this.identificationUtils.IsTypeOfObject(o, ItemType.Fence))
                             {
-                                if (ModEntry.Config.EnableReplacingFences)
+                                if (this.config.EnableReplacingFences)
                                     // We have a fence, so we want to remove it before placing our new one.
                                     this.DemolishOnTile(targetTile, TileFeature.Object);
                             }
@@ -346,7 +347,7 @@ namespace SmartBuilding.Utilities
                 }
                 else if (itemInfo.ItemType == ItemType.StorageFurniture)
                 {
-                    if (ModEntry.Config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
+                    if (this.config.EnablePlacingStorageFurniture && !itemInfo.IsDgaItem)
                     {
                         bool placedSuccessfully = false;
 
@@ -371,7 +372,7 @@ namespace SmartBuilding.Utilities
                             this.logger.Log(I18n.SmartBuilding_Message_StorageFurniture_RetrievalTip());
 
                         // If we have less restrictive furniture placement enabled, we simply try to place it. Otherwise, we use the vanilla placementAction.
-                        if (ModEntry.Config.LessRestrictiveFurniturePlacement)
+                        if (this.config.LessRestrictiveFurniturePlacement)
                             here.furniture.Add(storage);
                         else
                             placedSuccessfully = storage.placementAction(here, (int)targetTile.X * 64,
@@ -392,7 +393,7 @@ namespace SmartBuilding.Utilities
                     TV tv = null;
 
                     // We need to determine which we we're placing this TV based upon the furniture placement restriction option.
-                    if (ModEntry.Config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                    if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                     {
                         tv = new TV(itemToPlace.ItemId, targetTile);
                         here.furniture.Add(tv);
@@ -412,7 +413,7 @@ namespace SmartBuilding.Utilities
                     BedFurniture bed = null;
 
                     // We decide exactly how we're placing the furniture based upon the less restrictive setting.
-                    if (ModEntry.Config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
+                    if (this.config.LessRestrictiveBedPlacement && !itemInfo.IsDgaItem)
                     {
                         bed = new BedFurniture(itemToPlace.ItemId, targetTile);
                         here.furniture.Add(bed);
@@ -433,7 +434,7 @@ namespace SmartBuilding.Utilities
                     Furniture? furniture = null;
 
                     // Determine exactly how we're placing this furniture.
-                    if (ModEntry.Config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
+                    if (this.config.LessRestrictiveFurniturePlacement && !itemInfo.IsDgaItem)
                     {
                         furniture = new Furniture(itemToPlace.ItemId, targetTile);
                         furniture.currentRotation.Value = (itemToPlace as Furniture).currentRotation.Value;
@@ -552,15 +553,13 @@ namespace SmartBuilding.Utilities
                         if (here.objects.ContainsKey(tile))
                         {
                             // If the setting to disable chest pickup is enabled, we pick up the chest. If not, we do nothing.
-                            if (ModEntry.Config.CanDestroyChests)
+                            if (this.config.CanDestroyChests)
                             {
                                 // This is fairly fragile, but it's fine with vanilla chests, at least.
                                 Chest chest = new Chest(true, tile);
 
-                                Item newChest = (o as Chest).getOne();
-                                (newChest as SObject).owner.Value = o.owner.Value;
-                                Game1.player.addItemByMenuIfNecessary(newChest);
                                 (o as Chest).destroyAndDropContents(tile * 64);
+                                Game1.player.addItemByMenuIfNecessary(chest.getOne());
                                 here.objects.Remove(tile);
                             }
                             else
@@ -574,24 +573,13 @@ namespace SmartBuilding.Utilities
                         if (here.objects.ContainsKey(tile))
                         {
                             // If the setting to disable chest pickup is enabled, we pick up the chest. If not, we do nothing.
-                            if (ModEntry.Config.CanDestroyChests)
+                            if (this.config.CanDestroyChests)
                             {
-                                Item realChest = ItemRegistry.Create(o.QualifiedItemId, 1, allowNull: true);
+                                // This is fairly fragile, but it's fine with vanilla chests, at least.
+                                var chest = new Chest(true, tile);
 
-                                if (realChest is null)
-                                {
-                                    this.logger.Log(I18n.SmartBuilding_Error_Removal_RemovingItemFailedToIdentify(),
-                                        LogLevel.Error, true);
-                                    this.logger.Log($"Item ID: {o.ItemId}", LogLevel.Error);
-                                    this.logger.Log($"Item Qualified ID: {o.QualifiedItemId}", LogLevel.Error);
-                                    this.logger.Log($"Item Name: {o.Name}", LogLevel.Error);
-                                    this.logger.Log($"Item DisplayName: {o.DisplayName}", LogLevel.Error);
-
-                                    return;
-                                }
-
-                                Game1.player.addItemByMenuIfNecessary(realChest);
                                 (o as Chest).destroyAndDropContents(tile * 64);
+                                Game1.player.addItemByMenuIfNecessary(chest.getOne());
                                 here.objects.Remove(tile);
                             }
                             else
@@ -713,13 +701,13 @@ namespace SmartBuilding.Utilities
                         return;
 
                     if (Items.TryGetItemFromFlooring(floor, out Item finalFloor))
-                    {
                         Game1.player.addItemByMenuIfNecessary(finalFloor);
-                        here.terrainFeatures.Remove(tile);
-                    }
                     else
                         this.logger.Error(
                             $"Couldn't get flooring item from floor with type {floor.whichFloor.Value}. Cannot safely remove.");
+
+                    // Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
+                    here.terrainFeatures.Remove(tile);
                 }
 
             // handle picking up growable bushes.
@@ -749,7 +737,7 @@ namespace SmartBuilding.Utilities
                 if (furnitureToGrab != null)
                 {
                     // If it's a StorageFurniture, and the setting to allow working with it is false, do nothing.
-                    if (furnitureToGrab is StorageFurniture && !ModEntry.Config.EnablePlacingStorageFurniture)
+                    if (furnitureToGrab is StorageFurniture && !this.config.EnablePlacingStorageFurniture)
                         return;
 
                     // Otherwise, we can continue.

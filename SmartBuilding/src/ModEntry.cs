@@ -26,10 +26,6 @@ namespace SmartBuilding
         private static IMonitor monitor = null!;
         private Logger logger = null!;
         private static ModConfig config = null!;
-        public static ModConfig Config
-        {
-            get => config;
-        }
         private ButtonActions buttonActions;
 
         // Debug stuff to make my life less painful when going through my pre-release checklist.
@@ -80,7 +76,7 @@ namespace SmartBuilding
             ModEntry.helper = helper;
             monitor = this.Monitor;
             this.logger = new Logger(monitor, helper.Translation);
-            this.LoadConfig();
+            config = ModEntry.helper.ReadConfig<ModConfig>();
 
             // This is where we'll register with GMCM.
             ModEntry.helper.Events.GameLoop.GameLaunched += this.GameLaunched;
@@ -279,11 +275,6 @@ namespace SmartBuilding
                             this.logger.Exception(e);
                         }
                 }
-        }
-
-        public void LoadConfig()
-        {
-            config = ModEntry.helper.ReadConfig<ModConfig>();
         }
 
         private void RegisterWithGmcm()
@@ -810,13 +801,13 @@ namespace SmartBuilding
             // Set up our helpers.
             this.drawingUtils = new DrawingUtils();
             this.identificationUtils =
-                new IdentificationUtils(helper, this.logger, this.dgaApi, this.moreFertilizersApi, this.growBushesApi,
+                new IdentificationUtils(helper, this.logger, config, this.dgaApi, this.moreFertilizersApi, this.growBushesApi,
                     this.placementUtils);
-            this.placementUtils = new PlacementUtils(this.identificationUtils, this.moreFertilizersApi,
+            this.placementUtils = new PlacementUtils(config, this.identificationUtils, this.moreFertilizersApi,
                 this.giantCropTapApi, this.growBushesApi, this.logger, helper);
             this.playerUtils = new PlayerUtils(this.logger);
             this.worldUtils = new WorldUtils(this.identificationUtils, this.placementUtils, this.playerUtils,
-                this.giantCropTapApi, this.logger, this.moreFertilizersApi, this.growBushesApi);
+                this.giantCropTapApi, config, this.logger, this.moreFertilizersApi, this.growBushesApi);
             this.modState = new ModState(this.logger, config, this.playerUtils, this.identificationUtils, this.worldUtils,
                 this.placementUtils);
             this.buttonActions = new ButtonActions(this, this.modState); // Ew, no. Fix this ugly nonsense later.
@@ -833,9 +824,6 @@ namespace SmartBuilding
             this.Helper.ConsoleCommands.Add("sb_count",
                 "Count how many instances of an object exist in the current map.",
                 this.commands.CountInMap);
-            this.Helper.ConsoleCommands.Add("sb_reload_config",
-                "Reload the config.",
-                this.commands.ReloadConfig);
 
             if (this.toolbarIconsApi != null)
             {

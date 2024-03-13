@@ -1,9 +1,5 @@
 ﻿# Player Co-ordinates Changelog
 
-## 1.0.0
-#### Fixes
-* Updated for 1.6 support.
-
 ## 0.7.3
 #### Fixes
 * Fixed build errors for 1.6.

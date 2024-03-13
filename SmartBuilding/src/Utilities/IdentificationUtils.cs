@@ -13,15 +13,17 @@ namespace SmartBuilding.Utilities
         private readonly IDynamicGameAssetsApi? dgaApi;
         private readonly IModHelper helper;
         private readonly Logger logger;
+        private ModConfig config;
         private IMoreFertilizersAPI? moreFertilizersApi;
         private IGrowableBushesAPI? growableBushesApi;
         private PlacementUtils placementUtils;
 
-        public IdentificationUtils(IModHelper helper, Logger logger, IDynamicGameAssetsApi? dgaApi,
+        public IdentificationUtils(IModHelper helper, Logger logger, ModConfig config, IDynamicGameAssetsApi? dgaApi,
             IMoreFertilizersAPI? moreFertilizersApi, IGrowableBushesAPI? growableBushesAPI, PlacementUtils placementUtils)
         {
             this.helper = helper;
             this.logger = logger;
+            this.config = config;
             this.dgaApi = dgaApi;
             this.moreFertilizersApi = moreFertilizersApi;
             this.growableBushesApi = growableBushesAPI;
@@ -148,11 +150,9 @@ namespace SmartBuilding.Utilities
 
         public bool DoesTerrainFeatureContainModData(TerrainFeature tf, string search)
         {
-#if DEBUG
             var timer = new Stopwatch();
-            timer.Start();
-#endif
 
+            timer.Start();
             if (tf != null && tf.modData != null)
                 foreach (SerializableDictionary<string, string>? modData in tf.modData)
                 foreach (string? key in modData.Keys)
@@ -160,10 +160,9 @@ namespace SmartBuilding.Utilities
                     if (key.Contains(search) || value.Contains(search))
                         return true;
 
-#if DEBUG
             timer.Stop();
+
             this.logger.Log($"Took {timer.ElapsedMilliseconds}ms to search modData.", LogLevel.Trace);
-#endif
 
             return false;
         }

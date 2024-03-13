@@ -1,11 +1,9 @@
 ﻿# Carry Your Pet release notes
 
-## 1.3.0
-#### Fixes
-* Updated for 1.6 support.
 ## 1.2.1
 #### Fixes
 * 1.6 support!
+
 ## 1.2.0
 #### Additions
 * Now instead of needing to click on your pet with the carry key held down to drop them, you simply have to press the key. No clicking involved, so dropping tiny animals should be completely fooltproof.
