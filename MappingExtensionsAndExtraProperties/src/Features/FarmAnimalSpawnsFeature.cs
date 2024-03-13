@@ -1,8 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using DecidedlyShared.Logging;
+using DecidedlyShared.Utilities;
 using HarmonyLib;
+using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
@@ -22,9 +28,12 @@ public class FarmAnimalSpawnsFeature : Feature
     private static Logger logger;
     private static Harmony harmony;
     private static IModHelper helper;
+    private static AnimalModel animalData;
+    private static Dictionary<FarmAnimal, Animal> spawnedAnimals = new Dictionary<FarmAnimal, Animal>();
 
     public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
     {
+        this.Enabled = false;
         this.FeatureId = id;
         FarmAnimalSpawnsFeature.logger = logger;
         FarmAnimalSpawnsFeature.helper = helper;
@@ -35,10 +44,10 @@ public class FarmAnimalSpawnsFeature : Feature
     {
         try
         {
-            this.HarmonyPatcher.Patch(
-                AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-                postfix: new HarmonyMethod(typeof(LetterFeature),
-                    nameof(SetMailFlagFeature.GameLocation_CheckAction_Postfix)));
+            FarmAnimalSpawnsFeature.harmony.Patch(
+                AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.pet)),
+                prefix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
+                    nameof(FarmAnimalSpawnsFeature.FarmAnimalPetPrefix)));
         }
         catch (Exception e)
         {
@@ -53,7 +62,68 @@ public class FarmAnimalSpawnsFeature : Feature
         this.Enabled = false;
     }
 
-    public override void RegisterCallbacks() {}
+    public override void RegisterCallbacks()
+    {
+        FeatureManager.OnDayStartCallback += this.OnDayStart;
+    }
+
+    private void OnDayStart(object? sender, EventArgs e)
+    {
+        if (!Context.IsWorldReady || !Context.IsMainPlayer || !this.Enabled)
+            return;
+
+        // We technically only need to run this once, but this will be a super fast operation because it's cached.
+        animalData = helper.GameContent.Load<AnimalModel>("MEEP/FarmAnimals/SpawnData");
+
+        // We need access to Game1.multiplayer. This is critical.
+        Multiplayer multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+
+        if (multiplayer is null)
+        {
+            // This is a catastrophic failure.
+            logger.Log("Reflecting to get Game1.Multiplayer failed. As a result, we can't spawn any animals. This should never happen.", LogLevel.Error);
+
+            return;
+        }
+
+        foreach (Animal animal in animalData.Animals)
+        {
+            if (!GameStateQuery.CheckConditions(animal.Condition))
+            {
+                logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
+
+                continue;
+            }
+
+            GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
+
+            if (targetLocation is null)
+            {
+                logger.Log($"Couldn't parse location name \"{animal.LocationId}\". Animal not spawned.", LogLevel.Error);
+                continue;
+            }
+
+            // Sanity check time.
+            if (animal.SkinId is null)
+                animal.SkinId = "";
+
+            FarmAnimal babbyAnimal = new FarmAnimal(animal.AnimalId, multiplayer.getNewID(), -1L)
+            {
+                skinID = { animal.SkinId }
+            };
+
+            babbyAnimal.Position = new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
+            babbyAnimal.Name = animal.DisplayName is null ? "No Name Boi" : animal.DisplayName;
+
+            // We got a location, so we're good to check our GameStateQuery condition.
+
+            targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
+            spawnedAnimals.Add(babbyAnimal, animal);
+
+            logger.Log($"Animal {animal.Id} spawned in {targetLocation.Name}.", LogLevel.Info);
+
+        }
+    }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
     {
@@ -63,21 +133,15 @@ public class FarmAnimalSpawnsFeature : Feature
 
     public static bool FarmAnimalPetPrefix(FarmAnimal __instance, Farmer who, bool is_auto_pet)
     {
+        if (!enabled)
+            return true;
+
         // If we're dealing with one of our spawned animals, we display a nice message.
         if (spawnedAnimals.ContainsKey(__instance))
         {
-            string hudMessage;
-
-            if (spawnedAnimals[__instance].PetMessage is not null &&
-                !spawnedAnimals[__instance].PetMessage.Equals(""))
-                hudMessage = translation.Get(spawnedAnimals[__instance].PetMessage);
-            else
-                hudMessage = $"{__instance.displayName} looks very happy today!";
-
-            if (!Game1.doesHUDMessageExist(hudMessage))
-            {
-                Game1.addHUDMessage(new HUDMessage(hudMessage) {noIcon = true });
-            }
+            Vector2 messageSize = Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
+            DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
+            Game1.activeClickableMenu = dialogue;
 
             return false;
         }

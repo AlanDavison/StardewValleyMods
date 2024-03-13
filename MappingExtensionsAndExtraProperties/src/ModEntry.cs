@@ -51,13 +51,14 @@ public class ModEntry : Mod
                 args.LoadFrom(() => new Dictionary<string, string>(), AssetLoadPriority.Low);
             }
 
-            if (args.NameWithoutLocale.IsDirectlyUnderPath("MEEP/FarmAnimals/SpawnData"))
+            if (args.NameWithoutLocale.IsEquivalentTo("MEEP/FarmAnimals/SpawnData"))
             {
-                args.LoadFrom(() => new List<Animal>(), AssetLoadPriority.Low);
+                args.LoadFrom(() => new AnimalModel(), AssetLoadPriority.Low);
             }
         };
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
+        helper.Events.GameLoop.DayStarted += this.OnDayStarted;
     }
 
     private void LoadContentPacks()
@@ -177,6 +178,11 @@ public class ModEntry : Mod
     private void OnDayEndingEarly(object? sender, DayEndingEventArgs e)
     {
         FeatureManager.EarlyOnDayEnding();
+    }
+
+    private void OnDayStarted(object? sender, DayStartedEventArgs e)
+    {
+        FeatureManager.OnDayStart();
     }
 
     public override object? GetApi()

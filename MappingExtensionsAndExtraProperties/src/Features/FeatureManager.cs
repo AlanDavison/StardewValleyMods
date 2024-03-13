@@ -13,6 +13,7 @@ public static class FeatureManager
     private static HashSet<Feature> features = new HashSet<Feature>();
     private static Feature[] cursorAffectingFeatures;
     internal static event EventHandler? GameTickCallback;
+    internal static event EventHandler? OnDayStartCallback;
     internal static event EventHandler? EarlyDayEndingCallback;
     internal static event EventHandler? LateDayEndingCallback;
     internal static event EventHandler<OnLocationChangeEventArgs>? OnLocationChangeCallback;
@@ -88,6 +89,11 @@ public static class FeatureManager
     {
         GameTickCallback?.Invoke(null, null);
 
+    }
+
+    public static void OnDayStart()
+    {
+        OnDayStartCallback?.Invoke(null, null);
     }
 
     public static void EarlyOnDayEnding()
