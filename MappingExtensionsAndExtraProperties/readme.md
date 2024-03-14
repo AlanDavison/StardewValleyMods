@@ -10,17 +10,18 @@ This mod does nothing on its own. Its primary purpose is to allow map authors to
 ## Current features
 Click on the link to go to the mini-docs for each one
 
-| Updated in version | **Detailed Description**                                                    | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
-|:-------------------|-----------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2.0.0              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)      | Buildings | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
-| 2.0.0              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties) | Buildings | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
-| 2.0.0              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties) | Buildings | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
+| Updated in version | **Detailed Description**                                                              | **Layer** | **Description**                                                                                                                                                                                                                                                                                                                   |
+|:-------------------|---------------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2.0.0              | [*Closeup Interaction*](#Using-the-CloseupInteraction-tile-properties)                | Buildings | This tile property will display a specified image on the screen when the player interacts with the tile it's placed on. If you want the player to be able to examine a photo on a desk and actually see the photo up-close, this is the one to use.                                                                               |
+| 2.0.0              | [*Closeup Interaction Text*](#Using-the-CloseupInteraction-tile-properties)           | Buildings | This tile property only works in conjunction with `CloseupInteraction_Image`, and will display the specified text as a description below the image.                                                                                                                                                                               |
+| 2.0.0              | [*Closeup Interaction Reel*](#Using-the-CloseupInteraction-reel-tile-properties)      | Buildings | This is a special variation of the closeup interaction properties. With this method, the mod will display the first image, and allow the player to also look at image 2, image 3, etc., all while allowing you to optionally have a text description for required images.                                                         |
 | 2.0.0              | [*Closeup Interaction Sound*](#Using-the-MEEP_CloseupInteraction_Sound-tile-property) | Buildings | This is a tile property you can use alongside any of the other Closeup Interaction properties. When you specify a game sound cue using it, the sound will play when the player opens the interaction, or turns the page in the case of a reel.                                                                                    |
-| 2.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                | Buildings | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
-| 2.0.0              | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                         | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
-| 2.0.0              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                            | Buildings | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
-| 2.0.0              | [*Letter Type*](#MEEP_Letter_Type)                                          | Buildings | This property allows you to specify a vanilla letter background, *or* a custom letter background image.                                                                                                                                                                                                                           |
-| **2.1.0**          | [Farm Animal Spawning](#Spawning-farm-animals)                              | N/A       | MEEP lets you spawn any farm animal in the game (including custom ones added with 1.6's new custom farm animal feature) on a map of your choosing. Farm animals spawned by MEEP can't be milked/sheared/sold, and can display a custom message when you chat with them.
+| 2.0.0              | [*Set Mail Flag*](#Using-the-MEEP_SetMailFlag-tile-property)                          | Buildings | This tile property will set the specified mail flag when the player interacts with the tile it's on.                                                                                                                                                                                                                              |
+| **2.2.0**          | [Adding a conversation topic](#Using-the-MEEP_AddConversationTopic-tile-property)     | Buildings | MEEP allows you to add a conversation topic to the player that interacts with a tile. This works alongside any other MEEP tile properties. For instance, you can set a conversation topic when the player clicks to look at something on an NPC's table.                                                                          |
+| 2.0.0              | [*Fake NPC*](#Using-the-MEEP_FakeNPC-tile-property)                                   | Back      | This tile property will spawn a fake NPC on the tile it's placed on. This NPC will breathe like a normal NPC, face you like a normal NPC, and can be talked to like a normal NPC. You can also specify a custom sprite size for the NPC. For example: a 32x32 NPC, or a 64x64 NPC. Other sizes may work, but haven't been tested. |
+| 2.0.0              | [*Letter*](#Using-the-MEEP-Letter-tile-property)                                      | Buildings | With the Letter tile properties, you can trigger a vanilla-style letter/mail when the player interacts with the specified tile.                                                                                                                                                                                                   |
+| 2.0.0              | [*Letter Type*](#MEEP_Letter_Type)                                                    | Buildings | This property allows you to specify a vanilla letter background, *or* a custom letter background image.                                                                                                                                                                                                                           |
+| 2.1.0          | [Farm Animal Spawning](#Spawning-farm-animals)                                        | N/A       | MEEP lets you spawn any farm animal in the game (including custom ones added with 1.6's new custom farm animal feature) on a map of your choosing. Farm animals spawned by MEEP can't be milked/sheared/sold, and can display a custom message when you chat with them.
 
 ## Using the features
 Using the features is fairly simple. There are a few things you'll need to know that I won't be covering here:
@@ -36,11 +37,13 @@ which feature every mod using it requires, and which version of MEEP the mod is 
 
 All of the current keys are as follows:
 
-* `DH.MEEP`
+* `DH.MEEP` (Mandatory to use MEEP.)
 * `DH.MEEP.CloseupInteractions`
 * `DH.MEEP.FakeNPCs`
 * `DH.MEEP.VanillaLetters`
 * `DH.MEEP.SetMailFlag`
+* `DH.MEEP.FarmAnimalSpawns`
+* `DH.MEEP.AddConversationTopic`
 
 The following example uses closeup interactions, fake NPCs, and was made for version 2.0.0 of MEEP.
 
@@ -232,6 +235,42 @@ This one is fairly self-explanatory. You would add the tile property `DHSetMailF
 With this example, interacting with the tile will bring up the fortune teller image and message, and set the mail flag `DHSeenFortuneTellerImage`. Whenever Content Patcher refreshes its patches, the interaction to bring up the image and description will vanish. You can specify a custom update rate [as seen here](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide.md#how-often-are-patch-changes-applied).
 
 You could also use this for any kind of conditional patch that checks for a mail flag.
+
+### Using the MEEP_AddConversationTopic tile property
+This one is also fairly self-explanatory. It sets a conversation topic whenever a tile is interacted with!
+```json
+{
+    "Format": "1.28.0",
+    "Changes": [
+        {
+            // Apply the tile property
+            "Action": "EditMap",
+            "Target": "Maps/SeedShop",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 13,
+                        "Y": 18
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_Letter Super Evil Joja Plans^^Ha, fooled you! No plans here.",
+                        "MEEP_Letter_Type": "Mods/DecidedlyHuman/JojaLetterBG",
+                        "MEEP_AddConversationTopic": "DH.MEEP.SeenEvilJojaLetter 7"
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+All you do is add the `MEEP_AddConversationTopic` tile property as you see above. It takes one or two arguments. In:
+```
+"MEEP_AddConversationTopic": "DH.MEEP.SeenEvilJojaLetter 7"
+```
+
+`DH.MEEP.SeenEvilJojaLetter`: This is the conversation topic you want to add.
+`7`: This is the number of days the conversation topic will remain active.
 
 ### Using the MEEP_FakeNPC tile property
 This tile property will allow you to spawn a "fake" NPC on a given tile. Unlike a "real" NPC, which needs a disposition, and lots of setup, a "fake" NPC needs very, very little. Fake NPCs cannot receive gifts, don't have a schedule, and won't move around. They're intended to be a middle ground between a simple static NPC sprite, and a fully-fledged NPC.

@@ -68,6 +68,7 @@ public class ModEntry : Mod
         bool vanillaLettersUsed = false;
         bool setMailFlagUsed = false;
         bool farmAnimalSpawningUsed = false;
+        bool addConversationTopicUsed = false;
 
 
         foreach (var mod in this.Helper.ModRegistry.GetAll())
@@ -86,6 +87,8 @@ public class ModEntry : Mod
                     setMailFlagUsed = true;
                 if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.FarmAnimalSpawns"))
                     farmAnimalSpawningUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.AddConversationTopic"))
+                    addConversationTopicUsed = true;
             }
         }
 
@@ -125,6 +128,14 @@ public class ModEntry : Mod
             FarmAnimalSpawnsFeature farmAnimals =
                 new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.logger, this.Helper);
             FeatureManager.AddFeature(farmAnimals);
+        }
+
+        if (addConversationTopicUsed)
+        {
+            AddConversationTopicFeature conversationTopics =
+                new AddConversationTopicFeature(this.harmony, "DH.AddConversationTopic", this.logger,
+                    this.tileProperties);
+            FeatureManager.AddFeature(conversationTopics);
         }
 
         if (FeatureManager.FeatureCount > 0)

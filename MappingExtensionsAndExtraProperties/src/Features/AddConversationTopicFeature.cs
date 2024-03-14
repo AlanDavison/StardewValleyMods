@@ -5,7 +5,7 @@ using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MappingExtensionsAndExtraProperties.Utils;
 using StardewModdingAPI;
 using StardewValley;
 using xTile.Dimensions;
@@ -13,7 +13,7 @@ using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
-public class SetMailFlagFeature : Feature
+public class AddConversationTopicFeature : Feature
 {
     public sealed override string FeatureId { get; init; }
     public sealed override Harmony HarmonyPatcher { get; init; }
@@ -28,15 +28,14 @@ public class SetMailFlagFeature : Feature
     }
     private static bool enabled;
 
-    public SetMailFlagFeature(Harmony harmony, string id, Logger logger, TilePropertyHandler tilePropertyHandler)
+    public AddConversationTopicFeature(Harmony harmony, string id, Logger logger, TilePropertyHandler tilePropertyHandler)
     {
         this.Enabled = false;
         this.HarmonyPatcher = harmony;
         this.FeatureId = id;
-        SetMailFlagFeature.logger = logger;
-        SetMailFlagFeature.tileProperties = tilePropertyHandler;
+        AddConversationTopicFeature.logger = logger;
+        AddConversationTopicFeature.tileProperties = tilePropertyHandler;
         this.AffectsCursorIcon = false;
-        this.CursorId = 5;
     }
 
     public override void Enable()
@@ -45,8 +44,8 @@ public class SetMailFlagFeature : Feature
         {
             this.HarmonyPatcher.Patch(
                 AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-                postfix: new HarmonyMethod(typeof(SetMailFlagFeature),
-                    nameof(SetMailFlagFeature.GameLocation_CheckAction_Postfix)));
+                postfix: new HarmonyMethod(typeof(AddConversationTopicFeature),
+                    nameof(AddConversationTopicFeature.GameLocation_CheckAction_Postfix)));
         }
         catch (Exception e)
         {
@@ -83,15 +82,19 @@ public class SetMailFlagFeature : Feature
         // Consider removing this try/catch.
         try
         {
-            // First, pull our tile co-ordinates from the location.
             int tileX = tileLocation.X;
             int tileY = tileLocation.Y;
 
-            // Check for the DHSetMailFlag property on a given tile.
-            if (tileProperties.TryGetBuildingProperty(tileX, tileY, __instance, SetMailFlag.PropertyKey,
-                    out PropertyValue dhSetMailFlagProperty))
+            if (tileProperties.TryGetBuildingProperty(tileX, tileY, __instance, AddConversationTopic.PropertyKey,
+                    out PropertyValue addConversationTopicProperty))
             {
-                MailFlag.SetMailFlag(dhSetMailFlagProperty, logger);
+                if (!Parsers.TryParse(addConversationTopicProperty.ToString(),
+                        out AddConversationTopic parsedProperty))
+                {
+                    return;
+                }
+
+                ConversationTopic.SetConversationTopic(parsedProperty.ConversationTopic, parsedProperty.Days);
             }
         }
         catch (Exception e)

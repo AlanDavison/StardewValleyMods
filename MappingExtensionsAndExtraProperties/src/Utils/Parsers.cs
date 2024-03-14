@@ -55,6 +55,36 @@ public class Parsers
         return false;
     }
 
+    public static bool TryParseIncludingKey(string property, out AddConversationTopic parsedProperty)
+    {
+        parsedProperty = null;
+
+        string[] splitProperty = property.Split(" ");
+
+        // We need one or two properties exclusively.
+        if (splitProperty.Length < 1) return false;
+        if (splitProperty.Length > 2) return false;
+
+        StringBuilder args = new StringBuilder();
+        // We know we're dealing with the minimum required parameters now, so we rejoin them to pass into the parser.
+        for (int i = 1; i < splitProperty.Length; i++)
+        {
+            if (i == splitProperty.Length - 1)
+                args.Append($"{splitProperty[i]}");
+            else
+                args.Append($"{splitProperty[i]} ");
+        }
+
+        if (TryParse(args.ToString(), out AddConversationTopic finalParsedProperty))
+        {
+            parsedProperty = finalParsedProperty;
+
+            return true;
+        }
+
+        return false;
+    }
+
     public static bool TryParseIncludingKey(string property, out CloseupInteractionText parsedProperty)
     {
         parsedProperty = new CloseupInteractionText();
@@ -259,6 +289,26 @@ public class Parsers
 
         // All of our ints were parsed successfully, so we assign them to a brand new sourceRect.
         parsedProperty.SourceRect = new Rectangle(rectX, rectY, rectWidth, rectHeight);
+
+        return true;
+    }
+
+    public static bool TryParse(string property, out AddConversationTopic parsedProperty)
+    {
+        parsedProperty = null;
+        string[] splitProperty = property.Split(" ");
+
+        // For this property, we want either:
+        // 1) One argument (just the conversation topic string)
+        // 2) Two argument (the conversation topic string, and an integer to specify the days it will last for)
+        if (splitProperty.Length < 1) return false;
+        if (splitProperty.Length > 2) return false;
+
+        string conversationTopic = splitProperty[0];
+        if (!int.TryParse(splitProperty[1], out int numDays)) return false;
+
+        // Everything's parsed correctly, so we stick everything in the parsed property and be on our way.
+        parsedProperty = new AddConversationTopic(conversationTopic, numDays);
 
         return true;
     }
