@@ -109,7 +109,8 @@ public class FarmAnimalSpawnsFeature : Feature
 
             FarmAnimal babbyAnimal = new FarmAnimal(animal.AnimalId, multiplayer.getNewID(), -1L)
             {
-                skinID = { animal.SkinId }
+                skinID = { animal.SkinId },
+                age = { animal.Age }
             };
 
             babbyAnimal.Position = new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
@@ -118,9 +119,11 @@ public class FarmAnimalSpawnsFeature : Feature
             // We got a location, so we're good to check our GameStateQuery condition.
 
             targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
+            babbyAnimal.update(Game1.currentGameTime, targetLocation);
+            babbyAnimal.ReloadTextureIfNeeded();
             spawnedAnimals.Add(babbyAnimal, animal);
 
-            logger.Log($"Animal {animal.Id} spawned in {targetLocation.Name}.", LogLevel.Info);
+            logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
 
         }
     }

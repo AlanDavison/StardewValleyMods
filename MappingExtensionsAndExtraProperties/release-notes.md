@@ -1,5 +1,9 @@
 # MEEP Release Notes
 
+* 2.2.2
+  * "Fixed" (added because I forgot originally... oops) MEEP-spawned farm animals not being able to have their age specified.
+* 2.2.0
+  * Added a new tile property that allows you to set a custom conversation topic.
 * 2.1.0-beta
   * Added the ability to spawn farm animals!
 * 2.0.4-beta

@@ -490,11 +490,24 @@ Here's an example of an edit that will spawn two farm animals. One in the submar
             "Entries": {
                 "DH.TilePropertyTestMod.WhiteChickenSubmarine": {
                     "AnimalId": "White Chicken",
+                    "Age": 0,
                     "LocationId": "Submarine",
                     "DisplayName": "Animal One Name",
                     "PetMessage": [
                         "UwU",
                         "I'm a baby chicken!"
+                    ],
+                    "HomeTileX": 13,
+                    "HomeTileY": 5,
+                    "Condition": ""
+                },
+                "DH.TilePropertyTestMod.WhiteChickenSubmarine": {
+                    "AnimalId": "White Chicken",
+                    "Age": 100,
+                    "LocationId": "Submarine",
+                    "DisplayName": "Animal One Name",
+                    "PetMessage": [
+                        "I'm a very old chicken, so you won't get an UwU from me!"
                     ],
                     "HomeTileX": 13,
                     "HomeTileY": 5,
@@ -526,6 +539,7 @@ Let's look at one in isolation.
 ```json
 "DH.TilePropertyTestMod.WhiteChickenSubmarine": {
     "AnimalId": "White Chicken",
+    "Age": 0,
     "LocationId": "Submarine",
     "DisplayName": "Animal One Name",
     "PetMessage": [
@@ -540,6 +554,7 @@ Let's look at one in isolation.
 
 * `"DH.TilePropertyTestMod.WhiteChickenSubmarine"` is the spawn ID for the animal. This needs to be 100% unique per animal spawn, so it's recommended that you use the format `YourName.YourMod.AnimalType`. You can also do, for example, `YourName.YourMod.Animal1` if you plan on spawning multiple of the same animal. Just increment the number at the end!
 * `"AnimalId": "White Chicken"`: This is the internal animal ID of the animal. In this case, we're spawning a vanilla white chicken, and its internal ID is `White Chicken`.
+* `"Age": 0,`: This is the age of the animal!
 * `"LocationId": "Submarine"`: This is the location name. For example, `SeedShop` is Pierre's shop, `JoshHouse` is Alex's house, and `ScienceHouse` is Robin's house.
 * `"DisplayName": "Animal One Name"`: This is currently unused, but feel free to add it for the future when the name will be displayed alongside the pet message.
 ```json
