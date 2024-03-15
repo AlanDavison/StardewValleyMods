@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace MappingExtensionsAndExtraProperties.Models.FarmAnimals;
@@ -14,4 +15,45 @@ public class Animal
     public int HomeTileX { get; set; }
     public int HomeTileY { get; set; }
     public string? Condition { get; set; }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendLine();
+        sb.Append("---------------");
+        sb.AppendLine();
+
+        sb.Append($"Id: {this.Id}");
+        sb.AppendLine();
+        sb.Append($"AnimalId: {this.AnimalId}");
+        sb.AppendLine();
+        sb.Append($"SkinId: {this.SkinId}");
+        sb.AppendLine();
+        sb.Append($"Age: {this.Age}");
+        sb.AppendLine();
+        sb.Append($"LocationId: {this.LocationId}");
+        sb.AppendLine();
+        sb.Append($"DisplayName: {this.DisplayName}");
+        sb.AppendLine();
+
+        foreach (string s in this.PetMessage)
+        {
+            sb.Append($"PetMessage: {s}");
+            sb.AppendLine();
+        }
+
+        sb.Append($"HomeTileX {this.HomeTileX}");
+        sb.AppendLine();
+        sb.Append($"HomeTileY: {this.HomeTileY}");
+        sb.AppendLine();
+        sb.Append($"Condition: {this.Condition}");
+        sb.AppendLine();
+
+
+        sb.Append("---------------");
+        sb.AppendLine();
+
+        return sb.ToString();
+    }
 }

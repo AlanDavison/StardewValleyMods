@@ -65,6 +65,16 @@ public class FarmAnimalSpawnsFeature : Feature
     public override void RegisterCallbacks()
     {
         FeatureManager.OnDayStartCallback += this.OnDayStart;
+        FeatureManager.EarlyDayEndingCallback += this.OnEarlyDayEnding;
+    }
+
+    private void OnEarlyDayEnding(object? sender, EventArgs e)
+    {
+        foreach (var animal in spawnedAnimals)
+        {
+            logger.Log($"Removing {animal.Key.displayName} of id {animal.Key.type} in {animal.Key.currentLocation.Name}.", LogLevel.Trace);
+            animal.Key.currentLocation.animals.Remove(animal.Key.myID.Value);
+        }
     }
 
     private void OnDayStart(object? sender, EventArgs e)
@@ -74,6 +84,8 @@ public class FarmAnimalSpawnsFeature : Feature
 
         // We technically only need to run this once, but this will be a super fast operation because it's cached.
         animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
+
+        spawnedAnimals.Clear();
 
         // We need access to Game1.multiplayer. This is critical.
         Multiplayer multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
