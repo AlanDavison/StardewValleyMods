@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 2.2.5
+  * Fixed a bug with farm animal spawning.
 * 2.2.2
   * "Fixed" (added because I forgot originally... oops) MEEP-spawned farm animals not being able to have their age specified.
 * 2.2.0
