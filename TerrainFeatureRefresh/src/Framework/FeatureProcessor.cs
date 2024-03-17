@@ -89,7 +89,7 @@ public class FeatureProcessor
 
     private void LogRemoval(TerrainFeature tf)
     {
-        this.logger.Log($"Removed TerrainFeature at tile {tf.currentTileLocation} in {this.location.Name}.", LogLevel.Trace);
+        this.logger.Log($"Removed TerrainFeature at tile {tf.Tile} in {this.location.Name}.", LogLevel.Trace);
     }
 
     private List<SObject> GetSObjects(GameLocation location, Func<SObject, bool> predicate)
@@ -157,7 +157,7 @@ public class FeatureProcessor
         foreach (TerrainFeature tf in terrainFeaturesToDestroy)
         {
             this.LogRemoval(tf);
-            this.location.terrainFeatures.Remove(tf.currentTileLocation);
+            this.location.terrainFeatures.Remove(tf.Tile);
         }
     }
 
@@ -194,11 +194,11 @@ public class FeatureProcessor
             if (!predicate.Invoke(tf))
                 continue;
 
-            if (this.location.terrainFeatures.ContainsKey(tf.currentTileLocation))
+            if (this.location.terrainFeatures.ContainsKey(tf.Tile))
                 continue;
 
-            this.LogAddition(tf, tf.currentTileLocation);
-            this.location.terrainFeatures.Add(tf.currentTileLocation, tf);
+            this.LogAddition(tf, tf.Tile);
+            this.location.terrainFeatures.Add(tf.Tile, tf);
         }
     }
 
@@ -214,7 +214,7 @@ public class FeatureProcessor
             if (this.location.largeTerrainFeatures.Contains(tf))
                 continue;
 
-            this.LogAddition(tf, tf.currentTileLocation);
+            this.LogAddition(tf, tf.Tile);
             this.location.largeTerrainFeatures.Add(tf);
         }
     }
@@ -231,7 +231,7 @@ public class FeatureProcessor
             if (this.location.resourceClumps.Contains(rc))
                 continue;
 
-            this.LogAddition(rc, rc.currentTileLocation);
+            this.LogAddition(rc, rc.Tile);
             this.location.resourceClumps.Add(rc);
         }
     }
