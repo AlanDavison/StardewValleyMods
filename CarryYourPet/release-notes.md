@@ -1,5 +1,8 @@
 ﻿# Carry Your Pet release notes
 
+## 1.3.0
+#### Fixed
+* Full 1.6 update.
 ## 1.2.1
 #### Fixes
 * 1.6 support!

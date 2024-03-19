@@ -1,5 +1,9 @@
 ﻿# Better Return Scepter Changelog
 
+## 1.2.0
+####
+* Full 1.6 release.
+
 ## 1.1.2
 #### Fixes
 * Fixed build errors for 1.6.

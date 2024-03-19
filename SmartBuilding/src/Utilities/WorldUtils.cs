@@ -703,8 +703,12 @@ namespace SmartBuilding.Utilities
                     if (Items.TryGetItemFromFlooring(floor, out Item finalFloor))
                         Game1.player.addItemByMenuIfNecessary(finalFloor);
                     else
+                    {
                         this.logger.Error(
                             $"Couldn't get flooring item from floor with type {floor.whichFloor.Value}. Cannot safely remove.");
+
+                        return;
+                    }
 
                     // Game1.createItemDebris(finalFloor, playerTile * 64, 1, here);
                     here.terrainFeatures.Remove(tile);

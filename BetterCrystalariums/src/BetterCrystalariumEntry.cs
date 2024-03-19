@@ -29,7 +29,7 @@ namespace BetterCrystalariums
             harmony.Patch(
                 AccessTools.Method(typeof(SObject),
                     nameof(SObject.performObjectDropInAction),
-                    new[] { typeof(Item), typeof(bool), typeof(Farmer) }),
+                    new[] { typeof(Item), typeof(bool), typeof(Farmer), typeof(bool) }),
                 new HarmonyMethod(typeof(Patches),
                     nameof(Patches.ObjectDropIn_Prefix))
             );

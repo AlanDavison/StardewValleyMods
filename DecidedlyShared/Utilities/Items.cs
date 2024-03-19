@@ -24,7 +24,7 @@ namespace DecidedlyShared.Utilities
             if (itemId is null)
                 return false;
 
-            if (!ItemRegistry.Exists(itemId))
+            if (! ItemRegistry.Exists(itemId))
                 return false;
 
             floorItem = ItemRegistry.Create(itemId, allowNull: true);
@@ -32,7 +32,7 @@ namespace DecidedlyShared.Utilities
             if (floorItem is null)
                 return false;
 
-            return false;
+            return true;
         }
 
         public static bool TryGetFlooringFromItemId(string id, out Flooring floor)

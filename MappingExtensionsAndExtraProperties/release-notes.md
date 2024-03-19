@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 2.3.0
+  * Full 1.6 release.
 * 2.2.5
   * Fixed a bug with farm animal spawning.
 * 2.2.2

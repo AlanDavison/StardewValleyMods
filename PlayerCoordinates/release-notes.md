@@ -1,5 +1,9 @@
 ﻿# Player Co-ordinates Changelog
 
+## 1.0.0
+#### Changes
+* Full 1.6 update.
+
 ## 0.7.3
 #### Fixes
 * Fixed build errors for 1.6.

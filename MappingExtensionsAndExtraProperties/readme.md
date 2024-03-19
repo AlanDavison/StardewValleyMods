@@ -1,5 +1,5 @@
 ﻿# Mapping Extensions and Extra Properties (MEEP) Documentation
-**Version 2.0.0 -- The 1.6 Special!**
+**Version 2.3.0 -- The 1.6 Special!**
 *PLEASE NOTE: The layers different tile properties go on have changed in MEEP 2.0.0 as a result of changes in 1.6.*
 
 All releases can be found on my [Nexus page](https://www.nexusmods.com/users/79440738?tab=user+files).

@@ -1,5 +1,9 @@
 ﻿# Smart Cursor Changelog
 
+## 1.3.0
+#### Changes
+* Full 1.6 update.
+
 ## 1.2.1
 #### Fixes
 * 1.6 support!
