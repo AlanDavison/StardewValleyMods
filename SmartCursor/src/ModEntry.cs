@@ -263,6 +263,10 @@ namespace SmartCursor
         /// </summary>
         private void GameLoopOnUpdateTicked(object? sender, UpdateTickedEventArgs e)
         {
+            // Guard against fishing rod usage.
+            if (Game1.player.CurrentTool is FishingRod)
+                return;
+
             //TODO should we update GamePadState and MouseState before checking isHoldKeyDown?
             //TODO don't call this from GameLoopOnUpdateTicked
             this.updateTargetedObject();
@@ -510,6 +514,10 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void InputOnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
+            // Guard against fishing rod usage.
+            if (Game1.player.CurrentTool is FishingRod)
+                return;
+
             if (e.Button == this.config.SmartCursorHold)
                 this.isHoldKeyDown = true;
 
