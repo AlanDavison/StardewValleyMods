@@ -270,13 +270,16 @@ namespace SmartCursor
             GamePadState gamepadState = Game1.input.GetGamePadState();
             MouseState mouseState = Game1.input.GetMouseState();
 
+            if (this.isHoldKeyDown)
+                this.Helper.Input.Suppress(SButton.MouseRight);
+
             // Now, if our cooldown timer has passed and the correct keys are held, we want to hit again.
             if (this.isHoldKeyDown && (gamepadState.IsButtonDown(Buttons.X)
                                        || mouseState.LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
             {
                 // if (Game1.player.UsingTool)
                 //     return;
-                Game1.player.UsingTool = true;
+                // Game1.player.UsingTool = true;
 
                 var dummy = new Farmer();
 
@@ -287,13 +290,15 @@ namespace SmartCursor
                     this.GatherResources(Game1.currentLocation);
                 }
 
-                Game1.player.EndUsingTool();
+                // Game1.player.EndUsingTool();
             }
         }
 
         private void BreakObject(Farmer player, Tool tool, bool refundStamina)
         {
             float startingStamina = player.stamina;
+
+            player.BeginUsingTool();
 
             tool.DoFunction(
                 Game1.currentLocation,
@@ -510,6 +515,9 @@ namespace SmartCursor
 
             var dummy = new Farmer();
             this.isHoldKeyDown = e.IsDown(this.config.SmartCursorHold);
+
+            if (this.isHoldKeyDown)
+                this.Helper.Input.Suppress(SButton.MouseRight);
 
             if ((e.Button == SButton.MouseLeft || e.Button == SButton.ControllerX ||
                  Game1.input.GetMouseState().LeftButton == ButtonState.Pressed) && !Game1.player.UsingTool)
