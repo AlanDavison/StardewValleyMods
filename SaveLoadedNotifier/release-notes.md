@@ -1,5 +1,9 @@
 ﻿# Into the Game Changelog
 
+## 1.1.1
+#### Fixes
+* Fixed a problem with multiplayer.
+
 ## 1.1.0
 #### Changes
 * Full 1.6 update.
