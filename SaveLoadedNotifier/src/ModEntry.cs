@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace SaveLoadedNotifier
 {
@@ -18,6 +19,10 @@ namespace SaveLoadedNotifier
         [EventPriority((EventPriority)int.MinValue)]
         private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
         {
+            // Apparently multiplayer exists.
+            if (Game1.activeClickableMenu is CharacterCustomization)
+                return;
+
             try
             {
                 // This will throw if the cue doesn't exist.
