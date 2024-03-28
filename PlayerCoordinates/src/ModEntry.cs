@@ -198,6 +198,9 @@ namespace PlayerCoordinates
             if (!this.showHud)
                 return;
 
+            if (Game1.game1.takingMapScreenshot)
+                return;
+
 
             // We only need to update our co-ordinates if we're drawing the HUD. Maybe make this an option?
             this.UpdateCurrentCoordinates();

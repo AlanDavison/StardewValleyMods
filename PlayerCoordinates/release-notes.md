@@ -1,5 +1,9 @@
 ﻿# Player Co-ordinates Changelog
 
+## 1.0.1
+#### Fixes
+* Finally did the thing so that the HUD doesn't get saved in map screenshots.
+
 ## 1.0.0
 #### Changes
 * Full 1.6 update.
