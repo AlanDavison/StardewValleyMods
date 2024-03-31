@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
@@ -100,43 +101,51 @@ public class FarmAnimalSpawnsFeature : Feature
 
         foreach (Animal animal in animalData.Values)
         {
-            if (!GameStateQuery.CheckConditions(animal.Condition))
+            try
             {
-                logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
+                if (!GameStateQuery.CheckConditions(animal.Condition))
+                {
+                    logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
 
-                continue;
+                    continue;
+                }
+
+                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
+
+                if (targetLocation is null)
+                {
+                    logger.Log($"Couldn't parse location name \"{animal.LocationId}\". Animal not spawned.",
+                        LogLevel.Error);
+                    continue;
+                }
+
+                // Sanity check time.
+                if (animal.SkinId is null)
+                    animal.SkinId = "";
+
+                FarmAnimal babbyAnimal = new FarmAnimal(animal.AnimalId, multiplayer.getNewID(), -1L)
+                {
+                    skinID = { animal.SkinId },
+                    age = { animal.Age }
+                };
+
+                babbyAnimal.Position =
+                    new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
+                babbyAnimal.Name = animal.DisplayName is null ? "No Name Boi" : animal.DisplayName;
+
+                // We got a location, so we're good to check our GameStateQuery condition.
+
+                targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
+                babbyAnimal.update(Game1.currentGameTime, targetLocation);
+                babbyAnimal.ReloadTextureIfNeeded();
+                spawnedAnimals.Add(babbyAnimal, animal);
+
+                logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
             }
-
-            GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
-
-            if (targetLocation is null)
+            catch (Exception ex)
             {
-                logger.Log($"Couldn't parse location name \"{animal.LocationId}\". Animal not spawned.", LogLevel.Error);
-                continue;
+                logger.Log($"Caught an exception spawning {animal.AnimalId} spawned in {animal.LocationId}. Skipping!");
             }
-
-            // Sanity check time.
-            if (animal.SkinId is null)
-                animal.SkinId = "";
-
-            FarmAnimal babbyAnimal = new FarmAnimal(animal.AnimalId, multiplayer.getNewID(), -1L)
-            {
-                skinID = { animal.SkinId },
-                age = { animal.Age }
-            };
-
-            babbyAnimal.Position = new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
-            babbyAnimal.Name = animal.DisplayName is null ? "No Name Boi" : animal.DisplayName;
-
-            // We got a location, so we're good to check our GameStateQuery condition.
-
-            targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
-            babbyAnimal.update(Game1.currentGameTime, targetLocation);
-            babbyAnimal.ReloadTextureIfNeeded();
-            spawnedAnimals.Add(babbyAnimal, animal);
-
-            logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
-
         }
     }
 
