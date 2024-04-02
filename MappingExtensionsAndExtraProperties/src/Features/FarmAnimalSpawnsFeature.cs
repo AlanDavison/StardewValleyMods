@@ -49,6 +49,11 @@ public class FarmAnimalSpawnsFeature : Feature
                 AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.pet)),
                 prefix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
                     nameof(FarmAnimalSpawnsFeature.FarmAnimalPetPrefix)));
+
+            FarmAnimalSpawnsFeature.harmony.Patch(
+                AccessTools.Method(typeof(AnimalPage), nameof(AnimalPage.FindAnimals)),
+                postfix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
+                    nameof(FarmAnimalSpawnsFeature.FindAnimals_Postfix)));
         }
         catch (Exception e)
         {
@@ -129,6 +134,7 @@ public class FarmAnimalSpawnsFeature : Feature
                     age = { animal.Age }
                 };
 
+                babbyAnimal.modData.Add("MEEP_Farm_Animal", "true");
                 babbyAnimal.Position =
                     new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
                 babbyAnimal.Name = animal.DisplayName is null ? "No Name Boi" : animal.DisplayName;
@@ -171,5 +177,33 @@ public class FarmAnimalSpawnsFeature : Feature
         }
 
         return true;
+    }
+
+    public static void FindAnimals_Postfix(AnimalPage __instance, List<AnimalPage.AnimalEntry> __result)
+    {
+        try
+        {
+            List<AnimalPage.AnimalEntry> toRemove = new List<AnimalPage.AnimalEntry>();
+
+            foreach (AnimalPage.AnimalEntry entry in __result)
+            {
+                if (entry.Animal.modData.ContainsKey("MEEP_Farm_Animal"))
+                {
+                    toRemove.Add(entry);
+                }
+            }
+
+            foreach (AnimalPage.AnimalEntry removing in toRemove)
+            {
+                if (__result.Contains(removing))
+                {
+                    __result.Remove(removing);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+        }
     }
 }

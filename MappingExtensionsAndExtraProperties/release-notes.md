@@ -1,5 +1,7 @@
 # MEEP Release Notes
 
+* 2.3.3
+  * Fixed a problem with spawned farm animals appearing in 1.6's new animals tab.
 * 2.3.2
   * Fixed a massive oversight with spawning invalid farm animals resulting in no later animals being spawned.
 * 2.3.0
