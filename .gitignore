@@ -13,16 +13,5 @@ StardewValleyMods.sln.DotSettings.user
 # However, I do also occasionally have content pack manifest files in a subfolder of a "master" project, so I can't
 # just exclude all manifest.json files.
 
-BetterCrystalariums/manifest.json
-BetterReturnScepter/manifest.json
-CarryYourPet/manifest.json
-DefaultWindowSize/manifest.json
-DialogueTester/manifest.json
-GiveMeMyCursorBack/manifest.json
-MappingExtensionsAndExtraProperties/manifest.json
-PlayerCoordinates/manifest.json
-SaveLoadedNotifier/manifest.json
-SmartBuilding/manifest.json
-SmartCursor/manifest.json
-AnotherClickMovementExperience/manifest.json
+manifest.json
 
