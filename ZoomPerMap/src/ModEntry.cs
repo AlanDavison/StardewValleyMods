@@ -3,6 +3,7 @@ using DecidedlyShared.Logging;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
 
 namespace ZoomPerMap;
@@ -95,6 +96,9 @@ public class ModEntry : Mod
         {
             return zoomLevel;
         }
+
+        if (location is MineShaft || location is VolcanoDungeon)
+            return this.config.defaultMineZoomLevel;
 
         return location.IsOutdoors ? this.config.defaultOutdoorZoomLevel : this.config.defaultIndoorZoomLevel;
     }
