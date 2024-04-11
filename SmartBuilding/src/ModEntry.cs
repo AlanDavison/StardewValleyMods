@@ -257,10 +257,10 @@ namespace SmartBuilding
             if (helper.ModRegistry.IsLoaded("furyx639.ToolbarIcons"))
                 if (this.Helper.ModRegistry.Get("furyx639.ToolbarIcons") is IModInfo modInfo)
                 {
-                    if (modInfo.Manifest.Version.IsOlderThan("2.3.0"))
+                    if (modInfo.Manifest.Version.IsOlderThan("2.7.1"))
                     {
                         this.logger.Log(
-                            "Installed version of Toolbar Icons is too old. Please update it to 2.3.0 or higher.");
+                            "Installed version of Toolbar Icons is too old. Please update it to 2.7.1 or higher.");
                         this.toolbarIconsApi = null;
                     }
                     else

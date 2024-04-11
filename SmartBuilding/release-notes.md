@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.1
+#### Fixes
+* Potentially fixed the problem people are having with cask placement.
 ## 1.8.0
 #### Fixes
 * 1.6 compatibility.
