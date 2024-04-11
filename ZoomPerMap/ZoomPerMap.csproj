@@ -5,7 +5,7 @@
 
     <PropertyGroup>
         <Name>Zoom Per Map</Name>
-        <Description>Remembers the zoom level you set in each map, and switches to that zoom level when you enter it..</Description>
+        <Description>Remembers the zoom level you set in each map, and switches to that zoom level when you enter it.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:00000</UpdateKeys>
         <Version>1.0.0</Version>

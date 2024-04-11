@@ -56,6 +56,12 @@ public class ModEntry : Mod
                 () => this.config.defaultIndoorZoomLevel,
                 (val) => this.config.defaultIndoorZoomLevel = val,
                 () => I18n.Settings_DefaultIndoorZoom());
+
+            gmcm.AddNumberOption(
+                this.ModManifest,
+                () => this.config.defaultMineZoomLevel,
+                (val) => this.config.defaultMineZoomLevel = val,
+                () => I18n.Settings_DefaultMineZoom());
         }
     }
 

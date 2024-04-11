@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.2
+#### Fixes
+* Fixed Toolbar Icon integration.
 ## 1.8.1
 #### Fixes
 * Potentially fixed the problem people are having with cask placement.
