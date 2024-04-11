@@ -267,6 +267,8 @@ namespace SmartBuilding
                         // Try to get the API.
                         try
                         {
+                            this.logger.Log("Ignore the following Toolbar Icons error. Something very weird is going on somewhere, and we're aware of the issue.", LogLevel.Info);
+
                             this.toolbarIconsApi =
                                 this.Helper.ModRegistry.GetApi<IToolbarIconsApi>("furyx639.ToolbarIcons");
                         }
@@ -831,10 +833,11 @@ namespace SmartBuilding
                     "Mods/SmartBuilding/ToolButtons",
                     Ui.GetButtonSourceRect(ButtonId.Draw),
                     I18n.SmartBuilding_Integrations_ToolbarIcons_Tooltip());
-                this.toolbarIconsApi.ToolbarIconPressed += (o, s) =>
+
+                this.toolbarIconsApi.Subscribe(args =>
                 {
-                    if (s.Equals("smart-building.toggle-build-mode")) this.ToggleBuildMode();
-                };
+                    if (args.Id.Equals("smart-building.toggle-build-mode")) this.ToggleBuildMode();
+                });
             }
         }
 
