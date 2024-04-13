@@ -218,11 +218,17 @@ namespace SmartBuilding.Utilities
                 return ItemType.GrassStarter;
             if (itemName.Equals("Crab Pot"))
                 return ItemType.CrabPot;
-            if (item.Type == "Seeds" || item.Category == -74)
+            if (item.Type == "Crafting" && item.Category == -74)
             {
-                if (!item.Name.Contains("Sapling") && !item.Name.Equals("Acorn") && !item.Name.Equals("Maple Seed") &&
-                    !item.Name.Equals("Pine Cone") && !item.Name.Equals("Mahogany Seed"))
-                    return ItemType.Seed;
+                return ItemType.Sapling;
+            }
+            else if (item.Type == "Basic" && item.Category == -74)
+            {
+                return ItemType.Sapling;
+            }
+            else if (item.Type.Equals("Seeds"))
+            {
+                return ItemType.Seed;
             }
             else if (item.Name.Equals("Tree Fertilizer"))
                 return ItemType.TreeFertilizer;

@@ -99,6 +99,7 @@
     "smart-building.error.refunding.generic-refund-message": "R-01: Something went wrong.",
     "smart-building.error.refunding.refunding-item-to-player-inventory": "R-02: Refunding item to player inventory: ",
     "smart-building.warning.gmcm-not-installed": "GMCM-01: The user doesn't have GMCM installed. This is not an error.",
+    "smart-building.warning.there-might-be-a-tree-here": "It looks like there might be tilled dirt, or a tree sapling planted on this tile. You can't place this here.",
     // Messages
     "smart-building.message.item-name": "Item name",
     "smart-building.message.item-parent-sheet-index": "ParentSheetIndex",

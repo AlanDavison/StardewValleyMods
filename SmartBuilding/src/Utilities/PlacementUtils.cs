@@ -435,6 +435,14 @@ namespace SmartBuilding.Utilities
                     }
 
                     return true;
+                case ItemType.Sapling:
+                    if (here.terrainFeatures.ContainsKey(v))
+                    {
+                        this.logger.Log(I18n.SmartBuilding_Warning_ThereMightBeATreeHere(), LogLevel.Trace, true);
+                        return false;
+                    }
+
+                    return i.canBePlacedHere(here, v, CollisionMask.All);
                 case ItemType.Generic:
                     GenericPlaceable
                         : // A goto, I know, gross, but... it works, and is fine for now, until I split out detection logic into methods.
