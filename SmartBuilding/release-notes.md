@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.3
+#### Fixes
+* Refactored some placement detection logic for better sapling support.
 ## 1.8.2
 #### Fixes
 * Fixed Toolbar Icon integration.
