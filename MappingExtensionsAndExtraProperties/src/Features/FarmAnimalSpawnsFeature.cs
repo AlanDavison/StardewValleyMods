@@ -54,6 +54,11 @@ public class FarmAnimalSpawnsFeature : Feature
                 AccessTools.Method(typeof(AnimalPage), nameof(AnimalPage.FindAnimals)),
                 postfix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
                     nameof(FarmAnimalSpawnsFeature.FindAnimals_Postfix)));
+
+            FarmAnimalSpawnsFeature.harmony.Patch(
+                AccessTools.Method(typeof(GameLocation), nameof(GameLocation.getAllFarmAnimals)),
+                postfix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
+                    nameof(FarmAnimalSpawnsFeature.GameLocationGetAllFarmAnimals_Postfix)));
         }
         catch (Exception e)
         {
@@ -169,6 +174,12 @@ public class FarmAnimalSpawnsFeature : Feature
         // If we're dealing with one of our spawned animals, we display a nice message.
         if (spawnedAnimals.ContainsKey(__instance))
         {
+            if (is_auto_pet)
+                return false;
+
+            if (who.currentLocation.Name != __instance.currentLocation.Name)
+                return false;
+
             Vector2 messageSize = Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
             DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
             Game1.activeClickableMenu = dialogue;
@@ -177,6 +188,34 @@ public class FarmAnimalSpawnsFeature : Feature
         }
 
         return true;
+    }
+
+    public static void GameLocationGetAllFarmAnimals_Postfix(GameLocation __instance, List<FarmAnimal> __result)
+    {
+        try
+        {
+            List<FarmAnimal> toRemove = new List<FarmAnimal>();
+
+            foreach (FarmAnimal entry in __result)
+            {
+                if (entry.modData.ContainsKey("MEEP_Farm_Animal"))
+                {
+                    toRemove.Add(entry);
+                }
+            }
+
+            foreach (FarmAnimal removing in toRemove)
+            {
+                if (__result.Contains(removing))
+                {
+                    __result.Remove(removing);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+        }
     }
 
     public static void FindAnimals_Postfix(AnimalPage __instance, List<AnimalPage.AnimalEntry> __result)
