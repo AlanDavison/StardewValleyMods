@@ -505,6 +505,14 @@ namespace SmartBuilding
                 getValue: () => config.EnableInsertingItemsIntoMachines,
                 setValue: value => config.EnableInsertingItemsIntoMachines = value
             );
+
+            configMenuApi.AddBoolOption(
+                this.ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_FreezeTimeInBuildMode(),
+                tooltip: () => I18n.SmartBuilding_Settings_CheatyOptions_FreezeTimeInBuildMode_Tooltip(),
+                getValue: () => config.FreezeTimeInBuildMode,
+                setValue: value => config.FreezeTimeInBuildMode = value
+            );
         }
 
         private void RegisterToggleSettings(IGenericModConfigMenuApi configMenuApi)
@@ -857,6 +865,15 @@ namespace SmartBuilding
         private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
         {
             if (this.toolMenuUi != null)
+            {
+                // Our UI isn't null, so double-check we're in build mode.
+                if (this.modState.BuildingMode)
+                {
+                    // We are, so we freeze time if the setting for it is enabled.
+                    if (config.FreezeTimeInBuildMode)
+                        Game1.gameTimeInterval = 0;
+                }
+
                 // If our tool menu is enabled and there's no menu up, we go forward with processing its events.
                 if (this.toolMenuUi.Enabled && Game1.activeClickableMenu == null)
                 {
@@ -887,6 +904,7 @@ namespace SmartBuilding
                         config.HoldToDraw.JustPressed())
                         this.toolMenuUi.ReceiveLeftClick(this.currentMouseX, this.currentMouseY);
                 }
+            }
         }
 
         /// <summary>

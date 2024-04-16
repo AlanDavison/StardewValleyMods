@@ -63,6 +63,8 @@
     "smart-building.settings.cheaty-options.enable-inserting-items-into-machines": "Enable placing items into machines",
     "smart-building.settings.cheaty-options.creative-mode": "Creative mode",
     "smart-building.settings.cheaty-options.creative-mode.tooltip": "Don't remove items from the inventory when placing with Smart Building.",
+    "smart-building.settings.cheaty-options.freeze-time-in-build-mode": "[BETA] Freeze time in build mode",
+    "smart-building.settings.cheaty-options.freeze-time-in-build-mode.tooltip": "Freeze time while in build mode, so you can build at the speed you prefer.",
     "smart-building.settings.debug.title": "Debug Settings",
     "smart-building.settings.debug.enable-debug-command": "Enable debug command",
     "smart-building.settings.debug.enable-debug-keybinds": "Enable debug keybinds",

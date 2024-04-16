@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.5
+#### Additions
+* Added a beta cheaty feature. With it enabled, time will freeze when in build mode.
 ## 1.8.4
 #### Fixes
 * Made more lax object placement work again. Oops!
