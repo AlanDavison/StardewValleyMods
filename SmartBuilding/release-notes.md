@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.4
+#### Fixes
+* Made more lax object placement work again. Oops!
 ## 1.8.3
 #### Fixes
 * Refactored some placement detection logic for better sapling support.

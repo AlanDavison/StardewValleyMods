@@ -452,6 +452,8 @@ namespace SmartBuilding.Utilities
                         // We want to check if the location's SObject dictionary contains something on this tile.
                         if (Game1.currentLocation.Objects.ContainsKey(v))
                             return false;
+                        else
+                            return true;
                     }
 
                     if (i.canBePlacedHere(here, v, CollisionMask.All))
