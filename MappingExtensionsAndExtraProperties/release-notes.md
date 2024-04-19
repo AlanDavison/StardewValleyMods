@@ -1,4 +1,6 @@
 # MEEP Release Notes
+* 2.3.5
+  * Correctly neutered farm animals (I think), and added a command to allow for sending farm animals to another dimension (read: remove them permanently).
 * 2.3.4
   * Fixed a problem with CJB's cheat menu constantly trying to pet our farm animals.
 * 2.3.3

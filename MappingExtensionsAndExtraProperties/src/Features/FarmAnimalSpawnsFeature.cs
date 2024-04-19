@@ -6,10 +6,17 @@ using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValley.Mods;
+using xTile.Dimensions;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
@@ -77,6 +84,26 @@ public class FarmAnimalSpawnsFeature : Feature
     {
         FeatureManager.OnDayStartCallback += this.OnDayStart;
         FeatureManager.EarlyDayEndingCallback += this.OnEarlyDayEnding;
+        FeatureManager.OnDisplayRenderedCallback += this.OnDisplayRenderedCallback;
+    }
+
+    private void OnDisplayRenderedCallback(object? sender, RenderedStepEventArgs e)
+    {
+        if (ModEntry.AnimalRemovalMode)
+        {
+            if (e.Step == RenderSteps.Overlays)
+            {
+                SpriteBatch sb = e.SpriteBatch;
+
+                string warningMessage =
+                    "IN MEEP EMERGENCY\nANIMAL REMOVAL MODE. IF\nYOU INTERACT WITH AN\nANIMAL IN THIS MODE,\nIT WILL BE REMOVED.\nRUN THE\nmeep_emergency_remove_animals\nCOMMAND AGAIN TO DISABLE IT.";
+                Vector2 messageSize = Game1.dialogueFont.MeasureString(warningMessage);
+                int centreX = Game1.uiViewport.Width / 2 - (int)messageSize.X / 2;
+                int centreY = Game1.uiViewport.Height / 2 - (int)messageSize.Y / 2;
+                sb.DrawString(Game1.dialogueFont, warningMessage, new Vector2(centreX + 2, centreY + 2), Color.Black * 0.75f);
+                sb.DrawString(Game1.dialogueFont, warningMessage, new Vector2(centreX, centreY), Color.Blue);
+            }
+        }
     }
 
     private void OnEarlyDayEnding(object? sender, EventArgs e)
@@ -149,6 +176,7 @@ public class FarmAnimalSpawnsFeature : Feature
                 targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
                 babbyAnimal.update(Game1.currentGameTime, targetLocation);
                 babbyAnimal.ReloadTextureIfNeeded();
+                babbyAnimal.allowReproduction.Value = false;
                 spawnedAnimals.Add(babbyAnimal, animal);
 
                 logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
@@ -171,23 +199,50 @@ public class FarmAnimalSpawnsFeature : Feature
         if (!enabled)
             return true;
 
-        // If we're dealing with one of our spawned animals, we display a nice message.
-        if (spawnedAnimals.ContainsKey(__instance))
+        try
         {
-            if (is_auto_pet)
+            if (ModEntry.AnimalRemovalMode)
+            {
+                if (spawnedAnimals.ContainsKey(__instance))
+                {
+                    __instance.currentLocation.Animals.Remove(__instance.myID.Value);
+                }
+
                 return false;
-
-            if (who.currentLocation.Name != __instance.currentLocation.Name)
-                return false;
-
-            Vector2 messageSize = Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
-            DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
-            Game1.activeClickableMenu = dialogue;
-
-            return false;
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
         }
 
-        return true;
+        try
+        {
+            // If we're dealing with one of our spawned animals, we display a nice message.
+            if (spawnedAnimals.ContainsKey(__instance))
+            {
+                if (is_auto_pet)
+                    return false;
+
+                if (who.currentLocation.Name != __instance.currentLocation.Name)
+                    return false;
+
+                Vector2 messageSize =
+                    Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
+                DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
+                Game1.activeClickableMenu = dialogue;
+
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+        }
+
+        return false;
     }
 
     public static void GameLocationGetAllFarmAnimals_Postfix(GameLocation __instance, List<FarmAnimal> __result)
