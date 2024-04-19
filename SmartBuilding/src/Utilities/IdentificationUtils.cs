@@ -82,55 +82,8 @@ namespace SmartBuilding.Utilities
                 // We know this matches the two things all producers (both vanilla and PFM) have in common, so now we can move on to figuring out exactly what type of producer we're looking at.
                 string? producerName = o.Name;
 
-                // Now, the most efficient thing to do will be to attempt to find only the vanilla machines which do not deduct automatically, as everything else, vanilla and PFM, deducts automatically.
-                switch (producerName)
-                {
-                    case "Mayonnaise Machine":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Preserves Jar":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Cheese Press":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Loom":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Keg":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Cask":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Oil Maker":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Crystalarium":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Recycling Machine":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Seed Maker":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Slime Incubator":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Ostrich Incubator":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    case "Deconstructor":
-                        type = ProducerType.ManualRemoval;
-                        break;
-                    default:
-                        // At this point, we've filtered out all vanilla producers which require manual removal, so we're left with only producers, vanilla and modded, that deduct automatically.
-                        type = ProducerType.AutomaticRemoval;
-                        break;
-                }
-
-                return type;
+                // In 1.6, all machines appear to deduct automatically correctly.
+                return ProducerType.AutomaticRemoval;
             }
 
             return type;
