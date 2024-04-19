@@ -2,6 +2,7 @@
 ## 1.8.6
 #### Fixes
 * Fixed inserting items into machines taking too many items.
+* Applied fixed Chinese translation, thanks to Aurelionyang on Nexus!
 ## 1.8.5
 #### Additions
 * Added a beta cheaty feature. With it enabled, time will freeze when in build mode.
