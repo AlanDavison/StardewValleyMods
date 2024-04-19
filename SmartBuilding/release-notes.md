@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.7
+#### Additions
+* Added a toggle to the time freezing setting. When enabled, time will only freeze while on the farm.
 ## 1.8.6
 #### Fixes
 * Fixed inserting items into machines taking too many items.
