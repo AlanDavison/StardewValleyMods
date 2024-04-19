@@ -513,6 +513,14 @@ namespace SmartBuilding
                 getValue: () => config.FreezeTimeInBuildMode,
                 setValue: value => config.FreezeTimeInBuildMode = value
             );
+
+            configMenuApi.AddBoolOption(
+                this.ModManifest,
+                name: () => I18n.SmartBuilding_Settings_CheatyOptions_OnlyFreezeTimeOnFarm(),
+                tooltip: () => I18n.SmartBuilding_Settings_CheatyOptions_OnlyFreezeTimeOnFarm_Tooltip(),
+                getValue: () => config.OnlyFreezeTimeOnFarm,
+                setValue: value => config.OnlyFreezeTimeOnFarm = value
+            );
         }
 
         private void RegisterToggleSettings(IGenericModConfigMenuApi configMenuApi)
@@ -871,7 +879,19 @@ namespace SmartBuilding
                 {
                     // We are, so we freeze time if the setting for it is enabled.
                     if (config.FreezeTimeInBuildMode)
-                        Game1.gameTimeInterval = 0;
+                    {
+                        if (config.OnlyFreezeTimeOnFarm)
+                        {
+                            if (Game1.currentLocation.Equals(Game1.getFarm()))
+                            {
+                                Game1.gameTimeInterval = 0;
+                            }
+                        }
+                        else
+                        {
+                            Game1.gameTimeInterval = 0;
+                        }
+                    }
                 }
 
                 // If our tool menu is enabled and there's no menu up, we go forward with processing its events.

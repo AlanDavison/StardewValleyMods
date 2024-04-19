@@ -65,6 +65,8 @@
     "smart-building.settings.cheaty-options.creative-mode.tooltip": "Don't remove items from the inventory when placing with Smart Building.",
     "smart-building.settings.cheaty-options.freeze-time-in-build-mode": "[BETA] Freeze time in build mode",
     "smart-building.settings.cheaty-options.freeze-time-in-build-mode.tooltip": "Freeze time while in build mode, so you can build at the speed you prefer.",
+    "smart-building.settings.cheaty-options.only-freeze-time-on-farm": "Only freeze time on the farm",
+    "smart-building.settings.cheaty-options.only-freeze-time-on-farm.tooltip": "If the time freezing setting is enabled, only freeze time on the farm.",
     "smart-building.settings.debug.title": "Debug Settings",
     "smart-building.settings.debug.enable-debug-command": "Enable debug command",
     "smart-building.settings.debug.enable-debug-keybinds": "Enable debug keybinds",
