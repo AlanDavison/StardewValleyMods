@@ -179,7 +179,7 @@ namespace SmartBuilding.Utilities
             {
                 return ItemType.Sapling;
             }
-            else if (item.Type.Equals("Seeds"))
+            else if (item.Type.Equals("Seeds") || item.Type.Equals("Seed") || item.Category.Equals(-74))
             {
                 return ItemType.Seed;
             }
