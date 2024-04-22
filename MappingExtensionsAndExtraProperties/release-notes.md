@@ -1,4 +1,6 @@
 # MEEP Release Notes
+* 2.3.6
+  * Fixed the animal-removal command. Oops!
 * 2.3.5
   * Correctly neutered farm animals (I think), and added a command to allow for sending farm animals to another dimension (read: remove them permanently).
 * 2.3.4

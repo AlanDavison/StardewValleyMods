@@ -203,7 +203,7 @@ public class FarmAnimalSpawnsFeature : Feature
         {
             if (ModEntry.AnimalRemovalMode)
             {
-                if (spawnedAnimals.ContainsKey(__instance))
+                if (__instance.currentLocation.Animals.ContainsKey(__instance.myID.Value))
                 {
                     __instance.currentLocation.Animals.Remove(__instance.myID.Value);
                 }
