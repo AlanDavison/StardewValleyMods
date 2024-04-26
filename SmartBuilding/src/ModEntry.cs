@@ -41,6 +41,7 @@ namespace SmartBuilding
 
         // UI gubbins
         private Texture2D itemBox = null!;
+        private GamePadState oldGamepadState = new GamePadState();
 
         // Mod state
         private ModState modState;
@@ -186,7 +187,7 @@ namespace SmartBuilding
             };
 
             // If we're enabling building mode, we create our UI, and set it to enabled.
-            this.toolMenuUi = new ToolMenu(this.logger, this.toolButtonsTexture, toolButtons, this.modState);
+            this.toolMenuUi = new ToolMenu(this.logger, this.toolButtonsTexture, toolButtons, this.modState, config);
             this.toolMenuUi.Enabled = true;
 
             // Then, if it isn't already in onScreenMenus, we add it.
@@ -665,6 +666,13 @@ namespace SmartBuilding
                 getValue: () => config.FurnitureLayer,
                 setValue: value => config.FurnitureLayer = value
             );
+
+            configMenuApi.AddKeybind(
+                this.ModManifest,
+                name: () => I18n.SmartBuilding_Settings_OptionalKeybinds_ControllerPressButton(),
+                getValue: () => config.PressButton,
+                setValue: value => config.PressButton = value
+            );
         }
 
         private void RegisterMandatoryKeybinds(IGenericModConfigMenuApi configMenuApi)
@@ -914,15 +922,42 @@ namespace SmartBuilding
 
                     // Do our hover event.
                     this.toolMenuUi.DoHover(this.currentMouseX, this.currentMouseY);
-
                     this.toolMenuUi.SetCursorHoverState(this.currentMouseX, this.currentMouseY);
+
+                    // This is janky, but this is still before the eventual rewrite.
+                    if (this.Helper.Input.GetState(SButton.DPadDown) == SButtonState.Pressed)
+                    {
+                        this.toolMenuUi.ReceiveGamePadButton(SButton.DPadDown);
+                        this.Helper.Input.Suppress(SButton.DPadDown);
+                    }
+                    if (this.Helper.Input.GetState(SButton.DPadUp) == SButtonState.Pressed)
+                    {
+                        this.toolMenuUi.ReceiveGamePadButton(SButton.DPadUp);
+                        this.Helper.Input.Suppress(SButton.DPadUp);
+                    }
+                    if (this.Helper.Input.GetState(SButton.DPadLeft) == SButtonState.Pressed)
+                    {
+                        this.toolMenuUi.ReceiveGamePadButton(SButton.DPadLeft);
+                        this.Helper.Input.Suppress(SButton.DPadLeft);
+                    }
+                    if (this.Helper.Input.GetState(SButton.DPadRight) == SButtonState.Pressed)
+                    {
+                        this.toolMenuUi.ReceiveGamePadButton(SButton.DPadRight);
+                        this.Helper.Input.Suppress(SButton.DPadRight);
+                    }
+                    if (this.Helper.Input.GetState(config.PressButton) == SButtonState.Pressed)
+                    {
+                        this.toolMenuUi.ReceiveGamePadButton(config.PressButton);
+                    }
 
                     // We also need to manually call a click method, because by default, it'll only work if the bounds of the IClickableMenu contain the cursor.
                     // We specifically do not want the bounds to be expanded to include the side layer buttons, however, because that will be far too large a boundary.
                     if ((mouseState.LeftButton == ButtonState.Pressed &&
                          Game1.oldMouseState.LeftButton == ButtonState.Released) ||
-                        config.HoldToDraw.JustPressed())
+                        config.HoldToDraw.IsDown())
+                    {
                         this.toolMenuUi.ReceiveLeftClick(this.currentMouseX, this.currentMouseY);
+                    }
                 }
             }
         }

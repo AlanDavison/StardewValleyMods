@@ -117,6 +117,20 @@ namespace SmartBuilding.UI
                                 this.Component.bounds.Y + 64), Color.WhiteSmoke,
                             new Color(Color.Black, 0.75f));
                     }
+
+            if (this.Type == ButtonType.Function)
+                if (this.modState.ActiveTool != ButtonId.None)
+                    if (this.Id.Equals(this.modState.ActiveTool))
+                        b.Draw(
+                            Game1.mouseCursors,
+                            new Vector2(this.Component.bounds.X, this.Component.bounds.Y),
+                            Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 29),
+                            Color.Black,
+                            0.0f,
+                            Vector2.Zero,
+                            1f,
+                            SpriteEffects.None,
+                            0f);
         }
     }
 }
