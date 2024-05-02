@@ -66,6 +66,11 @@ public class FarmAnimalSpawnsFeature : Feature
                 AccessTools.Method(typeof(GameLocation), nameof(GameLocation.getAllFarmAnimals)),
                 postfix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
                     nameof(FarmAnimalSpawnsFeature.GameLocationGetAllFarmAnimals_Postfix)));
+
+            FarmAnimalSpawnsFeature.harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(FarmAnimal), nameof(FarmAnimal.draw)),
+                prefix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
+                    nameof(FarmAnimalSpawnsFeature.FarmAnimalDraw_Prefix)));
         }
         catch (Exception e)
         {
@@ -192,6 +197,29 @@ public class FarmAnimalSpawnsFeature : Feature
     {
         cursorId = default;
         return false;
+    }
+
+    public static bool FarmAnimalDraw_Prefix(FarmAnimal __instance, SpriteBatch b)
+    {
+        try
+        {
+            if (Game1.CurrentEvent is not null)
+            {
+                if (__instance.modData.ContainsKey("MEEP_Farm_Animal"))
+                {
+                    return false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Warn("Caught exception in FarmAnimal.draw() prefix:");
+            logger.Exception(e);
+
+            return true;
+        }
+
+        return true;
     }
 
     public static bool FarmAnimalPetPrefix(FarmAnimal __instance, Farmer who, bool is_auto_pet)
