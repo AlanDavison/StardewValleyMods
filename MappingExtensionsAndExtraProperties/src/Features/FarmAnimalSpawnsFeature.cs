@@ -1,22 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using StardewValley.Mods;
-using xTile.Dimensions;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
@@ -182,6 +177,7 @@ public class FarmAnimalSpawnsFeature : Feature
                 babbyAnimal.update(Game1.currentGameTime, targetLocation);
                 babbyAnimal.ReloadTextureIfNeeded();
                 babbyAnimal.allowReproduction.Value = false;
+                babbyAnimal.wasPet.Value = true;
                 spawnedAnimals.Add(babbyAnimal, animal);
 
                 logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
