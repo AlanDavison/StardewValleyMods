@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.8.11
+####
+* Fixed an issue where picking up big chests would give a regular chest.
 ## 1.8.10
 ####
 * Finally fixed an issue with picking up furniture either giving you zero of the item, or multiple.

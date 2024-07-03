@@ -567,7 +567,7 @@ namespace SmartBuilding.Utilities
                                     LogLevel.Trace, true);
                         }
                     }
-                    else if (o is Chest)
+                    else if (o is Chest chestInWorld)
                     {
                         // We're double checking at this point for safety. I want to be extra careful with chests.
                         if (here.objects.ContainsKey(tile))
@@ -576,10 +576,10 @@ namespace SmartBuilding.Utilities
                             if (this.config.CanDestroyChests)
                             {
                                 // This is fairly fragile, but it's fine with vanilla chests, at least.
-                                var chest = new Chest(true, tile);
+                                Object chest = ItemRegistry.Create<Object>($"(BC){chestInWorld.ItemId}");
 
-                                (o as Chest).destroyAndDropContents(tile * 64);
-                                Game1.player.addItemByMenuIfNecessary(chest.getOne());
+                                chestInWorld.destroyAndDropContents(tile * 64);
+                                Game1.player.addItemByMenuIfNecessary(chest);
                                 here.objects.Remove(tile);
                             }
                             else
