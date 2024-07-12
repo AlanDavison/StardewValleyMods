@@ -5,7 +5,7 @@ namespace DecidedlyShared.Constants
 {
     public class Directions
     {
-        public static List<Vector2> vector2 = new()
+        public static List<Vector2> All = new()
         {
             new Vector2(0, 0), // Centre
             new Vector2(-1, 0), // Left

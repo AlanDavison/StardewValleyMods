@@ -46,7 +46,7 @@ namespace PortableBridges.Tool
             {
                 location.terrainFeatures.Add(tile, bridge);
 
-                foreach (var direction in Directions.vector2)
+                foreach (var direction in Directions.All)
                 {
                     var newTile = tile + direction;
                     if (location.doesTileHavePropertyNoNull((int)newTile.X, (int)newTile.Y, "Water", "Back")
