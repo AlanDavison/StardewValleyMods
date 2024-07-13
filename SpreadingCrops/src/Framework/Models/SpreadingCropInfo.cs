@@ -6,7 +6,7 @@ public class SpreadingCropInfo
 {
     // The order of these fields indicate the correct order in the CustomField.
     public double SpreadChance { get; init; }
-    public bool NewCropIsWatered { get; init; }
+    public bool SpreadToAllValidTiles { get; init; }
 
     public SpreadingCropInfo(string cropField)
     {
@@ -19,11 +19,11 @@ public class SpreadingCropInfo
 
         if (fields.Length >= 2)
         {
-            if (!bool.TryParse(fields[1], out bool newCropIsWatered))
+            if (!bool.TryParse(fields[1], out bool spreadToAllValidTiles))
                 throw new ArgumentException(
-                    "Couldn't parse third value as the bool for the new crop being watered or not.");
+                    "Couldn't parse third value as the bool for whether the crop should spread to all valid tiles.");
 
-            this.NewCropIsWatered = newCropIsWatered;
+            this.SpreadToAllValidTiles = spreadToAllValidTiles;
         }
     }
 }
