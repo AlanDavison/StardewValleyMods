@@ -3,9 +3,9 @@
 
 ### Spawning farm animals
 
-To spawn farm animals with MEEP, you'll be editing one of MEEP's data models using CP's `EditData` property. If you're unsure of how to do this, you can find a link to the `EditData` section of CP's documentation near the top of the [main readme here](../readme.md).
+To spawn farm animals with MEEP, you'll be editing one of MEEP's data models using CP's `EditData` property. If you're unsure of how to do this, you can find a link to the `EditData` section of CP's documentation near the top of the [main readme here](../readme.md#Using-the-features).
 
-Here's an example of an edit that will spawn two farm animals. One in the submarine, and one in Alex's house respectively:
+Here's an example of an edit that will spawn three farm animals. Two in the submarine, and one in Alex's house respectively:
 
 ```json
 {
@@ -59,7 +59,7 @@ Here's an example of an edit that will spawn two farm animals. One in the submar
 }
 ```
 
-In this case, we're adding two animals to `MEEP/FarmAnimals/SpawnData`. Each one is separated with a comma like many different things you would patch with CP.
+In this case, we're adding three animals to `MEEP/FarmAnimals/SpawnData`. Each one is separated with a comma like many different things you would patch with CP.
 Let's look at one in isolation.
 
 ```json
