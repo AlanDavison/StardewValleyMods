@@ -1,6 +1,5 @@
 using System;
 using DecidedlyShared.Logging;
-using DecidedlyShared.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
@@ -59,9 +58,26 @@ public class InvulnerableTreeFeature : Feature
 
     public static bool PerformToolActionPrefix(Tree __instance, Tool t, int explosion, Vector2 tileLocation)
     {
+        try
+        {
+            if (__instance is null)
+                return true;
+            if (__instance.GetData() is null)
+                return true;
+            if (__instance.GetData().CustomFields is null)
+                return true;
+
+            if ((bool)__instance?.GetData()?.CustomFields?.ContainsKey("DH_MEEP_Invulnerable_Tree"))
+                return false;
 
 
-        return true;
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+            return true;
+        }
     }
 
 }

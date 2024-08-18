@@ -78,7 +78,7 @@ public class ModEntry : Mod
         bool setMailFlagUsed = false;
         bool farmAnimalSpawningUsed = false;
         bool addConversationTopicUsed = false;
-        bool invulnerableTreeUsed = true; // TODO: CHANGE THIS FOR RELEASE.
+        bool invulnerableTreeUsed = false;
 
 
         foreach (var mod in this.Helper.ModRegistry.GetAll())
@@ -99,6 +99,8 @@ public class ModEntry : Mod
                     farmAnimalSpawningUsed = true;
                 if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.AddConversationTopic"))
                     addConversationTopicUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.InvulnerableTrees"))
+                    invulnerableTreeUsed = true;
             }
         }
 
