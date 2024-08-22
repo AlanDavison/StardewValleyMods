@@ -24,6 +24,7 @@ namespace SmartCursor
         private readonly int baseRange = 3;
         private byte cooldownThreshold = 30;
         private bool isHoldKeyDown;
+        private int highestTierRange;
 
         private Dictionary<int, int> toolRanges = new Dictionary<int, int>();
 
@@ -322,10 +323,15 @@ namespace SmartCursor
                     break;
             }
 
-            int upgradeLevel = player.CurrentTool.UpgradeLevel < 7 ? player.CurrentTool.UpgradeLevel : 6;
+            int largestRange = this.toolRanges[this.toolRanges.Count - 1];
+
+            if (player.CurrentTool.UpgradeLevel > this.toolRanges.Count)
+            {
+                largestRange += player.CurrentTool.UpgradeLevel - largestRange;
+            }
 
             return this.GetTileToTarget(playerTile, breakableType, this.breakableResources,
-                this.toolRanges[upgradeLevel] + 1f);
+                largestRange + 1f);
         }
 
         /// <summary>
