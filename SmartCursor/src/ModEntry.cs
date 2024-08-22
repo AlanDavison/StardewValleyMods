@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 
