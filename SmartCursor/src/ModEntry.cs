@@ -165,30 +165,6 @@ namespace SmartCursor
                     min: 1,
                     max: 20);
 
-                configMenuApi.AddNumberOption(
-                    mod: this.ModManifest,
-                    getValue: () => this.config.TierSixRange,
-                    setValue: i =>
-                    {
-                        this.toolRanges[5] = i;
-                        this.config.TierSixRange = i;
-                    },
-                    name: () => I18n.Settings_Ranges_Tier6Range(),
-                    min: 1,
-                    max: 20);
-
-                configMenuApi.AddNumberOption(
-                    mod: this.ModManifest,
-                    getValue: () => this.config.TierSevenRange,
-                    setValue: i =>
-                    {
-                        this.toolRanges[6] = i;
-                        this.config.TierSevenRange = i;
-                    },
-                    name: () => I18n.Settings_Ranges_Tier7Range(),
-                    min: 1,
-                    max: 20);
-
                 configMenuApi.AddSectionTitle(
                     this.ModManifest,
                     () => I18n.Settings_Toggles_Title());
