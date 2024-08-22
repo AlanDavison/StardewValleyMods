@@ -347,8 +347,10 @@ namespace SmartCursor
                     break;
             }
 
+            int upgradeLevel = player.CurrentTool.UpgradeLevel < 7 ? player.CurrentTool.UpgradeLevel : 6;
+
             return this.GetTileToTarget(playerTile, breakableType, this.breakableResources,
-                this.toolRanges[player.CurrentTool.UpgradeLevel] + 1f);
+                this.toolRanges[upgradeLevel] + 1f);
         }
 
         /// <summary>
