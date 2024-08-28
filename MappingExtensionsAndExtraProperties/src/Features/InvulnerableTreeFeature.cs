@@ -60,6 +60,7 @@ public class InvulnerableTreeFeature : Feature
     {
         try
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (__instance is null)
                 return true;
             if (__instance.GetData() is null)
