@@ -33,7 +33,12 @@ public class InvulnerableTreeFeature : Feature
             harmony.Patch(
                 AccessTools.DeclaredMethod(typeof(Tree), nameof(Tree.performToolAction)),
                 prefix: new HarmonyMethod(typeof(InvulnerableTreeFeature),
-                    nameof(InvulnerableTreeFeature.PerformToolActionPrefix)));
+                    nameof(InvulnerableTreeFeature.Tree_PerformToolAction_Prefix)));
+
+            harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(FruitTree), nameof(FruitTree.performToolAction)),
+                prefix: new HarmonyMethod(typeof(InvulnerableTreeFeature),
+                    nameof(InvulnerableTreeFeature.FruitTree_PerformToolAction_Prefix)));
         }
         catch (Exception e)
         {
@@ -56,7 +61,33 @@ public class InvulnerableTreeFeature : Feature
         return false;
     }
 
-    public static bool PerformToolActionPrefix(Tree __instance, Tool t, int explosion, Vector2 tileLocation)
+    public static bool FruitTree_PerformToolAction_Prefix(FruitTree __instance, Tool t, int explosion,
+        Vector2 tileLocation)
+    {
+        try
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (__instance is null)
+                return true;
+            if (__instance.GetData() is null)
+                return true;
+            if (__instance.GetData().CustomFields is null)
+                return true;
+
+            if ((bool)__instance?.GetData()?.CustomFields?.ContainsKey("DH_MEEP_Invulnerable_Tree"))
+                return false;
+
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+            return true;
+        }
+    }
+
+    public static bool Tree_PerformToolAction_Prefix(Tree __instance, Tool t, int explosion, Vector2 tileLocation)
     {
         try
         {
