@@ -104,3 +104,19 @@ These are the tiles the animal spawns on. They will wander around as usual, howe
 ```
 
 The condition field is a [Game State Query](https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.6#Game_state_queries). The animal will only spawn if this condition is true, so you can have animals that only spawn in the sun, in the rain, or any other number of things supported by the game.
+
+### Making trees invulnerable
+
+This allows you to mark your own custom wild trees or fruit trees as invulnerable, so they can't be destroyed by axes or bombs.
+
+**Be extremely careful with this**. If you make a custom wild tree or fruit tree invulnerable and plantable, you could end up getting the player in a bad situation that could involve you helping them edit your mod to temporarily disable the tree invulnerability. **This is exclusively intended for trees that spawn naturally on a map that the player won't be able to plant**. You have been warned.
+
+Now we have that warning out of the way, let's go over the basic syntax for it.
+
+You need to add a custom field to your tree/fruit tree model as follows:
+
+```json
+"CustomFields": {"DH_MEEP_Invulnerable_Tree": ""}
+```
+
+That's really all there is to it. Since it's so highly recommended you **don't** add this to a custom tree designed purely to be spawned in a map, I won't be going over how to edit this custom field into an existing tree. You know where to look if you want to, though!
