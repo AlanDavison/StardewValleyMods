@@ -53,12 +53,16 @@ public class PatchToolMethods(Harmony harmony, Patches patchesClass, Logger logg
         if (!result)
         {
             logger.Error($"Error patching method. Context follows.");
-            logger.Error($"Context: ", result);
+            logger.Error($"Context: {result.Context}");
 
             if (result.ExceptionExists())
             {
-                logger.Exception(result.GetException()!);
+                logger.Exception(result.Exception!);
             }
+        }
+        else
+        {
+            logger.Log($"Successfully patched method {result.Context}", LogLevel.Info);
         }
     }
 }
