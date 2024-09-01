@@ -45,7 +45,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ImageElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\VBoxElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\HarmonyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Items.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Sound.cs" />
