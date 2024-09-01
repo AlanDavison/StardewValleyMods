@@ -1,6 +1,6 @@
 using System;
 
-namespace DecidedlyShared.Models;
+namespace DHVarietyTools.Utilities;
 
 public class DescriptiveBool(bool state, string context = "", string message = "", Exception? exception = null)
 {
