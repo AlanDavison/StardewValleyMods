@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using DecidedlyShared.Logging;
 using DHVarietyTools.Utilities;
 using HarmonyLib;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Tools;
 
 namespace DHVarietyTools;
 
