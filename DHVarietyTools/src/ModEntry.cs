@@ -10,29 +10,21 @@ namespace DHVarietyTools;
 
 public class ModEntry : Mod
 {
-    private static IMonitor monitor;
+    private Harmony harmony;
+    private Patches patchesClass;
+    private Logger logger;
 
     public override void Entry(IModHelper helper)
     {
-        ModEntry.monitor = this.Monitor;
-        Harmony harmony = new Harmony(this.ModManifest.UniqueID);
-        Logger logger = new Logger(this.Monitor);
-        Patches patches = new Patches(this.Monitor, helper, logger);
+        this.harmony = new Harmony(this.ModManifest.UniqueID);
+        this.logger = new Logger(this.Monitor);
+        this.patchesClass = new Patches(this.Monitor, helper, this.logger);
+        helper.Events.GameLoop.SaveLoaded += this.GameLoopOnSaveLoaded;
+    }
 
-
-        // TODO: For full release, use the CustomFields field to scan for methods to patch in Patches.cs.
-        // Example:
-        /* For FenceFixer:
-         * "CustomFields": {
-               "DH_Variety_Tool_Class": "FenceFixer1"
-           }
-           Scan for method named FenceFixer1(args...) in Patches.cs.
-         */
-
-        helper.Events.GameLoop.SaveLoaded += (sender, args) =>
-        {
-            PatchToolMethods patcher = new PatchToolMethods(harmony, patches, logger, Game1.toolData.Values.ToList());
-            patcher.DoPatches();
-        };
+    private void GameLoopOnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    {
+        PatchToolMethods patcher = new PatchToolMethods(this.harmony, this.patchesClass, this.logger, Game1.toolData.Values.ToList());
+        patcher.DoPatches();
     }
 }
