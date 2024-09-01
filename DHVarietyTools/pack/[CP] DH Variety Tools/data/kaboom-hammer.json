@@ -1,0 +1,25 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Tools",
+            "Entries": {
+                "DecidedlyHuman_KaboomHammer1_Tool": {
+                    "ClassName": "GenericTool",
+                    "Name": "DH_KaboomHammer1",
+                    "DisplayName": "{{i18n: kaboom-hammer-tier-1-display-name}}",
+                    "Description": "{{i18n: kaboom-hammer-tier-1-description}}",
+                    "Texture": "Mods/DecidedlyHuman/DHVarietyTools/ToolsSheet",
+                    "SpriteIndex": 105,
+                    "MenuSpriteIndex": 131,
+                    "UpgradeLevel": 0,
+                    "ApplyUpgradeLevelToDisplayName": false,
+                    "CanBeLostOnDeath": false,
+                    "CustomFields": {
+                        "DH_VarietyTools_ToolDoFunction_Prefix": "KaboomHammer1_Prefix"
+                    }
+                }
+            }
+        }
+    ]
+}

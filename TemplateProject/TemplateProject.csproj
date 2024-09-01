@@ -15,4 +15,10 @@
         <EnableHarmony>false</EnableHarmony>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="0Harmony">
+        <HintPath>..\..\..\..\.local\share\Steam\steamapps\common\Stardew Valley\smapi-internal\0Harmony.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

@@ -1,0 +1,9 @@
+{
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/DHVarietyTools/ToolsSheet",
+            "FromFile": "assets/tools.png"
+        }
+    ]
+}

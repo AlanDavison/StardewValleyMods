@@ -1,0 +1,25 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Tools",
+            "Entries": {
+                "DecidedlyHuman_FenceFixer1_Tool": {
+                    "ClassName": "GenericTool",
+                    "Name": "DH_FenceFixer1",
+                    "DisplayName": "{{i18n: fence-fixer-tier-1-display-name}}",
+                    "Description": "{{i18n: fence-fixer-tier-1-description}}",
+                    "Texture": "Mods/DecidedlyHuman/DHVarietyTools/ToolsSheet",
+                    "SpriteIndex": 21,
+                    "MenuSpriteIndex": 47,
+                    "UpgradeLevel": 0,
+                    "ApplyUpgradeLevelToDisplayName": false,
+                    "CanBeLostOnDeath": false,
+                    "CustomFields": {
+                        "DH_VarietyTools_ToolDoFunction_Prefix": "FenceFixer1_Prefix"
+                    }
+                }
+            }
+        }
+    ]
+}
