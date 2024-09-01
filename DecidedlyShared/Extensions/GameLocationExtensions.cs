@@ -1,5 +1,5 @@
-﻿using DecidedlyShared.Constants;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Collections.Generic;
+using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.TerrainFeatures;
@@ -34,6 +34,38 @@ public static class GameLocationExtensions
         }
 
         return false;
+    }
+
+    public static bool TryGetSObjectsInRadius(this GameLocation location, Vector2 tile, out List<SObject> foundObjects)
+    {
+        foundObjects = new List<SObject>();
+
+        if (location.TryGetSObject(tile, out SObject? o))
+        {
+            foundObjects.Add(o);
+
+            var directions = new List<Vector2>
+            {
+                tile + new Vector2(-1, 0), // Left
+                tile + new Vector2(1, 0), // Right
+                tile + new Vector2(0, -1), // Up
+                tile + new Vector2(0, 1), // Down
+                tile + new Vector2(-1, -1), // Up left
+                tile + new Vector2(1, -1), // Up right
+                tile + new Vector2(-1, 1), // Down left
+                tile + new Vector2(1, 1) // Down right
+            };
+
+            foreach (var direction in directions)
+            {
+                if (location.TryGetSObject(tile, out SObject? adjacentObject))
+                {
+                    foundObjects.Add(adjacentObject);
+                }
+            }
+        }
+
+        return foundObjects.Count > 0;
     }
 
     public static SObject GetSObject(this GameLocation location, Vector2 tile)
