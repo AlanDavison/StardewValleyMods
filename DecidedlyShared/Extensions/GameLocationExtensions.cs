@@ -23,7 +23,7 @@ public static class GameLocationExtensions
         return false;
     }
 
-    public static bool TryGetSObject(this GameLocation location, Vector2 tile, out SObject? foundObject)
+    public static bool TryGetSObject(this GameLocation location, Vector2 tile, out SObject foundObject)
     {
         foundObject = null;
 
