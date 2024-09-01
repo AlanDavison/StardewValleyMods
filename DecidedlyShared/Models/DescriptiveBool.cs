@@ -9,14 +9,12 @@ public class DescriptiveBool(bool state, string context = "", string message = "
     private string context;
     private Exception? exception;
 
+    public Exception? Exception => this.exception;
+    public string Context => this.context;
+
     public bool ExceptionExists()
     {
         return this.exception is not null;
-    }
-
-    public Exception? GetException()
-    {
-        return this.exception;
     }
 
     public static implicit operator bool(DescriptiveBool d) => d.state;
