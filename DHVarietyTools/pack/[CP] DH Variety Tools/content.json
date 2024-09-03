@@ -8,6 +8,10 @@
         {
             "Action": "Include",
             "FromFile": "data/fence-fixer.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "data/kaboom-hammer.json"
         }
     ]
 }
