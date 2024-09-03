@@ -34,13 +34,13 @@ public class PatchToolMethods(Harmony harmony, Patches patchesClass, Logger logg
         switch (key)
         {
             case "DH_VarietyTools_ToolDoFunction_Prefix":
-                logger.Log($"Found tool with method prefix ID.", LogLevel.Info);
+                logger.Log($"Found tool with method prefix ID. Method to patch: {value}", LogLevel.Info);
                 result = HarmonyHelper.TryPrefixPatchMethod(harmony, this.patchesClass, value);
 
                 this.PrintPatchingResponse(result);
                 break;
             case "DH_VarietyTools_ToolDoFunction_Postfix":
-                logger.Log($"Found tool with method postfix ID.", LogLevel.Info);
+                logger.Log($"Found tool with method postfix ID. Method to patch: {value}", LogLevel.Info);
                 result = HarmonyHelper.TryPostfixPatchMethod(harmony, this.patchesClass, value);
 
                 this.PrintPatchingResponse(result);
@@ -50,7 +50,7 @@ public class PatchToolMethods(Harmony harmony, Patches patchesClass, Logger logg
 
     private void PrintPatchingResponse(DescriptiveBool result)
     {
-        if (!result)
+        if (result)
         {
             logger.Error($"Error patching method. Context follows.");
             logger.Error($"Context: {result.Context}");

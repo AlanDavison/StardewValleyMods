@@ -20,7 +20,7 @@ public class HarmonyHelper
                     AccessTools.Method(typeof(Tool), nameof(Tool.DoFunction)),
                     prefix: new HarmonyMethod(prefixMethod));
 
-                return new DescriptiveBool(true);
+                return new DescriptiveBool(true, methodName);
             }
         }
         catch (Exception e) when (e is ArgumentNullException || e is AmbiguousMatchException)
@@ -43,7 +43,7 @@ public class HarmonyHelper
                     AccessTools.Method(typeof(Tool), nameof(Tool.DoFunction)),
                     postfix: new HarmonyMethod(prefixMethod));
 
-                return new DescriptiveBool(true);
+                return new DescriptiveBool(true, methodName);
             }
         }
         catch (Exception e) when (e is ArgumentNullException || e is AmbiguousMatchException)
