@@ -20,7 +20,7 @@ public class HarmonyHelper
                     AccessTools.Method(typeof(Tool), nameof(Tool.DoFunction)),
                     prefix: new HarmonyMethod(prefixMethod));
 
-                return new DescriptiveBool(true, methodName);
+                return new DescriptiveBool(true, $"Prefix patched method {prefixMethod.Name}");
             }
         }
         catch (Exception e) when (e is ArgumentNullException || e is AmbiguousMatchException)
@@ -35,15 +35,15 @@ public class HarmonyHelper
     {
         try
         {
-            MethodInfo? prefixMethod = patchesClass.GetMethod(methodName);
+            MethodInfo? postfixMethod = patchesClass.GetMethod(methodName);
 
-            if (prefixMethod is not null)
+            if (postfixMethod is not null)
             {
                 harmony.Patch(
                     AccessTools.Method(typeof(Tool), nameof(Tool.DoFunction)),
-                    postfix: new HarmonyMethod(prefixMethod));
+                    postfix: new HarmonyMethod(postfixMethod));
 
-                return new DescriptiveBool(true, methodName);
+                return new DescriptiveBool(true, $"Postfix patched method {postfixMethod.Name}");
             }
         }
         catch (Exception e) when (e is ArgumentNullException || e is AmbiguousMatchException)
