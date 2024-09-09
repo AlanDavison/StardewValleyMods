@@ -5,7 +5,7 @@
             "Target": "Data/Tools",
             "Entries": {
                 "DecidedlyHuman_KaboomHammer1_Tool": {
-                    "ClassName": "GenericTool",
+                    "ClassName": "Pickaxe",
                     "Name": "DH_KaboomHammer1",
                     "DisplayName": "{{i18n: kaboom-hammer-tier-1-display-name}}",
                     "Description": "{{i18n: kaboom-hammer-tier-1-description}}",
@@ -16,7 +16,7 @@
                     "ApplyUpgradeLevelToDisplayName": false,
                     "CanBeLostOnDeath": false,
                     "CustomFields": {
-                        "DH_VarietyTools_ToolDoFunction_Prefix": "KaboomHammer1_Prefix"
+                        "DH_VarietyTools_ToolDoFunction_Postfix": "KaboomHammer1_Postfix"
                     }
                 }
             }

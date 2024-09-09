@@ -16,7 +16,7 @@
                     "ApplyUpgradeLevelToDisplayName": false,
                     "CanBeLostOnDeath": false,
                     "CustomFields": {
-                        "DH_VarietyTools_ToolDoFunction_Prefix": "FenceFixer1_Prefix"
+                        "DH_VarietyTools_ToolDoFunction_Postfix": "FenceFixer1_Postfix"
                     }
                 }
             }
