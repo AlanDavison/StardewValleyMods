@@ -11,14 +11,10 @@ namespace MappingExtensionsAndExtraProperties.Functionality;
 
 public class AnimalDialogueBox : DialogueBox
 {
-    private Texture2D portrait;
-    private Rectangle portraitSourceRect;
     private NPC npc;
 
-    public AnimalDialogueBox(Texture2D animalPortrait, Rectangle portraitSourceRect, Dialogue dialogue, NPC npc) : base(dialogue)
+    public AnimalDialogueBox(Dialogue dialogue, NPC npc) : base(dialogue)
     {
-        this.portrait = animalPortrait;
-        this.portraitSourceRect = portraitSourceRect;
         this.npc = npc;
         this.friendshipJewel = Rectangle.Empty;
 
