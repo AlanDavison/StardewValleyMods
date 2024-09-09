@@ -11,6 +11,7 @@ public class Animal
     public int Age { get; set; }
     public string? LocationId { get; set; }
     public string? DisplayName { get; set; }
+    public string? PortraitTexture { get; set; }
     public string[]? PetMessage { get; set; }
     public int HomeTileX { get; set; }
     public int HomeTileY { get; set; }

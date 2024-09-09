@@ -255,18 +255,25 @@ public class FarmAnimalSpawnsFeature : Feature
                 Vector2 messageSize =
                     Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
                 NPC npc = new NPC();
-                npc.Portrait = Game1.content.Load<Texture2D>("Portraits/Abigail_Beach");
-                npc.Name = spawnedAnimals[__instance].DisplayName;
-                npc.displayName = spawnedAnimals[__instance].DisplayName;
 
-                AnimalDialogueBox dialogue = new AnimalDialogueBox(
-                    Game1.content.Load<Texture2D>("Portraits/Abigail_Beach"),
-                    Rectangle.Empty,
-                    new Dialogue(npc, "", String.Join("$b", spawnedAnimals[__instance].PetMessage.ToList())),
-                    npc);
+                if (spawnedAnimals[__instance].PortraitTexture is not null)
+                {
+                    npc.Portrait = Game1.content.Load<Texture2D>(spawnedAnimals[__instance].PortraitTexture);
+                    npc.Name = spawnedAnimals[__instance].DisplayName;
+                    npc.displayName = spawnedAnimals[__instance].DisplayName;
 
-                // DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
+                    AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
+                        new Dialogue(npc, "", string.Join(" ", spawnedAnimals[__instance].PetMessage.ToList())),
+                        npc);
+
+                    Game1.activeClickableMenu = dialogueBoxWithPortrait;
+
+                    return false;
+                }
+
+                DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
                 Game1.activeClickableMenu = dialogue;
+
 
                 return false;
             }
