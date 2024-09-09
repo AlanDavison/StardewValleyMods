@@ -53,12 +53,26 @@ public class Patches
 
         if (location.Objects.ContainsKey(toolHitLocation))
         {
-            SObject o = location.Objects[toolHitLocation];
-            if (o is Fence fence)
-            {
-                fence.health.Value = fence.maxHealth.Value;
+            bool hitAtLeastOneTile = false;
+            location.TryGetSObjectsInRadius(toolHitLocation, out List<SObject> surroundingTiles);
 
+            foreach (SObject o in surroundingTiles)
+            {
+                if (o.IsBreakableStone())
+                {
+                    hitAtLeastOneTile = true;
+                    int tileX, tileY;
+                    tileX = (int)o.TileLocation.X;
+                    tileY = (int)o.TileLocation.Y;
+
+                    location.OnStoneDestroyed(o.ItemId, tileX, tileY, who);
+                    location.removeObject(o.TileLocation, false);
+                    Game1.createRadialDebris(location, 4, tileX, tileY, 12, false);
+                }
             }
+
+            if (hitAtLeastOneTile)
+                DecidedlyShared.Utilities.Sound.TryPlaySound("cowboy_explosion");
         }
     }
 }
