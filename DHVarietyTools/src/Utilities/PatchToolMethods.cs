@@ -29,28 +29,24 @@ public class PatchToolMethods(Harmony harmony, Patches patchesClass, Logger logg
 
     private void TryDoPatchForField(string key, string value)
     {
-        DescriptiveBool result;
-
         switch (key)
         {
             case "DH_VarietyTools_ToolDoFunction_Prefix":
                 logger.Log($"Found tool with method prefix ID. Method to patch: {value}", LogLevel.Info);
-                result = HarmonyHelper.TryPrefixPatchMethod(harmony, this.patchesClass, value);
 
-                this.PrintPatchingResponse(result);
+                this.PrintPatchingResponse(HarmonyHelper.TryPrefixPatchMethod(harmony, this.patchesClass, value));
                 break;
             case "DH_VarietyTools_ToolDoFunction_Postfix":
                 logger.Log($"Found tool with method postfix ID. Method to patch: {value}", LogLevel.Info);
-                result = HarmonyHelper.TryPostfixPatchMethod(harmony, this.patchesClass, value);
 
-                this.PrintPatchingResponse(result);
+                this.PrintPatchingResponse(HarmonyHelper.TryPostfixPatchMethod(harmony, this.patchesClass, value));
                 break;
         }
     }
 
     private void PrintPatchingResponse(DescriptiveBool result)
     {
-        if (result)
+        if (!result)
         {
             logger.Error($"Error patching method. Context follows.");
             logger.Error($"Context: {result.Context}");
@@ -62,7 +58,7 @@ public class PatchToolMethods(Harmony harmony, Patches patchesClass, Logger logg
         }
         else
         {
-            logger.Log($"Successfully patched method {result.Context}", LogLevel.Info);
+            logger.Log($"{result.Context}", LogLevel.Info);
         }
     }
 }
