@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using DecidedlyShared.Extensions;
 using DecidedlyShared.Logging;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
@@ -35,7 +37,7 @@ public class Patches
             if (o is Fence fence)
             {
                 fence.health.Value = fence.maxHealth.Value;
-
+                DecidedlyShared.Utilities.Sound.TryPlaySound("explosion");
             }
         }
     }
