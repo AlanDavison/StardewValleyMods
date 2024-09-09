@@ -58,7 +58,7 @@ public static class GameLocationExtensions
 
             foreach (var direction in directions)
             {
-                if (location.TryGetSObject(tile, out SObject? adjacentObject))
+                if (location.TryGetSObject(direction, out SObject? adjacentObject))
                 {
                     foundObjects.Add(adjacentObject);
                 }
