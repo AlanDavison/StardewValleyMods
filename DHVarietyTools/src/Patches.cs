@@ -46,7 +46,7 @@ public class Patches
             return;
         if (__instance.ItemId is null)
             return;
-        if (__instance.ItemId != "DecidedlyHuman_KaboomHammer1_Tool.")
+        if (__instance.ItemId != "DecidedlyHuman_KaboomHammer1_Tool")
             return;
 
         Vector2 toolHitLocation = new Vector2(x / 64, y / 64);
