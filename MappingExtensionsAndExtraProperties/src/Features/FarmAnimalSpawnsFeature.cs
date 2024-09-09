@@ -4,6 +4,7 @@ using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
+using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -253,7 +254,18 @@ public class FarmAnimalSpawnsFeature : Feature
 
                 Vector2 messageSize =
                     Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
-                DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
+                NPC npc = new NPC();
+                npc.Portrait = Game1.content.Load<Texture2D>("Portraits/Abigail_Beach");
+                npc.Name = spawnedAnimals[__instance].DisplayName;
+                npc.displayName = spawnedAnimals[__instance].DisplayName;
+
+                AnimalDialogueBox dialogue = new AnimalDialogueBox(
+                    Game1.content.Load<Texture2D>("Portraits/Abigail_Beach"),
+                    Rectangle.Empty,
+                    new Dialogue(npc, "", String.Join("$b", spawnedAnimals[__instance].PetMessage.ToList())),
+                    npc);
+
+                // DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
                 Game1.activeClickableMenu = dialogue;
 
                 return false;
