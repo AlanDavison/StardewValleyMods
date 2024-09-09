@@ -20,16 +20,12 @@ public class Patches
 
     public static void FenceFixer1_Prefix(Tool __instance, GameLocation location, int x, int y, int power, Farmer who)
     {
-        logger.Log($"Using tool {__instance.ItemId}.");
-
         if (__instance is null)
             return;
         if (__instance.ItemId is null)
             return;
         if (__instance.ItemId != "DecidedlyHuman_FenceFixer1_Tool.")
             return;
-
-        logger.Log("Tool good!", LogLevel.Info);
 
         Vector2 toolHitLocation = new Vector2(x / 64, y / 64);
 
@@ -46,16 +42,12 @@ public class Patches
 
     public static void KaboomHammer1_Prefix(Tool __instance, GameLocation location, int x, int y, int power, Farmer who)
     {
-        logger.Log($"Using tool {__instance.ItemId}.");
-
         if (__instance is null)
             return;
         if (__instance.ItemId is null)
             return;
         if (__instance.ItemId != "DecidedlyHuman_KaboomHammer1_Tool.")
             return;
-
-        logger.Log("Tool good!", LogLevel.Info);
 
         Vector2 toolHitLocation = new Vector2(x / 64, y / 64);
 
