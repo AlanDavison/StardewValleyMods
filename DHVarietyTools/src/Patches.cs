@@ -18,7 +18,7 @@ public class Patches
         Patches.logger = logger;
     }
 
-    public static void FenceFixer1_Prefix(Tool __instance, GameLocation location, int x, int y, int power, Farmer who)
+    public static void FenceFixer1_Postfix(Tool __instance, GameLocation location, int x, int y, int power, Farmer who)
     {
         if (__instance is null)
             return;
@@ -40,7 +40,7 @@ public class Patches
         }
     }
 
-    public static void KaboomHammer1_Prefix(Tool __instance, GameLocation location, int x, int y, int power, Farmer who)
+    public static void KaboomHammer1_Postfix(Tool __instance, GameLocation location, int x, int y, int power, Farmer who)
     {
         if (__instance is null)
             return;
