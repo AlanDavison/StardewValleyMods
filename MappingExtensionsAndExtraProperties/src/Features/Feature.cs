@@ -31,7 +31,7 @@ public abstract class Feature
     public abstract int CursorId { get; init; }
 
     /// <summary>
-    /// Whether or not this feature has been enabled.
+    /// Whether this feature has been enabled.
     /// </summary>
     public abstract bool Enabled { get; internal set; }
 
