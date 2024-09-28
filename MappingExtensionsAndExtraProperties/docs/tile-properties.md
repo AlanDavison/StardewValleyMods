@@ -1,7 +1,7 @@
 # Mapping Extensions and Extra Properties (MEEP) Documentation
 **Important**: Remember to read the section on [adding the correct keys to your manifest](../readme.md#Adding-MEEP-feature-keys-to-your-manifest) for the specific features you intend to use first.
 
-### Using the CloseupInteraction tile properties
+## Using the CloseupInteraction tile properties
 The basic format for `CloseupInteraction` is in the following snippet of an `EditMap` patch using Content Patcher.
 
 ```json
@@ -118,7 +118,7 @@ the interaction is opened, or the page is turned in the reel.
 
 The sound cue must be valid, or MEEP will log an error every time the property is interacted with, and no sound will be played.
 
-### Using the MEEP_SetMailFlag tile property
+## Using the MEEP_SetMailFlag tile property
 This one is fairly self-explanatory. You would add the tile property `DHSetMailFlag`, and the value for it is the mail flag you want to be set. for example:
 
 ```json
@@ -155,7 +155,7 @@ With this example, interacting with the tile will bring up the fortune teller im
 
 You could also use this for any kind of conditional patch that checks for a mail flag.
 
-### Using the MEEP_AddConversationTopic tile property
+## Using the MEEP_AddConversationTopic tile property
 This one is also fairly self-explanatory. It sets a conversation topic whenever a tile is interacted with!
 ```json
 {
@@ -191,7 +191,7 @@ All you do is add the `MEEP_AddConversationTopic` tile property as you see above
 `DH.MEEP.SeenEvilJojaLetter`: This is the conversation topic you want to add.
 `7`: This is the number of days the conversation topic will remain active.
 
-### Using the MEEP_FakeNPC tile property
+## Using the MEEP_FakeNPC tile property
 This tile property will allow you to spawn a "fake" NPC on a given tile. Unlike a "real" NPC, which needs a disposition, and lots of setup, a "fake" NPC needs very, very little. Fake NPCs cannot receive gifts, don't have a schedule, and won't move around. They're intended to be a middle ground between a simple static NPC sprite, and a fully-fledged NPC.
 
 The most basic setup is as follows:
@@ -286,7 +286,7 @@ Finally, we need to add a tile property to specify where we want the NPC to spaw
 }
 ```
 
-#### Optional argument: NPC sprite size
+### Optional argument: NPC sprite size
 We can also, however, specify a custom NPC sprite size. Yes, that means you can have an NPC larger than 16x32. How to do that is very simple:
 ```json
 {
@@ -313,10 +313,10 @@ Do note, however, that using a custom size for your NPC will disable the breathi
 
 Instead, you can just draw the shadows into the NPC sprite. This allows for much nicer looking shadows, too!
 
-### Using the MEEP Letter tile property
+## Using the MEEP Letter tile property
 The `Letter` tile properties are fairly simple. There are two of them -- `MEEP_Letter`, and `MEEP_Letter_Type`.
 
-#### MEEP_Letter
+### MEEP_Letter
 This is the mandatory property, and is fairly simple:
 ```json
 {
@@ -346,12 +346,12 @@ You just need to specify the tile property on the desired tile, and format the l
 
 **Important note**: Most, if not all vanilla mail commands should work here. However, given that the letter can be opened as many times as the player desires as long as the patch remains in place, you want to be very, very careful not to allow for infinite items, and other weird issues.
 
-#### MEEP_Letter_Type
+### MEEP_Letter_Type
 There are two ways to use `MEEP_Letter_Type`. One is to simply specify the vanilla letter background type (seen [here](https://i.imgur.com/llJupGQ.png)), *or* specify your own custom background image.
 
 Your custom image *must* follow the vanilla size, however. The file should be 320x180 pixels, but *visually* does not need to fill up the entire image.
 
-##### Vanilla background example
+#### Vanilla background example
 ```json
 {
     "Position": {
@@ -368,7 +368,7 @@ Your custom image *must* follow the vanilla size, however. The file should be 32
 
 Note nothing but the specific vanilla letter background ID in the property.
 
-##### Custom background example
+#### Custom background example
 Firstly, you need to load your image somewhere in your Content Patcher mod as demonstrated below.
 ```json
 {
