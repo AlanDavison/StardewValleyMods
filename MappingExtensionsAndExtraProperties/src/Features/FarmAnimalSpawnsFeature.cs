@@ -258,17 +258,25 @@ public class FarmAnimalSpawnsFeature : Feature
 
                 if (spawnedAnimals[__instance].PortraitTexture is not null)
                 {
-                    npc.Portrait = Game1.content.Load<Texture2D>(spawnedAnimals[__instance].PortraitTexture);
-                    npc.Name = spawnedAnimals[__instance].DisplayName;
-                    npc.displayName = spawnedAnimals[__instance].DisplayName;
+                    try
+                    {
+                        npc.Portrait = Game1.content.Load<Texture2D>(spawnedAnimals[__instance].PortraitTexture);
 
-                    AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
-                        new Dialogue(npc, "", string.Join(" ", spawnedAnimals[__instance].PetMessage.ToList())),
-                        npc);
+                        npc.Name = spawnedAnimals[__instance].DisplayName;
+                        npc.displayName = spawnedAnimals[__instance].DisplayName;
 
-                    Game1.activeClickableMenu = dialogueBoxWithPortrait;
+                        AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
+                            new Dialogue(npc, "", string.Join(" ", spawnedAnimals[__instance].PetMessage.ToList())),
+                            npc);
 
-                    return false;
+                        Game1.activeClickableMenu = dialogueBoxWithPortrait;
+
+                        return false;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Warn($"Portrait key for farm animal {spawnedAnimals[__instance].DisplayName} was present, but invalid.");
+                    }
                 }
 
                 DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
