@@ -17,7 +17,6 @@ public class AnimalDialogueBox : DialogueBox
     {
         this.npc = npc;
         this.friendshipJewel = Rectangle.Empty;
-
     }
 
     public override void draw(SpriteBatch b)
