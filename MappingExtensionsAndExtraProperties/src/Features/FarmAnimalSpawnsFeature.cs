@@ -141,14 +141,14 @@ public class FarmAnimalSpawnsFeature : Feature
         {
             try
             {
-                if (!GameStateQuery.CheckConditions(animal.Condition))
+                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
+
+                if (!GameStateQuery.CheckConditions(animal.Condition, location: targetLocation))
                 {
                     logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
 
                     continue;
                 }
-
-                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
 
                 if (targetLocation is null)
                 {
