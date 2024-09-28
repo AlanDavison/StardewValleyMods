@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -74,11 +75,7 @@ public class InvulnerableTreeFeature : Feature
             if (__instance.GetData().CustomFields is null)
                 return true;
 
-            if ((bool)__instance?.GetData()?.CustomFields?.ContainsKey("DH_MEEP_Invulnerable_Tree"))
-                return false;
-
-
-            return true;
+            return !DoCustomFieldsSuggestInvulnerability(__instance.GetData().CustomFields);
         }
         catch (Exception e)
         {
@@ -99,11 +96,7 @@ public class InvulnerableTreeFeature : Feature
             if (__instance.GetData().CustomFields is null)
                 return true;
 
-            if ((bool)__instance?.GetData()?.CustomFields?.ContainsKey("DH_MEEP_Invulnerable_Tree"))
-                return false;
-
-
-            return true;
+            return !DoCustomFieldsSuggestInvulnerability(__instance.GetData().CustomFields);
         }
         catch (Exception e)
         {
@@ -112,4 +105,8 @@ public class InvulnerableTreeFeature : Feature
         }
     }
 
+    private static bool DoCustomFieldsSuggestInvulnerability(Dictionary<string, string> data)
+    {
+        return data.ContainsKey("DH_MEEP_Invulnerable_Tree");
+    }
 }
