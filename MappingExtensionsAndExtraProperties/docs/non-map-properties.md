@@ -119,4 +119,4 @@ You need to add a custom field to your tree/fruit tree model as follows:
 "CustomFields": {"DH_MEEP_Invulnerable_Tree": ""}
 ```
 
-That's really all there is to it. Since it's so highly recommended you **don't** add this to a custom tree designed purely to be spawned in a map, I won't be going over how to edit this custom field into an existing tree. You know where to look if you want to, though!
+That's really all there is to it. Since it's so highly recommended you **only** add this to a custom tree designed purely to be spawned in a map, I won't be going over how to edit this custom field into an existing tree. I don't want to encourage or help with something that could lead to problems for users!
