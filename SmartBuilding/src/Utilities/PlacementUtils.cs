@@ -95,6 +95,10 @@ namespace SmartBuilding.Utilities
                             if (o.Name.Equals("Gate"))
                                 return false;
 
+                            // It isn't a gate, so now we want to check if it already has a torch.
+                            if (o.heldObject.Value is not null)
+                                return false;
+
                             return true;
                         }
                     }
