@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Build\Latest.targets"/>
+    <Import Project="..\Build\Common.csproj"/>
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+
+    <PropertyGroup>
+        <Name>Voice Acting Framework</Name>
+        <Description>A framework allowing people to add voice acting to Stardew Valley.</Description>
+        <MinimumApiVersion>4.0.0</MinimumApiVersion>
+        <UpdateKeys>Nexus:00000</UpdateKeys>
+        <Version>1.0.0-alpha</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>true</EnableHarmony>
+    </PropertyGroup>
+
+</Project>
