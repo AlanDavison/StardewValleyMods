@@ -15,4 +15,8 @@
         <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\VAFPackFormat\VAFPackFormat.csproj" />
+    </ItemGroup>
+
 </Project>
