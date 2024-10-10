@@ -19,6 +19,9 @@
         <None Update="release-notes.md">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="credits.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
 
         <SMAPIDependency Include="furyx639.ToolbarIcons" Version="2.7.1" Required="false"/>
 
