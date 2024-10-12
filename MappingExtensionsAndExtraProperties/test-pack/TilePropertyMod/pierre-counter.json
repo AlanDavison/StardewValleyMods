@@ -1,0 +1,24 @@
+{
+    "Changes": [
+        {
+            // Apply the tile property
+            "Action": "EditMap",
+            "Target": "Maps/SeedShop",
+            "Update": "OnTimeChange",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 8,
+                        "Y": 18
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/PierreCounterThing",
+                        "MEEP_CloseupInteraction_Text": "Is this a tomato?",
+                        "MEEP_CloseupInteraction_Sound": "slosh"
+                    }
+                }
+            ]
+        }       
+    ]
+}
