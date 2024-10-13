@@ -1,4 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Build\Latest.targets" />
+    <ItemGroup>
+        <Reference Include="MonoGame.Framework">
+            <HintPath>$(GamePath)MonoGame.Framework.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>$(GamePath)smapi-internal/Newtonsoft.Json.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
