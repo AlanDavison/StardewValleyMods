@@ -1,0 +1,25 @@
+{
+    // Keybinds
+    "settings.keybinds.title": "Raccourcis clavier",
+    "settings.keybinds.hold-to-activate": "Maintenir pour activer",
+    // Tier ranges
+    "settings.ranges.tier-ranges.title": "Portée des paliers des outils",
+    "settings.ranges.tier-amount-notice": "Vous pouvez sélectionner la portée pour chaque palier d’outil ici. Le palier 5 (iridium) et les deux suivants ne seront pas pris on compte à moins d’avoir un mod qui les ajoute en tant qu’amélioration. ",
+    "settings.ranges.tier-1-range": "Base",
+    "settings.ranges.tier-2-range": "Cuivre",
+    "settings.ranges.tier-3-range": "Acier",
+    "settings.ranges.tier-4-range": "Or",
+    "settings.ranges.tier-5-range": "Iridium (Mod)",
+    "settings.ranges.tier-6-range": "Tier 6 (Mod)",
+    "settings.ranges.tier-7-range": "Tier 7 (Mod)",
+    // Toggles
+    "settings.toggles.title": "Activations supplémentaires",
+    "settings.toggles.allow-targeting-baby-trees": "Cibler les pousses d’arbres",
+    "settings.toggles.allow-targeting-baby-trees.tooltip": "Cela permettra au curseur intelligent de cibler des arbres qui n’ont pas complétement poussé.",
+    "settings.toggles.allow-targeting-tapped-trees": "Cibler des arbres avec saigneur",
+    "settings.toggles.allow-targeting-tapped-trees.tooltip": "Cela permettra au curseur intelligent de cibler des arbres qui disposent d’un saigneur sur eux.",
+    "settings.toggles.allow-targeting-giant-crops": "Cibler des cultures géantes",
+    "settings.toggles.allow-targeting-giant-crops.tooltip": "Cela permettra au curseur intelligent de cibler des cultures géantes",
+    // Messages
+    "messages.gmcm-not-installed": "GMCM n’est pas installé. Ce n’est nécessaire mais est hautement recommandé."
+}
