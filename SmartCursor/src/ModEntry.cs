@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DecidedlyShared.APIs;
@@ -18,6 +19,7 @@ namespace SmartCursor
     public class ModEntry : Mod
     {
         private List<BreakableEntity> breakableResources;
+        private IItemExtensionsApi? itemExtensionsApi = null;
         private SmartCursorConfig config;
         private Logger logger;
         private Vector2? targetedObject;
@@ -41,6 +43,7 @@ namespace SmartCursor
             this.logger = new Logger(this.Monitor, helper.Translation);
             I18n.Init(helper.Translation);
 
+            helper.Events.GameLoop.GameLaunched += this.GameLoopOnGameLaunched;
             helper.Events.Player.Warped += this.OnPlayerWarped;
             helper.Events.Input.ButtonPressed += this.InputOnButtonPressed;
             helper.Events.Input.ButtonReleased += this.InputOnButtonReleased;
@@ -49,6 +52,33 @@ namespace SmartCursor
             helper.Events.World.TerrainFeatureListChanged += this.WorldOnTerrainFeatureListChanged;
             helper.Events.GameLoop.UpdateTicked += this.GameLoopOnUpdateTicked;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
+        }
+
+        private void GameLoopOnGameLaunched(object? sender, GameLaunchedEventArgs e)
+        {
+            if (this.Helper.ModRegistry.IsLoaded("mistyspring.ItemExtensions"))
+            {
+                try
+                {
+                    IModInfo? modInfo = this.Helper.ModRegistry.Get("mistyspring.ItemExtensions");
+
+                    if (!SemanticVersion.TryParse("1.9.1", out ISemanticVersion desiredVersion)) return;
+                    if (modInfo.Manifest.Version.IsOlderThan(desiredVersion))
+                    {
+                        this.logger.Warn("Item Extensions was installed, but its version was too low (minimum 1.9.1), so integration with it is disabled.");
+                        return;
+                    }
+
+                    IItemExtensionsApi? api = this.Helper.ModRegistry.GetApi<IItemExtensionsApi>("mistyspring.ItemExtensions");
+
+                    if (api is null)
+                        this.logger.Warn("Item Extensions was installed and had the correct version, but there was a problem getting its API, so integration with it is disabled.");
+                }
+                catch (Exception ex)
+                {
+                    this.logger.Exception(ex);
+                }
+            }
         }
 
         /// <summary>
@@ -559,13 +589,13 @@ namespace SmartCursor
             foreach (var feature in location.terrainFeatures.Values)
             {
                 if (feature is Tree tree)
-                    this.breakableResources.Add(new BreakableEntity(tree, this.config));
+                    this.breakableResources.Add(new BreakableEntity(tree, this.config, this.itemExtensionsApi));
             }
 
             // Then with large terrain features.
             foreach (var feature in location.largeTerrainFeatures)
             {
-                this.breakableResources.Add(new BreakableEntity(feature, this.config));
+                this.breakableResources.Add(new BreakableEntity(feature, this.config, this.itemExtensionsApi));
             }
 
 

@@ -1,4 +1,6 @@
-﻿using DecidedlyShared.Constants;
+﻿using System;
+using DecidedlyShared.APIs;
+using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using StardewValley.TerrainFeatures;
 
@@ -7,6 +9,7 @@ namespace SmartCursor
     public class BreakableEntity
     {
         private SmartCursorConfig config;
+        private IItemExtensionsApi itemExtensionsApi; // This is bad and needs reworking.
         public Vector2 Tile { get; }
 
         public BreakableType Type { get; }
@@ -16,9 +19,10 @@ namespace SmartCursor
         /// </summary>
         /// <param name="feature"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config)
+        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config, IItemExtensionsApi itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(feature);
             this.Tile = feature.Tile;
         }
@@ -53,7 +57,9 @@ namespace SmartCursor
         /// <returns>The <see cref="BreakableType"/> of the <see cref="SObject"/> passed in.</returns>
         public BreakableType GetBreakableType(SObject obj)
         {
-            if (obj.Name.Equals("Stone"))
+            Console.WriteLine($"API is null: {this.itemExtensionsApi is null}");
+
+            if (obj.Name.Equals("Stone") || this.itemExtensionsApi.IsStone(obj.ItemId))
                 return BreakableType.Pickaxe;
 
             if (obj.Name.Equals("Twig"))

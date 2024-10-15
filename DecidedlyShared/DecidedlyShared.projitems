@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISaveAnywhereApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISpaceCoreApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ITapGiantCropsApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\IItemExtensionsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IToolbarIconsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\AffixType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\BreakableType.cs" />
