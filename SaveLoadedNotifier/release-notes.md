@@ -1,5 +1,9 @@
 ﻿# Into the Game Changelog
 
+## 1.2.1
+#### Additions
+* Added a French translation courtesy of CaranudLapin on GitHub!
+
 ## 1.2.0
 #### Additions
 * Now you can select the sound cue that's played when your save loads. See the mod config or GMCM integration.
