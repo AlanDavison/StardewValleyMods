@@ -5,11 +5,19 @@
 
     <PropertyGroup>
         <Name>On Distant Shores</Name>
-        <Description>You've heard rumours of an especially bountiful land. Maybe it's worth the trek to get there?</Description>
+        <Description>C# component for On Distant Shores.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:00000</UpdateKeys>
         <Version>1.0.0-alpha</Version>
     </PropertyGroup>
+
+    <ItemGroup>
+        <ContentPacks Include="packs/[CP] On Distant Shores" Version="$(Version)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="planning\" />
+    </ItemGroup>
 
     <PropertyGroup>
         <EnableHarmony>false</EnableHarmony>
