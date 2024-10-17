@@ -4,7 +4,7 @@
     "Version": "1.0.0",
     "Description": "You've heard rumours of an especially bountiful land. Maybe it's worth the trek to get there?",
     "UniqueID": "YourName.YourModName",
-    "UpdateKeys": [], // when you release the mod, see https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Update_checks
+    "UpdateKeys": [],
     "ContentPackFor": {
         "UniqueID": "Pathoschild.ContentPatcher"
     }
