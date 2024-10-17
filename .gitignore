@@ -15,3 +15,5 @@ StardewValleyMods.sln.DotSettings.user
 
 manifest.json
 
+# Exclude Krita's backup files.
+*.kra~
