@@ -17,3 +17,4 @@ manifest.json
 
 # Exclude Krita's backup files.
 *.kra~
+*.kra-autosave.kra
