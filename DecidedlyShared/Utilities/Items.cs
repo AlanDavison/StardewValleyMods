@@ -11,7 +11,7 @@ namespace DecidedlyShared.Utilities
         {
             floorItem = null;
 
-            string? floorType = floor.whichFloor;
+            string? floorType = floor.whichFloor.Value;
 
             if (floorType is null)
                 return false;
