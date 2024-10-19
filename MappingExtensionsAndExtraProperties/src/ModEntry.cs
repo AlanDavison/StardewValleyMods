@@ -8,6 +8,7 @@ using MappingExtensionsAndExtraProperties.Api;
 using MappingExtensionsAndExtraProperties.Commands;
 using MappingExtensionsAndExtraProperties.Features;
 using MappingExtensionsAndExtraProperties.Functionality;
+using MappingExtensionsAndExtraProperties.Models.CustomBackgrounds;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
 using MappingExtensionsAndExtraProperties.Utils;
 using StardewModdingAPI;
@@ -64,10 +65,25 @@ public class ModEntry : Mod
             {
                 args.LoadFrom(() => new Dictionary<string, Animal>(), AssetLoadPriority.Low);
             }
+
+            if (args.NameWithoutLocale.IsEquivalentTo("MEEP/CustomBackgrounds/BackgroundData"))
+            {
+                args.LoadFrom(() => new Dictionary<string, BackgroundData>(), AssetLoadPriority.Low);
+            }
         };
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
+        helper.Events.Player.Warped += this.BackgroundWarpTest;
         helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+    }
+
+    private void BackgroundWarpTest(object? sender, WarpedEventArgs args)
+    {
+        Dictionary<string, BackgroundData> data = this.Helper.GameContent.Load<Dictionary<string, BackgroundData>>("MEEP/CustomBackgrounds/BackgroundData");
+        
+
+        // Game1.background = new Background(texture, 1, mapWidth / tileSize.Width, mapHeight / tileSize.Height,
+        //     tileSize.Width, tileSize.Height, 4f, 1, numTiles, 1d, Color.White);
     }
 
     private void LoadContentPacks()

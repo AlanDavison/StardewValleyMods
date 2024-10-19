@@ -3,10 +3,14 @@
     "Format": "1.28.0",
     "CustomLocations": [
         {
-          "Name": "Custom_MEEP_Station",
-          "FromMapFile": "assets/Map/Custom_MEEP_Station.tmx"
+            "Name": "Custom_MEEP_Station",
+            "FromMapFile": "assets/Map/Custom_MEEP_Station.tmx"
+        },
+        {
+            "Name": "Custom_MEEP_Canyon",
+            "FromMapFile": "assets/Map/Custom_MEEP_Canyon.tmx"
         }
-      ],
+    ],
     "Changes": [
         {
             // MEEP fake NPC portrait and dialogue loading.
@@ -33,7 +37,6 @@
             "Action": "Include",
             "FromFile": "interaction-reel.json"
         },
-
         {
             // Patch in the farm animal spawning.
             "Action": "Include",
@@ -56,6 +59,10 @@
         {
             "Action": "Include",
             "FromFile": "farm-and-farmhouse.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "custom-backgrounds.json"
         }
     ]
 }

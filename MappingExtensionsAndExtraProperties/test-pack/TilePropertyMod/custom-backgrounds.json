@@ -1,0 +1,73 @@
+{
+    "Changes": [
+        {
+            "Action": "EditMap",
+            "Target": "MEEP/CustomBackgrounds/BackgroundData",
+            "Entries": {
+                "Custom_MEEP_Canyon": {
+                    "Format": "1.0.0",
+                    "Images": [
+                        {
+                            "Texture": "Mods/MyMod/BackgroundImage1",
+                            "ImageId": "BackgroundImage1"
+                        },
+                        {
+                            "Texture": "Mods/MyMod/BackgroundImage2",
+                            "ImageId": "BackgroundImage2"
+                        },
+                        {
+                            "Texture": "Mods/MyMod/BackgroundImage3",
+                            "ImageId": "BackgroundImage3"
+                        },
+                        {
+                            "Texture": "Mods/MyMod/BackgroundImage4",
+                            "ImageId": "BackgroundImage4"
+                        },
+                        {
+                            "Texture": "Mods/MyMod/BackgroundImage5",
+                            "ImageId": "BackgroundImage5"
+                        },
+                        {
+                            "Texture": "Mods/MyMod/BackgroundImage6",
+                            "ImageId": "BackgroundImage6"
+                        }
+                    ],
+                    "Scene": {
+                        "Elements": [
+                            {
+                                "ImageId": "BackgroundImage1",
+                                "Position": {"X":  0, "Y":  0, "HorizontalParallaxFactor": 0, "VerticalParallaxFactor":  0},
+                                "Depth": 0
+                            },
+                            {
+                                "ImageId": "BackgroundImage2",
+                                "Position": {"X":  0, "Y":  0, "HorizontalParallaxFactor": 1, "VerticalParallaxFactor":  0},
+                                "Depth": 1
+                            },
+                            {
+                                "ImageId": "BackgroundImage3",
+                                "Position": {"X":  0, "Y":  0, "HorizontalParallaxFactor": 2, "VerticalParallaxFactor":  0},
+                                "Depth": 2
+                            },
+                            {
+                                "ImageId": "BackgroundImage4",
+                                "Position": {"X":  57, "Y":  0, "HorizontalParallaxFactor": 0, "VerticalParallaxFactor":  0},
+                                "Depth": 0
+                            },
+                            {
+                                "ImageId": "BackgroundImage5",
+                                "Position": {"X":  57, "Y":  0, "HorizontalParallaxFactor": 1, "VerticalParallaxFactor":  0},
+                                "Depth": 1
+                            },
+                            {
+                                "ImageId": "BackgroundImage6",
+                                "Position": {"X":  57, "Y":  0, "HorizontalParallaxFactor": 2, "VerticalParallaxFactor":  0},
+                                "Depth": 2
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}
