@@ -36,32 +36,56 @@
                         "Elements": [
                             {
                                 "ImageId": "BackgroundImage1",
-                                "Position": {"X":  0, "Y":  0, "HorizontalParallaxFactor": 0, "VerticalParallaxFactor":  0},
+                                "BaseX": 0,
+                                "BaseY": 0,
+                                "HorizontalParallaxFactor": 0,
+                                "VerticalParallaxFactor": 0,
+                                "Anchor": "Left",
                                 "Depth": 0
                             },
                             {
                                 "ImageId": "BackgroundImage2",
-                                "Position": {"X":  0, "Y":  0, "HorizontalParallaxFactor": 1, "VerticalParallaxFactor":  0},
+                                "BaseX": 0,
+                                "BaseY": 0,
+                                "HorizontalParallaxFactor": 0,
+                                "VerticalParallaxFactor": 0,
+                                "Anchor": "Left",
                                 "Depth": 1
                             },
                             {
                                 "ImageId": "BackgroundImage3",
-                                "Position": {"X":  0, "Y":  0, "HorizontalParallaxFactor": 2, "VerticalParallaxFactor":  0},
+                                "BaseX": 0,
+                                "BaseY": 0,
+                                "HorizontalParallaxFactor": 0,
+                                "VerticalParallaxFactor": 0,
+                                "Anchor": "Left",
                                 "Depth": 2
                             },
                             {
                                 "ImageId": "BackgroundImage4",
-                                "Position": {"X":  57, "Y":  0, "HorizontalParallaxFactor": 0, "VerticalParallaxFactor":  0},
+                                "BaseX": 0,
+                                "BaseY": 0,
+                                "HorizontalParallaxFactor": 0,
+                                "VerticalParallaxFactor": 0,
+                                "Anchor": "Right",
                                 "Depth": 0
                             },
                             {
                                 "ImageId": "BackgroundImage5",
-                                "Position": {"X":  57, "Y":  0, "HorizontalParallaxFactor": 1, "VerticalParallaxFactor":  0},
+                                "BaseX": 0,
+                                "BaseY": 0,
+                                "HorizontalParallaxFactor": 0,
+                                "VerticalParallaxFactor": 0,
+                                "Anchor": "Right",
                                 "Depth": 1
                             },
                             {
                                 "ImageId": "BackgroundImage6",
-                                "Position": {"X":  57, "Y":  0, "HorizontalParallaxFactor": 2, "VerticalParallaxFactor":  0},
+                                "BaseX": 0,
+                                "BaseY": 0,
+                                "HorizontalParallaxFactor": 0,
+                                "VerticalParallaxFactor": 0,
+                                "Anchor": "Right",
                                 "Depth": 2
                             }
                         ]

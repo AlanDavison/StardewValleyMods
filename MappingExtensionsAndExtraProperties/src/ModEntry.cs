@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
@@ -80,7 +81,14 @@ public class ModEntry : Mod
     private void BackgroundWarpTest(object? sender, WarpedEventArgs args)
     {
         Dictionary<string, BackgroundData> data = this.Helper.GameContent.Load<Dictionary<string, BackgroundData>>("MEEP/CustomBackgrounds/BackgroundData");
-        
+
+        Game1.background = new CustomBackground(data.Values.FirstOrDefault());
+
+        Utility.ForEachLocation(location =>
+        {
+            this.logger.Log(location.Name, LogLevel.Info);
+            return true;
+        });
 
         // Game1.background = new Background(texture, 1, mapWidth / tileSize.Width, mapHeight / tileSize.Height,
         //     tileSize.Width, tileSize.Height, 4f, 1, numTiles, 1d, Color.White);

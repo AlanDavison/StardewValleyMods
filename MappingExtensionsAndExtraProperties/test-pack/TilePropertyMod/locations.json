@@ -1,0 +1,46 @@
+{
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Maps/Custom_MEEP_Station",
+            "FromFile": "assets/Map/Custom_MEEP_Station.tmx"
+        },
+        {
+            "Action": "Load",
+            "Target": "Maps/Custom_MEEP_Canyon",
+            "FromFile": "assets/Map/Custom_MEEP_Canyon.tmx"
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Locations",
+            "Entries": {
+                "Custom_MEEP_Station": {
+                    "DisplayName": "MEEP Station",
+                    "DefaultArrivalTile": {
+                        "X": 15,
+                        "Y": 15
+                    },
+                    "CreateOnLoad": {
+                        "MapPath": "Maps/Custom_MEEP_Station"
+                    }
+                }
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Locations",
+            "Entries": {
+                "Custom_MEEP_Canyon": {
+                    "DisplayName": "MEEP Canyon",
+                    "DefaultArrivalTile": {
+                        "X": 15,
+                        "Y": 15
+                    },
+                    "CreateOnLoad": {
+                        "MapPath": "Maps/Custom_MEEP_Canyon"
+                    }
+                }
+            }
+        }
+    ]
+}

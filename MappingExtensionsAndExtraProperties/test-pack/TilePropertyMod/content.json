@@ -1,17 +1,11 @@
 {
     "$schema": "https://smapi.io/schemas/content-patcher.json",
-    "Format": "1.28.0",
-    "CustomLocations": [
-        {
-            "Name": "Custom_MEEP_Station",
-            "FromMapFile": "assets/Map/Custom_MEEP_Station.tmx"
-        },
-        {
-            "Name": "Custom_MEEP_Canyon",
-            "FromMapFile": "assets/Map/Custom_MEEP_Canyon.tmx"
-        }
-    ],
+    "Format": "2.0.0",
     "Changes": [
+        {
+            "Action": "Include",
+            "FromFile": "locations.json"
+        },
         {
             // MEEP fake NPC portrait and dialogue loading.
             "Action": "Include",

@@ -64,6 +64,36 @@
             "Action": "Load",
             "Target": "Mods/DecidedlyHuman/CheckeredBG",
             "FromFile": "assets/meep-checkered-background.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MyMod/LeftChasmParallax1",
+            "FromFile": "assets/ChasmBackground/left-chasm-parallax-1.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MyMod/LeftChasmParallax2",
+            "FromFile": "assets/ChasmBackground/left-chasm-parallax-2.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MyMod/LeftChasmParallax3",
+            "FromFile": "assets/ChasmBackground/left-chasm-parallax-3.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MyMod/RightChasmParallax1",
+            "FromFile": "assets/ChasmBackground/right-chasm-parallax-1.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MyMod/RightChasmParallax2",
+            "FromFile": "assets/ChasmBackground/right-chasm-parallax-2.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MyMod/RightChasmParallax3",
+            "FromFile": "assets/ChasmBackground/right-chasm-parallax-3.png"
         }
     ]
 }
