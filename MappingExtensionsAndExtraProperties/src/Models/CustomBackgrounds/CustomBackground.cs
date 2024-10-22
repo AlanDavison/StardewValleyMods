@@ -55,7 +55,6 @@ public class CustomBackground : Background
         int viewportHCentre = viewport.X + viewport.Width / 2;
         int viewportVCentre = viewport.Y + viewport.Height / 2;
         float xOffset = viewportHCentre - mapHorizontalCentre;
-        float yOffset = viewportVCentre - mapVerticalCentre;
 
         // I don't think there is a way to make this work mathematically without having anchor sides for our elements.
         // No big deal, though. TODO: Add anchor sides to background elements.
