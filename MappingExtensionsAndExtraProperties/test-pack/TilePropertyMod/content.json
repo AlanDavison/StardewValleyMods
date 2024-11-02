@@ -56,6 +56,10 @@
         {
             "Action": "Include",
             "FromFile": "farm-and-farmhouse.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "event-commands.json"
         }
     ]
 }

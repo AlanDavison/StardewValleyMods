@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Monsters;
 
 namespace MappingExtensionsAndExtraProperties.Functionality;
 
@@ -29,5 +30,30 @@ public class EventCommands
     {
         e.CurrentCommand++;
         // e.InsertNextCommand(loc, time);
+    }
+
+    public static void AddColouredSlime(Event e, string[] args, EventContext context)
+    {
+        if (!ArgUtility.TryGetVector2(args, 1, out Vector2 tile, out string? error, integerOnly: false, "Vector2 tile") ||
+            !ArgUtility.TryGetDirection(args, 3, out int facingDirection, out error, "int facingDirection") ||
+            !ArgUtility.TryGetInt(args, 4, out int red, out error, "int facingDirection") ||
+            !ArgUtility.TryGetInt(args, 5, out int green, out error, "int facingDirection") ||
+            !ArgUtility.TryGetInt(args, 6, out int blue, out error, "int facingDirection"))
+        {
+            context.LogErrorAndSkip(error);
+            return;
+        }
+
+        string slimeTexture = "Characters\\Monsters\\GreenSlime";
+        int slimeSpriteWidth = 16;
+        int slimeSpriteHeight = 24;
+
+        // AnimatedSprite slimeSprite = new AnimatedSprite(slimeTexture, 0, slimeSpriteWidth, slimeSpriteHeight);
+        // NPC slime = new NPC(slimeSprite, tile, facingDirection, "Slime");
+        GreenSlime slime = new GreenSlime(tile * 64f, new Color(red, green, blue));
+        // slime.reloadSprite();
+
+        e.actors.Add(slime);
+        e.currentCommand++;
     }
 }

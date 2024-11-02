@@ -164,6 +164,12 @@ public class ModEntry : Mod
         }
 
         FeatureManager.EnableFeatures();
+        this.RegisterEventCommands();
+    }
+
+    private void RegisterEventCommands()
+    {
+        Event.RegisterCommand("addColouredSlime", EventCommands.AddColouredSlime);
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
