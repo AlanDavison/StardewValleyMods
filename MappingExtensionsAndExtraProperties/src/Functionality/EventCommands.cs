@@ -44,14 +44,15 @@ public class EventCommands
             return;
         }
 
-        string slimeTexture = "Characters\\Monsters\\GreenSlime";
+        string slimeTexture = "Characters\\Monsters\\Green Slime";
         int slimeSpriteWidth = 16;
         int slimeSpriteHeight = 24;
 
-        // AnimatedSprite slimeSprite = new AnimatedSprite(slimeTexture, 0, slimeSpriteWidth, slimeSpriteHeight);
-        // NPC slime = new NPC(slimeSprite, tile, facingDirection, "Slime");
-        GreenSlime slime = new GreenSlime(tile * 64f, new Color(red, green, blue));
-        // slime.reloadSprite();
+        AnimatedSprite slimeSprite = new AnimatedSprite(slimeTexture, 0, slimeSpriteWidth, slimeSpriteHeight);
+        NPC slime = new NPC(slimeSprite, tile * 64f, facingDirection, "Slime", Game1.content);
+
+        // GreenSlime slime = new GreenSlime(tile * 64f, new Color(red, green, blue));
+        // slime.timeSinceLastJump = -1000000;
 
         e.actors.Add(slime);
         e.currentCommand++;

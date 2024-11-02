@@ -1,10 +1,10 @@
 {
     "Changes": [
-        {
+                {
             "Action": "EditData",
-            "Target": "Data/Events/FarmHouse",
+            "Target": "Data/Events/Custom_MEEP_Station",
             "Entries": {
-                "13371337/d Mon Tue Wed Thu Fri Sat Sun": "aerobics/0 0/farmer 5 5 2/addColouredSlime 7 7 0 255 0 0/addColouredSlime 6 7 0 0 255 0/addColouredSlime 7 6 0 0 0 255/skippable/pause 10000/stopMusic/end"
+                "13371337/d Mon Tue Wed Thu Fri Sat Sun": "aerobics/5 5/farmer 4 7 2/addColouredSlime 2 9 0 255 0 0/addColouredSlime 3 9 0 0 255 0/addColouredSlime 4 9 0 0 0 255/addColouredSlime 4 9 0 255 0 255/skippable/pause 10000/stopMusic/end"
             }
         }
     ]
