@@ -9,6 +9,29 @@
       ],
     "Changes": [
         {
+            "Action": "Load",
+            "Target": "Data/Events/Custom_MEEP_Station",
+            "FromFile": "blank.json"
+        },
+        {
+            "Action": "Load",
+            "Target": "Maps/Custom_MEEP_Station",
+            "FromFile": "assets/Map/Custom_MEEP_Station.tmx"
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Locations",
+            "Entries": {
+                "Custom_MEEP_Station": {
+                    "DisplayName": "MEEP Station",
+                    "DefaultArrivalTile": {
+                        "X": 20,
+                        "Y": 20
+                    }
+                }
+            }
+        },
+        {
             // MEEP fake NPC portrait and dialogue loading.
             "Action": "Include",
             "FromFile": "fake-npcs.json"
