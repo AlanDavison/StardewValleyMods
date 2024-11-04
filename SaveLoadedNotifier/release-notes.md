@@ -1,5 +1,9 @@
 ﻿# Into the Game Changelog
 
+## 1.2.2
+#### Fixes
+* Updated for Stardew Valley 1.6.9.
+
 ## 1.2.1
 #### Additions
 * Added a French translation courtesy of CaranudLapin on GitHub!
