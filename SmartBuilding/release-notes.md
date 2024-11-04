@@ -1,6 +1,11 @@
 # Smart Building release notes
+## 1.8.12
+#### Fixes
+* 1.6.9 support!
+* Fix blue grass starters not being placeable as a regular grass starter.
+* Fixed fence torch placement logic. Previously, Smart Building would let you put a torch on a fence that already has a torch in that spot, wasting the torch.
 ## 1.8.11
-####
+#### Fixes
 * Fixed an issue where picking up big chests would give a regular chest.
 ## 1.8.10
 ####

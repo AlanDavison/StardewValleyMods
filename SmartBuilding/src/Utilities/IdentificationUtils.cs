@@ -168,7 +168,7 @@ namespace SmartBuilding.Utilities
                 return ItemType.Fence;
             if (itemName.Equals("Gate") || item.ParentSheetIndex.Equals(325))
                 return ItemType.Fence;
-            if (itemName.Equals("Grass Starter"))
+            if (itemName.Equals("Grass Starter") || itemName.Equals("Blue Grass Starter"))
                 return ItemType.GrassStarter;
             if (itemName.Equals("Crab Pot"))
                 return ItemType.CrabPot;
