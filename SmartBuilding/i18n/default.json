@@ -132,6 +132,6 @@
     "smart-building.commands.debug.sb-test": "If you need to read this, it is not for you. Here be dragons.",
     "smart-building.commands.debug.sb-identify-items": "Identify all items in the player's inventory.",
     // Mod integrations
-    "smart-building.integrations.more-fertilizers.invalid-fertiliser-position": "MF-01: This fertiliser position may have been invalid",
+    "smart-building.integrations.more-fertilizers.invalid-fertiliser-position": "MF-01: This fertiliser position may have been invalid.",
     "smart-building.integrations.growable-bushes.invalid-bush-position": "MF-01: This bush position may have been invalid."
 }
