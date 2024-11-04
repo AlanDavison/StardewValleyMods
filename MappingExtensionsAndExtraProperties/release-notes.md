@@ -1,7 +1,8 @@
 # MEEP Release Notes
 * 2.4.0
-  * Added a new feature! Now you can make your custom wild or fruit trees invulnerable, meaning the player can't chop them down or blow them up.
+  * Now you can make your custom wild or fruit trees invulnerable, meaning the player can't chop them down or blow them up.
   * Added portrait support to MEEP-spawned farm animals. This also works with portrait commands to display the happy, sad, etc. portraits.
+  * Added an event command, allowing you to spawn slimes of specific colours during your events.
 * 2.3.7
   * Fixed MEEP farm animals appearing in events.
   * Potentially fixed Lazy Mod spam-petting MEEP farm animals.
