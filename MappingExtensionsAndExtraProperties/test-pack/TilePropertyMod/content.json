@@ -1,0 +1,88 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Format": "1.28.0",
+    "CustomLocations": [
+        {
+          "Name": "Custom_MEEP_Station",
+          "FromMapFile": "assets/Map/Custom_MEEP_Station.tmx"
+        }
+      ],
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Data/Events/Custom_MEEP_Station",
+            "FromFile": "blank.json"
+        },
+        {
+            "Action": "Load",
+            "Target": "Maps/Custom_MEEP_Station",
+            "FromFile": "assets/Map/Custom_MEEP_Station.tmx"
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Locations",
+            "Entries": {
+                "Custom_MEEP_Station": {
+                    "DisplayName": "MEEP Station",
+                    "DefaultArrivalTile": {
+                        "X": 20,
+                        "Y": 20
+                    }
+                }
+            }
+        },
+        {
+            // MEEP fake NPC portrait and dialogue loading.
+            "Action": "Include",
+            "FromFile": "fake-npcs.json"
+        },
+        {
+            // Include our tile property edits for the MEEP demo/test map.
+            "Action": "Include",
+            "FromFile": "meep-station-edits.json"
+        },
+        {
+            // Include our tile property edits for the MEEP demo/test map.
+            "Action": "Include",
+            "FromFile": "walnut-room-edits.json"
+        },
+        {
+            // Patch in the Pierre counter MEEP_CloseupInteraction_Image example to the seed shop
+            "Action": "Include",
+            "FromFile": "pierre-counter.json"
+        },
+        {
+            // Patch in the reel example to the town lamppost.
+            "Action": "Include",
+            "FromFile": "interaction-reel.json"
+        },
+
+        {
+            // Patch in the farm animal spawning.
+            "Action": "Include",
+            "FromFile": "farm-animal-spawns.json"
+        },
+        {
+            // Patch in our letter tile property.
+            "Action": "Include",
+            "FromFile": "letter-demo.json"
+        },
+        {
+            // Load in our general use images.
+            "Action": "Include",
+            "FromFile": "general-loads.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "tree-edits.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "farm-and-farmhouse.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "event-commands.json"
+        }
+    ]
+}

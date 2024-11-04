@@ -78,6 +78,7 @@ public class ModEntry : Mod
         bool setMailFlagUsed = false;
         bool farmAnimalSpawningUsed = false;
         bool addConversationTopicUsed = false;
+        bool invulnerableTreeUsed = false;
 
 
         foreach (var mod in this.Helper.ModRegistry.GetAll())
@@ -98,6 +99,8 @@ public class ModEntry : Mod
                     farmAnimalSpawningUsed = true;
                 if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.AddConversationTopic"))
                     addConversationTopicUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.InvulnerableTrees"))
+                    invulnerableTreeUsed = true;
             }
         }
 
@@ -147,6 +150,13 @@ public class ModEntry : Mod
             FeatureManager.AddFeature(conversationTopics);
         }
 
+        if (invulnerableTreeUsed)
+        {
+            InvulnerableTreeFeature invulnerableTrees =
+                new InvulnerableTreeFeature(this.harmony, "DH.InvulnerableTrees", this.logger);
+            FeatureManager.AddFeature(invulnerableTrees);
+        }
+
         if (FeatureManager.FeatureCount > 0)
         {
             CleanupFeature cleanup = new CleanupFeature("DH.Internal.CleanupFeature");
@@ -154,6 +164,12 @@ public class ModEntry : Mod
         }
 
         FeatureManager.EnableFeatures();
+        this.RegisterEventCommands();
+    }
+
+    private void RegisterEventCommands()
+    {
+        Event.RegisterCommand("addColouredSlime", EventCommands.AddColouredSlime);
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)

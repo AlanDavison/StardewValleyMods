@@ -1,0 +1,13 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/WildTrees",
+            "Fields": {
+                "3": {
+                    "CustomFields": {"DH_MEEP_Invulnerable_Tree": ""}
+                }
+            }
+        }
+    ]
+}

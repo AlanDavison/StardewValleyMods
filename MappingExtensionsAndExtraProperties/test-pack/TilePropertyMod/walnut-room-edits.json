@@ -1,0 +1,13 @@
+{
+    "Changes": [
+        {
+            "Action": "EditMap",
+            "Target": "Maps/QiNutRoom",
+            "MapProperties": {
+                "MEEP_Background_Image": "Mods/DecidedlyHuman/CheckeredBG",
+                "MEEP_Background_Tile_Size": "200x200",
+                "MEEP_Background_Tile_Variation": "0.5"
+            }
+        }
+    ]
+}

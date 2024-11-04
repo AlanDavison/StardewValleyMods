@@ -8,12 +8,16 @@
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
-        <Version>2.3.7</Version>
+        <Version>2.4.0-merge</Version>
     </PropertyGroup>
 
     <PropertyGroup>
         <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
+        <ContentPacks Include="test-pack/TilePropertyMod" Version="$(Version)" />
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

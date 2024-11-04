@@ -4,6 +4,7 @@ using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
+using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -140,14 +141,14 @@ public class FarmAnimalSpawnsFeature : Feature
         {
             try
             {
-                if (!GameStateQuery.CheckConditions(animal.Condition))
+                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
+
+                if (!GameStateQuery.CheckConditions(animal.Condition, location: targetLocation))
                 {
                     logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
 
                     continue;
                 }
-
-                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
 
                 if (targetLocation is null)
                 {
@@ -253,8 +254,34 @@ public class FarmAnimalSpawnsFeature : Feature
 
                 Vector2 messageSize =
                     Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
+                NPC npc = new NPC();
+
+                if (spawnedAnimals[__instance].PortraitTexture is not null)
+                {
+                    try
+                    {
+                        npc.Portrait = Game1.content.Load<Texture2D>(spawnedAnimals[__instance].PortraitTexture);
+
+                        npc.Name = spawnedAnimals[__instance].DisplayName;
+                        npc.displayName = spawnedAnimals[__instance].DisplayName;
+
+                        AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
+                            new Dialogue(npc, "", string.Join(" ", spawnedAnimals[__instance].PetMessage.ToList())),
+                            npc);
+
+                        Game1.activeClickableMenu = dialogueBoxWithPortrait;
+
+                        return false;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Warn($"Portrait key for farm animal {spawnedAnimals[__instance].DisplayName} was present, but invalid.");
+                    }
+                }
+
                 DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
                 Game1.activeClickableMenu = dialogue;
+
 
                 return false;
             }
