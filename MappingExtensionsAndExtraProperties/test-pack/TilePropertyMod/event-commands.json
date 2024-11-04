@@ -4,7 +4,7 @@
             "Action": "EditData",
             "Target": "Data/Events/Custom_MEEP_Station",
             "Entries": {
-                "13371337/d Mon Tue Wed Thu Fri Sat Sun": "aerobics/5 5/farmer 4 7 2/addColouredSlime 2 9 0 255 0 0/addColouredSlime 3 9 0 0 255 0/addColouredSlime 4 9 0 0 0 255/addColouredSlime 4 9 0 255 0 255/skippable/pause 10000/stopMusic/end"
+                "13371337/d Mon Tue Wed Thu Fri Sat Sun": "continue/5 5/farmer 4 7 2/addColouredSlime 14 12 255 89 7/addColouredSlime 20 12 100 255 12/addColouredSlime 14 18 16 64 255/skippable/pause 10000/stopMusic/end"
             }
         }
     ]
