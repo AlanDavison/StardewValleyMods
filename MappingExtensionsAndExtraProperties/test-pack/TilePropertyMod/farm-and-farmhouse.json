@@ -25,8 +25,8 @@
                     "PetMessage": [
                         "I'm a very old chicken, so you won't get an UwU from me!"
                     ],
-                    "HomeTileX": 4,
-                    "HomeTileY": 4,
+                    "HomeTileX": 5,
+                    "HomeTileY": 7,
                     "Condition": ""
                 },
                 "DH.TilePropertyTestMod.FookinOstrichFarmHouse": {
