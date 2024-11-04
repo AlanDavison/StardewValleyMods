@@ -150,6 +150,8 @@ That's really all there is to it. Since it's so highly recommended you **only** 
 
 This event command will allow you to spawn coloured slimes in your events. The syntax is fairly simple, though every argument is required.
 
+This assumes familiarity with event commands in Stardew Valley. To get up to speed, consider reading through the [event page](<https://stardewvalleywiki.com/Modding:Event_data>) on the official Stardew Valley wiki. For more of a walkthrough style, [this guide by Thylak](<https://stardewmodding.wiki.gg/wiki/Events_for_Everyone>) will give you all you need.
+
 In the following example:
 `addColouredSlime 14 12 255 89 7`
 
