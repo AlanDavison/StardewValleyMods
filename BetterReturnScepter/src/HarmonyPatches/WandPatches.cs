@@ -28,7 +28,7 @@ namespace BetterReturnScepter.HarmonyPatches
         public static bool Wand_DoFunction_Prefix(Wand __instance, int x, int y, int power, Farmer who)
         {
             // If the player is in an instanceable structure (such as a shed, coop, barn, etc.), we want to warp to the front door.
-            if (!who.currentLocation.isStructure)
+            if (!who.currentLocation.isStructure.Value)
             {
                 previousPoint.Location = who.currentLocation;
                 previousPoint.Tile = who.Tile;
