@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
@@ -258,7 +259,7 @@ namespace SmartBuilding.Utilities
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string? GetFlooringNameFromId(string id)
+        public string GetFlooringNameFromId(string id)
         {
             switch (id)
             {
@@ -289,7 +290,7 @@ namespace SmartBuilding.Utilities
                 case "7":
                     return "Crystal Path"; // Correct.
                 default:
-                    return null;
+                    return string.Empty;
             }
         }
 

@@ -597,7 +597,7 @@ namespace SmartBuilding.Utilities
                         {
                             // There's an item there, so we can relatively safely assume it's a torch.
                             // We remove its light source from the location, and refund the torch.
-                            here.removeLightSource(o.heldObject.Value.lightSource.Identifier);
+                            here.removeLightSource(o.heldObject.Value.lightSource.Id);
 
                             this.playerUtils.RefundItem(o.heldObject.Value, "No error. Do not log.");
                         }
