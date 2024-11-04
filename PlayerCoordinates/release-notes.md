@@ -1,5 +1,9 @@
 ﻿# Player Co-ordinates Changelog
 
+## 1.0.2
+#### Fixes
+* Updated for Stardew Valley 1.6.9.
+
 ## 1.0.1
 #### Fixes
 * Finally did the thing so that the HUD doesn't get saved in map screenshots.

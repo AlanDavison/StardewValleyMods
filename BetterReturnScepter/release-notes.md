@@ -1,5 +1,9 @@
 ﻿# Better Return Scepter Changelog
 
+## 1.2.1
+#### Fixes
+* Updated for Stardew Valley 1.6.9.
+
 ## 1.2.0
 ####
 * Full 1.6 release.

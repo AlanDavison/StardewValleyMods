@@ -72,17 +72,7 @@ namespace SmartBuilding.UI
                         new Rectangle(0, 256, 60, 60),
                         this.xPositionOnScreen + 64, this.yPositionOnScreen,
                         this.width + 32 + 8,
-                        64 * 4 + 8 * 8 + 64,
-                        16, 12, 16, 12
-                    );
-
-                    DecidedlyShared.Ui.Utils.DrawBox(
-                        b,
-                        Game1.menuTexture,
-                        new Rectangle(0, 256, 60, 60),
-                        this.xPositionOnScreen + 64, this.yPositionOnScreen,
-                        this.width + 32 + 8,
-                        64 * 4 + 8 * 8 + 64,
+                        64 * 4 + 8 * 8 + 0,
                         16, 12, 16, 12
                     );
                 }
@@ -157,7 +147,7 @@ namespace SmartBuilding.UI
                         button.Component.bounds.Height);
 
                     if (button.LayerToTarget == TileFeature.Furniture)
-                        button.Component.bounds.Height = 128;
+                        button.Component.bounds.Height = 64;
                 }
 
             // foreach (ToolButton button in toolButtons)

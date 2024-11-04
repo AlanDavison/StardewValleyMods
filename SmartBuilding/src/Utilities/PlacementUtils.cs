@@ -95,6 +95,10 @@ namespace SmartBuilding.Utilities
                             if (o.Name.Equals("Gate"))
                                 return false;
 
+                            // It isn't a gate, so now we want to check if it already has a torch.
+                            if (o.heldObject.Value is not null)
+                                return false;
+
                             return true;
                         }
                     }
@@ -125,7 +129,7 @@ namespace SmartBuilding.Utilities
                             if (this.config.EnableReplacingFloors)
                             {
                                 // If the names aren't the same, we return true, because we want to replace. Otherwise, false.
-                                if (!this.identificationUtils.GetFlooringNameFromId(floor.whichFloor).Equals(i.Name))
+                                if (!this.identificationUtils.GetFlooringNameFromId(floor.whichFloor.Value).Equals(i.Name))
                                     return true;
                                 return false;
                             }
@@ -304,9 +308,9 @@ namespace SmartBuilding.Utilities
                             var tree = (Tree)here.terrainFeatures[v];
 
                             // If the tree isn't tapped, we confirm that a tapper can be placed here.
-                            if (!tree.tapped)
+                            if (!tree.tapped.Value)
                                 // If the tree is fully grown, we *can* place a tapper.
-                                return tree.growthStage >= 5;
+                                return tree.growthStage.Value >= 5;
                         }
 
                     // If there isn't a tree here, we next check for a giant grop.

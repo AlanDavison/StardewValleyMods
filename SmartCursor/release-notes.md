@@ -1,5 +1,9 @@
 ﻿# Smart Cursor Changelog
 
+## 1.3.3
+#### Fixes
+* Rebuilt for Stardew Valley 1.6.9.
+
 ## 1.3.2
 #### Fixes
 * Fixed problems using tools with a higher than vanilla upgrade level.
