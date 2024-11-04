@@ -1,6 +1,8 @@
 # Mapping Extensions and Extra Properties (MEEP) Documentation
 **Important**: Remember to read the section on [adding the correct keys to your manifest](../readme.md#Adding-MEEP-feature-keys-to-your-manifest) for the specific features you intend to use first.
 
+Note that some features (currently event commands) do *not* require any keys in your manifest.
+
 ### Spawning farm animals
 
 To spawn farm animals with MEEP, you'll be editing one of MEEP's data models using CP's `EditData` property. If you're unsure of how to do this, you can find a link to the `EditData` section of CP's documentation near the top of the [main readme here](../readme.md#Using-the-features).
@@ -143,3 +145,23 @@ You need to add a custom field to your tree/fruit tree model as follows:
 ```
 
 That's really all there is to it. Since it's so highly recommended you **only** add this to a custom tree designed purely to be spawned in a map, I won't be going over how to edit this custom field into an existing tree. I don't want to encourage or help with something that could lead to problems for users!
+
+### Spawning coloured slimes in events
+
+This event command will allow you to spawn coloured slimes in your events. The syntax is fairly simple, though every argument is required.
+
+In the following example:
+`addColouredSlime 14 12 255 89 7`
+
+* `14` is the X tile position you want the slime to spawn on.
+* `12` is the Y tile position you want the slime to spawn on.
+* `255` is the red hex value for the slime's colour.
+* `89` is the green hex value for the slime's colour.
+* `7` is the blue hex value for the slime's colour.
+
+So, as a template:
+
+`addColouredSlime tile_x tile_y red_value green_value blue_value`
+#### Caveats
+
+It's important to note that the slimes *do* have their typical AI, meaning they will try to jump towards the player if they get close enough. They won't be able to harm the player during the event, but it's something to keep in mind for your map/event design.
