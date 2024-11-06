@@ -3,7 +3,7 @@
     "Author": "DecidedlyHuman",
     "Version": "2.4.0-merge",
     "Description": "Tile properties for testing.",
-    "UniqueID": "DecidedlyHuman.MEEP.TilePropertyTestMod",
+    "UniqueID": "meep.test",
     "UpdateKeys": [],
     "ContentPackFor": {
         "UniqueID": "Pathoschild.ContentPatcher"
