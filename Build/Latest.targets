@@ -2,7 +2,7 @@
     <PropertyGroup>
         <!-- Note for people forking this repo: uncoment the line below and add your own game path if necessary. -->
         <!-- <GamePath>$(HOME)/.local/share/Steam/steamapps/common/Stardew Valley/</GamePath> -->
-        
+
         <ModZipPath>$(SolutionDir)Release\Zip</ModZipPath>
     </PropertyGroup>
 </Project>
