@@ -265,7 +265,6 @@ namespace DecidedlyShared.UIOld
             // this.scrollBarHandle.bounds.Y = this.scrollBarArea.bounds.Top;
             // this.scrollBarHandle.bounds.Height = this.scrollBarArea.bounds.Height / this.CurrentTopIndex == 0 ? 1 : this.CurrentTopIndex;
 
-            // TODO: REMOVE THIS OUT OF DEBUG.
 #if DEBUG
             if (this.logger != null)
             {
@@ -421,7 +420,6 @@ namespace DecidedlyShared.UIOld
 
         public void Draw(SpriteBatch sb, float scale = 1f, bool isScrollHandle = false)
         {
-            // TODO: REMOVE THIS OUT OF DEBUG.
 #if DEBUG
             this.PositionScrollElements();
 #endif
