@@ -40,7 +40,6 @@ namespace DecidedlyShared.Utilities
             floor = null;
             string? itemId;
 
-            // TODO: Fix this. Need to get the type from the flooring data asset for the flooring which contains this item ID.
             string? type = Game1.floorPathData.FirstOrDefault(f => f.Value.ItemId.Equals(id)).Value.Id;
 
             try
