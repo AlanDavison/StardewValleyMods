@@ -18,6 +18,7 @@ namespace SmartCursor
     public class ModEntry : Mod
     {
         private List<BreakableEntity> breakableResources;
+        private IItemExtensionsApi? itemExtensionsApi;
         private SmartCursorConfig config;
         private Logger logger;
         private Vector2? targetedObject;
@@ -74,6 +75,19 @@ namespace SmartCursor
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             this.RegisterWithGmcm();
+            this.GetApiIntegrations();
+        }
+
+        private void GetApiIntegrations()
+        {
+            if (!this.Helper.ModRegistry.IsLoaded("mistyspring.ItemExtensions"))
+                return;
+
+            if (this.Helper.ModRegistry.Get("mistyspring.ItemExtensions")!.Manifest.Version.IsOlderThan(
+                    new SemanticVersion(1, 11, 0)))
+                return;
+
+            this.itemExtensionsApi = this.Helper.ModRegistry.GetApi<IItemExtensionsApi>("mistyspring.ItemExtensions");
         }
 
         private void RegisterWithGmcm()
