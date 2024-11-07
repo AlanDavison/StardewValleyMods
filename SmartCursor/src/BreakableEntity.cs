@@ -50,7 +50,7 @@ namespace SmartCursor
         /// Returns the BreakableType of the SObject passed in.
         /// </summary>
         /// <returns>The <see cref="BreakableType"/> of the <see cref="SObject"/> passed in.</returns>
-        public BreakableType GetBreakableType(SObject obj)
+        private BreakableType GetBreakableType(SObject obj)
         {
             if (obj.Name.Equals("Stone"))
                 return BreakableType.Pickaxe;
@@ -68,7 +68,7 @@ namespace SmartCursor
         /// Returns the BreakableType of the TerrainFeature passed in.
         /// </summary>
         /// <returns>The <see cref="BreakableType"/> of the <see cref="TerrainFeature"/> passed in.</returns>
-        public BreakableType GetBreakableType(TerrainFeature tf)
+        private BreakableType GetBreakableType(TerrainFeature tf)
         {
             if (tf is Tree tree)
             {
@@ -97,7 +97,7 @@ namespace SmartCursor
         /// Returns the BreakableType of the ResourceClump passed in.
         /// </summary>
         /// <returns>The <see cref="BreakableType"/> of the <see cref="ResourceClump"/> passed in.</returns>
-        public BreakableType GetBreakableType(ResourceClump clump)
+        private BreakableType GetBreakableType(ResourceClump clump)
         {
             if (clump is GiantCrop)
                 return this.config.AllowTargetingGiantCrops ? BreakableType.Axe : BreakableType.NotAllowed;
