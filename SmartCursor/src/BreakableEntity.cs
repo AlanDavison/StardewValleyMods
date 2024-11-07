@@ -8,7 +8,6 @@ namespace SmartCursor
     {
         private SmartCursorConfig config;
         public Vector2 Tile { get; }
-
         public BreakableType Type { get; }
 
         /// <summary>
