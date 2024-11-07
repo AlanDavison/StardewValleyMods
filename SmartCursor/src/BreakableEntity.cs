@@ -1,4 +1,5 @@
-﻿using DecidedlyShared.Constants;
+﻿using DecidedlyShared.APIs;
+using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using StardewValley.TerrainFeatures;
 
@@ -15,7 +16,7 @@ namespace SmartCursor
         /// </summary>
         /// <param name="feature"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config)
+        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi = null)
         {
             this.config = config;
             this.Type = this.GetBreakableType(feature);
@@ -27,7 +28,7 @@ namespace SmartCursor
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(SObject obj, SmartCursorConfig config)
+        public BreakableEntity(SObject obj, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi = null)
         {
             this.config = config;
             this.Type = this.GetBreakableType(obj);
@@ -39,7 +40,7 @@ namespace SmartCursor
         /// </summary>
         /// <param name="clump"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(ResourceClump clump, SmartCursorConfig config)
+        public BreakableEntity(ResourceClump clump, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi = null)
         {
             this.config = config;
             this.Type = this.GetBreakableType(clump);
