@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DecidedlyShared.Logging;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -13,6 +14,7 @@ public class FakeNpc : NPC
     private Logger logger;
     private GameLocation npcLocation;
     private string internalId;
+    private int framesSinceJump = 0;
 
     /// <summary>
     /// Warning: This can be null if the NPC is serialised over the network.
@@ -40,6 +42,21 @@ public class FakeNpc : NPC
             this.logger.Log($"{player.Name}:{player.userID}:{player.UniqueMultiplayerID.ToString()}", LogLevel.Info);
         }
 #endif
+    }
+
+    public override void update(GameTime time, GameLocation location)
+    {
+        this.framesSinceJump++;
+
+        if (this.framesSinceJump > 40)
+        {
+            base.jump(4f);
+            base.yJumpGravity = -0.5f;
+            this.framesSinceJump = 0;
+            this.logger.Log("Jumped.", LogLevel.Info);
+        }
+
+        base.update(time, location);
     }
 
     public FakeNpc()
