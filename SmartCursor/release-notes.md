@@ -1,5 +1,9 @@
 ﻿# Smart Cursor Changelog
 
+## 1.4.0
+#### Additions
+* Item Extensions support, finally!
+
 ## 1.3.3
 #### Fixes
 * Rebuilt for Stardew Valley 1.6.9.
