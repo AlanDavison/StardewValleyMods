@@ -17,12 +17,12 @@ namespace SmartCursor
         /// </summary>
         /// <param name="feature"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi = null)
+        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(feature);
             this.Tile = feature.Tile;
-            this.itemExtensionsApi = itemExtensionsApi;
         }
 
         /// <summary>
@@ -30,12 +30,12 @@ namespace SmartCursor
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(SObject obj, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi = null)
+        public BreakableEntity(SObject obj, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(obj);
             this.Tile = obj.TileLocation;
-            this.itemExtensionsApi = itemExtensionsApi;
         }
 
         /// <summary>
@@ -43,12 +43,12 @@ namespace SmartCursor
         /// </summary>
         /// <param name="clump"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(ResourceClump clump, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi = null)
+        public BreakableEntity(ResourceClump clump, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(clump);
             this.Tile = clump.Tile;
-            this.itemExtensionsApi = itemExtensionsApi;
         }
 
         /// <summary>
@@ -146,8 +146,12 @@ namespace SmartCursor
         {
             switch (tool)
             {
+                case "axe":
+                    return BreakableType.Axe;
                 case "Axe":
                     return BreakableType.Axe;
+                case "pick":
+                    return BreakableType.Pickaxe;
                 case "Pickaxe":
                     return BreakableType.Pickaxe;
             }
