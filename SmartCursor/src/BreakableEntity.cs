@@ -1,4 +1,5 @@
-﻿using DecidedlyShared.Constants;
+﻿using DecidedlyShared.APIs;
+using DecidedlyShared.Constants;
 using Microsoft.Xna.Framework;
 using StardewValley.TerrainFeatures;
 
@@ -7,8 +8,8 @@ namespace SmartCursor
     public class BreakableEntity
     {
         private SmartCursorConfig config;
+        private IItemExtensionsApi? itemExtensionsApi;
         public Vector2 Tile { get; }
-
         public BreakableType Type { get; }
 
         /// <summary>
@@ -16,9 +17,10 @@ namespace SmartCursor
         /// </summary>
         /// <param name="feature"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config)
+        public BreakableEntity(TerrainFeature feature, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(feature);
             this.Tile = feature.Tile;
         }
@@ -28,9 +30,10 @@ namespace SmartCursor
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(SObject obj, SmartCursorConfig config)
+        public BreakableEntity(SObject obj, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(obj);
             this.Tile = obj.TileLocation;
         }
@@ -40,9 +43,10 @@ namespace SmartCursor
         /// </summary>
         /// <param name="clump"></param>
         /// <param name="config">The config required to make correct decisions on breakability.</param>
-        public BreakableEntity(ResourceClump clump, SmartCursorConfig config)
+        public BreakableEntity(ResourceClump clump, SmartCursorConfig config, IItemExtensionsApi? itemExtensionsApi)
         {
             this.config = config;
+            this.itemExtensionsApi = itemExtensionsApi;
             this.Type = this.GetBreakableType(clump);
             this.Tile = clump.Tile;
         }
@@ -51,8 +55,12 @@ namespace SmartCursor
         /// Returns the BreakableType of the SObject passed in.
         /// </summary>
         /// <returns>The <see cref="BreakableType"/> of the <see cref="SObject"/> passed in.</returns>
-        public BreakableType GetBreakableType(SObject obj)
+        private BreakableType GetBreakableType(SObject obj)
         {
+            if (this.itemExtensionsApi is not null &&
+                this.itemExtensionsApi.GetBreakingTool(obj.ItemId, false, out string tool))
+                return this.GetTypeFromTool(tool);
+
             if (obj.Name.Equals("Stone"))
                 return BreakableType.Pickaxe;
 
@@ -69,7 +77,7 @@ namespace SmartCursor
         /// Returns the BreakableType of the TerrainFeature passed in.
         /// </summary>
         /// <returns>The <see cref="BreakableType"/> of the <see cref="TerrainFeature"/> passed in.</returns>
-        public BreakableType GetBreakableType(TerrainFeature tf)
+        private BreakableType GetBreakableType(TerrainFeature tf)
         {
             if (tf is Tree tree)
             {
@@ -98,10 +106,24 @@ namespace SmartCursor
         /// Returns the BreakableType of the ResourceClump passed in.
         /// </summary>
         /// <returns>The <see cref="BreakableType"/> of the <see cref="ResourceClump"/> passed in.</returns>
-        public BreakableType GetBreakableType(ResourceClump clump)
+        private BreakableType GetBreakableType(ResourceClump clump)
         {
+            if (clump is GiantCrop && this.config.AllowTargetingGiantCrops == false)
+                return BreakableType.NotAllowed;
+
+            if (this.itemExtensionsApi is not null)
+            {
+                string clumpId = "";
+
+                if ((bool)clump.modData?.TryGetValue("mistyspring.ItemExtensions/CustomClumpId", out clumpId))
+                {
+                    if (this.itemExtensionsApi.GetBreakingTool(clumpId, true, out string tool))
+                        return this.GetTypeFromTool(tool);
+                }
+            }
+
             if (clump is GiantCrop)
-                return this.config.AllowTargetingGiantCrops ? BreakableType.Axe : BreakableType.NotAllowed;
+                return BreakableType.Axe;
 
             switch (clump.parentSheetIndex.Value)
             {
@@ -118,6 +140,23 @@ namespace SmartCursor
             }
 
             return BreakableType.Axe;
+        }
+
+        private BreakableType GetTypeFromTool(string tool)
+        {
+            switch (tool)
+            {
+                case "axe":
+                    return BreakableType.Axe;
+                case "Axe":
+                    return BreakableType.Axe;
+                case "pick":
+                    return BreakableType.Pickaxe;
+                case "Pickaxe":
+                    return BreakableType.Pickaxe;
+            }
+
+            return BreakableType.NotAllowed;
         }
     }
 }

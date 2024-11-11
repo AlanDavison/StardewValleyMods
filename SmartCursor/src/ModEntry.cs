@@ -18,6 +18,7 @@ namespace SmartCursor
     public class ModEntry : Mod
     {
         private List<BreakableEntity> breakableResources;
+        private IItemExtensionsApi? itemExtensionsApi;
         private SmartCursorConfig config;
         private Logger logger;
         private Vector2? targetedObject;
@@ -74,6 +75,19 @@ namespace SmartCursor
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             this.RegisterWithGmcm();
+            this.GetApiIntegrations();
+        }
+
+        private void GetApiIntegrations()
+        {
+            if (!this.Helper.ModRegistry.IsLoaded("mistyspring.ItemExtensions"))
+                return;
+
+            if (this.Helper.ModRegistry.Get("mistyspring.ItemExtensions")!.Manifest.Version.IsOlderThan(
+                    new SemanticVersion(1, 11, 0)))
+                return;
+
+            this.itemExtensionsApi = this.Helper.ModRegistry.GetApi<IItemExtensionsApi>("mistyspring.ItemExtensions");
         }
 
         private void RegisterWithGmcm()
@@ -552,27 +566,27 @@ namespace SmartCursor
             foreach (KeyValuePair<Vector2, SObject> pair in location.Objects.Pairs)
             {
                 if (pair.Value.Type.Equals("Litter"))
-                    this.breakableResources.Add(new BreakableEntity(pair.Value, this.config));
+                    this.breakableResources.Add(new BreakableEntity(pair.Value, this.config, this.itemExtensionsApi));
             }
 
             // Then the same with terrain features.
             foreach (var feature in location.terrainFeatures.Values)
             {
                 if (feature is Tree tree)
-                    this.breakableResources.Add(new BreakableEntity(tree, this.config));
+                    this.breakableResources.Add(new BreakableEntity(tree, this.config, this.itemExtensionsApi));
             }
 
             // Then with large terrain features.
             foreach (var feature in location.largeTerrainFeatures)
             {
-                this.breakableResources.Add(new BreakableEntity(feature, this.config));
+                this.breakableResources.Add(new BreakableEntity(feature, this.config, this.itemExtensionsApi));
             }
 
 
             // And finally, resource clumps.
             foreach (var clump in location.resourceClumps)
             {
-                this.breakableResources.Add(new BreakableEntity(clump, this.config));
+                this.breakableResources.Add(new BreakableEntity(clump, this.config, this.itemExtensionsApi));
                 // this.logger.Log($"Clump parentSheetIndex: {clump.parentSheetIndex}");
             }
 
