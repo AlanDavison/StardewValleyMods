@@ -16,7 +16,7 @@ public class WarpStationData
     /// The <see cref="WarpStationTarget"/> targets being handled by this warp station.
     /// </summary>
     [JsonProperty("Targets")]
-    private List<WarpStationTarget> warpTargets;
+    private Dictionary<string, WarpStationTarget> warpTargets;
 
     /// <summary>
     /// The event to be played when departing this location. Can be overridden by <see cref="WarpStationTarget"/>'s departingEvent field.

@@ -10,7 +10,6 @@ public class WarpStationTarget
     /// <summary>
     /// The ID for the warp station target.
     /// </summary>
-    [JsonProperty("Id")]
     private string targetId;
 
     /// <summary>
