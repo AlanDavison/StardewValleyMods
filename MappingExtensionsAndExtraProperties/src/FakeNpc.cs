@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Pathfinding;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -32,6 +33,12 @@ public class FakeNpc : NPC
         this.npcLocation = npcLocation;
         base.currentLocation = this.npcLocation;
         this.logger.Log($"{name} of type {nameof(FakeNpc)} created in {npcLocation.Name}.", LogLevel.Trace);
+        base.controller = new PathFindController(
+            this,
+            npcLocation,
+            new Point((int)tile.X + 20, (int)tile.Y + 3),
+            0);
+
 
 #if DEBUG
         // Extra debug logging in case I need to try to narrow down serialisation issues.
@@ -48,12 +55,11 @@ public class FakeNpc : NPC
     {
         this.framesSinceJump++;
 
-        if (this.framesSinceJump > 40)
+        if (this.framesSinceJump > Game1.random.Next(40, 70))
         {
             base.jump(4f);
             base.yJumpGravity = -0.5f;
             this.framesSinceJump = 0;
-            this.logger.Log("Jumped.", LogLevel.Info);
         }
 
         base.update(time, location);
