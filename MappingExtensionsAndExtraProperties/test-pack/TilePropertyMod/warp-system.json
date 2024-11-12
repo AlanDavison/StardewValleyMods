@@ -23,26 +23,30 @@
                 "TestMod.BusStopWarpStation": {
                     "Title": "Warp-O-Tron Deluxe",
                     "DepartingEvent": null,
-                    "Targets": [
-                        {
-                            "Id": "Pirate Cove",
+                    "Targets": {
+                        "Pirate Cove": {
                             "Location": "IslandSouthEastCave",
-                            "Tile": {"X": 22, "Y": 26},
+                            "Tile": {
+                                "X": 22,
+                                "Y": 26
+                            },
                             "Image": "Mods/MEEP/TestMod/Warps/Images/PirateCoveWarpTarget",
                             "Description": "Yarr! Pirates be here!",
                             "DepartingEvent": null,
                             "ArrivingEvent": null
                         },
-                        {
-                            "Id": "Ginger Island Caldera",
+                        "Ginger Island Caldera": {
                             "Location": "Caldera",
-                            "Tile": {"X": 23, "Y": 28},
+                            "Tile": {
+                                "X": 23,
+                                "Y": 28
+                            },
                             "Image": "Mods/MEEP/TestMod/Warps/Images/CalderaWarpTarget",
                             "Description": "A quick drop-off for your forging needs.",
                             "DepartingEvent": null,
                             "ArrivingEvent": null
                         }
-                    ]
+                    }
                 }
             }
         }
