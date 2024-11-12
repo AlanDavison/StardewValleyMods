@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -26,8 +29,8 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
     /// </remarks>
     public string AddButtonText
     {
-        get => addButton?.Text ?? "";
-        set => RequireView(() => addButton).Text = value;
+        get => this.addButton?.Text ?? "";
+        set => this.RequireView(() => this.addButton).Text = value;
     }
 
     /// <summary>
@@ -38,15 +41,16 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
     /// </remarks>
     public string DeleteButtonTooltip
     {
-        get => deleteButtonTooltip;
+        get => this.deleteButtonTooltip;
         set
         {
-            if (value == deleteButtonTooltip)
+            if (value == this.deleteButtonTooltip)
             {
                 return;
             }
-            deleteButtonTooltip = value;
-            foreach (var keybindLane in keybindsLane?.Children ?? [])
+
+            this.deleteButtonTooltip = value;
+            foreach (var keybindLane in this.keybindsLane?.Children ?? [])
             {
                 if (keybindLane.GetChildren().LastOrDefault()?.View is Image deleteButton)
                 {
@@ -61,15 +65,16 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
     /// </summary>
     public KeybindList KeybindList
     {
-        get => keybindList;
+        get => this.keybindList;
         set
         {
-            if (value == keybindList)
+            if (value == this.keybindList)
             {
                 return;
             }
-            keybindList = value;
-            UpdateKeybinds();
+
+            this.keybindList = value;
+            this.UpdateKeybinds();
         }
     }
 
@@ -91,15 +96,16 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
     /// </remarks>
     public KeybindType KeybindType
     {
-        get => keybindType;
+        get => this.keybindType;
         set
         {
-            if (value == keybindType)
+            if (value == this.keybindType)
             {
                 return;
             }
-            keybindType = value;
-            UpdateKeybindType();
+
+            this.keybindType = value;
+            this.UpdateKeybindType();
         }
     }
 
@@ -148,24 +154,25 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
     /// </remarks>
     public void StartCapturing()
     {
-        if (CapturingInput)
+        if (this.CapturingInput)
         {
             return;
         }
-        addButton.Visibility = Visibility.Hidden;
-        capturedButtons.Clear();
-        currentKeybindView.Keybind = new();
+
+        this.addButton.Visibility = Visibility.Hidden;
+        this.capturedButtons.Clear();
+        this.currentKeybindView.Keybind = new();
         var endColor = Color.DarkOrange;
         var startColor = AlphaLerp(Color.Transparent, endColor, 0.3f);
-        capturingAnimator.Start(startColor, endColor, TimeSpan.FromSeconds(1));
-        CapturingInput = true;
+        this.capturingAnimator.Start(startColor, endColor, TimeSpan.FromSeconds(1));
+        this.CapturingInput = true;
     }
 
     /// <inheritdoc />
     public override void Update(TimeSpan elapsed)
     {
         base.Update(elapsed);
-        if (!CapturingInput)
+        if (!this.CapturingInput)
         {
             return;
         }
@@ -174,7 +181,7 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
         {
             if (UI.InputHelper.IsDown(button))
             {
-                StopCapturing();
+                this.StopCapturing();
                 UI.InputHelper.Suppress(button);
                 return;
             }
@@ -184,13 +191,12 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
         bool anyChanged = false;
         foreach (var button in pressedButtons)
         {
-            anyChanged |= capturedButtons.Add(button);
+            anyChanged |= this.capturedButtons.Add(button);
             anyPressed = true;
         }
-        if (KeybindType == KeybindType.SingleButton && anyPressed)
+        if (this.KeybindType == KeybindType.SingleButton && anyPressed)
         {
-            anyChanged |=
-                capturedButtons.RemoveWhere(button =>
+            anyChanged |= this.capturedButtons.RemoveWhere(button =>
                     !UI.InputHelper.IsDown(button)
                     // Some buttons, like triggers, can behave erratically due to discrepancies between SDV's definition
                     // of "down" vs. SMAPI's, so we add this extra condition to prevent removal of any buttons that SDV
@@ -200,28 +206,27 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
         }
         if (anyChanged)
         {
-            currentKeybindView.Keybind =
-                KeybindType == KeybindType.SingleButton ? new(capturedButtons.First()) : new([.. capturedButtons]);
+            this.currentKeybindView.Keybind = this.KeybindType == KeybindType.SingleButton ? new(this.capturedButtons.First()) : new([.. this.capturedButtons]);
         }
-        if (capturedButtons.Count > 0 && !anyPressed)
+        if (this.capturedButtons.Count > 0 && !anyPressed)
         {
-            var capturedKeybind = new Keybind([.. capturedButtons]);
+            var capturedKeybind = new Keybind([.. this.capturedButtons]);
             if (capturedKeybind.IsBound)
             {
-                KeybindList =
-                    KeybindType == KeybindType.MultipleKeybinds
-                        ? new([.. KeybindList.Keybinds, capturedKeybind])
+                this.KeybindList = this.KeybindType == KeybindType.MultipleKeybinds
+                        ? new([.. this.KeybindList.Keybinds, capturedKeybind])
                         : new(capturedKeybind);
             }
-            StopCapturing();
+
+            this.StopCapturing();
         }
     }
 
     /// <inheritdoc />
     protected override IView CreateView()
     {
-        currentKeybindView = new() { SpriteMap = spriteMap };
-        addButton = CreateAddButton();
+        this.currentKeybindView = new() { SpriteMap = spriteMap };
+        this.addButton = this.CreateAddButton();
         var currentKeybindLane = new Lane()
         {
             Layout = new()
@@ -231,17 +236,16 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
                 MinHeight = 64,
             },
             VerticalContentAlignment = Alignment.Middle,
-            Children = [currentKeybindView, addButton],
+            Children = [this.currentKeybindView, this.addButton],
         };
-        keybindEntryHighlighter = new Frame()
+        this.keybindEntryHighlighter = new Frame()
         {
             Layout = LayoutParameters.AutoRow(),
             Background = new(Game1.staminaRect),
             BackgroundTint = Color.Transparent,
             Content = currentKeybindLane,
         };
-        capturingAnimator = new(
-            keybindEntryHighlighter,
+        this.capturingAnimator = new(this.keybindEntryHighlighter,
             frame => frame.BackgroundTint,
             AlphaLerp,
             (frame, color) => frame.BackgroundTint = color
@@ -250,16 +254,16 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
             AutoReverse = true,
             Loop = true,
         };
-        keybindsLane = new() { Layout = LayoutParameters.AutoRow(), Orientation = Orientation.Vertical };
-        UpdateKeybinds();
-        layoutLane = new Lane() { Layout = LayoutParameters.AutoRow(), Orientation = Orientation.Vertical };
-        UpdateKeybindType();
+        this.keybindsLane = new() { Layout = LayoutParameters.AutoRow(), Orientation = Orientation.Vertical };
+        this.UpdateKeybinds();
+        this.layoutLane = new Lane() { Layout = LayoutParameters.AutoRow(), Orientation = Orientation.Vertical };
+        this.UpdateKeybindType();
         return new Frame()
         {
             Layout = new() { Width = Length.Px(640), Height = Length.Content() },
             Border = UiSprites.ControlBorder,
             Padding = UiSprites.ControlBorder.FixedEdges! + new Edges(8),
-            Content = layoutLane,
+            Content = this.layoutLane,
         };
     }
 
@@ -271,7 +275,7 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
         }
         Game1.playSound("drumkit6");
         UI.InputHelper.Suppress(e.Button);
-        StartCapturing();
+        this.StartCapturing();
     }
 
     private void AddKeybindRow(Keybind keybind)
@@ -279,7 +283,7 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
         var keybindView = new KeybindView
         {
             Layout = LayoutParameters.AutoRow(),
-            Margin = keybindsLane.Children.Count > 0 ? new(Top: 16) : Edges.NONE,
+            Margin = this.keybindsLane.Children.Count > 0 ? new(Top: 16) : Edges.NONE,
             Keybind = keybind,
             SpriteMap = spriteMap,
         };
@@ -289,33 +293,33 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
             Sprite = UiSprites.SmallTrashCan,
             ShadowAlpha = 0.35f,
             ShadowOffset = new(-3, 4),
-            Tooltip = DeleteButtonTooltip,
+            Tooltip = this.DeleteButtonTooltip,
             Focusable = true,
             Tags = Tags.Create(keybind),
         };
-        deleteButton.LeftClick += DeleteButton_LeftClick;
+        deleteButton.LeftClick += this.DeleteButton_LeftClick;
         var row = new Lane()
         {
             Layout = LayoutParameters.AutoRow(),
             VerticalContentAlignment = Alignment.Middle,
             Children = [keybindView, new Spacer() { Layout = LayoutParameters.AutoRow() }, deleteButton],
         };
-        keybindsLane.Children.Add(row);
+        this.keybindsLane.Children.Add(row);
     }
 
     private static Color AlphaLerp(Color color1, Color color2, float amount)
     {
         amount = MathHelper.Clamp(amount, 0f, 1f);
-        var alpha = MathHelper.Lerp(color1.A, color2.A, amount) / 255f;
+        float alpha = MathHelper.Lerp(color1.A, color2.A, amount) / 255f;
         return new((int)(color2.R * alpha), (int)(color2.G * alpha), (int)(color2.B * alpha), (int)(alpha * 255));
     }
 
     private Button CreateAddButton()
     {
         var button = new Button() { Layout = LayoutParameters.FitContent() };
-        if (!string.IsNullOrEmpty(AddButtonText))
+        if (!string.IsNullOrEmpty(this.AddButtonText))
         {
-            button.Text = AddButtonText;
+            button.Text = this.AddButtonText;
         }
         else
         {
@@ -327,7 +331,7 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
                 Tint = new(0.2f, 0.5f, 1f),
             };
         }
-        button.LeftClick += AddButton_LeftClick;
+        button.LeftClick += this.AddButton_LeftClick;
         return button;
     }
 
@@ -339,7 +343,7 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
         }
         Game1.playSound("trashcan");
         var keybind = view.Tags.Get<Keybind>();
-        KeybindList = new(KeybindList.Keybinds.Where(kb => kb != keybind).ToArray());
+        this.KeybindList = new(this.KeybindList.Keybinds.Where(kb => kb != keybind).ToArray());
     }
 
     private static IEnumerable<SButton> GetPressedButtons()
@@ -375,13 +379,13 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
     private void StopCapturing()
     {
         Game1.playSound("drumkit6");
-        CapturingInput = false;
-        capturingAnimator.Stop();
-        keybindEntryHighlighter.BackgroundTint = Color.Transparent;
-        addButton.Visibility = Visibility.Visible;
-        capturedButtons.Clear();
-        currentKeybindView.Keybind = new();
-        if (KeybindType != KeybindType.MultipleKeybinds)
+        this.CapturingInput = false;
+        this.capturingAnimator.Stop();
+        this.keybindEntryHighlighter.BackgroundTint = Color.Transparent;
+        this.addButton.Visibility = Visibility.Visible;
+        this.capturedButtons.Clear();
+        this.currentKeybindView.Keybind = new();
+        if (this.KeybindType != KeybindType.MultipleKeybinds)
         {
             Overlay.Remove(this);
         }
@@ -389,29 +393,30 @@ public class KeybindOverlay(ISpriteMap<SButton>? spriteMap) : FullScreenOverlay
 
     private void UpdateKeybinds()
     {
-        if (keybindsLane is null)
+        if (this.keybindsLane is null)
         {
             return;
         }
-        keybindsLane.Children.Clear();
-        foreach (var keybind in KeybindList.Keybinds)
+
+        this.keybindsLane.Children.Clear();
+        foreach (var keybind in this.KeybindList.Keybinds)
         {
             if (keybind.IsBound)
             {
-                AddKeybindRow(keybind);
+                this.AddKeybindRow(keybind);
             }
         }
     }
 
     private void UpdateKeybindType()
     {
-        if (layoutLane is null)
+        if (this.layoutLane is null)
         {
             return;
         }
-        layoutLane.Children =
-            KeybindType == KeybindType.MultipleKeybinds
-                ? [keybindEntryHighlighter, horizontalDivider, keybindsLane]
-                : [keybindEntryHighlighter];
+
+        this.layoutLane.Children = this.KeybindType == KeybindType.MultipleKeybinds
+                ? [this.keybindEntryHighlighter, this.horizontalDivider, this.keybindsLane]
+                : [this.keybindEntryHighlighter];
     }
 }

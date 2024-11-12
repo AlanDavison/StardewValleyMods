@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Layout;
 
@@ -20,13 +21,13 @@ public class Image : View
     /// </remarks>
     public ImageFit Fit
     {
-        get => fit;
+        get => this.fit;
         set
         {
-            if (value != fit)
+            if (value != this.fit)
             {
-                fit = value;
-                OnPropertyChanged(nameof(Fit));
+                this.fit = value;
+                this.OnPropertyChanged(nameof(this.Fit));
             }
         }
     }
@@ -36,13 +37,13 @@ public class Image : View
     /// </summary>
     public Alignment HorizontalAlignment
     {
-        get => horizontalAlignment;
+        get => this.horizontalAlignment;
         set
         {
-            if (value != horizontalAlignment)
+            if (value != this.horizontalAlignment)
             {
-                horizontalAlignment = value;
-                OnPropertyChanged(nameof(HorizontalAlignment));
+                this.horizontalAlignment = value;
+                this.OnPropertyChanged(nameof(this.HorizontalAlignment));
             }
         }
     }
@@ -58,12 +59,12 @@ public class Image : View
     /// </remarks>
     public SimpleRotation? Rotation
     {
-        get => rotation.Value;
+        get => this.rotation.Value;
         set
         {
-            if (rotation.SetIfChanged(value))
+            if (this.rotation.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Rotation));
+                this.OnPropertyChanged(nameof(this.Rotation));
             }
         }
     }
@@ -78,12 +79,12 @@ public class Image : View
     /// </remarks>
     public float Scale
     {
-        get => scale.Value;
+        get => this.scale.Value;
         set
         {
-            if (scale.SetIfChanged(value))
+            if (this.scale.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Scale));
+                this.OnPropertyChanged(nameof(this.Scale));
             }
         }
     }
@@ -93,13 +94,13 @@ public class Image : View
     /// </summary>
     public float ShadowAlpha
     {
-        get => shadowAlpha;
+        get => this.shadowAlpha;
         set
         {
-            if (value != shadowAlpha)
+            if (value != this.shadowAlpha)
             {
-                shadowAlpha = value;
-                OnPropertyChanged(nameof(ShadowAlpha));
+                this.shadowAlpha = value;
+                this.OnPropertyChanged(nameof(this.ShadowAlpha));
             }
         }
     }
@@ -110,13 +111,13 @@ public class Image : View
     /// </summary>
     public Vector2 ShadowOffset
     {
-        get => shadowOffset;
+        get => this.shadowOffset;
         set
         {
-            if (value != shadowOffset)
+            if (value != this.shadowOffset)
             {
-                shadowOffset = value;
-                OnPropertyChanged(nameof(ShadowOffset));
+                this.shadowOffset = value;
+                this.OnPropertyChanged(nameof(this.ShadowOffset));
             }
         }
     }
@@ -130,12 +131,12 @@ public class Image : View
     /// </remarks>
     public Sprite? Sprite
     {
-        get => sprite.Value;
+        get => this.sprite.Value;
         set
         {
-            if (sprite.SetIfChanged(value))
+            if (this.sprite.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Sprite));
+                this.OnPropertyChanged(nameof(this.Sprite));
             }
         }
     }
@@ -145,13 +146,13 @@ public class Image : View
     /// </summary>
     public Color Tint
     {
-        get => tint;
+        get => this.tint;
         set
         {
-            if (value != tint)
+            if (value != this.tint)
             {
-                tint = value;
-                OnPropertyChanged(nameof(Tint));
+                this.tint = value;
+                this.OnPropertyChanged(nameof(this.Tint));
             }
         }
     }
@@ -161,13 +162,13 @@ public class Image : View
     /// </summary>
     public Alignment VerticalAlignment
     {
-        get => verticalAlignment;
+        get => this.verticalAlignment;
         set
         {
-            if (value != verticalAlignment)
+            if (value != this.verticalAlignment)
             {
-                verticalAlignment = value;
-                OnPropertyChanged(nameof(VerticalAlignment));
+                this.verticalAlignment = value;
+                this.OnPropertyChanged(nameof(this.VerticalAlignment));
             }
         }
     }
@@ -190,129 +191,128 @@ public class Image : View
     {
         // We intentionally don't check scale here, as scale doesn't affect layout size.
         // Instead, that is checked (and reset) in the draw method.
-        return sprite.IsDirty || rotation.IsDirty;
+        return this.sprite.IsDirty || this.rotation.IsDirty;
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        if (scale.IsDirty)
+        if (this.scale.IsDirty)
         {
-            UpdateSlice();
+            this.UpdateSlice();
         }
-        Rectangle? clipRect = Fit == ImageFit.Cover ? new(0, 0, (int)ContentSize.X, (int)ContentSize.Y) : null;
-        if (ShadowAlpha > 0 && slice is not null)
+        Rectangle? clipRect = this.Fit == ImageFit.Cover ? new(0, 0, (int)this.ContentSize.X, (int)this.ContentSize.Y) : null;
+        if (this.ShadowAlpha > 0 && this.slice is not null)
         {
             using var _transform = b.SaveTransform();
-            b.Translate(ShadowOffset);
+            b.Translate(this.ShadowOffset);
             using var _shadowClip = clipRect.HasValue ? b.Clip(clipRect.Value) : null;
-            slice.Draw(b, new(Color.Black, ShadowAlpha));
+            this.slice.Draw(b, new(Color.Black, this.ShadowAlpha));
         }
         using var _clip = clipRect.HasValue ? b.Clip(clipRect.Value) : null;
-        slice?.Draw(b, Tint);
+        this.slice?.Draw(b, this.Tint);
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var limits = Layout.GetLimits(availableSize);
-        var imageSize = GetImageSize(limits);
-        ContentSize = Layout.Resolve(availableSize, () => imageSize);
-        if (sprite.IsDirty)
+        var limits = this.Layout.GetLimits(availableSize);
+        var imageSize = this.GetImageSize(limits);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => imageSize);
+        if (this.sprite.IsDirty)
         {
-            slice = sprite.Value is not null ? new(sprite.Value) : null;
+            this.slice = this.sprite.Value is not null ? new(this.sprite.Value) : null;
         }
-        if (slice is not null)
+        if (this.slice is not null)
         {
-            var left = HorizontalAlignment.Align(imageSize.X, ContentSize.X);
-            var top = VerticalAlignment.Align(imageSize.Y, ContentSize.Y);
-            destinationRect = new Rectangle(new Vector2(left, top).ToPoint(), imageSize.ToPoint());
-            UpdateSlice();
+            float left = this.HorizontalAlignment.Align(imageSize.X, this.ContentSize.X);
+            float top = this.VerticalAlignment.Align(imageSize.Y, this.ContentSize.Y);
+            this.destinationRect = new Rectangle(new Vector2(left, top).ToPoint(), imageSize.ToPoint());
+            this.UpdateSlice();
         }
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        rotation.ResetDirty();
-        sprite.ResetDirty();
+        this.rotation.ResetDirty();
+        this.sprite.ResetDirty();
     }
 
     private Vector2 GetImageSize(Vector2 limits)
     {
-        if (Sprite is null)
+        if (this.Sprite is null)
         {
             return Vector2.Zero;
         }
-        var sourceRect = Sprite.SourceRect ?? Sprite.Texture.Bounds;
-        var swapDimensions = Rotation?.IsQuarter() ?? false;
-        var (sourceWidth, sourceHeight) = !swapDimensions
+        var sourceRect = this.Sprite.SourceRect ?? this.Sprite.Texture.Bounds;
+        bool swapDimensions = this.Rotation?.IsQuarter() ?? false;
+        (int sourceWidth, int sourceHeight) = !swapDimensions
             ? (sourceRect.Width, sourceRect.Height)
             : (sourceRect.Height, sourceRect.Width);
-        var scale = Sprite.SliceSettings?.Scale ?? 1;
-        var scaledSourceWidth = sourceWidth * scale;
-        var scaledSourceHeight = sourceHeight * scale;
-        if (
-            Layout.Width.Type == LengthType.Content
-            && (Fit != ImageFit.Contain || Layout.Height.Type == LengthType.Content)
+        float scale = this.Sprite.SliceSettings?.Scale ?? 1;
+        float scaledSourceWidth = sourceWidth * scale;
+        float scaledSourceHeight = sourceHeight * scale;
+        if (this.Layout.Width.Type == LengthType.Content
+            && (this.Fit != ImageFit.Contain || this.Layout.Height.Type == LengthType.Content)
             && scaledSourceWidth < limits.X
         )
         {
             limits.X = scaledSourceWidth;
         }
-        if (
-            Layout.Height.Type == LengthType.Content
-            && (Fit != ImageFit.Contain || Layout.Width.Type == LengthType.Content)
+        if (this.Layout.Height.Type == LengthType.Content
+            && (this.Fit != ImageFit.Contain || this.Layout.Width.Type == LengthType.Content)
             && scaledSourceHeight < limits.Y
         )
         {
             limits.Y = scaledSourceHeight;
         }
-        if (Fit == ImageFit.Stretch)
+        if (this.Fit == ImageFit.Stretch)
         {
             return limits;
         }
-        if (Fit == ImageFit.None || IsSourceSize())
+        if (this.Fit == ImageFit.None || this.IsSourceSize())
         {
             return new(scaledSourceWidth, scaledSourceHeight);
         }
-        var maxScaleX = limits.X / sourceWidth;
-        var maxScaleY = limits.Y / sourceHeight;
-        return Fit switch
+        float maxScaleX = limits.X / sourceWidth;
+        float maxScaleY = limits.Y / sourceHeight;
+        return this.Fit switch
         {
             ImageFit.Contain => sourceRect.Size.ToVector2() * MathF.Min(maxScaleX, maxScaleY),
             ImageFit.Cover => sourceRect.Size.ToVector2() * MathF.Max(maxScaleX, maxScaleY),
-            _ => throw new NotImplementedException($"Invalid fit type: {Fit}"),
+            _ => throw new NotImplementedException($"Invalid fit type: {this.Fit}"),
         };
     }
 
     private bool IsSourceSize()
     {
-        return Layout.Width.Type == LengthType.Content && Layout.Height.Type == LengthType.Content;
+        return this.Layout.Width.Type == LengthType.Content && this.Layout.Height.Type == LengthType.Content;
     }
 
     private void UpdateSlice()
     {
-        if (slice is null)
+        if (this.slice is null)
         {
             // Still reset the dirty flag, because when the slice is eventually created it will have the newest scale.
-            scale.ResetDirty();
+            this.scale.ResetDirty();
             return;
         }
 
-        if (Scale == 1.0f)
+        if (this.Scale == 1.0f)
         {
-            slice.Layout(destinationRect, Rotation);
+            this.slice.Layout(this.destinationRect, this.Rotation);
         }
         else
         {
-            var deltaSize = destinationRect.Size.ToVector2() * (Scale - 1) / 2;
-            var scaledRect = destinationRect; // Make a copy (Rectangle is struct)
+            var deltaSize = this.destinationRect.Size.ToVector2() * (this.Scale - 1) / 2;
+            var scaledRect = this.destinationRect; // Make a copy (Rectangle is struct)
             scaledRect.Inflate(deltaSize.X, deltaSize.Y);
-            slice.Layout(scaledRect, Rotation);
+            this.slice.Layout(scaledRect, this.Rotation);
         }
-        rotation.ResetDirty();
-        scale.ResetDirty();
+
+        this.rotation.ResetDirty();
+        this.scale.ResetDirty();
     }
 }
 

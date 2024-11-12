@@ -16,13 +16,13 @@ public class Button : ComponentView<View>
     /// </summary>
     public IView? Content
     {
-        get => contentFrame.Content;
+        get => this.contentFrame.Content;
         set
         {
-            if (value != contentFrame.Content)
+            if (value != this.contentFrame.Content)
             {
-                contentFrame.Content = value;
-                OnPropertyChanged(nameof(Content));
+                this.contentFrame.Content = value;
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -32,16 +32,17 @@ public class Button : ComponentView<View>
     /// </summary>
     public Sprite? DefaultBackground
     {
-        get => defaultBackgroundSprite;
+        get => this.defaultBackgroundSprite;
         set
         {
-            if (value == defaultBackgroundSprite)
+            if (value == this.defaultBackgroundSprite)
             {
                 return;
             }
-            defaultBackgroundSprite = value;
-            UpdateBackgroundImage();
-            OnPropertyChanged(nameof(DefaultBackground));
+
+            this.defaultBackgroundSprite = value;
+            this.UpdateBackgroundImage();
+            this.OnPropertyChanged(nameof(this.DefaultBackground));
         }
     }
 
@@ -54,19 +55,21 @@ public class Button : ComponentView<View>
     /// </remarks>
     public SpriteFont Font
     {
-        get => font;
+        get => this.font;
         set
         {
-            if (value == font)
+            if (value == this.font)
             {
                 return;
             }
-            font = value;
-            if (contentFrame.Content is Label label)
+
+            this.font = value;
+            if (this.contentFrame.Content is Label label)
             {
-                label.Font = font;
+                label.Font = this.font;
             }
-            OnPropertyChanged(nameof(Font));
+
+            this.OnPropertyChanged(nameof(this.Font));
         }
     }
 
@@ -75,16 +78,17 @@ public class Button : ComponentView<View>
     /// </summary>
     public Sprite? HoverBackground
     {
-        get => hoverBackgroundSprite;
+        get => this.hoverBackgroundSprite;
         set
         {
-            if (value == hoverBackgroundSprite)
+            if (value == this.hoverBackgroundSprite)
             {
                 return;
             }
-            hoverBackgroundSprite = value;
-            UpdateBackgroundImage();
-            OnPropertyChanged(nameof(HoverBackground));
+
+            this.hoverBackgroundSprite = value;
+            this.UpdateBackgroundImage();
+            this.OnPropertyChanged(nameof(this.HoverBackground));
         }
     }
 
@@ -93,8 +97,8 @@ public class Button : ComponentView<View>
     /// </summary>
     public Edges Margin
     {
-        get => View.Margin;
-        set => View.Margin = value;
+        get => this.View.Margin;
+        set => this.View.Margin = value;
     }
 
     /// <summary>
@@ -102,13 +106,13 @@ public class Button : ComponentView<View>
     /// </summary>
     public bool ShadowVisible
     {
-        get => backgroundImage.ShadowAlpha > 0;
+        get => this.backgroundImage.ShadowAlpha > 0;
         set
         {
-            if (value != backgroundImage.ShadowAlpha > 0)
+            if (value != this.backgroundImage.ShadowAlpha > 0)
             {
-                backgroundImage.ShadowAlpha = value ? 0.5f : 0f;
-                OnPropertyChanged(nameof(ShadowVisible));
+                this.backgroundImage.ShadowAlpha = value ? 0.5f : 0f;
+                this.OnPropertyChanged(nameof(this.ShadowVisible));
             }
         }
     }
@@ -123,21 +127,21 @@ public class Button : ComponentView<View>
     /// </remarks>
     public string? Text
     {
-        get => contentFrame.Content is Label label ? label.Text : null;
+        get => this.contentFrame.Content is Label label ? label.Text : null;
         set
         {
-            if (contentFrame.Content is Label label)
+            if (this.contentFrame.Content is Label label)
             {
                 if ((value ?? "") != label.Text)
                 {
                     label.Text = value ?? "";
-                    OnPropertyChanged(nameof(Text));
+                    this.OnPropertyChanged(nameof(this.Text));
                 }
             }
             else if (value is not null)
             {
-                contentFrame.Content = Label.Simple(value, font);
-                OnPropertyChanged(nameof(Text));
+                this.contentFrame.Content = Label.Simple(value, this.font);
+                this.OnPropertyChanged(nameof(this.Text));
             }
         }
     }
@@ -154,14 +158,14 @@ public class Button : ComponentView<View>
     /// <inheritdoc />
     protected override View CreateView()
     {
-        backgroundImage = new Image()
+        this.backgroundImage = new Image()
         {
             Layout = LayoutParameters.Fill(),
             Fit = ImageFit.Stretch,
             ShadowOffset = new(-4, 4),
         };
-        UpdateBackgroundImage(false);
-        contentFrame = new Frame() { Layout = LayoutParameters.FitContent(), Margin = new(16, 12) };
+        this.UpdateBackgroundImage(false);
+        this.contentFrame = new Frame() { Layout = LayoutParameters.FitContent(), Margin = new(16, 12) };
         var panel = new Panel()
         {
             Layout = new()
@@ -173,40 +177,41 @@ public class Button : ComponentView<View>
             },
             HorizontalContentAlignment = Alignment.Middle,
             VerticalContentAlignment = Alignment.Middle,
-            Children = [backgroundImage, contentFrame],
+            Children = [this.backgroundImage, this.contentFrame],
             Focusable = true,
         };
-        panel.PointerEnter += Panel_PointerEnter;
-        panel.PointerLeave += Panel_PointerLeave;
+        panel.PointerEnter += this.Panel_PointerEnter;
+        panel.PointerLeave += this.Panel_PointerLeave;
         return panel;
     }
 
     private void Panel_PointerEnter(object? sender, PointerEventArgs e)
     {
-        UpdateBackgroundImage(true);
+        this.UpdateBackgroundImage(true);
     }
 
     private void Panel_PointerLeave(object? sender, PointerEventArgs e)
     {
-        UpdateBackgroundImage(false);
+        this.UpdateBackgroundImage(false);
     }
 
     private void UpdateBackgroundImage(bool? hover = null)
     {
         if (hover.HasValue)
         {
-            lastHoverState = hover.Value;
+            this.lastHoverState = hover.Value;
         }
         else
         {
-            hover = lastHoverState;
+            hover = this.lastHoverState;
         }
-        if (backgroundImage is null)
+        if (this.backgroundImage is null)
         {
             return;
         }
-        backgroundImage.Sprite = hover.Value
-            ? HoverBackground ?? DefaultBackground ?? UiSprites.ButtonDark
-            : DefaultBackground ?? UiSprites.ButtonDark;
+
+        this.backgroundImage.Sprite = hover.Value
+            ? this.HoverBackground ?? this.DefaultBackground ?? UiSprites.ButtonDark
+            : this.DefaultBackground ?? UiSprites.ButtonDark;
     }
 }

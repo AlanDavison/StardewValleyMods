@@ -18,7 +18,7 @@ public class Spacer : View
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var limits = Layout.GetLimits(availableSize);
-        ContentSize = Layout.Resolve(availableSize, () => Vector2.Zero);
+        var limits = this.Layout.GetLimits(availableSize);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => Vector2.Zero);
     }
 }

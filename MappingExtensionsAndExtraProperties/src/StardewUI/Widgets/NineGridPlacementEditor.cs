@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewUI.Events;
 using StardewUI.Graphics;
@@ -28,13 +29,13 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public Color CellColor
     {
-        get => cellColor;
+        get => this.cellColor;
         set
         {
-            if (value != cellColor)
+            if (value != this.cellColor)
             {
-                cellColor = value;
-                OnPropertyChanged(nameof(CellColor));
+                this.cellColor = value;
+                this.OnPropertyChanged(nameof(this.CellColor));
             }
         }
     }
@@ -44,13 +45,13 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public IView? Content
     {
-        get => content;
+        get => this.content;
         set
         {
-            if (value != content)
+            if (value != this.content)
             {
-                content = value;
-                OnPropertyChanged(nameof(Content));
+                this.content = value;
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -65,13 +66,13 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public Color GridColor
     {
-        get => gridColor;
+        get => this.gridColor;
         set
         {
-            if (value != gridColor)
+            if (value != this.gridColor)
             {
-                gridColor = value;
-                OnPropertyChanged(nameof(GridColor));
+                this.gridColor = value;
+                this.OnPropertyChanged(nameof(this.GridColor));
             }
         }
     }
@@ -81,13 +82,13 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public Color HoverTintColor
     {
-        get => hoverTintColor;
+        get => this.hoverTintColor;
         set
         {
-            if (value != hoverTintColor)
+            if (value != this.hoverTintColor)
             {
-                hoverTintColor = value;
-                OnPropertyChanged(nameof(HoverTintColor));
+                this.hoverTintColor = value;
+                this.OnPropertyChanged(nameof(this.HoverTintColor));
             }
         }
     }
@@ -97,12 +98,12 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public int LineWidth
     {
-        get => lineWidth.Value;
+        get => this.lineWidth.Value;
         set
         {
-            if (lineWidth.SetIfChanged(value))
+            if (this.lineWidth.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(LineWidth));
+                this.OnPropertyChanged(nameof(this.LineWidth));
             }
         }
     }
@@ -112,13 +113,13 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public NineGridPlacement Placement
     {
-        get => placement;
+        get => this.placement;
         set
         {
-            if (value != placement)
+            if (value != this.placement)
             {
-                placement = value;
-                OnPropertyChanged(nameof(Placement));
+                this.placement = value;
+                this.OnPropertyChanged(nameof(this.Placement));
             }
         }
     }
@@ -128,13 +129,13 @@ public class NineGridPlacementEditor : View
     /// </summary>
     public Color SelectionBackgroundColor
     {
-        get => selectionBackgroundColor;
+        get => this.selectionBackgroundColor;
         set
         {
-            if (value != selectionBackgroundColor)
+            if (value != this.selectionBackgroundColor)
             {
-                selectionBackgroundColor = value;
-                OnPropertyChanged(nameof(SelectionBackgroundColor));
+                this.selectionBackgroundColor = value;
+                this.OnPropertyChanged(nameof(this.SelectionBackgroundColor));
             }
         }
     }
@@ -158,14 +159,14 @@ public class NineGridPlacementEditor : View
         if (e.IsPrimaryButton())
         {
             Game1.playSound("bigSelect");
-            overlay = new PositioningOverlay(ButtonSpriteMap, DirectionSpriteMap)
+            this.overlay = new PositioningOverlay(this.ButtonSpriteMap, this.DirectionSpriteMap)
             {
-                Content = Content,
-                ContentPlacement = Placement,
+                Content = this.Content,
+                ContentPlacement = this.Placement,
                 DimmingAmount = 0.93f,
             };
-            overlay.Close += Overlay_Close;
-            Overlay.Push(overlay);
+            this.overlay.Close += this.Overlay_Close;
+            Overlay.Push(this.overlay);
             e.Handled = true;
         }
         base.OnClick(e);
@@ -174,86 +175,86 @@ public class NineGridPlacementEditor : View
     /// <inheritdoc />
     public override void OnPointerMove(PointerMoveEventArgs e)
     {
-        isHovering = ContainsPoint(e.Position);
+        this.isHovering = this.ContainsPoint(e.Position);
         base.OnPointerMove(e);
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return lineWidth.IsDirty;
+        return this.lineWidth.IsDirty;
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        var tintedSelectedCellColor = Tint(SelectionBackgroundColor);
-        var tintedCellColor = Tint(CellColor);
-        for (int row = 0; row < cells.GetLength(0); row++)
+        var tintedSelectedCellColor = this.Tint(this.SelectionBackgroundColor);
+        var tintedCellColor = this.Tint(this.CellColor);
+        for (int row = 0; row < this.cells.GetLength(0); row++)
         {
-            for (int col = 0; col < cells.GetLength(1); col++)
+            for (int col = 0; col < this.cells.GetLength(1); col++)
             {
-                var color = IsSelectedCell(col, row) ? tintedSelectedCellColor : tintedCellColor;
+                var color = this.IsSelectedCell(col, row) ? tintedSelectedCellColor : tintedCellColor;
                 if (color != Color.Transparent)
                 {
-                    b.Draw(Game1.staminaRect, cells[row, col], null, color);
+                    b.Draw(Game1.staminaRect, this.cells[row, col], null, color);
                 }
             }
         }
-        if (GridColor == Color.Transparent)
+        if (this.GridColor == Color.Transparent)
         {
             return;
         }
-        var tintedGridColor = Tint(GridColor);
-        foreach (var gridline in gridlines)
+        var tintedGridColor = this.Tint(this.GridColor);
+        foreach (var gridline in this.gridlines)
         {
-            b.Draw(Game1.staminaRect, gridline, null, Tint(tintedGridColor));
+            b.Draw(Game1.staminaRect, gridline, null, this.Tint(tintedGridColor));
         }
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var limits = Layout.GetLimits(availableSize);
-        ContentSize = Layout.Resolve(availableSize, () => Vector2.Zero);
+        var limits = this.Layout.GetLimits(availableSize);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => Vector2.Zero);
 
-        int columnWidth = (int)MathF.Round((ContentSize.X - LineWidth * 4) / 3);
-        int rowHeight = (int)MathF.Round((ContentSize.Y - LineWidth * 4) / 3);
+        int columnWidth = (int)MathF.Round((this.ContentSize.X - this.LineWidth * 4) / 3);
+        int rowHeight = (int)MathF.Round((this.ContentSize.Y - this.LineWidth * 4) / 3);
         // Cells
         int y = 0;
         for (int row = 0; row < 3; row++)
         {
-            y += LineWidth;
+            y += this.LineWidth;
             int x = 0;
             for (int col = 0; col < 3; col++)
             {
-                x += LineWidth;
-                cells[row, col] = new(x, y, columnWidth, rowHeight);
+                x += this.LineWidth;
+                this.cells[row, col] = new(x, y, columnWidth, rowHeight);
                 x += columnWidth;
             }
             y += rowHeight;
         }
         // Gridlines
-        int gridWidth = columnWidth * 3 + LineWidth * 4;
-        int gridHeight = rowHeight * 3 + LineWidth * 4;
+        int gridWidth = columnWidth * 3 + this.LineWidth * 4;
+        int gridHeight = rowHeight * 3 + this.LineWidth * 4;
         int gridX = 0;
         for (int col = 0; col < 4; col++)
         {
-            gridlines[col] = new(gridX, 0, LineWidth, gridHeight);
-            gridX += LineWidth + columnWidth;
+            this.gridlines[col] = new(gridX, 0, this.LineWidth, gridHeight);
+            gridX += this.LineWidth + columnWidth;
         }
         int gridY = 0;
         for (int row = 0; row < 4; row++)
         {
-            gridlines[row + 4] = new(0, gridY, gridWidth, LineWidth);
-            gridY += LineWidth + rowHeight;
+            this.gridlines[row + 4] = new(0, gridY, gridWidth, this.LineWidth);
+            gridY += this.LineWidth + rowHeight;
         }
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        lineWidth.ResetDirty();
+        this.lineWidth.ResetDirty();
     }
 
     private static int GetCellIndex(Alignment alignment)
@@ -269,31 +270,32 @@ public class NineGridPlacementEditor : View
 
     private bool IsSelectedCell(int col, int row)
     {
-        return col == GetCellIndex(Placement.HorizontalAlignment) && row == GetCellIndex(Placement.VerticalAlignment);
+        return col == GetCellIndex(this.Placement.HorizontalAlignment) && row == GetCellIndex(this.Placement.VerticalAlignment);
     }
 
     private void Overlay_Close(object? sender, EventArgs e)
     {
-        if (overlay is not null)
+        if (this.overlay is not null)
         {
-            Placement = overlay.ContentPlacement;
+            this.Placement = this.overlay.ContentPlacement;
         }
-        overlay = null;
-        isHovering = false;
+
+        this.overlay = null;
+        this.isHovering = false;
     }
 
     private Color Tint(Color color)
     {
-        if (!isHovering || HoverTintColor.A == 0 || HoverTintColor == Color.White)
+        if (!this.isHovering || this.HoverTintColor.A == 0 || this.HoverTintColor == Color.White)
         {
             return color;
         }
         const float tintAmount = 0.25f;
-        float tintAlpha = 255 / HoverTintColor.A;
-        int r = (int)(color.R * (1 - tintAmount) + HoverTintColor.R * tintAmount * tintAlpha);
-        int g = (int)(color.G * (1 - tintAmount) + HoverTintColor.G * tintAmount * tintAlpha);
-        int b = (int)(color.B * (1 - tintAmount) + HoverTintColor.B * tintAmount * tintAlpha);
-        int a = (int)(color.A * (1 - tintAmount) + HoverTintColor.A * tintAmount);
+        float tintAlpha = 255 / this.HoverTintColor.A;
+        int r = (int)(color.R * (1 - tintAmount) + this.HoverTintColor.R * tintAmount * tintAlpha);
+        int g = (int)(color.G * (1 - tintAmount) + this.HoverTintColor.G * tintAmount * tintAlpha);
+        int b = (int)(color.B * (1 - tintAmount) + this.HoverTintColor.B * tintAmount * tintAlpha);
+        int a = (int)(color.A * (1 - tintAmount) + this.HoverTintColor.A * tintAmount);
         return new(r, g, b, a);
     }
 }

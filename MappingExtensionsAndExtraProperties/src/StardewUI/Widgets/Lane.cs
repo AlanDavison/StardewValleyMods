@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Input;
 using StardewUI.Layout;
@@ -15,13 +18,13 @@ public class Lane : View
     /// </summary>
     public IList<IView> Children
     {
-        get => children;
+        get => this.children;
         set
         {
-            if (children.SetItems(value))
+            if (this.children.SetItems(value))
             {
-                OnPropertyChanged(nameof(Children));
-                OnPropertyChanged(nameof(VisibleChildren));
+                this.OnPropertyChanged(nameof(this.Children));
+                this.OnPropertyChanged(nameof(this.VisibleChildren));
             }
         }
     }
@@ -33,12 +36,12 @@ public class Lane : View
     /// </summary>
     public Alignment HorizontalContentAlignment
     {
-        get => horizontalContentAlignment.Value;
+        get => this.horizontalContentAlignment.Value;
         set
         {
-            if (horizontalContentAlignment.SetIfChanged(value))
+            if (this.horizontalContentAlignment.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(HorizontalContentAlignment));
+                this.OnPropertyChanged(nameof(this.HorizontalContentAlignment));
             }
         }
     }
@@ -48,12 +51,12 @@ public class Lane : View
     /// </summary>
     public Orientation Orientation
     {
-        get => orientation.Value;
+        get => this.orientation.Value;
         set
         {
-            if (orientation.SetIfChanged(value))
+            if (this.orientation.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Orientation));
+                this.OnPropertyChanged(nameof(this.Orientation));
             }
         }
     }
@@ -65,12 +68,12 @@ public class Lane : View
     /// </summary>
     public Alignment VerticalContentAlignment
     {
-        get => verticalContentAlignment.Value;
+        get => this.verticalContentAlignment.Value;
         set
         {
-            if (verticalContentAlignment.SetIfChanged(value))
+            if (this.verticalContentAlignment.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(VerticalContentAlignment));
+                this.OnPropertyChanged(nameof(this.VerticalContentAlignment));
             }
         }
     }
@@ -78,7 +81,7 @@ public class Lane : View
     /// <summary>
     /// The children that have received layout and have at least some content visible.
     /// </summary>
-    public IEnumerable<IView> VisibleChildren => Children.Take(visibleChildCount);
+    public IEnumerable<IView> VisibleChildren => this.Children.Take(this.visibleChildCount);
 
     private readonly DirtyTrackingList<IView> children = [];
     private readonly DirtyTracker<Alignment> horizontalContentAlignment = new(Alignment.Start);
@@ -95,15 +98,15 @@ public class Lane : View
         // No matter what the navigation direction is, if the cursor is already within one of the children, then we
         // should perform a recursive focus search on that child before doing anything else, so that delegation works
         // properly.
-        var nearestChildIndex = FindNearestChildIndex(contentPosition);
+        int nearestChildIndex = this.FindNearestChildIndex(contentPosition);
         if (nearestChildIndex < 0)
         {
-            LogFocusSearch("Couldn't find any matching children; ending search.");
+            this.LogFocusSearch("Couldn't find any matching children; ending search.");
             return null;
         }
 
-        var nearestChild = visibleChildPositions[nearestChildIndex];
-        LogFocusSearch(
+        var nearestChild = this.visibleChildPositions[nearestChildIndex];
+        this.LogFocusSearch(
             $"Nearest child '{nearestChild.View.Name}' is at index {nearestChildIndex} with bounds: "
                 + $"[{nearestChild.Position}, {nearestChild.View.OuterSize}]"
         );
@@ -111,14 +114,14 @@ public class Lane : View
         var nearestTarget = nearestResult?.Target;
         if (nearestTarget is not null)
         {
-            LogFocusSearch(
+            this.LogFocusSearch(
                 $"Nearest child '{nearestChild.View.Name}' matched the query: '{nearestTarget.View.Name}' with "
                     + $"bounds: [{nearestTarget.Position}, {nearestTarget.View.OuterSize}]"
             );
         }
         else
         {
-            LogFocusSearch($"Nearest child '{nearestChild.View.Name}' does NOT match the current query.");
+            this.LogFocusSearch($"Nearest child '{nearestChild.View.Name}' does NOT match the current query.");
         }
         // The search result from the nearest child is always where we want to start, but not always where we want to
         // finish. If the cursor is actually within the child bounds, then it's always correct, but otherwise we have
@@ -130,7 +133,7 @@ public class Lane : View
         // layout.
         if (nearestTarget is not null && nearestChild.ContainsPoint(contentPosition))
         {
-            LogFocusSearch(
+            this.LogFocusSearch(
                 $"Returning nearest child's result '{nearestTarget.View.Name}' since it contains the specified point "
                     + "and has its own match."
             );
@@ -142,35 +145,37 @@ public class Lane : View
         // to it. The parallel case is easier; we only need to traverse the list in the specified direction until
         // something finds focus - which could be the result we already have, the only catch being that the "nearest"
         // element might be on the wrong side, so we have to check.
-        if (direction.GetOrientation() == Orientation)
+        if (direction.GetOrientation() == this.Orientation)
         {
-            LogFocusSearch($"Nearest child wasn't exact match; searching ALONG the orientation ({Orientation}) axis.");
+            this.LogFocusSearch($"Nearest child wasn't exact match; searching ALONG the orientation ({this.Orientation}) axis.");
             if (nearestTarget is not null && IsCorrectDirection(contentPosition, nearestTarget, direction))
             {
-                LogFocusSearch(
+                this.LogFocusSearch(
                     $"Nearest child's result '{nearestTarget.View.Name}' is already in the requested direction "
                         + $"({direction} of {contentPosition}); returning it."
                 );
                 return nearestResult;
             }
-            var searchStep = IsReverseDirection(direction) ? -1 : 1;
-            for (int i = nearestChildIndex + searchStep; i >= 0 && i < visibleChildCount; i += searchStep)
+            int searchStep = IsReverseDirection(direction) ? -1 : 1;
+            for (int i = nearestChildIndex + searchStep; i >= 0 && i < this.visibleChildCount; i += searchStep)
             {
-                var searchChild = visibleChildPositions[i];
-                LogFocusSearch($"Searching next child '{searchChild.View.Name}' at index {i}");
+                var searchChild = this.visibleChildPositions[i];
+                this.LogFocusSearch($"Searching next child '{searchChild.View.Name}' at index {i}");
                 var childResult = searchChild.FocusSearch(contentPosition, direction);
                 if (childResult is not null)
                 {
-                    LogFocusSearch(
+                    this.LogFocusSearch(
                         $"Found a match: '{searchChild.View.Name}' matched the query: "
                             + $"'{childResult.Target.View.Name}' with bounds: "
                             + $"[{childResult.Target.Position}, {childResult.Target.View.OuterSize}]"
                     );
                     return childResult;
                 }
-                LogFocusSearch("No result at this position.");
+
+                this.LogFocusSearch("No result at this position.");
             }
-            LogFocusSearch("No matches anywhere in this lane.");
+
+            this.LogFocusSearch("No matches anywhere in this lane.");
             return null;
         }
 
@@ -182,40 +187,40 @@ public class Lane : View
         // way, as opposed to entering the bounds of the entire lane from a different view entirely, then we don't allow
         // the movement, otherwise nonintuitive things can happen like moving UP several views when the RIGHT button is
         // pressed.
-        LogFocusSearch($"Nearest child wasn't exact match; searching OPPOSITE the orientation ({Orientation}) axis.");
+        this.LogFocusSearch($"Nearest child wasn't exact match; searching OPPOSITE the orientation ({this.Orientation}) axis.");
         if (nearestChild.ContainsPoint(contentPosition))
         {
-            LogFocusSearch("Nearest child already contains the requested position; no more possible results.");
+            this.LogFocusSearch("Nearest child already contains the requested position; no more possible results.");
             return null;
         }
-        var nearestDistance = nearestTarget is not null
-            ? GetDistance(contentPosition, nearestTarget, Orientation)
+        float nearestDistance = nearestTarget is not null
+            ? GetDistance(contentPosition, nearestTarget, this.Orientation)
             : float.PositiveInfinity;
         var ahead = (index: nearestChildIndex, distance: nearestDistance, result: nearestResult);
         var behind = ahead;
-        LogFocusSearch("Starting distance search in forward direction");
-        for (int i = nearestChildIndex + 1; i < visibleChildCount; i++)
+        this.LogFocusSearch("Starting distance search in forward direction");
+        for (int i = nearestChildIndex + 1; i < this.visibleChildCount; i++)
         {
-            var nextChild = visibleChildPositions[i];
-            LogFocusSearch($"Next candidate is '{nextChild.View.Name}' at position {i}");
+            var nextChild = this.visibleChildPositions[i];
+            this.LogFocusSearch($"Next candidate is '{nextChild.View.Name}' at position {i}");
             var nextResult = nextChild.FocusSearch(contentPosition, direction);
-            var nextDistance = nextResult is not null
-                ? MathF.Abs(GetDistance(contentPosition, nextResult.Target, Orientation))
+            float nextDistance = nextResult is not null
+                ? MathF.Abs(GetDistance(contentPosition, nextResult.Target, this.Orientation))
                 : float.PositiveInfinity;
             if (nextResult is not null)
             {
-                LogFocusSearch(
+                this.LogFocusSearch(
                     $"Found possible match: '{nextResult.Target.View.Name}' with distance {nextDistance} and bounds: "
                         + $"[{nextResult.Target.Position}, {nextResult.Target.View.OuterSize}]"
                 );
             }
             else
             {
-                LogFocusSearch("No matches in this child.");
+                this.LogFocusSearch("No matches in this child.");
             }
             if (nextDistance < ahead.distance)
             {
-                LogFocusSearch($"Distance {nextDistance} is smaller than best ahead distance {ahead.distance}.");
+                this.LogFocusSearch($"Distance {nextDistance} is smaller than best ahead distance {ahead.distance}.");
                 ahead = (i, nextDistance, nextResult);
             }
             else if (!float.IsPositiveInfinity(nextDistance))
@@ -225,29 +230,30 @@ public class Lane : View
                 break;
             }
         }
-        LogFocusSearch("Starting distance search in reverse direction");
+
+        this.LogFocusSearch("Starting distance search in reverse direction");
         for (int i = nearestChildIndex - 1; i >= 0; i--)
         {
-            var nextChild = visibleChildPositions[i];
-            LogFocusSearch($"Next candidate is {nextChild.View.Name} at position {i}");
+            var nextChild = this.visibleChildPositions[i];
+            this.LogFocusSearch($"Next candidate is {nextChild.View.Name} at position {i}");
             var prevResult = nextChild.FocusSearch(contentPosition, direction);
-            var prevDistance = prevResult is not null
-                ? MathF.Abs(GetDistance(contentPosition, prevResult.Target, Orientation))
+            float prevDistance = prevResult is not null
+                ? MathF.Abs(GetDistance(contentPosition, prevResult.Target, this.Orientation))
                 : float.PositiveInfinity;
             if (prevResult is not null)
             {
-                LogFocusSearch(
+                this.LogFocusSearch(
                     $"Found possible match: '{prevResult.Target.View.Name}' with distance {prevDistance} and bounds: "
                         + $"[{prevResult.Target.Position}, {prevResult.Target.View.OuterSize}]"
                 );
             }
             else
             {
-                LogFocusSearch("No matches in this child.");
+                this.LogFocusSearch("No matches in this child.");
             }
             if (prevDistance < behind.distance)
             {
-                LogFocusSearch($"Distance {prevDistance} is smaller than best behind distance {behind.distance}.");
+                this.LogFocusSearch($"Distance {prevDistance} is smaller than best behind distance {behind.distance}.");
                 behind = (i, prevDistance, prevResult);
             }
             else if (!float.IsPositiveInfinity(prevDistance))
@@ -257,10 +263,11 @@ public class Lane : View
         }
         if (ahead.result is null && behind.result is null)
         {
-            LogFocusSearch("Didn't find any matches either behind or ahead of the nearest position");
+            this.LogFocusSearch("Didn't find any matches either behind or ahead of the nearest position");
             return null;
         }
-        LogFocusSearch(
+
+        this.LogFocusSearch(
             "Matches found:\n"
                 + $"  Ahead: '{ahead.result?.Target.View.Name}' [{ahead.result?.Target.Position}, "
                 + $"{ahead.result?.Target.View.OuterSize}] distance={ahead.distance}\n"
@@ -273,23 +280,23 @@ public class Lane : View
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return visibleChildPositions;
+        return this.visibleChildPositions;
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return orientation.IsDirty
-            || horizontalContentAlignment.IsDirty
-            || verticalContentAlignment.IsDirty
-            || children.IsDirty
-            || visibleChildPositions.Any(child => child.View.IsDirty());
+        return this.orientation.IsDirty
+            || this.horizontalContentAlignment.IsDirty
+            || this.verticalContentAlignment.IsDirty
+            || this.children.IsDirty
+            || this.visibleChildPositions.Any(child => child.View.IsDirty());
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        foreach (var (child, position) in visibleChildPositions.OrderBy(child => child.View.ZIndex))
+        foreach (var (child, position) in this.visibleChildPositions.OrderBy(child => child.View.ZIndex))
         {
             using var _ = b.SaveTransform();
             b.Translate(position);
@@ -300,36 +307,37 @@ public class Lane : View
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var limits = Layout.GetLimits(availableSize);
-        var swapOrientation = Orientation.Swap();
-        childrenSize = Vector2.Zero;
-        int previousVisibleChildCount = visibleChildCount;
-        visibleChildCount = 0;
+        var limits = this.Layout.GetLimits(availableSize);
+        var swapOrientation = this.Orientation.Swap();
+        this.childrenSize = Vector2.Zero;
+        int previousVisibleChildCount = this.visibleChildCount;
+        this.visibleChildCount = 0;
 
         void measureChild(IView child, Vector2 childLimits, bool isDeferred)
         {
             bool hasSwapOrientationStretch = swapOrientation.Length(child.Layout).Type == LengthType.Stretch;
-            if (hasSwapOrientationStretch && (!isDeferred || swapOrientation.Length(Layout).Type == LengthType.Content))
+            if (hasSwapOrientationStretch && (!isDeferred || swapOrientation.Length(this.Layout).Type == LengthType.Content))
             {
-                var swapLength = swapOrientation.Get(childrenSize);
+                float swapLength = swapOrientation.Get(this.childrenSize);
                 if (swapLength > 0)
                 {
                     swapOrientation.Set(ref childLimits, swapLength);
                 }
             }
             child.Measure(childLimits);
-            var outerLength = Orientation.Get(child.OuterSize);
-            Orientation.Update(ref limits, v => v - outerLength);
-            Orientation.Update(ref childrenSize, v => v + outerLength);
+            float outerLength = this.Orientation.Get(child.OuterSize);
+            this.Orientation.Update(ref limits, v => v - outerLength);
+            this.Orientation.Update(ref this.childrenSize, v => v + outerLength);
             if (!hasSwapOrientationStretch)
             {
-                swapOrientation.Update(ref childrenSize, v => MathF.Max(v, swapOrientation.Get(child.OuterSize)));
+                swapOrientation.Update(ref this.childrenSize, v => MathF.Max(v, swapOrientation.Get(child.OuterSize)));
             }
-            visibleChildCount++;
+
+            this.visibleChildCount++;
         }
 
         var deferredChildren = new List<IView>();
-        foreach (var child in Children)
+        foreach (var child in this.Children)
         {
             if (child.Layout.Width.Type == LengthType.Stretch || child.Layout.Height.Type == LengthType.Stretch)
             {
@@ -353,56 +361,56 @@ public class Lane : View
         if (deferredChildren.Count > 0)
         {
             var deferredLimits = limits;
-            if (childrenSize != Vector2.Zero)
+            if (this.childrenSize != Vector2.Zero)
             {
-                var swapLimit = swapOrientation
-                    .Length(Layout)
-                    .Resolve(swapOrientation.Get(availableSize), () => swapOrientation.Get(childrenSize));
+                float swapLimit = swapOrientation
+                    .Length(this.Layout)
+                    .Resolve(swapOrientation.Get(availableSize), () => swapOrientation.Get(this.childrenSize));
                 swapOrientation.Set(ref deferredLimits, swapLimit);
             }
             foreach (var child in deferredChildren)
             {
-                Orientation.Set(ref deferredLimits, Orientation.Get(limits));
+                this.Orientation.Set(ref deferredLimits, this.Orientation.Get(limits));
                 measureChild(child, deferredLimits, true);
             }
         }
 
-        if (swapOrientation.Get(childrenSize) == 0 && Children.Count > 0)
+        if (swapOrientation.Get(this.childrenSize) == 0 && this.Children.Count > 0)
         {
-            swapOrientation.Set(ref childrenSize, Children.Max(c => swapOrientation.Get(c.OuterSize)));
+            swapOrientation.Set(ref this.childrenSize, this.Children.Max(c => swapOrientation.Get(c.OuterSize)));
         }
 
-        ContentSize = Layout.Resolve(availableSize, () => childrenSize);
-        UpdateVisibleChildPositions();
+        this.ContentSize = this.Layout.Resolve(availableSize, () => this.childrenSize);
+        this.UpdateVisibleChildPositions();
 
-        if (visibleChildCount != previousVisibleChildCount)
+        if (this.visibleChildCount != previousVisibleChildCount)
         {
-            OnPropertyChanged(nameof(VisibleChildren));
+            this.OnPropertyChanged(nameof(this.VisibleChildren));
         }
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        horizontalContentAlignment.ResetDirty();
-        verticalContentAlignment.ResetDirty();
-        children.ResetDirty();
-        orientation.ResetDirty();
+        this.horizontalContentAlignment.ResetDirty();
+        this.verticalContentAlignment.ResetDirty();
+        this.children.ResetDirty();
+        this.orientation.ResetDirty();
     }
 
     private int FindNearestChildIndex(Vector2 position)
     {
         // Child positions are sorted, so we could technically do a binary search. For the number of elements typically
         // found in a lane, it's probably not worth the extra complexity.
-        var axisPosition = Orientation.Get(position);
+        float axisPosition = this.Orientation.Get(position);
         int bestIndex = -1;
-        var maxDistance = float.PositiveInfinity;
-        for (int i = 0; i < visibleChildCount; i++)
+        float maxDistance = float.PositiveInfinity;
+        for (int i = 0; i < this.visibleChildCount; i++)
         {
-            var child = visibleChildPositions[i];
-            var minExtent = Orientation.Get(child.Position);
-            var maxExtent = Orientation.Get(child.Position + child.View.OuterSize);
-            var distance =
+            var child = this.visibleChildPositions[i];
+            float minExtent = this.Orientation.Get(child.Position);
+            float maxExtent = this.Orientation.Get(child.Position + child.View.OuterSize);
+            float distance =
                 (axisPosition >= minExtent && axisPosition < maxExtent)
                     ? 0
                     : MathF.Min(MathF.Abs(axisPosition - minExtent), MathF.Abs(axisPosition - maxExtent));
@@ -417,15 +425,15 @@ public class Lane : View
 
     private static float GetDistance(Vector2 position, ViewChild target, Orientation orientation)
     {
-        var axisPosition = orientation.Get(position);
-        var minExtent = orientation.Get(target.Position);
-        var maxExtent = orientation.Get(target.Position + target.View.OuterSize);
+        float axisPosition = orientation.Get(position);
+        float minExtent = orientation.Get(target.Position);
+        float maxExtent = orientation.Get(target.Position + target.View.OuterSize);
         if (axisPosition >= minExtent && axisPosition < maxExtent)
         {
             return 0;
         }
-        var distanceToMin = axisPosition - minExtent;
-        var distanceToMax = axisPosition - maxExtent;
+        float distanceToMin = axisPosition - minExtent;
+        float distanceToMax = axisPosition - maxExtent;
         // Note: Doing it this way preserves the sign, so other helpers like IsCorrectDirection can determine which side
         // the child is on.
         return MathF.Abs(distanceToMin) < MathF.Abs(distanceToMax) ? distanceToMin : distanceToMax;
@@ -433,7 +441,7 @@ public class Lane : View
 
     private static bool IsCorrectDirection(Vector2 position, ViewChild child, Direction direction)
     {
-        var distance = GetDistance(position, child, direction.GetOrientation());
+        float distance = GetDistance(position, child, direction.GetOrientation());
         // The distance is measured from child to position, so a negative distance corresponds to a positive direction.
         return float.IsNegative(distance) ^ IsReverseDirection(direction);
     }
@@ -446,24 +454,24 @@ public class Lane : View
 
     private void UpdateVisibleChildPositions()
     {
-        visibleChildPositions.Clear();
-        if (Orientation == Orientation.Horizontal)
+        this.visibleChildPositions.Clear();
+        if (this.Orientation == Orientation.Horizontal)
         {
-            var x = HorizontalContentAlignment.Align(childrenSize.X, ContentSize.X);
-            foreach (var child in VisibleChildren)
+            float x = this.HorizontalContentAlignment.Align(this.childrenSize.X, this.ContentSize.X);
+            foreach (var child in this.VisibleChildren)
             {
-                var y = VerticalContentAlignment.Align(child.OuterSize.Y, ContentSize.Y);
-                visibleChildPositions.Add(new(child, new(x, y)));
+                float y = this.VerticalContentAlignment.Align(child.OuterSize.Y, this.ContentSize.Y);
+                this.visibleChildPositions.Add(new(child, new(x, y)));
                 x += child.OuterSize.X;
             }
         }
         else
         {
-            var y = VerticalContentAlignment.Align(childrenSize.Y, ContentSize.Y);
-            foreach (var child in VisibleChildren)
+            float y = this.VerticalContentAlignment.Align(this.childrenSize.Y, this.ContentSize.Y);
+            foreach (var child in this.VisibleChildren)
             {
-                var x = HorizontalContentAlignment.Align(child.OuterSize.X, ContentSize.X);
-                visibleChildPositions.Add(new(child, new(x, y)));
+                float x = this.HorizontalContentAlignment.Align(child.OuterSize.X, this.ContentSize.X);
+                this.visibleChildPositions.Add(new(child, new(x, y)));
                 y += child.OuterSize.Y;
             }
         }

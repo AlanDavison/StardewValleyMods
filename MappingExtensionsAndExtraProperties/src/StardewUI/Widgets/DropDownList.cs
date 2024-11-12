@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Layout;
@@ -24,15 +27,15 @@ public class DropDownList<T> : ComponentView
     /// </summary>
     public Func<T, string>? OptionFormat
     {
-        get => optionFormat;
+        get => this.optionFormat;
         set
         {
-            if (value != optionFormat)
+            if (value != this.optionFormat)
             {
-                optionFormat = value ?? defaultOptionFormat;
-                UpdateOptions();
-                UpdateSelectedOption();
-                OnPropertyChanged(nameof(OptionFormat));
+                this.optionFormat = value ?? defaultOptionFormat;
+                this.UpdateOptions();
+                this.UpdateSelectedOption();
+                this.OnPropertyChanged(nameof(this.OptionFormat));
             }
         }
     }
@@ -45,18 +48,18 @@ public class DropDownList<T> : ComponentView
     /// </remarks>
     public float OptionMinWidth
     {
-        get => selectionFrame.Layout.MinWidth ?? 0;
+        get => this.selectionFrame.Layout.MinWidth ?? 0;
         set
         {
-            if (value != (selectionFrame.Layout.MinWidth ?? 0))
+            if (value != (this.selectionFrame.Layout.MinWidth ?? 0))
             {
-                selectionFrame.Layout = new()
+                this.selectionFrame.Layout = new()
                 {
                     Width = Length.Content(),
                     Height = Length.Content(),
                     MinWidth = value,
                 };
-                OnPropertyChanged(nameof(OptionMinWidth));
+                this.OnPropertyChanged(nameof(this.OptionMinWidth));
             }
         }
     }
@@ -66,12 +69,12 @@ public class DropDownList<T> : ComponentView
     /// </summary>
     public IReadOnlyList<T> Options
     {
-        get => options;
+        get => this.options;
         set
         {
-            if (options.SetItems(value))
+            if (this.options.SetItems(value))
             {
-                OnPropertyChanged(nameof(Options));
+                this.OnPropertyChanged(nameof(this.Options));
             }
         }
     }
@@ -81,20 +84,21 @@ public class DropDownList<T> : ComponentView
     /// </summary>
     public int SelectedIndex
     {
-        get => selectedIndex;
+        get => this.selectedIndex;
         set
         {
-            var validIndex = options.Count > 0 ? Math.Clamp(value, -1, options.Count - 1) : -1;
-            if (validIndex == selectedIndex)
+            int validIndex = this.options.Count > 0 ? Math.Clamp(value, -1, this.options.Count - 1) : -1;
+            if (validIndex == this.selectedIndex)
             {
                 return;
             }
-            selectedIndex = validIndex;
-            UpdateSelectedOption();
-            Select?.Invoke(this, EventArgs.Empty);
-            OnPropertyChanged(nameof(SelectedIndex));
-            OnPropertyChanged(nameof(SelectedOption));
-            OnPropertyChanged(nameof(SelectedOptionText));
+
+            this.selectedIndex = validIndex;
+            this.UpdateSelectedOption();
+            this.Select?.Invoke(this, EventArgs.Empty);
+            this.OnPropertyChanged(nameof(this.SelectedIndex));
+            this.OnPropertyChanged(nameof(this.SelectedOption));
+            this.OnPropertyChanged(nameof(this.SelectedOptionText));
         }
     }
 
@@ -103,8 +107,8 @@ public class DropDownList<T> : ComponentView
     /// </summary>
     public T? SelectedOption
     {
-        get => SelectedIndex >= 0 && SelectedIndex < options.Count ? options[SelectedIndex] : default;
-        set => SelectedIndex = value is not null ? options.IndexOf(value) : -1;
+        get => this.SelectedIndex >= 0 && this.SelectedIndex < this.options.Count ? this.options[this.SelectedIndex] : default;
+        set => this.SelectedIndex = value is not null ? this.options.IndexOf(value) : -1;
     }
 
     /// <summary>
@@ -112,7 +116,7 @@ public class DropDownList<T> : ComponentView
     /// </summary>
     public string SelectedOptionText
     {
-        get => selectedOptionLabel.Text;
+        get => this.selectedOptionLabel.Text;
     }
 
     private static readonly Func<T, string> defaultOptionFormat = v => v.ToString() ?? "";
@@ -132,18 +136,18 @@ public class DropDownList<T> : ComponentView
     /// <inheritdoc />
     public override bool Measure(Vector2 availableSize)
     {
-        if (options.IsDirty)
+        if (this.options.IsDirty)
         {
-            UpdateOptions();
-            options.ResetDirty();
+            this.UpdateOptions();
+            this.options.ResetDirty();
         }
-        var wasDirty = base.Measure(availableSize);
+        bool wasDirty = base.Measure(availableSize);
         if (wasDirty)
         {
-            overlayView.Layout = new LayoutParameters()
+            this.overlayView.Layout = new LayoutParameters()
             {
                 // Subtract padding from width.
-                Width = Length.Px(selectionFrame.OuterSize.X - 4),
+                Width = Length.Px(this.selectionFrame.OuterSize.X - 4),
                 Height = Length.Content(),
             };
         }
@@ -154,18 +158,18 @@ public class DropDownList<T> : ComponentView
     protected override IView CreateView()
     {
         // Overlay
-        optionsLane = new Lane() { Layout = LayoutParameters.AutoRow(), Orientation = Orientation.Vertical };
-        UpdateOptions();
-        overlayView = new(this);
+        this.optionsLane = new Lane() { Layout = LayoutParameters.AutoRow(), Orientation = Orientation.Vertical };
+        this.UpdateOptions();
+        this.overlayView = new(this);
 
         // Always visible
-        selectedOptionLabel = Label.Simple("");
-        selectionFrame = new Frame()
+        this.selectedOptionLabel = Label.Simple("");
+        this.selectionFrame = new Frame()
         {
             Layout = LayoutParameters.FitContent(),
             Padding = new(8, 4),
             Background = UiSprites.DropDownBackground,
-            Content = selectedOptionLabel,
+            Content = this.selectedOptionLabel,
         };
         var button = new Image()
         {
@@ -173,8 +177,8 @@ public class DropDownList<T> : ComponentView
             Sprite = UiSprites.DropDownButton,
             Focusable = true,
         };
-        var lane = new Lane() { Layout = LayoutParameters.FitContent(), Children = [selectionFrame, button] };
-        lane.LeftClick += Lane_LeftClick;
+        var lane = new Lane() { Layout = LayoutParameters.FitContent(), Children = [this.selectionFrame, button] };
+        lane.LeftClick += this.Lane_LeftClick;
         return lane;
     }
 
@@ -184,7 +188,8 @@ public class DropDownList<T> : ComponentView
         {
             return;
         }
-        ToggleOverlay();
+
+        this.ToggleOverlay();
     }
 
     private void OptionView_LeftClick(object? sender, ClickEventArgs e)
@@ -194,29 +199,29 @@ public class DropDownList<T> : ComponentView
             return;
         }
         Game1.playSound("drumkit6");
-        RemoveOverlay();
-        SelectedOption = optionView.Value;
+        this.RemoveOverlay();
+        this.SelectedOption = optionView.Value;
     }
 
     private void OptionView_Select(object? sender, EventArgs e)
     {
-        SetSelectedOptionView(view => view == sender);
+        this.SetSelectedOptionView(view => view == sender);
     }
 
     private bool RemoveOverlay()
     {
-        if (overlay is null)
+        if (this.overlay is null)
         {
             return false;
         }
-        Overlay.Remove(overlay);
-        overlay = null;
+        Overlay.Remove(this.overlay);
+        this.overlay = null;
         return true;
     }
 
     private void SetSelectedOptionView(Predicate<DropDownOptionView> predicate)
     {
-        foreach (var optionView in optionsLane.Children.OfType<DropDownOptionView>())
+        foreach (var optionView in this.optionsLane.Children.OfType<DropDownOptionView>())
         {
             optionView.IsSelected = predicate(optionView);
         }
@@ -224,40 +229,40 @@ public class DropDownList<T> : ComponentView
 
     private void ToggleOverlay()
     {
-        if (RemoveOverlay())
+        if (this.RemoveOverlay())
         {
             return;
         }
-        var selectedOption = SelectedOption;
-        SetSelectedOptionView(view => Equals(view.Value, selectedOption));
+        var selectedOption = this.SelectedOption;
+        this.SetSelectedOptionView(view => Equals(view.Value, selectedOption));
         Game1.playSound("shwip");
-        overlay = new Overlay(
-            overlayView,
+        this.overlay = new Overlay(this.overlayView,
             this,
             horizontalAlignment: Alignment.Start,
             horizontalParentAlignment: Alignment.Start,
             verticalAlignment: Alignment.Start,
             verticalParentAlignment: Alignment.End
-        ).OnClose(() => overlay = null);
-        Overlay.Push(overlay);
+        ).OnClose(() => this.overlay = null);
+        Overlay.Push(this.overlay);
     }
 
     private void UpdateOptions()
     {
-        if (optionsLane is null)
+        if (this.optionsLane is null)
         {
             return;
         }
-        optionsLane.Children = options
+
+        this.optionsLane.Children = this.options
             .Select(
                 (option, i) =>
                 {
-                    var optionView = new DropDownOptionView(option, optionFormat(option))
+                    var optionView = new DropDownOptionView(option, this.optionFormat(option))
                     {
-                        IsSelected = SelectedIndex == i,
+                        IsSelected = this.SelectedIndex == i,
                     };
-                    optionView.LeftClick += OptionView_LeftClick;
-                    optionView.Select += OptionView_Select;
+                    optionView.LeftClick += this.OptionView_LeftClick;
+                    optionView.Select += this.OptionView_Select;
                     return optionView as IView;
                 }
             )
@@ -266,11 +271,12 @@ public class DropDownList<T> : ComponentView
 
     private void UpdateSelectedOption()
     {
-        if (selectedOptionLabel is null)
+        if (this.selectedOptionLabel is null)
         {
             return;
         }
-        selectedOptionLabel.Text = SelectedOption is not null ? optionFormat(SelectedOption) : "";
+
+        this.selectedOptionLabel.Text = this.SelectedOption is not null ? this.optionFormat(this.SelectedOption) : "";
     }
 
     class DropDownOptionView(T value, string text) : ComponentView<Frame>
@@ -279,15 +285,16 @@ public class DropDownList<T> : ComponentView
 
         public bool IsSelected
         {
-            get => isSelected;
+            get => this.isSelected;
             set
             {
-                if (isSelected == value)
+                if (this.isSelected == value)
                 {
                     return;
                 }
-                isSelected = value;
-                View.BackgroundTint = GetBackgroundTint();
+
+                this.isSelected = value;
+                this.View.BackgroundTint = this.GetBackgroundTint();
             }
         }
 
@@ -303,23 +310,23 @@ public class DropDownList<T> : ComponentView
                 Layout = LayoutParameters.AutoRow(),
                 Padding = new(4),
                 Background = new(Game1.staminaRect),
-                BackgroundTint = GetBackgroundTint(),
+                BackgroundTint = this.GetBackgroundTint(),
                 Content = label,
                 Focusable = true,
             };
-            frame.PointerEnter += Frame_PointerEnter;
+            frame.PointerEnter += this.Frame_PointerEnter;
             return frame;
         }
 
         private void Frame_PointerEnter(object? sender, PointerEventArgs e)
         {
-            IsSelected = true;
-            Select?.Invoke(this, EventArgs.Empty);
+            this.IsSelected = true;
+            this.Select?.Invoke(this, EventArgs.Empty);
         }
 
         private Color GetBackgroundTint()
         {
-            return isSelected ? new(Color.White, 0.35f) : Color.Transparent;
+            return this.isSelected ? new(Color.White, 0.35f) : Color.Transparent;
         }
     }
 

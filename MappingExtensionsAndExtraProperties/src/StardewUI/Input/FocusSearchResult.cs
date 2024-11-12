@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace StardewUI.Input;
 
@@ -28,7 +30,7 @@ public record FocusSearchResult(ViewChild Target, IEnumerable<ViewChild> Path)
     public FocusSearchResult AsChild(IView parent, Vector2 position)
     {
         var root = new ViewChild(parent, Vector2.Zero);
-        var (target, path) = OffsetTargetOrPath(position);
+        var (target, path) = this.OffsetTargetOrPath(position);
         return new(target, path.Prepend(root));
     }
 
@@ -47,18 +49,18 @@ public record FocusSearchResult(ViewChild Target, IEnumerable<ViewChild> Path)
     /// <returns>A new <see cref="FocusSearchResult"/> with the <paramref name="distance"/> offset applied.</returns>
     public FocusSearchResult Offset(Vector2 distance)
     {
-        var (target, path) = OffsetTargetOrPath(distance);
+        var (target, path) = this.OffsetTargetOrPath(distance);
         return new(target, path);
     }
 
     private (ViewChild target, IEnumerable<ViewChild> path) OffsetTargetOrPath(Vector2 distance)
     {
-        var pathEnumerator = Path.GetEnumerator();
+        var pathEnumerator = this.Path.GetEnumerator();
         if (pathEnumerator.MoveNext())
         {
             var first = pathEnumerator.Current;
-            return (Target, pathEnumerator.ToEnumerable().Prepend(first.Offset(distance)));
+            return (this.Target, pathEnumerator.ToEnumerable().Prepend(first.Offset(distance)));
         }
-        return (Target.Offset(distance), []);
+        return (this.Target.Offset(distance), []);
     }
 }

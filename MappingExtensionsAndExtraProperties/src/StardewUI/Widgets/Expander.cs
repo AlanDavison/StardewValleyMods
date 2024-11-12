@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Layout;
@@ -21,14 +23,14 @@ public class Expander : ComponentView
     /// </summary>
     public IView? Content
     {
-        get => contentFrame.Content;
+        get => this.contentFrame.Content;
         set
         {
-            if (value != contentFrame.Content)
+            if (value != this.contentFrame.Content)
             {
-                contentFrame.Content = value;
-                UpdateContent();
-                OnPropertyChanged(nameof(Content));
+                this.contentFrame.Content = value;
+                this.UpdateContent();
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -38,13 +40,13 @@ public class Expander : ComponentView
     /// </summary>
     public Sprite? CollapsedSprite
     {
-        get => collapsedSprite;
+        get => this.collapsedSprite;
         set
         {
-            if (value != collapsedSprite)
+            if (value != this.collapsedSprite)
             {
-                collapsedSprite = value;
-                OnPropertyChanged(nameof(CollapsedSprite));
+                this.collapsedSprite = value;
+                this.OnPropertyChanged(nameof(this.CollapsedSprite));
             }
         }
     }
@@ -58,13 +60,13 @@ public class Expander : ComponentView
     /// </remarks>
     public Sprite? ExpandedSprite
     {
-        get => expandedSprite;
+        get => this.expandedSprite;
         set
         {
-            if (value != expandedSprite)
+            if (value != this.expandedSprite)
             {
-                expandedSprite = value;
-                OnPropertyChanged(nameof(ExpandedSprite));
+                this.expandedSprite = value;
+                this.OnPropertyChanged(nameof(this.ExpandedSprite));
             }
         }
     }
@@ -75,13 +77,13 @@ public class Expander : ComponentView
     [Outlet("Header")]
     public IView? Header
     {
-        get => headerLane.Children.ElementAtOrDefault(1);
+        get => this.headerLane.Children.ElementAtOrDefault(1);
         set
         {
-            if (value != headerLane.Children.ElementAtOrDefault(1))
+            if (value != this.headerLane.Children.ElementAtOrDefault(1))
             {
-                headerLane.Children = value is not null ? [indicator, value] : [indicator];
-                OnPropertyChanged(nameof(Header));
+                this.headerLane.Children = value is not null ? [this.indicator, value] : [this.indicator];
+                this.OnPropertyChanged(nameof(this.Header));
             }
         }
     }
@@ -91,13 +93,13 @@ public class Expander : ComponentView
     /// </summary>
     public Sprite? HeaderBackground
     {
-        get => headerFrame.Background;
+        get => this.headerFrame.Background;
         set
         {
-            if (value != headerFrame.Background)
+            if (value != this.headerFrame.Background)
             {
-                headerFrame.Background = value;
-                OnPropertyChanged(nameof(HeaderBackground));
+                this.headerFrame.Background = value;
+                this.OnPropertyChanged(nameof(this.HeaderBackground));
             }
         }
     }
@@ -107,13 +109,13 @@ public class Expander : ComponentView
     /// </summary>
     public Color HeaderBackgroundTint
     {
-        get => headerFrame.BackgroundTint;
+        get => this.headerFrame.BackgroundTint;
         set
         {
-            if (value != headerFrame.BackgroundTint)
+            if (value != this.headerFrame.BackgroundTint)
             {
-                headerFrame.BackgroundTint = value;
-                OnPropertyChanged(nameof(HeaderBackgroundTint));
+                this.headerFrame.BackgroundTint = value;
+                this.OnPropertyChanged(nameof(this.HeaderBackgroundTint));
             }
         }
     }
@@ -124,13 +126,13 @@ public class Expander : ComponentView
     /// </summary>
     public LayoutParameters HeaderLayout
     {
-        get => headerFrame.Layout;
+        get => this.headerFrame.Layout;
         set
         {
-            if (value != headerFrame.Layout)
+            if (value != this.headerFrame.Layout)
             {
-                headerFrame.Layout = value;
-                OnPropertyChanged(nameof(HeaderLayout));
+                this.headerFrame.Layout = value;
+                this.OnPropertyChanged(nameof(this.HeaderLayout));
             }
         }
     }
@@ -140,13 +142,13 @@ public class Expander : ComponentView
     /// </summary>
     public Edges HeaderPadding
     {
-        get => headerFrame.Padding;
+        get => this.headerFrame.Padding;
         set
         {
-            if (value != headerFrame.Padding)
+            if (value != this.headerFrame.Padding)
             {
-                headerFrame.Padding = value;
-                OnPropertyChanged(nameof(HeaderPadding));
+                this.headerFrame.Padding = value;
+                this.OnPropertyChanged(nameof(this.HeaderPadding));
             }
         }
     }
@@ -157,17 +159,18 @@ public class Expander : ComponentView
     /// </summary>
     public bool IsExpanded
     {
-        get => isExpanded;
+        get => this.isExpanded;
         set
         {
-            if (value == isExpanded)
+            if (value == this.isExpanded)
             {
                 return;
             }
-            isExpanded = value;
-            UpdateContent();
-            ExpandedChange?.Invoke(this, EventArgs.Empty);
-            OnPropertyChanged(nameof(IsExpanded));
+
+            this.isExpanded = value;
+            this.UpdateContent();
+            this.ExpandedChange?.Invoke(this, EventArgs.Empty);
+            this.OnPropertyChanged(nameof(this.IsExpanded));
         }
     }
 
@@ -176,9 +179,9 @@ public class Expander : ComponentView
     /// </summary>
     public Edges Margin
     {
-        get => layout.Margin;
+        get => this.layout.Margin;
         // "layout" is the root view so no OnPropertyChanged is required here.
-        set => layout.Margin = value;
+        set => this.layout.Margin = value;
     }
 
     private Sprite? collapsedSprite = UiSprites.CaretRight;
@@ -195,7 +198,7 @@ public class Expander : ComponentView
     /// <inheritdoc />
     protected override IView CreateView()
     {
-        indicator = new Image()
+        this.indicator = new Image()
         {
             Name = "ExpanderIndicator",
             Layout = new() { Width = Length.Content(), Height = Length.Content() },
@@ -203,45 +206,46 @@ public class Expander : ComponentView
             HorizontalAlignment = Alignment.Middle,
             VerticalAlignment = Alignment.Middle,
         };
-        headerLane = new Lane()
+        this.headerLane = new Lane()
         {
             Name = "ExpanderHeaderLane",
             Layout = LayoutParameters.FitContent(),
             VerticalContentAlignment = Alignment.Middle,
-            Children = [indicator],
+            Children = [this.indicator],
         };
-        headerFrame = new Frame()
+        this.headerFrame = new Frame()
         {
             Name = "ExpanderHeaderFrame",
             Layout = LayoutParameters.AutoRow(),
-            Content = headerLane,
+            Content = this.headerLane,
             Focusable = true,
         };
-        headerFrame.LeftClick += HeaderFrame_LeftClick;
-        contentFrame = new Frame() { Name = "ExpanderContentFrame", Layout = LayoutParameters.FitContent() };
-        layout = new Lane()
+        this.headerFrame.LeftClick += this.HeaderFrame_LeftClick;
+        this.contentFrame = new Frame() { Name = "ExpanderContentFrame", Layout = LayoutParameters.FitContent() };
+        this.layout = new Lane()
         {
             Name = "ExpanderLayout",
             Layout = LayoutParameters.FitContent(),
             Orientation = Orientation.Vertical,
         };
-        UpdateContent();
-        return layout;
+        this.UpdateContent();
+        return this.layout;
     }
 
     private void HeaderFrame_LeftClick(object? sender, ClickEventArgs e)
     {
-        IsExpanded = !IsExpanded;
+        this.IsExpanded = !this.IsExpanded;
     }
 
     private void UpdateContent()
     {
-        if (layout is null || indicator is null)
+        if (this.layout is null || this.indicator is null)
         {
             return;
         }
-        indicator.Sprite = isExpanded && ExpandedSprite is not null ? ExpandedSprite : CollapsedSprite;
-        indicator.Rotation = isExpanded && ExpandedSprite is null ? SimpleRotation.QuarterClockwise : null;
-        layout.Children = isExpanded ? [headerFrame, contentFrame] : [headerFrame];
+
+        this.indicator.Sprite = this.isExpanded && this.ExpandedSprite is not null ? this.ExpandedSprite : this.CollapsedSprite;
+        this.indicator.Rotation = this.isExpanded && this.ExpandedSprite is null ? SimpleRotation.QuarterClockwise : null;
+        this.layout.Children = this.isExpanded ? [this.headerFrame, this.contentFrame] : [this.headerFrame];
     }
 }

@@ -1,4 +1,5 @@
-﻿using StardewUI.Events;
+﻿using System;
+using StardewUI.Events;
 using StardewUI.Widgets;
 
 namespace StardewUI.Animation;
@@ -36,18 +37,18 @@ public class HoverScale
 
     private void Image_PointerEnter(object? sender, PointerEventArgs e)
     {
-        if (animator.CurrentAnimation is null)
+        if (this.animator.CurrentAnimation is null)
         {
-            animator.Start(1, maxScale, duration);
+            this.animator.Start(1, this.maxScale, this.duration);
         }
         else
         {
-            animator.Forward();
+            this.animator.Forward();
         }
     }
 
     private void Image_PointerLeave(object? sender, PointerEventArgs e)
     {
-        animator.Reverse();
+        this.animator.Reverse();
     }
 }

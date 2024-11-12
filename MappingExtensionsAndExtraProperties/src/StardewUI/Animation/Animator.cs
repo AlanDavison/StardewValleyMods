@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace StardewUI.Animation;
@@ -107,7 +108,7 @@ public class Animator<T, V> : IAnimator
     /// </remarks>
     public void Forward()
     {
-        IsReversing = false;
+        this.IsReversing = false;
     }
 
     /// <summary>
@@ -120,11 +121,12 @@ public class Animator<T, V> : IAnimator
     /// </remarks>
     public void Reset()
     {
-        if (CurrentAnimation is null || !targetRef.TryGetTarget(out var target))
+        if (this.CurrentAnimation is null || !this.targetRef.TryGetTarget(out var target))
         {
             return;
         }
-        setValue(target, IsReversing ? CurrentAnimation.EndValue : CurrentAnimation.StartValue);
+
+        this.setValue(target, this.IsReversing ? this.CurrentAnimation.EndValue : this.CurrentAnimation.StartValue);
     }
 
     /// <summary>
@@ -138,7 +140,7 @@ public class Animator<T, V> : IAnimator
     /// </remarks>
     public void Reverse()
     {
-        IsReversing = true;
+        this.IsReversing = true;
     }
 
     /// <summary>
@@ -147,13 +149,14 @@ public class Animator<T, V> : IAnimator
     /// <param name="animation">The animation settings.</param>
     public void Start(Animation<V> animation)
     {
-        if (!targetRef.TryGetTarget(out var target))
+        if (!this.targetRef.TryGetTarget(out var target))
         {
             return;
         }
-        setValue(target, animation.StartValue);
-        CurrentAnimation = animation;
-        elapsed = IsReversing ? animation.Duration : TimeSpan.Zero;
+
+        this.setValue(target, animation.StartValue);
+        this.CurrentAnimation = animation;
+        this.elapsed = this.IsReversing ? animation.Duration : TimeSpan.Zero;
     }
 
     /// <summary>
@@ -165,7 +168,7 @@ public class Animator<T, V> : IAnimator
     /// <param name="duration">Duration of the animation; defaults to 1 second if not specified.</param>
     public void Start(V startValue, V endValue, TimeSpan? duration = null)
     {
-        Start(new(startValue, endValue, duration ?? TimeSpan.FromSeconds(1)));
+        this.Start(new(startValue, endValue, duration ?? TimeSpan.FromSeconds(1)));
     }
 
     /// <summary>
@@ -176,11 +179,12 @@ public class Animator<T, V> : IAnimator
     /// <param name="duration">Duration of the animation; defaults to 1 second if not specified.</param>
     public void Start(V endValue, TimeSpan duration)
     {
-        if (!targetRef.TryGetTarget(out var target))
+        if (!this.targetRef.TryGetTarget(out var target))
         {
             return;
         }
-        Start(new(getValue(target), endValue, duration));
+
+        this.Start(new(this.getValue(target), endValue, duration));
     }
 
     /// <summary>
@@ -200,9 +204,9 @@ public class Animator<T, V> : IAnimator
     /// </remarks>
     public void Stop()
     {
-        CurrentAnimation = null;
-        IsReversing = false;
-        Paused = false;
+        this.CurrentAnimation = null;
+        this.IsReversing = false;
+        this.Paused = false;
     }
 
     /// <summary>
@@ -211,53 +215,52 @@ public class Animator<T, V> : IAnimator
     /// <param name="elapsed">Time elapsed since last tick.</param>
     public void Tick(TimeSpan elapsed)
     {
-        if (
-            Paused
-            || !targetRef.TryGetTarget(out var target)
-            || CurrentAnimation is null
-            || (!Loop && IsReversing && this.elapsed == TimeSpan.Zero)
-            || (!Loop && !AutoReverse && !IsReversing && this.elapsed >= CurrentAnimation.Duration)
+        if (this.Paused
+            || !this.targetRef.TryGetTarget(out var target)
+            || this.CurrentAnimation is null
+            || (!this.Loop && this.IsReversing && this.elapsed == TimeSpan.Zero)
+            || (!this.Loop && !this.AutoReverse && !this.IsReversing && this.elapsed >= this.CurrentAnimation.Duration)
         )
         {
             return;
         }
-        if (IsReversing)
+        if (this.IsReversing)
         {
             this.elapsed -= elapsed;
             if (this.elapsed < TimeSpan.Zero)
             {
-                if (AutoReverse)
+                if (this.AutoReverse)
                 {
-                    IsReversing = !IsReversing;
+                    this.IsReversing = !this.IsReversing;
                 }
                 else
                 {
-                    this.elapsed = Loop ? CurrentAnimation.Duration : TimeSpan.Zero;
+                    this.elapsed = this.Loop ? this.CurrentAnimation.Duration : TimeSpan.Zero;
                 }
             }
         }
         else
         {
             this.elapsed += elapsed;
-            if (this.elapsed >= CurrentAnimation.Duration)
+            if (this.elapsed >= this.CurrentAnimation.Duration)
             {
-                if (AutoReverse)
+                if (this.AutoReverse)
                 {
-                    IsReversing = !IsReversing;
+                    this.IsReversing = !this.IsReversing;
                 }
                 else
                 {
-                    this.elapsed = Loop ? TimeSpan.Zero : CurrentAnimation.Duration;
+                    this.elapsed = this.Loop ? TimeSpan.Zero : this.CurrentAnimation.Duration;
                 }
             }
         }
-        var progress = CurrentAnimation.Duration > TimeSpan.Zero ? this.elapsed / CurrentAnimation.Duration : 0;
-        var value = lerpValue(CurrentAnimation.StartValue, CurrentAnimation.EndValue, (float)progress);
-        setValue(target, value);
+        double progress = this.CurrentAnimation.Duration > TimeSpan.Zero ? this.elapsed / this.CurrentAnimation.Duration : 0;
+        var value = this.lerpValue(this.CurrentAnimation.StartValue, this.CurrentAnimation.EndValue, (float)progress);
+        this.setValue(target, value);
     }
 
     bool IAnimator.IsValid()
     {
-        return targetRef.TryGetTarget(out _);
+        return this.targetRef.TryGetTarget(out _);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Input;
 using StardewUI.Layout;
@@ -16,13 +17,13 @@ public class Frame : View
     /// </summary>
     public Sprite? Background
     {
-        get => background;
+        get => this.background;
         set
         {
-            if (value != background)
+            if (value != this.background)
             {
-                background = value;
-                OnPropertyChanged(nameof(Background));
+                this.background = value;
+                this.OnPropertyChanged(nameof(this.Background));
             }
         }
     }
@@ -32,13 +33,13 @@ public class Frame : View
     /// </summary>
     public Color BackgroundTint
     {
-        get => backgroundTint;
+        get => this.backgroundTint;
         set
         {
-            if (value != backgroundTint)
+            if (value != this.backgroundTint)
             {
-                backgroundTint = value;
-                OnPropertyChanged(nameof(BackgroundTint));
+                this.backgroundTint = value;
+                this.OnPropertyChanged(nameof(this.BackgroundTint));
             }
         }
     }
@@ -54,13 +55,13 @@ public class Frame : View
     /// </remarks>
     public Sprite? Border
     {
-        get => border;
+        get => this.border;
         set
         {
-            if (value != border)
+            if (value != this.border)
             {
-                border = value;
-                OnPropertyChanged(nameof(Border));
+                this.border = value;
+                this.OnPropertyChanged(nameof(this.Border));
             }
         }
     }
@@ -75,12 +76,12 @@ public class Frame : View
     /// </remarks>
     public Edges BorderThickness
     {
-        get => borderThickness.Value;
+        get => this.borderThickness.Value;
         set
         {
-            if (borderThickness.SetIfChanged(value))
+            if (this.borderThickness.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(BorderThickness));
+                this.OnPropertyChanged(nameof(this.BorderThickness));
             }
         }
     }
@@ -90,12 +91,12 @@ public class Frame : View
     /// </summary>
     public IView? Content
     {
-        get => content.Value;
+        get => this.content.Value;
         set
         {
-            if (content.SetIfChanged(value))
+            if (this.content.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Content));
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -107,12 +108,12 @@ public class Frame : View
     /// </summary>
     public Alignment HorizontalContentAlignment
     {
-        get => horizontalContentAlignment.Value;
+        get => this.horizontalContentAlignment.Value;
         set
         {
-            if (horizontalContentAlignment.SetIfChanged(value))
+            if (this.horizontalContentAlignment.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(HorizontalContentAlignment));
+                this.OnPropertyChanged(nameof(this.HorizontalContentAlignment));
             }
         }
     }
@@ -122,13 +123,13 @@ public class Frame : View
     /// </summary>
     public float ShadowAlpha
     {
-        get => shadowAlpha;
+        get => this.shadowAlpha;
         set
         {
-            if (value != shadowAlpha)
+            if (value != this.shadowAlpha)
             {
-                shadowAlpha = value;
-                OnPropertyChanged(nameof(ShadowAlpha));
+                this.shadowAlpha = value;
+                this.OnPropertyChanged(nameof(this.ShadowAlpha));
             }
         }
     }
@@ -142,13 +143,13 @@ public class Frame : View
     /// </remarks>
     public int ShadowCount
     {
-        get => shadowCount;
+        get => this.shadowCount;
         set
         {
-            if (value != shadowCount)
+            if (value != this.shadowCount)
             {
-                shadowCount = value;
-                OnPropertyChanged(nameof(ShadowCount));
+                this.shadowCount = value;
+                this.OnPropertyChanged(nameof(this.ShadowCount));
             }
         }
     }
@@ -159,13 +160,13 @@ public class Frame : View
     /// </summary>
     public Vector2 ShadowOffset
     {
-        get => shadowOffset;
+        get => this.shadowOffset;
         set
         {
-            if (value != shadowOffset)
+            if (value != this.shadowOffset)
             {
-                shadowOffset = value;
-                OnPropertyChanged(nameof(ShadowOffset));
+                this.shadowOffset = value;
+                this.OnPropertyChanged(nameof(this.ShadowOffset));
             }
         }
     }
@@ -177,12 +178,12 @@ public class Frame : View
     /// </summary>
     public Alignment VerticalContentAlignment
     {
-        get => verticalContentAlignment.Value;
+        get => this.verticalContentAlignment.Value;
         set
         {
-            if (verticalContentAlignment.SetIfChanged(value))
+            if (this.verticalContentAlignment.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(VerticalContentAlignment));
+                this.OnPropertyChanged(nameof(this.VerticalContentAlignment));
             }
         }
     }
@@ -205,29 +206,29 @@ public class Frame : View
     /// <inheritdoc />
     protected override FocusSearchResult? FindFocusableDescendant(Vector2 contentPosition, Direction direction)
     {
-        return Content?.FocusSearch(contentPosition, direction);
+        return this.Content?.FocusSearch(contentPosition, direction);
     }
 
     /// <inheritdoc />
     protected override Edges GetBorderThickness()
     {
-        return BorderThickness;
+        return this.BorderThickness;
     }
 
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return Content is not null ? [new(Content, contentPosition)] : [];
+        return this.Content is not null ? [new(this.Content, this.contentPosition)] : [];
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return borderThickness.IsDirty
-            || horizontalContentAlignment.IsDirty
-            || verticalContentAlignment.IsDirty
-            || content.IsDirty
-            || (Content?.IsDirty() ?? false);
+        return this.borderThickness.IsDirty
+            || this.horizontalContentAlignment.IsDirty
+            || this.verticalContentAlignment.IsDirty
+            || this.content.IsDirty
+            || (this.Content?.IsDirty() ?? false);
     }
 
     /// <inheritdoc />
@@ -235,72 +236,76 @@ public class Frame : View
     {
         using (b.SaveTransform())
         {
-            b.Translate(BorderThickness.Left, BorderThickness.Top);
-            if (ShadowAlpha > 0 && ShadowCount >= 1 && backgroundSlice is not null)
+            b.Translate(this.BorderThickness.Left, this.BorderThickness.Top);
+            if (this.ShadowAlpha > 0 && this.ShadowCount >= 1 && this.backgroundSlice is not null)
             {
                 using var _ = b.SaveTransform();
-                for (int i = 0; i < ShadowCount; i++)
+                for (int i = 0; i < this.ShadowCount; i++)
                 {
-                    b.Translate(ShadowOffset);
-                    backgroundSlice.Draw(b, new(Color.Black, ShadowAlpha));
+                    b.Translate(this.ShadowOffset);
+                    this.backgroundSlice.Draw(b, new(Color.Black, this.ShadowAlpha));
                 }
             }
-            backgroundSlice?.Draw(b, BackgroundTint);
+
+            this.backgroundSlice?.Draw(b, this.BackgroundTint);
         }
-        borderSlice?.Draw(b);
+
+        this.borderSlice?.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        if (Content is null)
+        if (this.Content is null)
         {
             return;
         }
         using var _ = b.SaveTransform();
-        b.Translate(contentPosition);
-        Content.Draw(b);
+        b.Translate(this.contentPosition);
+        this.Content.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        Content?.Measure(Layout.GetLimits(availableSize));
+        this.Content?.Measure(this.Layout.GetLimits(availableSize));
 
-        ContentSize = Layout.Resolve(availableSize, () => Content?.OuterSize ?? Vector2.Zero);
-        UpdateContentPosition();
+        this.ContentSize = this.Layout.Resolve(availableSize, () => this.Content?.OuterSize ?? Vector2.Zero);
+        this.UpdateContentPosition();
 
-        if (borderSlice?.Sprite != Border)
+        if (this.borderSlice?.Sprite != this.Border)
         {
-            borderSlice = Border is not null ? new(Border) : null;
+            this.borderSlice = this.Border is not null ? new(this.Border) : null;
         }
-        borderSlice?.Layout(new(Point.Zero, BorderSize.ToPoint()));
 
-        if (backgroundSlice?.Sprite != Background)
+        this.borderSlice?.Layout(new(Point.Zero, this.BorderSize.ToPoint()));
+
+        if (this.backgroundSlice?.Sprite != this.Background)
         {
-            backgroundSlice = Background is not null ? new(Background) : null;
+            this.backgroundSlice = this.Background is not null ? new(this.Background) : null;
         }
-        backgroundSlice?.Layout(new(Point.Zero, InnerSize.ToPoint()));
+
+        this.backgroundSlice?.Layout(new(Point.Zero, this.InnerSize.ToPoint()));
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        borderThickness.ResetDirty();
-        horizontalContentAlignment.ResetDirty();
-        verticalContentAlignment.ResetDirty();
-        content.ResetDirty();
+        this.borderThickness.ResetDirty();
+        this.horizontalContentAlignment.ResetDirty();
+        this.verticalContentAlignment.ResetDirty();
+        this.content.ResetDirty();
     }
 
     private void UpdateContentPosition()
     {
-        if (Content is null || Content.OuterSize == ContentSize)
+        if (this.Content is null || this.Content.OuterSize == this.ContentSize)
         {
-            contentPosition = Vector2.Zero;
+            this.contentPosition = Vector2.Zero;
             return;
         }
-        var left = HorizontalContentAlignment.Align(Content.OuterSize.X, ContentSize.X);
-        var top = VerticalContentAlignment.Align(Content.OuterSize.Y, ContentSize.Y);
-        contentPosition = new(left, top);
+        float left = this.HorizontalContentAlignment.Align(this.Content.OuterSize.X, this.ContentSize.X);
+        float top = this.VerticalContentAlignment.Align(this.Content.OuterSize.Y, this.ContentSize.Y);
+        this.contentPosition = new(left, top);
     }
 }

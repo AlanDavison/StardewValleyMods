@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Layout;
 
 namespace StardewUI.Overlays;
@@ -111,7 +112,7 @@ public interface IOverlay
     /// <param name="elapsed">The amount of real time elapsed since the last tick.</param>
     void Update(TimeSpan elapsed)
     {
-        View.OnUpdate(elapsed);
+        this.View.OnUpdate(elapsed);
     }
 }
 
@@ -188,7 +189,7 @@ public class Overlay(
     /// <inheritdoc/>
     public void OnClose()
     {
-        Close?.Invoke(this, EventArgs.Empty);
+        this.Close?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -201,7 +202,7 @@ public class Overlay(
     /// <returns>The current <see cref="Overlay"/> instance.</returns>
     public Overlay OnClose(Action onClose)
     {
-        Close += (_, _) => onClose();
+        this.Close += (_, _) => onClose();
         return this;
     }
 

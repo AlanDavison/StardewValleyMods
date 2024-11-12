@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewUI.Animation;
@@ -24,13 +26,13 @@ public class TextInput : View
     /// <inheritdoc cref="Frame.Background"/>
     public Sprite? Background
     {
-        get => frame.Background;
+        get => this.frame.Background;
         set
         {
-            if (value != frame.Background)
+            if (value != this.frame.Background)
             {
-                frame.Background = value;
-                OnPropertyChanged(nameof(Background));
+                this.frame.Background = value;
+                this.OnPropertyChanged(nameof(this.Background));
             }
         }
     }
@@ -44,13 +46,13 @@ public class TextInput : View
     /// </remarks>
     public Edges BorderThickness
     {
-        get => frame.Padding;
+        get => this.frame.Padding;
         set
         {
-            if (value != frame.Padding)
+            if (value != this.frame.Padding)
             {
-                frame.Padding = value;
-                OnPropertyChanged(nameof(BorderThickness));
+                this.frame.Padding = value;
+                this.OnPropertyChanged(nameof(this.BorderThickness));
             }
         }
     }
@@ -60,13 +62,13 @@ public class TextInput : View
     /// </summary>
     public Sprite? Caret
     {
-        get => caret.Sprite;
+        get => this.caret.Sprite;
         set
         {
-            if (value != caret.Sprite)
+            if (value != this.caret.Sprite)
             {
-                caret.Sprite = value;
-                OnPropertyChanged(nameof(Caret));
+                this.caret.Sprite = value;
+                this.OnPropertyChanged(nameof(this.Caret));
             }
         }
     }
@@ -81,12 +83,12 @@ public class TextInput : View
     /// </remarks>
     public int CaretPosition
     {
-        get => labelBeforeCursor.Text.Length;
+        get => this.labelBeforeCursor.Text.Length;
         set
         {
-            if (SetCaretPosition(value))
+            if (this.SetCaretPosition(value))
             {
-                OnPropertyChanged(nameof(CaretPosition));
+                this.OnPropertyChanged(nameof(this.CaretPosition));
             }
         }
     }
@@ -96,17 +98,17 @@ public class TextInput : View
     /// </summary>
     public float? CaretWidth
     {
-        get => caret.Layout.Width.Type == LengthType.Px ? caret.Layout.Width.Value : null;
+        get => this.caret.Layout.Width.Type == LengthType.Px ? this.caret.Layout.Width.Value : null;
         set
         {
-            if (value != CaretWidth)
+            if (value != this.CaretWidth)
             {
-                caret.Layout = new()
+                this.caret.Layout = new()
                 {
                     Width = value.HasValue ? Length.Px(value.Value) : Length.Content(),
                     Height = Length.Stretch(),
                 };
-                OnPropertyChanged(nameof(CaretWidth));
+                this.OnPropertyChanged(nameof(this.CaretWidth));
             }
         }
     }
@@ -116,14 +118,14 @@ public class TextInput : View
     /// </summary>
     public SpriteFont Font
     {
-        get => labelAfterCursor.Font;
+        get => this.labelAfterCursor.Font;
         set
         {
-            if (value != labelAfterCursor.Font || value != labelBeforeCursor.Font)
+            if (value != this.labelAfterCursor.Font || value != this.labelBeforeCursor.Font)
             {
-                labelAfterCursor.Font = value;
-                labelBeforeCursor.Font = value;
-                OnPropertyChanged(nameof(Font));
+                this.labelAfterCursor.Font = value;
+                this.labelBeforeCursor.Font = value;
+                this.OnPropertyChanged(nameof(this.Font));
             }
         }
     }
@@ -136,17 +138,18 @@ public class TextInput : View
     /// </remarks>
     public int MaxLength
     {
-        get => maxLength;
+        get => this.maxLength;
         set
         {
-            if (value != maxLength)
+            if (value != this.maxLength)
             {
-                maxLength = value;
-                if (value > 0 && Text.Length > value)
+                this.maxLength = value;
+                if (value > 0 && this.Text.Length > value)
                 {
-                    Text = Text[..value];
+                    this.Text = this.Text[..value];
                 }
-                OnPropertyChanged(nameof(MaxLength));
+
+                this.OnPropertyChanged(nameof(this.MaxLength));
             }
         }
     }
@@ -154,13 +157,13 @@ public class TextInput : View
     /// <inheritdoc cref="Frame.ShadowAlpha"/>
     public float ShadowAlpha
     {
-        get => frame.ShadowAlpha;
+        get => this.frame.ShadowAlpha;
         set
         {
-            if (value != frame.ShadowAlpha)
+            if (value != this.frame.ShadowAlpha)
             {
-                frame.ShadowAlpha = value;
-                OnPropertyChanged(nameof(ShadowAlpha));
+                this.frame.ShadowAlpha = value;
+                this.OnPropertyChanged(nameof(this.ShadowAlpha));
             }
         }
     }
@@ -168,13 +171,13 @@ public class TextInput : View
     /// <inheritdoc cref="Frame.ShadowOffset"/>
     public Vector2 ShadowOffset
     {
-        get => frame.ShadowOffset;
+        get => this.frame.ShadowOffset;
         set
         {
-            if (value != frame.ShadowOffset)
+            if (value != this.frame.ShadowOffset)
             {
-                frame.ShadowOffset = value;
-                OnPropertyChanged(nameof(ShadowOffset));
+                this.frame.ShadowOffset = value;
+                this.OnPropertyChanged(nameof(this.ShadowOffset));
             }
         }
     }
@@ -184,15 +187,15 @@ public class TextInput : View
     /// </summary>
     public Color TextColor
     {
-        get => labelBeforeCursor.Color;
+        get => this.labelBeforeCursor.Color;
         set
         {
-            if (value != labelBeforeCursor.Color)
+            if (value != this.labelBeforeCursor.Color)
             {
-                labelBeforeCursor.Color = value;
-                labelAfterCursor.Color = value;
-                caret.Tint = value;
-                OnPropertyChanged(nameof(TextColor));
+                this.labelBeforeCursor.Color = value;
+                this.labelAfterCursor.Color = value;
+                this.caret.Tint = value;
+                this.OnPropertyChanged(nameof(this.TextColor));
             }
         }
     }
@@ -205,8 +208,8 @@ public class TextInput : View
     /// </remarks>
     public string Text
     {
-        get => labelBeforeCursor.Text + labelAfterCursor.Text;
-        set => SetText(value);
+        get => this.labelBeforeCursor.Text + this.labelAfterCursor.Text;
+        set => this.SetText(value);
     }
 
     // A very small positive offset we add to the search position when trying to move the caret to the mouse cursor.
@@ -233,9 +236,9 @@ public class TextInput : View
     /// </summary>
     public TextInput()
     {
-        Focusable = true;
+        this.Focusable = true;
 
-        caret = new Image()
+        this.caret = new Image()
         {
             Name = "TextInputCursor",
             Layout = new() { Width = Length.Px(2), Height = Length.Stretch() },
@@ -245,20 +248,19 @@ public class TextInput : View
             Tint = Game1.textColor,
             Visibility = Visibility.Hidden,
         };
-        caretBlinkAnimator = Animator.On(
-            caret,
+        this.caretBlinkAnimator = Animator.On(this.caret,
             i => i.Visibility,
             (_, _, progress) => progress < 0.5f ? Visibility.Visible : Visibility.Hidden,
             (i, v) => i.Visibility = v
         );
-        caretBlinkAnimator.Loop = true;
-        labelBeforeCursor = new()
+        this.caretBlinkAnimator.Loop = true;
+        this.labelBeforeCursor = new()
         {
             Name = "TextInputBeforeCursor",
             Layout = LayoutParameters.FitContent(),
             MaxLines = 1,
         };
-        labelAfterCursor = new()
+        this.labelAfterCursor = new()
         {
             Name = "TextInputAfterCursor",
             Layout = LayoutParameters.FitContent(),
@@ -269,33 +271,33 @@ public class TextInput : View
             Name = "TextInputContentLane",
             Layout = LayoutParameters.Fill(),
             VerticalContentAlignment = Alignment.Middle,
-            Children = [labelBeforeCursor, caret, labelAfterCursor],
+            Children = [this.labelBeforeCursor, this.caret, this.labelAfterCursor],
         };
         var textBoxSprite = UiSprites.TextBox;
-        frame = new()
+        this.frame = new()
         {
             Layout = LayoutParameters.Fill(),
             Padding = textBoxSprite.FixedEdges ?? new(4),
             Background = textBoxSprite,
             Content = textLane,
         };
-        textBoxInterceptor = new(this);
-        textInputSubscriber = new(this, Game1.keyboardFocusInstance.Window);
+        this.textBoxInterceptor = new(this);
+        this.textInputSubscriber = new(this, Game1.keyboardFocusInstance.Window);
 
-        Font = Game1.smallFont;
-        TextColor = Game1.textColor;
+        this.Font = Game1.smallFont;
+        this.TextColor = Game1.textColor;
     }
 
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return [new(frame, Vector2.Zero)];
+        return [new(this.frame, Vector2.Zero)];
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return frame.IsDirty();
+        return this.frame.IsDirty();
     }
 
     /// <inheritdoc />
@@ -303,7 +305,7 @@ public class TextInput : View
     {
         if (e.IsPrimaryButton())
         {
-            Capture(e.Position);
+            this.Capture(e.Position);
             e.Handled = true;
         }
     }
@@ -311,35 +313,35 @@ public class TextInput : View
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        frame.Draw(b);
+        this.frame.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var limits = Layout.GetLimits(availableSize);
-        frame.Measure(limits);
-        ContentSize = Layout.Resolve(availableSize, () => frame.OuterSize);
+        var limits = this.Layout.GetLimits(availableSize);
+        this.frame.Measure(limits);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => this.frame.OuterSize);
     }
 
     private void Capture(Vector2 cursorPosition)
     {
-        Release(); // In case of switch between mouse and controller
+        this.Release(); // In case of switch between mouse and controller
         if (Game1.options.gamepadControls && !Game1.lastCursorMotionWasMouse)
         {
             // Vanilla text entry doesn't support moving the caret, so make sure we're at the end.
-            CaretPosition = Text.Length;
-            textBoxInterceptor.Width = (int)OuterSize.X;
-            textBoxInterceptor.Height = (int)OuterSize.Y;
-            textBoxInterceptor.Selected = true;
-            Game1.showTextEntry(textBoxInterceptor);
+            this.CaretPosition = this.Text.Length;
+            this.textBoxInterceptor.Width = (int)this.OuterSize.X;
+            this.textBoxInterceptor.Height = (int)this.OuterSize.Y;
+            this.textBoxInterceptor.Selected = true;
+            Game1.showTextEntry(this.textBoxInterceptor);
         }
         else
         {
-            var searchOrigin = new Vector2(BorderThickness.Left - CARET_SEARCH_OFFSET, BorderThickness.Top);
-            MoveCaretToCursor(cursorPosition - searchOrigin);
-            caretBlinkAnimator.Start(Visibility.Visible, Visibility.Hidden, TimeSpan.FromSeconds(1));
-            Game1.keyboardDispatcher.Subscriber = textInputSubscriber;
+            var searchOrigin = new Vector2(this.BorderThickness.Left - CARET_SEARCH_OFFSET, this.BorderThickness.Top);
+            this.MoveCaretToCursor(cursorPosition - searchOrigin);
+            this.caretBlinkAnimator.Start(Visibility.Visible, Visibility.Hidden, TimeSpan.FromSeconds(1));
+            Game1.keyboardDispatcher.Subscriber = this.textInputSubscriber;
         }
     }
 
@@ -348,22 +350,22 @@ public class TextInput : View
         switch (key)
         {
             case Keys.Left:
-                CaretPosition--;
+                this.CaretPosition--;
                 break;
             case Keys.Right:
-                CaretPosition++;
+                this.CaretPosition++;
                 break;
             case Keys.Home:
-                CaretPosition = 0;
+                this.CaretPosition = 0;
                 break;
             case Keys.End:
-                CaretPosition = Text.Length;
+                this.CaretPosition = this.Text.Length;
                 break;
             case Keys.Delete:
-                if (labelAfterCursor.Text.Length > 0)
+                if (this.labelAfterCursor.Text.Length > 0)
                 {
-                    labelAfterCursor.Text = labelAfterCursor.Text[1..];
-                    OnTextChanged();
+                    this.labelAfterCursor.Text = this.labelAfterCursor.Text[1..];
+                    this.OnTextChanged();
                 }
                 break;
         }
@@ -374,23 +376,23 @@ public class TextInput : View
         switch (c)
         {
             case '\b':
-                if (labelBeforeCursor.Text.Length > 0)
+                if (this.labelBeforeCursor.Text.Length > 0)
                 {
-                    labelBeforeCursor.Text = labelBeforeCursor.Text[..^1];
-                    OnTextChanged();
+                    this.labelBeforeCursor.Text = this.labelBeforeCursor.Text[..^1];
+                    this.OnTextChanged();
                 }
                 break;
             case '\t':
             case '\r':
-                Release();
+                this.Release();
                 break;
             default:
                 if (!char.IsControl(c))
                 {
-                    if (MaxLength == 0 || Text.Length < MaxLength)
+                    if (this.MaxLength == 0 || this.Text.Length < this.MaxLength)
                     {
-                        labelBeforeCursor.Text += c;
-                        OnTextChanged();
+                        this.labelBeforeCursor.Text += c;
+                        this.OnTextChanged();
                     }
                 }
                 break;
@@ -399,9 +401,9 @@ public class TextInput : View
 
     private void Insert(string text)
     {
-        if (MaxLength > 0)
+        if (this.MaxLength > 0)
         {
-            var remainingLength = Math.Max(MaxLength - Text.Length, 0);
+            int remainingLength = Math.Max(this.MaxLength - this.Text.Length, 0);
             if (text.Length > remainingLength)
             {
                 text = text[..remainingLength];
@@ -409,14 +411,14 @@ public class TextInput : View
         }
         if (text.Length > 0)
         {
-            labelBeforeCursor.Text += text;
-            OnTextChanged();
+            this.labelBeforeCursor.Text += text;
+            this.OnTextChanged();
         }
     }
 
     private void MoveCaretToCursor(Vector2 position)
     {
-        if (position.X < 0 || position.X > ContentSize.X || Text.Length == 0)
+        if (position.X < 0 || position.X > this.ContentSize.X || this.Text.Length == 0)
         {
             return;
         }
@@ -424,17 +426,17 @@ public class TextInput : View
         // of pixel positions to character positions and don't want to reimplement the entire font system.
         // A reasonably (?) fast solution should be to actually measure partial strings, using a binary search on the
         // length of the before/after string.
-        var (previousCharacterCount, labelText, labelOffset) =
-            position.X < labelBeforeCursor.OuterSize.X
-                ? (0, labelBeforeCursor.Text, position.X)
-                : (labelBeforeCursor.Text.Length, labelAfterCursor.Text, position.X - labelBeforeCursor.OuterSize.X);
-        var searchStart = 0;
-        var searchEnd = labelText.Length;
+        (int previousCharacterCount, string? labelText, float labelOffset) =
+            position.X < this.labelBeforeCursor.OuterSize.X
+                ? (0, this.labelBeforeCursor.Text, position.X)
+                : (this.labelBeforeCursor.Text.Length, this.labelAfterCursor.Text, position.X - this.labelBeforeCursor.OuterSize.X);
+        int searchStart = 0;
+        int searchEnd = labelText.Length;
         while (searchStart < searchEnd)
         {
             int searchMid = (int)(MathF.Ceiling((searchStart + searchEnd) / 2.0f));
-            var searchText = labelText[0..searchMid];
-            var textWidth = Font.MeasureString(searchText).X;
+            string? searchText = labelText[0..searchMid];
+            float textWidth = this.Font.MeasureString(searchText).X;
             if (labelOffset < textWidth)
             {
                 searchEnd = Math.Min(searchEnd - 1, searchMid);
@@ -444,51 +446,53 @@ public class TextInput : View
                 searchStart = Math.Max(searchStart + 1, searchMid);
             }
         }
-        var finalIndex = searchStart;
-        CaretPosition = previousCharacterCount + finalIndex;
+        int finalIndex = searchStart;
+        this.CaretPosition = previousCharacterCount + finalIndex;
     }
 
     private void OnTextChanged()
     {
-        TextChanged?.Invoke(this, EventArgs.Empty);
-        OnPropertyChanged(nameof(Text));
+        this.TextChanged?.Invoke(this, EventArgs.Empty);
+        this.OnPropertyChanged(nameof(this.Text));
     }
 
     private void Release()
     {
-        textBoxInterceptor.Selected = false;
-        textInputSubscriber.Selected = false;
+        this.textBoxInterceptor.Selected = false;
+        this.textInputSubscriber.Selected = false;
         Game1.closeTextEntry();
-        caretBlinkAnimator.Stop();
-        caret.Visibility = Visibility.Hidden;
+        this.caretBlinkAnimator.Stop();
+        this.caret.Visibility = Visibility.Hidden;
     }
 
     private bool SetCaretPosition(int position)
     {
-        var fullText = Text;
+        string? fullText = this.Text;
         position = Math.Clamp(position, 0, fullText.Length);
-        if (position == CaretPosition)
+        if (position == this.CaretPosition)
         {
             return false;
         }
-        labelBeforeCursor.Text = position > 0 ? fullText[0..position] : "";
-        labelAfterCursor.Text = position < fullText.Length ? fullText[position..] : "";
+
+        this.labelBeforeCursor.Text = position > 0 ? fullText[0..position] : "";
+        this.labelAfterCursor.Text = position < fullText.Length ? fullText[position..] : "";
         return true;
     }
 
     private void SetText(string text)
     {
-        if (text == Text)
+        if (text == this.Text)
         {
             return;
         }
-        if (maxLength > 0 && text.Length > maxLength)
+        if (this.maxLength > 0 && text.Length > this.maxLength)
         {
-            text = text[..maxLength];
+            text = text[..this.maxLength];
         }
-        labelBeforeCursor.Text = text;
-        labelAfterCursor.Text = "";
-        OnTextChanged();
+
+        this.labelBeforeCursor.Text = text;
+        this.labelAfterCursor.Text = "";
+        this.OnTextChanged();
     }
 
     private class TextBoxInterceptor(TextInput owner)
@@ -497,41 +501,41 @@ public class TextInput : View
     {
         private readonly TextInput owner = owner;
 
-        public IView CapturingView => owner;
+        public IView CapturingView => this.owner;
 
         public override void Draw(SpriteBatch spriteBatch, bool drawShadow = true)
         {
-            var b = new PropagatedSpriteBatch(spriteBatch, Transform.FromTranslation(new(X, Y)));
-            owner.Draw(b);
+            var b = new PropagatedSpriteBatch(spriteBatch, Transform.FromTranslation(new(this.X, this.Y)));
+            this.owner.Draw(b);
         }
 
         public override void RecieveCommandInput(char command)
         {
-            if (Selected)
+            if (this.Selected)
             {
-                owner.Insert(command);
+                this.owner.Insert(command);
             }
         }
 
         public override void RecieveTextInput(char inputChar)
         {
-            if (Selected)
+            if (this.Selected)
             {
-                owner.Insert(inputChar);
+                this.owner.Insert(inputChar);
             }
         }
 
         public override void RecieveTextInput(string text)
         {
-            if (Selected)
+            if (this.Selected)
             {
-                owner.Insert(text);
+                this.owner.Insert(text);
             }
         }
 
         public void ReleaseCapture()
         {
-            owner.Release();
+            this.owner.Release();
         }
     }
 
@@ -544,35 +548,36 @@ public class TextInput : View
 
         public bool Selected
         {
-            get => selected;
+            get => this.selected;
             set
             {
-                if (value == selected)
+                if (value == this.selected)
                 {
                     return;
                 }
-                selected = value;
-                if (selected)
+
+                this.selected = value;
+                if (this.selected)
                 {
                     Game1.keyboardDispatcher.Subscriber = this;
                     if (PlatformUsesWindowEvents())
                     {
-                        window.KeyDown += Window_KeyDown;
+                        this.window.KeyDown += this.Window_KeyDown;
                     }
                     else
                     {
-                        KeyboardInput.KeyDown += KeyboardInput_KeyDown;
+                        KeyboardInput.KeyDown += this.KeyboardInput_KeyDown;
                     }
                 }
                 else
                 {
                     if (PlatformUsesWindowEvents())
                     {
-                        window.KeyDown -= Window_KeyDown;
+                        this.window.KeyDown -= this.Window_KeyDown;
                     }
                     else
                     {
-                        KeyboardInput.KeyDown -= KeyboardInput_KeyDown;
+                        KeyboardInput.KeyDown -= this.KeyboardInput_KeyDown;
                     }
                     if (Game1.keyboardDispatcher.Subscriber == this)
                     {
@@ -582,15 +587,15 @@ public class TextInput : View
             }
         }
 
-        public IView CapturingView => owner;
+        public IView CapturingView => this.owner;
 
         private bool selected;
 
         public void RecieveCommandInput(char command)
         {
-            if (Selected)
+            if (this.Selected)
             {
-                owner.Insert(command);
+                this.owner.Insert(command);
             }
         }
 
@@ -602,33 +607,33 @@ public class TextInput : View
 
         public void RecieveTextInput(char inputChar)
         {
-            if (Selected)
+            if (this.Selected)
             {
-                owner.Insert(inputChar);
+                this.owner.Insert(inputChar);
             }
         }
 
         public void RecieveTextInput(string text)
         {
-            if (Selected)
+            if (this.Selected)
             {
-                owner.Insert(text);
+                this.owner.Insert(text);
             }
         }
 
         public void ReleaseCapture()
         {
-            owner.Release();
+            this.owner.Release();
         }
 
         private void KeyboardInput_KeyDown(object sender, KeyEventArgs e)
         {
-            owner.HandleSpecialKey(e.KeyCode);
+            this.owner.HandleSpecialKey(e.KeyCode);
         }
 
         private void Window_KeyDown(object? sender, InputKeyEventArgs e)
         {
-            owner.HandleSpecialKey(e.Key);
+            this.owner.HandleSpecialKey(e.Key);
         }
 
         // Same logic used in KeyboardDispatcher.

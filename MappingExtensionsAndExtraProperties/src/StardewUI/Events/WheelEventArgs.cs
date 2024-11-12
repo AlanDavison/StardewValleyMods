@@ -20,6 +20,6 @@ public class WheelEventArgs(Vector2 position, Direction direction)
     /// <inheritdoc/>
     public new WheelEventArgs Offset(Vector2 distance)
     {
-        return new(Position + distance, Direction);
+        return new(this.Position + distance, this.Direction);
     }
 }

@@ -23,8 +23,8 @@ public sealed class DirtyTracker<T>(T initialValue)
     /// </summary>
     public T Value
     {
-        get => value;
-        set => SetIfChanged(value);
+        get => this.value;
+        set => this.SetIfChanged(value);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public sealed class DirtyTracker<T>(T initialValue)
     /// </summary>
     public void ResetDirty()
     {
-        IsDirty = false;
+        this.IsDirty = false;
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public sealed class DirtyTracker<T>(T initialValue)
         if (!Equals(value, this.value))
         {
             this.value = value;
-            IsDirty = true;
+            this.IsDirty = true;
             return true;
         }
         return false;

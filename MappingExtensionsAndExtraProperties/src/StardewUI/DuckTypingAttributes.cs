@@ -1,4 +1,6 @@
-﻿namespace StardewUI;
+﻿using System;
+
+namespace StardewUI;
 
 /// <summary>
 /// Specifies a property name to use for duck-type conversions, if different from the member name.

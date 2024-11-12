@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StardewUI.Layout;
 
@@ -18,19 +20,19 @@ public class DirtyTrackingList<T> : IList<T>, IReadOnlyList<T>
     /// <inheritdoc />
     public T this[int index]
     {
-        get => items[index];
+        get => this.items[index];
         set
         {
-            if (!Equals(items[index], value))
+            if (!Equals(this.items[index], value))
             {
-                items[index] = value;
-                IsDirty = true;
+                this.items[index] = value;
+                this.IsDirty = true;
             }
         }
     }
 
     /// <inheritdoc />
-    public int Count => items.Count;
+    public int Count => this.items.Count;
 
     /// <inheritdoc />
     public bool IsReadOnly => false;
@@ -38,59 +40,60 @@ public class DirtyTrackingList<T> : IList<T>, IReadOnlyList<T>
     /// <inheritdoc />
     public void Add(T item)
     {
-        items.Add(item);
-        IsDirty = true;
+        this.items.Add(item);
+        this.IsDirty = true;
     }
 
     /// <inheritdoc />
     public void Clear()
     {
-        if (items.Count == 0)
+        if (this.items.Count == 0)
         {
             return;
         }
-        items.Clear();
-        IsDirty = true;
+
+        this.items.Clear();
+        this.IsDirty = true;
     }
 
     /// <inheritdoc />
     public bool Contains(T item)
     {
-        return items.Contains(item);
+        return this.items.Contains(item);
     }
 
     /// <inheritdoc />
     public void CopyTo(T[] array, int arrayIndex)
     {
-        items.CopyTo(array, arrayIndex);
+        this.items.CopyTo(array, arrayIndex);
     }
 
     /// <inheritdoc />
     public IEnumerator<T> GetEnumerator()
     {
-        return items.GetEnumerator();
+        return this.items.GetEnumerator();
     }
 
     /// <inheritdoc />
     public int IndexOf(T item)
     {
-        return items.IndexOf(item);
+        return this.items.IndexOf(item);
     }
 
     /// <inheritdoc />
     public void Insert(int index, T item)
     {
-        items.Insert(index, item);
-        IsDirty = true;
+        this.items.Insert(index, item);
+        this.IsDirty = true;
     }
 
     /// <inheritdoc />
     public bool Remove(T item)
     {
-        var wasRemoved = items.Remove(item);
+        bool wasRemoved = this.items.Remove(item);
         if (wasRemoved)
         {
-            IsDirty = true;
+            this.IsDirty = true;
         }
         return wasRemoved;
     }
@@ -98,8 +101,8 @@ public class DirtyTrackingList<T> : IList<T>, IReadOnlyList<T>
     /// <inheritdoc />
     public void RemoveAt(int index)
     {
-        items.RemoveAt(index);
-        IsDirty = true;
+        this.items.RemoveAt(index);
+        this.IsDirty = true;
     }
 
     /// <summary>
@@ -107,7 +110,7 @@ public class DirtyTrackingList<T> : IList<T>, IReadOnlyList<T>
     /// </summary>
     public void ResetDirty()
     {
-        IsDirty = false;
+        this.IsDirty = false;
     }
 
     /// <summary>
@@ -122,12 +125,12 @@ public class DirtyTrackingList<T> : IList<T>, IReadOnlyList<T>
         }
         this.items.Clear();
         this.items.AddRange(items);
-        IsDirty = true;
+        this.IsDirty = true;
         return true;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return GetEnumerator();
+        return this.GetEnumerator();
     }
 }

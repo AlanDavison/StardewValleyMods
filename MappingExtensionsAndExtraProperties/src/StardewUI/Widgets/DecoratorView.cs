@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using StardewUI.Events;
@@ -71,8 +73,8 @@ public class DecoratorView<T> : IView, IDisposable
         /// for this property.</returns>
         public TValue Get()
         {
-            EnsureInitialized();
-            return owner.view is not null ? getValue(owner.view) : value;
+            this.EnsureInitialized();
+            return this.owner.view is not null ? getValue(this.owner.view) : this.value;
         }
 
         /// <summary>
@@ -85,12 +87,12 @@ public class DecoratorView<T> : IView, IDisposable
         /// <param name="value">The new value.</param>
         public void Set(TValue value)
         {
-            EnsureInitialized();
+            this.EnsureInitialized();
             this.value = value;
-            isValueSet = true;
-            if (owner.view is not null)
+            this.isValueSet = true;
+            if (this.owner.view is not null)
             {
-                setValue(owner.view, value);
+                setValue(this.owner.view, value);
             }
         }
 
@@ -103,12 +105,12 @@ public class DecoratorView<T> : IView, IDisposable
         /// </remarks>
         public void Update()
         {
-            EnsureInitialized();
-            if (owner.view is not null)
+            this.EnsureInitialized();
+            if (this.owner.view is not null)
             {
-                if (isValueSet)
+                if (this.isValueSet)
                 {
-                    setValue(owner.view, value!);
+                    setValue(this.owner.view, this.value!);
                 }
                 else
                 {
@@ -117,7 +119,7 @@ public class DecoratorView<T> : IView, IDisposable
                     // That way, if anything external reads the property using `Get`, it will have the same value as the
                     // inner view; but also, if the inner view is swapped out at some point without the property ever
                     // having been set explicitly, then values from the old view don't "stick" to the new view.
-                    value = getValue(owner.view);
+                    this.value = getValue(this.owner.view);
                 }
             }
         }
@@ -125,7 +127,7 @@ public class DecoratorView<T> : IView, IDisposable
         [MemberNotNull(nameof(owner))]
         private void EnsureInitialized()
         {
-            if (owner is null)
+            if (this.owner is null)
             {
                 throw new InvalidOperationException($"{nameof(DecoratedProperty<T>)} has not been initialized.");
             }
@@ -144,70 +146,70 @@ public class DecoratorView<T> : IView, IDisposable
     }
 
     /// <inheritdoc />
-    public Bounds ActualBounds => view?.ActualBounds ?? Bounds.Empty;
+    public Bounds ActualBounds => this.view?.ActualBounds ?? Bounds.Empty;
 
     /// <inheritdoc />
-    public Bounds ContentBounds => view?.ContentBounds ?? Bounds.Empty;
+    public Bounds ContentBounds => this.view?.ContentBounds ?? Bounds.Empty;
 
     /// <inheritdoc />
-    public IEnumerable<Bounds> FloatingBounds => view?.FloatingBounds ?? [];
+    public IEnumerable<Bounds> FloatingBounds => this.view?.FloatingBounds ?? [];
 
     /// <inheritdoc />
-    public bool IsFocusable => view?.IsFocusable ?? false;
+    public bool IsFocusable => this.view?.IsFocusable ?? false;
 
     /// <inheritdoc />
     public LayoutParameters Layout
     {
-        get => layout;
-        set => layout.Set(value);
+        get => this.layout;
+        set => this.layout.Set(value);
     }
 
     /// <inheritdoc />
     public string Name
     {
-        get => name;
-        set => name.Set(value);
+        get => this.name;
+        set => this.name.Set(value);
     }
 
     /// <inheritdoc />
-    public Vector2 OuterSize => view?.OuterSize ?? Vector2.Zero;
+    public Vector2 OuterSize => this.view?.OuterSize ?? Vector2.Zero;
 
     /// <inheritdoc />
     public bool PointerEventsEnabled
     {
-        get => pointerEventsEnabled;
-        set => pointerEventsEnabled.Set(value);
+        get => this.pointerEventsEnabled;
+        set => this.pointerEventsEnabled.Set(value);
     }
 
     /// <inheritdoc />
     public Orientation? ScrollWithChildren
     {
-        get => scrollWithChildren;
-        set => scrollWithChildren.Set(value);
+        get => this.scrollWithChildren;
+        set => this.scrollWithChildren.Set(value);
     }
 
     /// <inheritdoc />
-    public Tags Tags => view?.Tags ?? Tags.Empty;
+    public Tags Tags => this.view?.Tags ?? Tags.Empty;
 
     /// <inheritdoc />
     public string Tooltip
     {
-        get => tooltip;
-        set => tooltip.Set(value);
+        get => this.tooltip;
+        set => this.tooltip.Set(value);
     }
 
     /// <inheritdoc />
     public Visibility Visibility
     {
-        get => visibility;
-        set => visibility.Set(value);
+        get => this.visibility;
+        set => this.visibility.Set(value);
     }
 
     /// <inheritdoc />
     public int ZIndex
     {
-        get => zIndex;
-        set => zIndex.Set(value);
+        get => this.zIndex;
+        set => this.zIndex.Set(value);
     }
 
     /// <inheritdoc />
@@ -248,8 +250,8 @@ public class DecoratorView<T> : IView, IDisposable
     /// </summary>
     protected T? View
     {
-        get => view;
-        set => SetInnerView(value);
+        get => this.view;
+        set => this.SetInnerView(value);
     }
 
     private readonly List<IDecoratedProperty> decoratedProperties = [];
@@ -272,94 +274,95 @@ public class DecoratorView<T> : IView, IDisposable
     /// </summary>
     public DecoratorView()
     {
-        RegisterDecoratedProperty(layout);
-        RegisterDecoratedProperty(name);
-        RegisterDecoratedProperty(pointerEventsEnabled);
-        RegisterDecoratedProperty(scrollWithChildren);
-        RegisterDecoratedProperty(tooltip);
-        RegisterDecoratedProperty(visibility);
-        RegisterDecoratedProperty(zIndex);
+        this.RegisterDecoratedProperty(this.layout);
+        this.RegisterDecoratedProperty(this.name);
+        this.RegisterDecoratedProperty(this.pointerEventsEnabled);
+        this.RegisterDecoratedProperty(this.scrollWithChildren);
+        this.RegisterDecoratedProperty(this.tooltip);
+        this.RegisterDecoratedProperty(this.visibility);
+        this.RegisterDecoratedProperty(this.zIndex);
     }
 
     /// <inheritdoc />
     public virtual bool ContainsPoint(Vector2 point)
     {
-        return view?.ContainsPoint(point) ?? false;
+        return this.view?.ContainsPoint(point) ?? false;
     }
 
     /// <inheritdoc />
     public virtual void Dispose()
     {
-        DetachHandlers();
-        if (view is IDisposable viewDisposable)
+        this.DetachHandlers();
+        if (this.view is IDisposable viewDisposable)
         {
             viewDisposable.Dispose();
         }
-        view = null;
+
+        this.view = null;
         GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
     public virtual void Draw(ISpriteBatch b)
     {
-        view?.Draw(b);
+        this.view?.Draw(b);
     }
 
     /// <inheritdoc />
     public virtual FocusSearchResult? FocusSearch(Vector2 position, Direction direction)
     {
-        return view?.FocusSearch(position, direction);
+        return this.view?.FocusSearch(position, direction);
     }
 
     /// <inheritdoc />
     public virtual ViewChild? GetChildAt(Vector2 position)
     {
-        return view?.ContainsPoint(position) == true ? new(view, Vector2.Zero) : null;
+        return this.view?.ContainsPoint(position) == true ? new(this.view, Vector2.Zero) : null;
     }
 
     /// <inheritdoc />
     public virtual Vector2? GetChildPosition(IView childView)
     {
-        return childView == view ? Vector2.Zero : null;
+        return childView == this.view ? Vector2.Zero : null;
     }
 
     /// <inheritdoc />
     public virtual IEnumerable<ViewChild> GetChildren()
     {
-        return view is not null ? [new(view, Vector2.Zero)] : [];
+        return this.view is not null ? [new(this.view, Vector2.Zero)] : [];
     }
 
     /// <inheritdoc />
     public virtual IEnumerable<ViewChild> GetChildrenAt(Vector2 position)
     {
-        return view?.ContainsPoint(position) == true ? [new(view, Vector2.Zero)] : [];
+        return this.view?.ContainsPoint(position) == true ? [new(this.view, Vector2.Zero)] : [];
     }
 
     /// <inheritdoc />
     public virtual ViewChild? GetDefaultFocusChild()
     {
-        return view?.GetDefaultFocusChild() ?? (view?.IsFocusable == true ? new(view, Vector2.Zero) : null);
+        return this.view?.GetDefaultFocusChild() ?? (this.view?.IsFocusable == true ? new(this.view, Vector2.Zero) : null);
     }
 
     /// <inheritdoc />
     public virtual bool HasOutOfBoundsContent()
     {
-        return view?.HasOutOfBoundsContent() ?? false;
+        return this.view?.HasOutOfBoundsContent() ?? false;
     }
 
     /// <inheritdoc />
     public virtual bool IsDirty()
     {
-        return view?.IsDirty() ?? false;
+        return this.view?.IsDirty() ?? false;
     }
 
     /// <inheritdoc />
     public virtual bool Measure(Vector2 availableSize)
     {
-        var wasDirty = view?.Measure(availableSize) ?? false;
+        bool wasDirty = this.view?.Measure(availableSize) ?? false;
         if (wasDirty)
         {
-            OnLayout();
+            this.OnLayout();
         }
         return wasDirty;
     }
@@ -367,50 +370,50 @@ public class DecoratorView<T> : IView, IDisposable
     /// <inheritdoc />
     public virtual void OnButtonPress(ButtonEventArgs e)
     {
-        view?.OnButtonPress(e);
+        this.view?.OnButtonPress(e);
     }
 
     /// <inheritdoc />
     public virtual void OnClick(ClickEventArgs e)
     {
-        view?.OnClick(e);
+        this.view?.OnClick(e);
     }
 
     /// <inheritdoc />
     public virtual void OnDrag(PointerEventArgs e)
     {
-        view?.OnDrag(e);
+        this.view?.OnDrag(e);
     }
 
     /// <inheritdoc />
     public virtual void OnDrop(PointerEventArgs e)
     {
-        view?.OnDrop(e);
+        this.view?.OnDrop(e);
     }
 
     /// <inheritdoc />
     public virtual void OnPointerMove(PointerMoveEventArgs e)
     {
-        view?.OnPointerMove(e);
+        this.view?.OnPointerMove(e);
     }
 
     /// <inheritdoc />
     public virtual void OnUpdate(TimeSpan elapsed)
     {
-        view?.OnUpdate(elapsed);
+        this.view?.OnUpdate(elapsed);
     }
 
     /// <inheritdoc />
     public virtual void OnWheel(WheelEventArgs e)
     {
-        view?.OnWheel(e);
+        this.view?.OnWheel(e);
     }
 
     /// <inheritdoc />
     public virtual bool ScrollIntoView(IEnumerable<ViewChild> path, out Vector2 distance)
     {
         distance = default;
-        return view?.ScrollIntoView(path, out distance) ?? false;
+        return this.view?.ScrollIntoView(path, out distance) ?? false;
     }
 
     /// <summary>
@@ -424,7 +427,7 @@ public class DecoratorView<T> : IView, IDisposable
     /// <param name="args">The event arguments.</param>
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs args)
     {
-        PropertyChanged?.Invoke(this, args);
+        this.PropertyChanged?.Invoke(this, args);
     }
 
     /// <summary>
@@ -433,7 +436,7 @@ public class DecoratorView<T> : IView, IDisposable
     /// <param name="propertyName">The name of the property that was changed.</param>
     protected virtual void OnPropertyChanged(string propertyName)
     {
-        PropertyChanged?.Invoke(this, new(propertyName));
+        this.PropertyChanged?.Invoke(this, new(propertyName));
     }
 
     /// <summary>
@@ -448,81 +451,85 @@ public class DecoratorView<T> : IView, IDisposable
     protected void RegisterDecoratedProperty<TValue>(DecoratedProperty<TValue> property)
     {
         ((IDecoratedProperty)property).Init(this);
-        decoratedProperties.Add(property);
+        this.decoratedProperties.Add(property);
     }
 
     private void AttachHandlers()
     {
-        if (view is null)
+        if (this.view is null)
         {
             return;
         }
-        view.ButtonPress += View_ButtonPress;
-        view.Click += View_Click;
-        view.Drag += View_Drag;
-        view.DragEnd += View_DragEnd;
-        view.DragStart += View_DragStart;
-        view.LeftClick += View_LeftClick;
-        view.PointerEnter += View_PointerEnter;
-        view.PointerLeave += View_PointerLeave;
-        view.PropertyChanged += View_PropertyChanged;
-        view.RightClick += View_RightClick;
-        view.Wheel += View_Wheel;
+
+        this.view.ButtonPress += this.View_ButtonPress;
+        this.view.Click += this.View_Click;
+        this.view.Drag += this.View_Drag;
+        this.view.DragEnd += this.View_DragEnd;
+        this.view.DragStart += this.View_DragStart;
+        this.view.LeftClick += this.View_LeftClick;
+        this.view.PointerEnter += this.View_PointerEnter;
+        this.view.PointerLeave += this.View_PointerLeave;
+        this.view.PropertyChanged += this.View_PropertyChanged;
+        this.view.RightClick += this.View_RightClick;
+        this.view.Wheel += this.View_Wheel;
     }
 
     private void DetachHandlers()
     {
-        if (view is null)
+        if (this.view is null)
         {
             return;
         }
-        view.ButtonPress -= View_ButtonPress;
-        view.Click -= View_Click;
-        view.Drag -= View_Drag;
-        view.DragEnd -= View_DragEnd;
-        view.DragStart -= View_DragStart;
-        view.LeftClick -= View_LeftClick;
-        view.PointerEnter -= View_PointerEnter;
-        view.PointerLeave -= View_PointerLeave;
-        view.PropertyChanged -= View_PropertyChanged;
-        view.RightClick -= View_RightClick;
-        view.Wheel -= View_Wheel;
+
+        this.view.ButtonPress -= this.View_ButtonPress;
+        this.view.Click -= this.View_Click;
+        this.view.Drag -= this.View_Drag;
+        this.view.DragEnd -= this.View_DragEnd;
+        this.view.DragStart -= this.View_DragStart;
+        this.view.LeftClick -= this.View_LeftClick;
+        this.view.PointerEnter -= this.View_PointerEnter;
+        this.view.PointerLeave -= this.View_PointerLeave;
+        this.view.PropertyChanged -= this.View_PropertyChanged;
+        this.view.RightClick -= this.View_RightClick;
+        this.view.Wheel -= this.View_Wheel;
     }
 
     private void SetInnerView(T? innerView)
     {
-        if (innerView == view)
+        if (innerView == this.view)
         {
             return;
         }
-        DetachHandlers();
-        view = innerView;
-        foreach (var property in decoratedProperties)
+
+        this.DetachHandlers();
+        this.view = innerView;
+        foreach (var property in this.decoratedProperties)
         {
             property.Update();
         }
-        AttachHandlers();
+
+        this.AttachHandlers();
     }
 
-    private void View_ButtonPress(object? _, ButtonEventArgs e) => ButtonPress?.Invoke(this, e);
+    private void View_ButtonPress(object? _, ButtonEventArgs e) => this.ButtonPress?.Invoke(this, e);
 
-    private void View_Click(object? _, ClickEventArgs e) => Click?.Invoke(this, e);
+    private void View_Click(object? _, ClickEventArgs e) => this.Click?.Invoke(this, e);
 
-    private void View_Drag(object? _, PointerEventArgs e) => Drag?.Invoke(this, e);
+    private void View_Drag(object? _, PointerEventArgs e) => this.Drag?.Invoke(this, e);
 
-    private void View_DragEnd(object? _, PointerEventArgs e) => DragEnd?.Invoke(this, e);
+    private void View_DragEnd(object? _, PointerEventArgs e) => this.DragEnd?.Invoke(this, e);
 
-    private void View_DragStart(object? _, PointerEventArgs e) => DragStart?.Invoke(this, e);
+    private void View_DragStart(object? _, PointerEventArgs e) => this.DragStart?.Invoke(this, e);
 
-    private void View_LeftClick(object? _, ClickEventArgs e) => LeftClick?.Invoke(this, e);
+    private void View_LeftClick(object? _, ClickEventArgs e) => this.LeftClick?.Invoke(this, e);
 
-    private void View_PointerEnter(object? _, PointerEventArgs e) => PointerEnter?.Invoke(this, e);
+    private void View_PointerEnter(object? _, PointerEventArgs e) => this.PointerEnter?.Invoke(this, e);
 
-    private void View_PointerLeave(object? _, PointerEventArgs e) => PointerLeave?.Invoke(this, e);
+    private void View_PointerLeave(object? _, PointerEventArgs e) => this.PointerLeave?.Invoke(this, e);
 
-    private void View_PropertyChanged(object? _, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
+    private void View_PropertyChanged(object? _, PropertyChangedEventArgs e) => this.PropertyChanged?.Invoke(this, e);
 
-    private void View_RightClick(object? _, ClickEventArgs e) => RightClick?.Invoke(this, e);
+    private void View_RightClick(object? _, ClickEventArgs e) => this.RightClick?.Invoke(this, e);
 
-    private void View_Wheel(object? _, WheelEventArgs e) => Wheel?.Invoke(this, e);
+    private void View_Wheel(object? _, WheelEventArgs e) => this.Wheel?.Invoke(this, e);
 }

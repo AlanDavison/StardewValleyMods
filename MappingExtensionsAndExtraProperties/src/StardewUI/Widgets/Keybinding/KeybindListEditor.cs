@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -27,13 +30,13 @@ public class KeybindListEditor : ComponentView
     /// </remarks>
     public string AddButtonText
     {
-        get => addButtonText;
+        get => this.addButtonText;
         set
         {
-            if (value != addButtonText)
+            if (value != this.addButtonText)
             {
-                addButtonText = value;
-                OnPropertyChanged(nameof(AddButtonText));
+                this.addButtonText = value;
+                this.OnPropertyChanged(nameof(this.AddButtonText));
             }
         }
     }
@@ -43,19 +46,21 @@ public class KeybindListEditor : ComponentView
     /// </summary>
     public int ButtonHeight
     {
-        get => buttonHeight;
+        get => this.buttonHeight;
         set
         {
-            if (value == buttonHeight)
+            if (value == this.buttonHeight)
             {
                 return;
             }
-            buttonHeight = value;
-            foreach (var keybindView in KeybindViews)
+
+            this.buttonHeight = value;
+            foreach (var keybindView in this.KeybindViews)
             {
                 keybindView.ButtonHeight = value;
             }
-            OnPropertyChanged(nameof(ButtonHeight));
+
+            this.OnPropertyChanged(nameof(this.ButtonHeight));
         }
     }
 
@@ -67,13 +72,13 @@ public class KeybindListEditor : ComponentView
     /// </remarks>
     public string DeleteButtonTooltip
     {
-        get => deleteButtonTooltip;
+        get => this.deleteButtonTooltip;
         set
         {
-            if (value != deleteButtonTooltip)
+            if (value != this.deleteButtonTooltip)
             {
-                deleteButtonTooltip = value;
-                OnPropertyChanged(nameof(DeleteButtonTooltip));
+                this.deleteButtonTooltip = value;
+                this.OnPropertyChanged(nameof(this.DeleteButtonTooltip));
             }
         }
     }
@@ -88,13 +93,13 @@ public class KeybindListEditor : ComponentView
     /// </remarks>
     public KeybindType? EditableType
     {
-        get => editableType;
+        get => this.editableType;
         set
         {
-            if (value != editableType)
+            if (value != this.editableType)
             {
-                editableType = value;
-                OnPropertyChanged(nameof(EditableType));
+                this.editableType = value;
+                this.OnPropertyChanged(nameof(this.EditableType));
             }
         }
     }
@@ -104,16 +109,17 @@ public class KeybindListEditor : ComponentView
     /// </summary>
     public string EmptyText
     {
-        get => emptyText;
+        get => this.emptyText;
         set
         {
-            if (value == emptyText)
+            if (value == this.emptyText)
             {
                 return;
             }
-            emptyText = value;
-            UpdateEmptyText(EmptyTextColor);
-            OnPropertyChanged(nameof(EmptyText));
+
+            this.emptyText = value;
+            this.UpdateEmptyText(this.EmptyTextColor);
+            this.OnPropertyChanged(nameof(this.EmptyText));
         }
     }
 
@@ -122,24 +128,25 @@ public class KeybindListEditor : ComponentView
     /// </summary>
     public Color EmptyTextColor
     {
-        get => emptyTextColor;
+        get => this.emptyTextColor;
         set
         {
-            if (value == emptyTextColor)
+            if (value == this.emptyTextColor)
             {
                 return;
             }
-            emptyTextColor = value;
-            UpdateEmptyText(EmptyTextColor);
-            OnPropertyChanged(nameof(EmptyTextColor));
+
+            this.emptyTextColor = value;
+            this.UpdateEmptyText(this.EmptyTextColor);
+            this.OnPropertyChanged(nameof(this.EmptyTextColor));
         }
     }
 
     /// <inheritdoc cref="View.Focusable" />
     public bool Focusable
     {
-        get => rootLane.Focusable;
-        set => rootLane.Focusable = value;
+        get => this.rootLane.Focusable;
+        set => this.rootLane.Focusable = value;
     }
 
     /// <summary>
@@ -152,19 +159,21 @@ public class KeybindListEditor : ComponentView
     /// </remarks>
     public SpriteFont Font
     {
-        get => font;
+        get => this.font;
         set
         {
-            if (value == font)
+            if (value == this.font)
             {
                 return;
             }
-            font = value;
-            foreach (var keybindView in KeybindViews)
+
+            this.font = value;
+            foreach (var keybindView in this.KeybindViews)
             {
                 keybindView.Font = value;
             }
-            OnPropertyChanged(nameof(Font));
+
+            this.OnPropertyChanged(nameof(this.Font));
         }
     }
 
@@ -176,16 +185,17 @@ public class KeybindListEditor : ComponentView
     /// </remarks>
     public KeybindList KeybindList
     {
-        get => keybindList;
+        get => this.keybindList;
         set
         {
-            if (value == keybindList)
+            if (value == this.keybindList)
             {
                 return;
             }
-            keybindList = value;
-            UpdateAll();
-            OnPropertyChanged(nameof(KeybindList));
+
+            this.keybindList = value;
+            this.UpdateAll();
+            this.OnPropertyChanged(nameof(this.KeybindList));
         }
     }
 
@@ -194,24 +204,25 @@ public class KeybindListEditor : ComponentView
     /// </summary>
     public ISpriteMap<SButton>? SpriteMap
     {
-        get => spriteMap;
+        get => this.spriteMap;
         set
         {
-            if (value == spriteMap)
+            if (value == this.spriteMap)
             {
                 return;
             }
-            spriteMap = value;
-            foreach (var keybindView in KeybindViews)
+
+            this.spriteMap = value;
+            foreach (var keybindView in this.KeybindViews)
             {
                 keybindView.SpriteMap = value;
             }
-            OnPropertyChanged(nameof(SpriteMap));
+
+            this.OnPropertyChanged(nameof(this.SpriteMap));
         }
     }
 
-    private IEnumerable<KeybindView> KeybindViews =>
-        rootLane.Children.OfType<Frame>().Select(frame => frame.Content).OfType<KeybindView>();
+    private IEnumerable<KeybindView> KeybindViews => this.rootLane.Children.OfType<Frame>().Select(frame => frame.Content).OfType<KeybindView>();
 
     private readonly Lane rootLane = new();
 
@@ -228,11 +239,11 @@ public class KeybindListEditor : ComponentView
     /// <inheritdoc />
     protected override IView CreateView()
     {
-        rootLane.LeftClick += RootLane_LeftClick;
-        rootLane.RightClick += RootLane_RightClick;
-        rootLane.PointerEnter += RootLane_PointerEnter;
-        rootLane.PointerLeave += RootLane_PointerLeave;
-        return rootLane;
+        this.rootLane.LeftClick += this.RootLane_LeftClick;
+        this.rootLane.RightClick += this.RootLane_RightClick;
+        this.rootLane.PointerEnter += this.RootLane_PointerEnter;
+        this.rootLane.PointerLeave += this.RootLane_PointerLeave;
+        return this.rootLane;
     }
 
     private void Overlay_Close(object? sender, EventArgs e)
@@ -241,30 +252,31 @@ public class KeybindListEditor : ComponentView
         {
             return;
         }
-        KeybindList = overlay.KeybindList;
+
+        this.KeybindList = overlay.KeybindList;
         // We generally won't receive the PointerLeave event after a full-screen overlay was open.
         // Known issue due to dependency on recursive PointerMove, hard to resolve.
-        UpdateTint(Color.White);
-        UpdateEmptyText(EmptyTextColor);
+        this.UpdateTint(Color.White);
+        this.UpdateEmptyText(this.EmptyTextColor);
     }
 
     private void RootLane_LeftClick(object? sender, ClickEventArgs e)
     {
-        if (EditableType is null)
+        if (this.EditableType is null)
         {
             return;
         }
         Game1.playSound("bigSelect");
-        var overlay = new KeybindOverlay(spriteMap)
+        var overlay = new KeybindOverlay(this.spriteMap)
         {
-            AddButtonText = AddButtonText,
-            DeleteButtonTooltip = DeleteButtonTooltip,
-            KeybindList = KeybindList,
-            KeybindType = EditableType.Value,
+            AddButtonText = this.AddButtonText,
+            DeleteButtonTooltip = this.DeleteButtonTooltip,
+            KeybindList = this.KeybindList,
+            KeybindType = this.EditableType.Value,
         };
-        overlay.Close += Overlay_Close;
+        overlay.Close += this.Overlay_Close;
         Overlay.Push(overlay);
-        if (EditableType != KeybindType.MultipleKeybinds || !KeybindList.IsBound)
+        if (this.EditableType != KeybindType.MultipleKeybinds || !this.KeybindList.IsBound)
         {
             UI.InputHelper.Suppress(e.Button);
             overlay.StartCapturing();
@@ -273,33 +285,34 @@ public class KeybindListEditor : ComponentView
 
     private void RootLane_PointerEnter(object? sender, PointerEventArgs e)
     {
-        if (EditableType is null)
+        if (this.EditableType is null)
         {
             return;
         }
-        UpdateTint(Color.Orange);
-        UpdateEmptyText(Color.SaddleBrown);
+
+        this.UpdateTint(Color.Orange);
+        this.UpdateEmptyText(Color.SaddleBrown);
     }
 
     private void RootLane_PointerLeave(object? sender, PointerEventArgs e)
     {
-        UpdateTint(Color.White);
-        UpdateEmptyText(EmptyTextColor);
+        this.UpdateTint(Color.White);
+        this.UpdateEmptyText(this.EmptyTextColor);
     }
 
     private void RootLane_RightClick(object? sender, ClickEventArgs e)
     {
-        if (EditableType is null)
+        if (this.EditableType is null)
         {
             return;
         }
         Game1.playSound("drumkit5");
-        KeybindList = new();
+        this.KeybindList = new();
     }
 
     private void UpdateAll()
     {
-        var keybindViews = keybindList
+        var keybindViews = this.keybindList
             .Keybinds.Where(kb => kb.IsBound)
             .Select(
                 (kb, index) =>
@@ -311,30 +324,30 @@ public class KeybindListEditor : ComponentView
                         Padding = UiSprites.MenuSlotTransparent.FixedEdges! + new Edges(4),
                         Content = new KeybindView
                         {
-                            ButtonHeight = buttonHeight,
-                            Font = font,
+                            ButtonHeight = this.buttonHeight,
+                            Font = this.font,
                             Keybind = kb,
-                            SpriteMap = spriteMap,
+                            SpriteMap = this.spriteMap,
                         },
                     }
             )
             .Cast<IView>()
             .ToList();
-        rootLane.Children = keybindViews.Count > 0 ? keybindViews : [Label.Simple(EmptyText)];
+        this.rootLane.Children = keybindViews.Count > 0 ? keybindViews : [Label.Simple(this.EmptyText)];
     }
 
     private void UpdateEmptyText(Color color)
     {
-        if (rootLane.Children.Count == 1 && rootLane.Children[0] is Label label)
+        if (this.rootLane.Children.Count == 1 && this.rootLane.Children[0] is Label label)
         {
-            label.Text = EmptyText;
+            label.Text = this.EmptyText;
             label.Color = color;
         }
     }
 
     private void UpdateTint(Color tintColor)
     {
-        foreach (var keybindView in KeybindViews)
+        foreach (var keybindView in this.KeybindViews)
         {
             keybindView.TintColor = tintColor;
         }

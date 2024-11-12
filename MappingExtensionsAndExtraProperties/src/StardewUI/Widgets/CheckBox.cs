@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Layout;
@@ -21,16 +22,17 @@ public class CheckBox : ComponentView<Lane>
     /// </summary>
     public Sprite? CheckedSprite
     {
-        get => checkedSprite;
+        get => this.checkedSprite;
         set
         {
-            if (value == checkedSprite)
+            if (value == this.checkedSprite)
             {
                 return;
             }
-            checkedSprite = value;
-            UpdateCheckImage();
-            OnPropertyChanged(nameof(CheckedSprite));
+
+            this.checkedSprite = value;
+            this.UpdateCheckImage();
+            this.OnPropertyChanged(nameof(this.CheckedSprite));
         }
     }
 
@@ -39,17 +41,18 @@ public class CheckBox : ComponentView<Lane>
     /// </summary>
     public bool IsChecked
     {
-        get => isChecked;
+        get => this.isChecked;
         set
         {
-            if (value == isChecked)
+            if (value == this.isChecked)
             {
                 return;
             }
-            isChecked = value;
-            UpdateCheckImage();
-            Change?.Invoke(this, EventArgs.Empty);
-            OnPropertyChanged(nameof(IsChecked));
+
+            this.isChecked = value;
+            this.UpdateCheckImage();
+            this.Change?.Invoke(this, EventArgs.Empty);
+            this.OnPropertyChanged(nameof(this.IsChecked));
         }
     }
 
@@ -58,13 +61,13 @@ public class CheckBox : ComponentView<Lane>
     /// </summary>
     public Color LabelColor
     {
-        get => label.Color;
+        get => this.label.Color;
         set
         {
-            if (value != label.Color)
+            if (value != this.label.Color)
             {
-                label.Color = value;
-                OnPropertyChanged(nameof(LabelColor));
+                this.label.Color = value;
+                this.OnPropertyChanged(nameof(this.LabelColor));
             }
         }
     }
@@ -77,14 +80,14 @@ public class CheckBox : ComponentView<Lane>
     /// </remarks>
     public string LabelText
     {
-        get => label.Text;
+        get => this.label.Text;
         set
         {
-            if (value != label.Text)
+            if (value != this.label.Text)
             {
-                label.Text = value;
-                View.Children = !string.IsNullOrEmpty(value) ? [checkImage, label] : [checkImage];
-                OnPropertyChanged(nameof(LabelText));
+                this.label.Text = value;
+                this.View.Children = !string.IsNullOrEmpty(value) ? [this.checkImage, this.label] : [this.checkImage];
+                this.OnPropertyChanged(nameof(this.LabelText));
             }
         }
     }
@@ -94,16 +97,17 @@ public class CheckBox : ComponentView<Lane>
     /// </summary>
     public Sprite? UncheckedSprite
     {
-        get => uncheckedSprite;
+        get => this.uncheckedSprite;
         set
         {
-            if (value == uncheckedSprite)
+            if (value == this.uncheckedSprite)
             {
                 return;
             }
-            uncheckedSprite = value;
-            UpdateCheckImage();
-            OnPropertyChanged(nameof(UncheckedSprite));
+
+            this.uncheckedSprite = value;
+            this.UpdateCheckImage();
+            this.OnPropertyChanged(nameof(this.UncheckedSprite));
         }
     }
 
@@ -118,33 +122,34 @@ public class CheckBox : ComponentView<Lane>
     /// <inheritdoc />
     protected override Lane CreateView()
     {
-        label = new Label() { Layout = LayoutParameters.FitContent(), Margin = new(Left: 12) };
-        checkImage = new Image() { Layout = LayoutParameters.FitContent(), Focusable = true };
-        UpdateCheckImage();
+        this.label = new Label() { Layout = LayoutParameters.FitContent(), Margin = new(Left: 12) };
+        this.checkImage = new Image() { Layout = LayoutParameters.FitContent(), Focusable = true };
+        this.UpdateCheckImage();
         var lane = new Lane()
         {
             Layout = LayoutParameters.FitContent(),
             VerticalContentAlignment = Alignment.Middle,
-            Children = [checkImage],
+            Children = [this.checkImage],
         };
-        lane.LeftClick += Lane_LeftClick;
+        lane.LeftClick += this.Lane_LeftClick;
         return lane;
     }
 
     private void Lane_LeftClick(object? sender, ClickEventArgs e)
     {
         Game1.playSound("drumkit6");
-        IsChecked = !IsChecked;
+        this.IsChecked = !this.IsChecked;
     }
 
     private void UpdateCheckImage()
     {
-        if (checkImage is null)
+        if (this.checkImage is null)
         {
             return;
         }
-        checkImage.Sprite = IsChecked
-            ? checkedSprite ?? UiSprites.CheckboxChecked
-            : uncheckedSprite ?? UiSprites.CheckboxUnchecked;
+
+        this.checkImage.Sprite = this.IsChecked
+            ? this.checkedSprite ?? UiSprites.CheckboxChecked
+            : this.uncheckedSprite ?? UiSprites.CheckboxUnchecked;
     }
 }

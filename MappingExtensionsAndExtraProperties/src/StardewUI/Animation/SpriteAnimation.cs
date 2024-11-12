@@ -1,4 +1,6 @@
-﻿using StardewUI.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using StardewUI.Graphics;
 using StardewUI.Widgets;
 
 namespace StardewUI.Animation;
@@ -43,7 +45,7 @@ public class SpriteAnimator : IAnimator
     /// <param name="image">The image to animate.</param>
     public SpriteAnimator(Image image)
     {
-        imageRef = new(image);
+        this.imageRef = new(image);
         AnimationRunner.Register(this);
     }
 
@@ -52,50 +54,50 @@ public class SpriteAnimator : IAnimator
     /// </summary>
     public void Reset()
     {
-        if (!imageRef.TryGetTarget(out var image))
+        if (!this.imageRef.TryGetTarget(out var image))
         {
             return;
         }
-        image.Sprite = Frames[0];
-        delayElapsed = TimeSpan.Zero;
-        elapsed = TimeSpan.Zero;
+        image.Sprite = this.Frames[0];
+        this.delayElapsed = TimeSpan.Zero;
+        this.elapsed = TimeSpan.Zero;
     }
 
     /// <inheritdoc />
     public void Tick(TimeSpan elapsed)
     {
-        if (Paused || FrameDuration == TimeSpan.Zero || Frames.Count == 0 || !imageRef.TryGetTarget(out var image))
+        if (this.Paused || this.FrameDuration == TimeSpan.Zero || this.Frames.Count == 0 || !this.imageRef.TryGetTarget(out var image))
         {
             return;
         }
-        if (this.elapsed == TimeSpan.Zero && delayElapsed < StartDelay)
+        if (this.elapsed == TimeSpan.Zero && this.delayElapsed < this.StartDelay)
         {
-            delayElapsed += elapsed;
-            if (Frames.Count > 0)
+            this.delayElapsed += elapsed;
+            if (this.Frames.Count > 0)
             {
-                image.Sprite = Frames[0];
+                image.Sprite = this.Frames[0];
             }
-            if (delayElapsed < StartDelay)
+            if (this.delayElapsed < this.StartDelay)
             {
                 return;
             }
         }
-        delayElapsed = TimeSpan.Zero;
-        var totalDuration = FrameDuration * Frames.Count;
+
+        this.delayElapsed = TimeSpan.Zero;
+        var totalDuration = this.FrameDuration * this.Frames.Count;
         this.elapsed += elapsed;
         if (this.elapsed > totalDuration)
         {
-            this.elapsed =
-                StartDelay > TimeSpan.Zero
+            this.elapsed = this.StartDelay > TimeSpan.Zero
                     ? TimeSpan.Zero
                     : TimeSpan.FromTicks(this.elapsed.Ticks % totalDuration.Ticks);
         }
-        var frameIndex = (int)(this.elapsed.TotalMilliseconds / FrameDuration.TotalMilliseconds);
-        image.Sprite = Frames[frameIndex];
+        int frameIndex = (int)(this.elapsed.TotalMilliseconds / this.FrameDuration.TotalMilliseconds);
+        image.Sprite = this.Frames[frameIndex];
     }
 
     bool IAnimator.IsValid()
     {
-        return imageRef.TryGetTarget(out _);
+        return this.imageRef.TryGetTarget(out _);
     }
 }

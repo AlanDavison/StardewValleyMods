@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewUI.Events;
@@ -80,20 +83,20 @@ public abstract class View : IView
     public event EventHandler<WheelEventArgs>? Wheel;
 
     /// <inheritdoc/>
-    public Bounds ActualBounds => GetActualBounds();
+    public Bounds ActualBounds => this.GetActualBounds();
 
     /// <inheritdoc/>
-    public Bounds ContentBounds => GetContentBounds();
+    public Bounds ContentBounds => this.GetContentBounds();
 
     /// <inheritdoc/>
-    public IEnumerable<Bounds> FloatingBounds => GetFloatingBounds();
+    public IEnumerable<Bounds> FloatingBounds => this.GetFloatingBounds();
 
     /// <summary>
     /// The layout size (not edge thickness) of the entire drawn area including the border, i.e. the
     /// <see cref="InnerSize"/> plus any borders defined in <see cref="GetBorderThickness"/>. Does not include the
     /// <see cref="Margin"/>.
     /// </summary>
-    public Vector2 BorderSize => InnerSize + GetBorderThickness().Total;
+    public Vector2 BorderSize => this.InnerSize + this.GetBorderThickness().Total;
 
     /// <summary>
     /// The size of the view's content, which is drawn inside the padding. Subclasses set this in their
@@ -101,13 +104,13 @@ public abstract class View : IView
     /// </summary>
     public Vector2 ContentSize
     {
-        get => contentSize;
+        get => this.contentSize;
         protected set
         {
-            if (value != contentSize)
+            if (value != this.contentSize)
             {
-                contentSize = value;
-                OnPropertyChanged(nameof(ContentSize));
+                this.contentSize = value;
+                this.OnPropertyChanged(nameof(this.ContentSize));
             }
         }
     }
@@ -117,13 +120,13 @@ public abstract class View : IView
     /// </summary>
     public bool Draggable
     {
-        get => draggable;
+        get => this.draggable;
         set
         {
-            if (value != draggable)
+            if (value != this.draggable)
             {
-                draggable = value;
-                OnPropertyChanged(nameof(Draggable));
+                this.draggable = value;
+                this.OnPropertyChanged(nameof(this.Draggable));
             }
         }
     }
@@ -133,13 +136,13 @@ public abstract class View : IView
     /// </summary>
     public IList<FloatingElement> FloatingElements
     {
-        get => floatingElements;
+        get => this.floatingElements;
         set
         {
-            if (!value.SequenceEqual(floatingElements))
+            if (!value.SequenceEqual(this.floatingElements))
             {
-                floatingElements = new(value);
-                OnPropertyChanged(nameof(FloatingElements));
+                this.floatingElements = new(value);
+                this.OnPropertyChanged(nameof(this.FloatingElements));
             }
         }
     }
@@ -153,14 +156,14 @@ public abstract class View : IView
     /// </remarks>
     public virtual bool Focusable
     {
-        get => isFocusable;
+        get => this.isFocusable;
         set
         {
-            if (value != isFocusable)
+            if (value != this.isFocusable)
             {
-                isFocusable = value;
-                OnPropertyChanged(nameof(Focusable));
-                OnPropertyChanged(nameof(IView.IsFocusable));
+                this.isFocusable = value;
+                this.OnPropertyChanged(nameof(this.Focusable));
+                this.OnPropertyChanged(nameof(IView.IsFocusable));
             }
         }
     }
@@ -169,23 +172,23 @@ public abstract class View : IView
     /// The size allocated to the entire area inside the border, i.e. <see cref="ContentSize"/> plus any
     /// <see cref="Padding"/>. Does not include border or <see cref="Margin"/>.
     /// </summary>
-    public Vector2 InnerSize => ContentSize + Padding.Total;
+    public Vector2 InnerSize => this.ContentSize + this.Padding.Total;
 
     /// <inheritdoc />
     [Obsolete("Use Focusable instead of IsFocusable when interacting directly with a concrete View.")]
-    public bool IsFocusable => Focusable;
+    public bool IsFocusable => this.Focusable;
 
     /// <summary>
     /// Layout settings for this view; determines how its dimensions will be computed.
     /// </summary>
     public LayoutParameters Layout
     {
-        get => layout.Value;
+        get => this.layout.Value;
         set
         {
-            if (layout.SetIfChanged(value))
+            if (this.layout.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Layout));
+                this.OnPropertyChanged(nameof(this.Layout));
             }
         }
     }
@@ -195,12 +198,12 @@ public abstract class View : IView
     /// </summary>
     public Edges Margin
     {
-        get => margin.Value;
+        get => this.margin.Value;
         set
         {
-            if (margin.SetIfChanged(value))
+            if (this.margin.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Margin));
+                this.OnPropertyChanged(nameof(this.Margin));
             }
         }
     }
@@ -210,13 +213,13 @@ public abstract class View : IView
     /// </summary>
     public string Name
     {
-        get => name;
+        get => this.name;
         set
         {
-            if (value != name)
+            if (value != this.name)
             {
-                name = value;
-                OnPropertyChanged(nameof(Name));
+                this.name = value;
+                this.OnPropertyChanged(nameof(this.Name));
             }
         }
     }
@@ -224,19 +227,19 @@ public abstract class View : IView
     /// <summary>
     /// The size of the entire area occupied by this view including margins, border and padding.
     /// </summary>
-    public Vector2 OuterSize => BorderSize + Margin.Total;
+    public Vector2 OuterSize => this.BorderSize + this.Margin.Total;
 
     /// <summary>
     /// Padding (whitespace inside border) for this view.
     /// </summary>
     public Edges Padding
     {
-        get => padding.Value;
+        get => this.padding.Value;
         set
         {
-            if (padding.SetIfChanged(value))
+            if (this.padding.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Padding));
+                this.OnPropertyChanged(nameof(this.Padding));
             }
         }
     }
@@ -250,13 +253,13 @@ public abstract class View : IView
     /// </remarks>
     public bool PointerEventsEnabled
     {
-        get => pointerEventsEnabled;
+        get => this.pointerEventsEnabled;
         set
         {
-            if (value != pointerEventsEnabled)
+            if (value != this.pointerEventsEnabled)
             {
-                pointerEventsEnabled = value;
-                OnPropertyChanged(nameof(PointerEventsEnabled));
+                this.pointerEventsEnabled = value;
+                this.OnPropertyChanged(nameof(this.PointerEventsEnabled));
             }
         }
     }
@@ -268,13 +271,13 @@ public abstract class View : IView
     /// </summary>
     public Orientation? ScrollWithChildren
     {
-        get => scrollWithChildren;
+        get => this.scrollWithChildren;
         set
         {
-            if (value != scrollWithChildren)
+            if (value != this.scrollWithChildren)
             {
-                scrollWithChildren = value;
-                OnPropertyChanged(nameof(ScrollWithChildren));
+                this.scrollWithChildren = value;
+                this.OnPropertyChanged(nameof(this.ScrollWithChildren));
             }
         }
     }
@@ -284,13 +287,13 @@ public abstract class View : IView
     /// </summary>
     public Tags Tags
     {
-        get => tags;
+        get => this.tags;
         set
         {
-            if (!value.Equals(tags))
+            if (!value.Equals(this.tags))
             {
-                tags = value;
-                OnPropertyChanged(nameof(Tags));
+                this.tags = value;
+                this.OnPropertyChanged(nameof(this.Tags));
             }
         }
     }
@@ -300,13 +303,13 @@ public abstract class View : IView
     /// </summary>
     public string Tooltip
     {
-        get => tooltip;
+        get => this.tooltip;
         set
         {
-            if (value != tooltip)
+            if (value != this.tooltip)
             {
-                tooltip = value;
-                OnPropertyChanged(nameof(Tooltip));
+                this.tooltip = value;
+                this.OnPropertyChanged(nameof(this.Tooltip));
             }
         }
     }
@@ -316,13 +319,13 @@ public abstract class View : IView
     /// </summary>
     public Visibility Visibility
     {
-        get => visibility;
+        get => this.visibility;
         set
         {
-            if (value != visibility)
+            if (value != this.visibility)
             {
-                visibility = value;
-                OnPropertyChanged(nameof(Visibility));
+                this.visibility = value;
+                this.OnPropertyChanged(nameof(this.Visibility));
             }
         }
     }
@@ -332,13 +335,13 @@ public abstract class View : IView
     /// </summary>
     public int ZIndex
     {
-        get => zIndex;
+        get => this.zIndex;
         set
         {
-            if (value != zIndex)
+            if (value != this.zIndex)
             {
-                zIndex = value;
-                OnPropertyChanged(nameof(ZIndex));
+                this.zIndex = value;
+                this.OnPropertyChanged(nameof(this.ZIndex));
             }
         }
     }
@@ -393,15 +396,15 @@ public abstract class View : IView
     /// </remarks>
     public View()
     {
-        name = GetType().Name;
+        this.name = this.GetType().Name;
     }
 
     /// <inheritdoc />
     public bool ContainsPoint(Vector2 point)
     {
-        return ActualBounds.ContainsPoint(point)
-            || FloatingBounds.Any(bounds => bounds.ContainsPoint(point))
-            || (hasChildrenWithOutOfBoundsContent && GetChildren().Any(c => c.ContainsPoint(point)));
+        return this.ActualBounds.ContainsPoint(point)
+            || this.FloatingBounds.Any(bounds => bounds.ContainsPoint(point))
+            || (this.hasChildrenWithOutOfBoundsContent && this.GetChildren().Any(c => c.ContainsPoint(point)));
     }
 
     /// <inheritdoc path="//*[not(self::remarks)]"/>
@@ -411,20 +414,20 @@ public abstract class View : IView
     /// </remarks>
     public void Draw(ISpriteBatch b)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(Draw));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.Draw));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
-        b.Translate(Margin.Left, Margin.Top);
+        b.Translate(this.Margin.Left, this.Margin.Top);
         using (b.SaveTransform())
         {
-            OnDrawBorder(b);
-            var borderThickness = GetBorderThickness();
-            b.Translate(borderThickness.Left + Padding.Left, borderThickness.Top + Padding.Top);
-            OnDrawContent(b);
+            this.OnDrawBorder(b);
+            var borderThickness = this.GetBorderThickness();
+            b.Translate(borderThickness.Left + this.Padding.Left, borderThickness.Top + this.Padding.Top);
+            this.OnDrawContent(b);
         }
-        foreach (var floatingElement in FloatingElements)
+        foreach (var floatingElement in this.FloatingElements)
         {
             floatingElement.Draw(b);
         }
@@ -440,12 +443,12 @@ public abstract class View : IView
     /// </remarks>
     public FocusSearchResult? FocusSearch(Vector2 position, Direction direction)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(FocusSearch));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.FocusSearch));
+        if (this.Visibility != Visibility.Visible)
         {
             return null;
         }
-        foreach (var floatingElement in FloatingElements)
+        foreach (var floatingElement in this.FloatingElements)
         {
             var floatingChild = floatingElement.AsViewChild();
             if (!floatingChild.ContainsPoint(position))
@@ -458,29 +461,28 @@ public abstract class View : IView
                 return floatingResult;
             }
         }
-        var offset = GetContentOffset();
-        LogFocusSearch($"{Name} starting focus search: {position - offset}, {direction}");
-        var found = FindFocusableDescendant(position - offset, direction);
+        var offset = this.GetContentOffset();
+        this.LogFocusSearch($"{this.Name} starting focus search: {position - offset}, {direction}");
+        var found = this.FindFocusableDescendant(position - offset, direction);
         if (found is not null)
         {
-            LogFocusSearch(
-                $"{Name} found focusable descendant '{found.Target.View.Name}' with bounds "
+            this.LogFocusSearch(
+                $"{this.Name} found focusable descendant '{found.Target.View.Name}' with bounds "
                     + $"[{found.Target.Position}, {found.Target.View.OuterSize}]"
             );
             return found.AsChild(this, offset);
         }
-        if (
-            Focusable
+        if (this.Focusable
             && (
                 (direction == Direction.East && position.X < 0)
-                || (direction == Direction.West && position.X >= OuterSize.X)
+                || (direction == Direction.West && position.X >= this.OuterSize.X)
                 || (direction == Direction.South && position.Y < 0)
-                || (direction == Direction.North && position.Y >= OuterSize.Y)
+                || (direction == Direction.North && position.Y >= this.OuterSize.Y)
             )
         )
         {
-            LogFocusSearch(
-                $"{Name} found no focusable descendants but matched itself: " + $"[{Vector2.Zero}, {OuterSize}]"
+            this.LogFocusSearch(
+                $"{this.Name} found no focusable descendants but matched itself: " + $"[{Vector2.Zero}, {this.OuterSize}]"
             );
             return new(new(this, Vector2.Zero), []);
         }
@@ -490,7 +492,7 @@ public abstract class View : IView
         // able to continue navigating inside that element.
         //
         // This second iteration is to be able to move the focus INTO a floating element from the main view.
-        foreach (var floatingElement in FloatingElements)
+        foreach (var floatingElement in this.FloatingElements)
         {
             var floatingResult = floatingElement.AsViewChild().FocusSearch(position, direction);
             if (floatingResult is not null)
@@ -498,22 +500,23 @@ public abstract class View : IView
                 return floatingResult;
             }
         }
-        LogFocusSearch($"View '{Name}' found no focusable descendants matching the query.");
+
+        this.LogFocusSearch($"View '{this.Name}' found no focusable descendants matching the query.");
         return null;
     }
 
     /// <inheritdoc />
     public ViewChild? GetChildAt(Vector2 position)
     {
-        return GetChildrenAt(position).FirstOrDefault();
+        return this.GetChildrenAt(position).FirstOrDefault();
     }
 
     /// <inheritdoc />
     public Vector2? GetChildPosition(IView childView)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(GetChildPosition));
-        return GetChildren()
-            .Concat(FloatingElements.Select(fe => fe.AsViewChild()))
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.GetChildPosition));
+        return this.GetChildren()
+            .Concat(this.FloatingElements.Select(fe => fe.AsViewChild()))
             .Where(child => child.View == childView)
             .Select(child => child.Position as Vector2?)
             .FirstOrDefault();
@@ -522,24 +525,24 @@ public abstract class View : IView
     /// <inheritdoc />
     public IEnumerable<ViewChild> GetChildren()
     {
-        var offset = GetContentOffset();
-        return GetLocalChildren()
+        var offset = this.GetContentOffset();
+        return this.GetLocalChildren()
             .Select(viewChild => new ViewChild(viewChild.View, viewChild.Position + offset))
-            .Concat(FloatingElements.Select(fe => fe.AsViewChild()));
+            .Concat(this.FloatingElements.Select(fe => fe.AsViewChild()));
     }
 
     /// <inheritdoc />
     public IEnumerable<ViewChild> GetChildrenAt(Vector2 position)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(GetChildrenAt));
-        var offset = GetContentOffset();
-        var directChildren = GetLocalChildrenAt(position - offset)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.GetChildrenAt));
+        var offset = this.GetContentOffset();
+        var directChildren = this.GetLocalChildrenAt(position - offset)
             .Where(child => child.View.Visibility == Visibility.Visible);
         foreach (var child in directChildren)
         {
             yield return child.Offset(offset);
         }
-        foreach (var floatingElement in FloatingElements)
+        foreach (var floatingElement in this.FloatingElements)
         {
             var floatingChild = floatingElement.AsViewChild();
             if (floatingChild.ContainsPoint(position))
@@ -552,48 +555,48 @@ public abstract class View : IView
     /// <inheritdoc />
     public virtual ViewChild? GetDefaultFocusChild()
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(GetDefaultFocusChild));
-        if (Focusable)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.GetDefaultFocusChild));
+        if (this.Focusable)
         {
             return new(this, Vector2.Zero);
         }
-        return GetChildren().Where(child => child.View.GetDefaultFocusChild() is not null).FirstOrDefault();
+        return this.GetChildren().Where(child => child.View.GetDefaultFocusChild() is not null).FirstOrDefault();
     }
 
     /// <inheritdoc />
     public bool HasOutOfBoundsContent()
     {
-        return hasChildrenWithOutOfBoundsContent
-            || FloatingElements.Any(fe => !ActualBounds.ContainsBounds(fe.AsViewChild().GetActualBounds()));
+        return this.hasChildrenWithOutOfBoundsContent
+            || this.FloatingElements.Any(fe => !this.ActualBounds.ContainsBounds(fe.AsViewChild().GetActualBounds()));
     }
 
     /// <inheritdoc />
     public bool IsDirty()
     {
-        return layout.IsDirty || margin.IsDirty || padding.IsDirty || IsContentDirty();
+        return this.layout.IsDirty || this.margin.IsDirty || this.padding.IsDirty || this.IsContentDirty();
     }
 
     /// <inheritdoc />
     public bool Measure(Vector2 availableSize)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(Measure));
-        if (!IsDirty() && availableSize == LastAvailableSize)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.Measure));
+        if (!this.IsDirty() && availableSize == this.LastAvailableSize)
         {
-            foreach (var floatingElement in FloatingElements)
+            foreach (var floatingElement in this.FloatingElements)
             {
                 floatingElement.MeasureAndPosition(this, wasParentDirty: false);
             }
             return false;
         }
-        var adjustedSize = availableSize - Margin.Total - Padding.Total - GetBorderThickness().Total;
-        OnMeasure(Vector2.Max(adjustedSize, Vector2.Zero));
-        LastAvailableSize = availableSize;
-        layout.ResetDirty();
-        margin.ResetDirty();
-        padding.ResetDirty();
-        ResetDirty();
-        hasChildrenWithOutOfBoundsContent = GetChildren().Any(child => child.View.HasOutOfBoundsContent());
-        foreach (var floatingElement in FloatingElements)
+        var adjustedSize = availableSize - this.Margin.Total - this.Padding.Total - this.GetBorderThickness().Total;
+        this.OnMeasure(Vector2.Max(adjustedSize, Vector2.Zero));
+        this.LastAvailableSize = availableSize;
+        this.layout.ResetDirty();
+        this.margin.ResetDirty();
+        this.padding.ResetDirty();
+        this.ResetDirty();
+        this.hasChildrenWithOutOfBoundsContent = this.GetChildren().Any(child => child.View.HasOutOfBoundsContent());
+        foreach (var floatingElement in this.FloatingElements)
         {
             floatingElement.MeasureAndPosition(this, wasParentDirty: true);
         }
@@ -603,37 +606,39 @@ public abstract class View : IView
     /// <inheritdoc/>
     public virtual void OnButtonPress(ButtonEventArgs e)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnButtonPress));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnButtonPress));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
-        DispatchPointerEvent(e, (view, args) => view.OnButtonPress(args));
+
+        this.DispatchPointerEvent(e, (view, args) => view.OnButtonPress(args));
         if (!e.Handled)
         {
-            ButtonPress?.Invoke(this, e);
+            this.ButtonPress?.Invoke(this, e);
         }
     }
 
     /// <inheritdoc/>
     public virtual void OnClick(ClickEventArgs e)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnClick));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnClick));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
-        DispatchPointerEvent(e, (view, args) => view.OnClick(args));
+
+        this.DispatchPointerEvent(e, (view, args) => view.OnClick(args));
         if (!e.Handled)
         {
-            Click?.Invoke(this, e);
+            this.Click?.Invoke(this, e);
             if (e.IsPrimaryButton())
             {
-                LeftClick?.Invoke(this, e);
+                this.LeftClick?.Invoke(this, e);
             }
             else if (e.IsSecondaryButton())
             {
-                RightClick?.Invoke(this, e);
+                this.RightClick?.Invoke(this, e);
             }
         }
     }
@@ -641,8 +646,8 @@ public abstract class View : IView
     /// <inheritdoc/>
     public virtual void OnDrag(PointerEventArgs e)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnDrag));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnDrag));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
@@ -654,64 +659,66 @@ public abstract class View : IView
         // The current workaround is just to disable pointer events on any "front" views that shouldn't block the drag
         // of any views underneath, which should be possible a majority of the time since these views are likely to be
         // non-interactive overlay views.
-        var draggingChild = GetOrUpdateDraggingChild(e.Position);
+        var draggingChild = this.GetOrUpdateDraggingChild(e.Position);
         if (draggingChild is not null)
         {
             DispatchPointerEvent(draggingChild, e, (view, args) => view.OnDrag(args));
         }
-        if (e.Handled || !Draggable)
+        if (e.Handled || !this.Draggable)
         {
             return;
         }
-        if (!isDragging)
+        if (!this.isDragging)
         {
             var startArgs = e.Clone();
-            DragStart?.Invoke(this, startArgs);
+            this.DragStart?.Invoke(this, startArgs);
             e.Handled |= startArgs.Handled;
         }
-        isDragging = true;
+
+        this.isDragging = true;
         var dragArgs = e.Clone();
-        Drag?.Invoke(this, dragArgs);
+        this.Drag?.Invoke(this, dragArgs);
         e.Handled |= dragArgs.Handled;
     }
 
     /// <inheritdoc/>
     public virtual void OnDrop(PointerEventArgs e)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnDrop));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnDrop));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
-        var draggingChild = GetOrUpdateDraggingChild(e.Position);
+        var draggingChild = this.GetOrUpdateDraggingChild(e.Position);
         if (draggingChild is not null)
         {
             DispatchPointerEvent(draggingChild, e, (view, args) => view.OnDrop(args));
         }
-        draggingView = null;
-        if (e.Handled || !isDragging)
+
+        this.draggingView = null;
+        if (e.Handled || !this.isDragging)
         {
             return;
         }
-        isDragging = false;
-        DragEnd?.Invoke(this, e);
+
+        this.isDragging = false;
+        this.DragEnd?.Invoke(this, e);
     }
 
     /// <inheritdoc/>
     public virtual void OnPointerMove(PointerMoveEventArgs e)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnPointerMove));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnPointerMove));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
-        var dispatchArgs =
-            LayoutOffset != previousLayoutOffset
-                ? new(e.PreviousPosition - previousLayoutOffset + LayoutOffset, e.Position)
+        var dispatchArgs = this.LayoutOffset != this.previousLayoutOffset
+                ? new(e.PreviousPosition - this.previousLayoutOffset + this.LayoutOffset, e.Position)
                 : e;
-        previousLayoutOffset = LayoutOffset;
-        var previousTarget = GetChildAt(dispatchArgs.PreviousPosition);
-        var currentTarget = GetChildAt(e.Position);
+        this.previousLayoutOffset = this.LayoutOffset;
+        var previousTarget = this.GetChildAt(dispatchArgs.PreviousPosition);
+        var currentTarget = this.GetChildAt(e.Position);
         if (currentTarget != previousTarget && previousTarget is not null)
         {
             DispatchPointerEvent(previousTarget, dispatchArgs, (view, args) => view.OnPointerMove(args));
@@ -731,15 +738,15 @@ public abstract class View : IView
         }
 
         // For self checks, don't adjust previous position, as offset should only apply to inner content.
-        var wasPointerInBounds = ContainsPoint(e.PreviousPosition);
-        var isPointerInBounds = ContainsPoint(e.Position);
+        bool wasPointerInBounds = this.ContainsPoint(e.PreviousPosition);
+        bool isPointerInBounds = this.ContainsPoint(e.Position);
         if (isPointerInBounds && !wasPointerInBounds)
         {
-            PointerEnter?.Invoke(this, e);
+            this.PointerEnter?.Invoke(this, e);
         }
         else if (!isPointerInBounds && wasPointerInBounds)
         {
-            PointerLeave?.Invoke(this, e);
+            this.PointerLeave?.Invoke(this, e);
         }
     }
 
@@ -750,8 +757,8 @@ public abstract class View : IView
     /// </remarks>
     public virtual void OnUpdate(TimeSpan elapsed)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnUpdate));
-        foreach (var child in GetChildren())
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnUpdate));
+        foreach (var child in this.GetChildren())
         {
             child.View.OnUpdate(elapsed);
         }
@@ -760,15 +767,16 @@ public abstract class View : IView
     /// <inheritdoc/>
     public virtual void OnWheel(WheelEventArgs e)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(OnWheel));
-        if (Visibility != Visibility.Visible)
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.OnWheel));
+        if (this.Visibility != Visibility.Visible)
         {
             return;
         }
-        DispatchPointerEvent(e, (view, args) => view.OnWheel(args));
+
+        this.DispatchPointerEvent(e, (view, args) => view.OnWheel(args));
         if (!e.Handled)
         {
-            Wheel?.Invoke(this, e);
+            this.Wheel?.Invoke(this, e);
         }
     }
 
@@ -779,7 +787,7 @@ public abstract class View : IView
     /// </remarks>
     public virtual bool ScrollIntoView(IEnumerable<ViewChild> path, out Vector2 distance)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(ScrollIntoView));
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.ScrollIntoView));
         distance = Vector2.Zero;
         var (parent, children) = path.SplitFirst();
         if (parent?.View == this)
@@ -787,7 +795,7 @@ public abstract class View : IView
             // Generally should only encounter this condition when called on the root view, using the verbatim path of a
             // FocusSearchResult. Handling it here is a little more convenient than requiring the caller to remember to
             // exclude the first element.
-            return ScrollIntoView(children, out distance);
+            return this.ScrollIntoView(children, out distance);
         }
         return parent?.View.ScrollIntoView(children, out distance) ?? false;
     }
@@ -795,7 +803,7 @@ public abstract class View : IView
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{GetType().Name}('{Name}')";
+        return $"{this.GetType().Name}('{this.Name}')";
     }
 
     /// <summary>
@@ -869,7 +877,7 @@ public abstract class View : IView
     /// <see cref="IView.ZIndex"/>.</returns>
     protected virtual IEnumerable<ViewChild> GetLocalChildrenAt(Vector2 contentPosition)
     {
-        return GetLocalChildren()
+        return this.GetLocalChildren()
             .Where(child => child.ContainsPoint(contentPosition))
             .OrderByDescending(child => child.View.ZIndex);
     }
@@ -900,7 +908,7 @@ public abstract class View : IView
     [Conditional("DEBUG_FOCUS_SEARCH")]
     protected void LogFocusSearch(string message)
     {
-        Logger.Log($"[{GetType().Name}:{Name}] {message}", LogLevel.Debug);
+        Logger.Log($"[{this.GetType().Name}:{this.Name}] {message}", LogLevel.Debug);
     }
 
     /// <summary>
@@ -946,7 +954,7 @@ public abstract class View : IView
     /// <param name="args">The event arguments.</param>
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs args)
     {
-        PropertyChanged?.Invoke(this, args);
+        this.PropertyChanged?.Invoke(this, args);
 
         // Dependent properties.
         //
@@ -961,28 +969,28 @@ public abstract class View : IView
         // OnPropertyChanged("BorderSize") which itself will call OnPropertyChanged("OuterSize").
         switch (args.PropertyName)
         {
-            case nameof(Margin):
-                OnPropertyChanged(nameof(OuterSize));
-                OnPropertyChanged(nameof(ActualBounds));
+            case nameof(this.Margin):
+                this.OnPropertyChanged(nameof(this.OuterSize));
+                this.OnPropertyChanged(nameof(this.ActualBounds));
                 break;
-            case nameof(Padding):
-                OnPropertyChanged(nameof(InnerSize));
+            case nameof(this.Padding):
+                this.OnPropertyChanged(nameof(this.InnerSize));
                 break;
-            case nameof(ContentSize):
-                OnPropertyChanged(nameof(InnerSize));
+            case nameof(this.ContentSize):
+                this.OnPropertyChanged(nameof(this.InnerSize));
                 break;
-            case nameof(InnerSize):
-                OnPropertyChanged(nameof(BorderSize));
+            case nameof(this.InnerSize):
+                this.OnPropertyChanged(nameof(this.BorderSize));
                 break;
-            case nameof(BorderSize):
-                OnPropertyChanged(nameof(OuterSize));
-                OnPropertyChanged(nameof(ActualBounds));
+            case nameof(this.BorderSize):
+                this.OnPropertyChanged(nameof(this.OuterSize));
+                this.OnPropertyChanged(nameof(this.ActualBounds));
                 break;
-            case nameof(ActualBounds):
-                OnPropertyChanged(nameof(ContentBounds));
+            case nameof(this.ActualBounds):
+                this.OnPropertyChanged(nameof(this.ContentBounds));
                 break;
-            case nameof(FloatingElements):
-                OnPropertyChanged(nameof(FloatingBounds));
+            case nameof(this.FloatingElements):
+                this.OnPropertyChanged(nameof(this.FloatingBounds));
                 break;
             default:
                 break;
@@ -995,7 +1003,7 @@ public abstract class View : IView
     /// <param name="propertyName">The name of the property that was changed.</param>
     protected virtual void OnPropertyChanged(string propertyName)
     {
-        OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        this.OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
     }
 
     /// <summary>
@@ -1011,7 +1019,7 @@ public abstract class View : IView
     private void DispatchPointerEvent<T>(T eventArgs, Action<IView, T> dispatch)
         where T : PointerEventArgs, IOffsettable<T>
     {
-        foreach (var child in GetChildrenAt(eventArgs.Position))
+        foreach (var child in this.GetChildrenAt(eventArgs.Position))
         {
             if (child.View.PointerEventsEnabled)
             {
@@ -1047,8 +1055,8 @@ public abstract class View : IView
         // the same view of content size 50, but with a *left* margin of -20 and no right margin, aligned left, actually
         // starts its draw at X=0 but then moves to X=-20. In our implementation, the view itself is internally offset,
         // as opposed to being given an offset layout position by the parent.
-        var x = MathF.Min(Margin.Left, 0);
-        var y = MathF.Min(Margin.Top, 0);
+        float x = MathF.Min(this.Margin.Left, 0);
+        float y = MathF.Min(this.Margin.Top, 0);
         var position = new Vector2(x, y);
         // Similarly, the size used for layout combines the left/right and top/bottom edges, but we have to separate
         // them here; each individual positive edge contributes positive to the total size but each individual negative
@@ -1060,8 +1068,8 @@ public abstract class View : IView
         // We'll use the border size as a starting point, on the assumption that negative borders and negative padding
         // are essentially incoherent (i.e. it's unclear what the "bounds" should really be if a view decides to draw
         // outside its own border).
-        var width = BorderSize.X + MathF.Max(Margin.Left, 0) + MathF.Max(Margin.Right, 0);
-        var height = BorderSize.Y + MathF.Max(Margin.Top, 0) + MathF.Max(Margin.Bottom, 0);
+        float width = this.BorderSize.X + MathF.Max(this.Margin.Left, 0) + MathF.Max(this.Margin.Right, 0);
+        float height = this.BorderSize.Y + MathF.Max(this.Margin.Top, 0) + MathF.Max(this.Margin.Bottom, 0);
         var size = new Vector2(width, height);
 
         return new(position, size);
@@ -1069,25 +1077,25 @@ public abstract class View : IView
 
     private Bounds GetContentBounds()
     {
-        var boundsWithMargin = GetActualBounds();
-        var position = boundsWithMargin.Position + new Vector2(Math.Max(Margin.Left, 0), Math.Max(Margin.Top, 0));
-        return new(position, ContentSize);
+        var boundsWithMargin = this.GetActualBounds();
+        var position = boundsWithMargin.Position + new Vector2(Math.Max(this.Margin.Left, 0), Math.Max(this.Margin.Top, 0));
+        return new(position, this.ContentSize);
     }
 
     private Vector2 GetContentOffset()
     {
-        var borderThickness = GetBorderThickness();
-        return LayoutOffset
-            + new Vector2(Margin.Left, Margin.Top)
+        var borderThickness = this.GetBorderThickness();
+        return this.LayoutOffset
+            + new Vector2(this.Margin.Left, this.Margin.Top)
             + new Vector2(borderThickness.Left, borderThickness.Top)
-            + new Vector2(Padding.Left, Padding.Top);
+            + new Vector2(this.Padding.Left, this.Padding.Top);
     }
 
     private IEnumerable<Bounds> GetFloatingBounds()
     {
-        return FloatingElements
+        return this.FloatingElements
             .SelectMany(GetFloatingElementBounds)
-            .Concat(GetChildren().SelectMany(child => child.GetFloatingBounds()));
+            .Concat(this.GetChildren().SelectMany(child => child.GetFloatingBounds()));
     }
 
     private static IEnumerable<Bounds> GetFloatingElementBounds(FloatingElement fe)
@@ -1101,17 +1109,17 @@ public abstract class View : IView
         // Since the effect of dragging is usually to move some view, we can't rely on the current cursor position to
         // accurately tell us which view to drag; instead, we need to track which is view is dragging, and re-read its
         // current position on each movement.
-        if (draggingView is not null)
+        if (this.draggingView is not null)
         {
-            var childPosition = GetChildPosition(draggingView);
-            return childPosition is not null ? new(draggingView, childPosition.Value) : null;
+            var childPosition = this.GetChildPosition(this.draggingView);
+            return childPosition is not null ? new(this.draggingView, childPosition.Value) : null;
         }
 
-        foreach (var child in GetChildrenAt(position))
+        foreach (var child in this.GetChildrenAt(position))
         {
             if (child.View.PointerEventsEnabled)
             {
-                draggingView = child.View;
+                this.draggingView = child.View;
                 return child;
             }
         }

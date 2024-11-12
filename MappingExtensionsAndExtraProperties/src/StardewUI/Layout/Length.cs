@@ -1,4 +1,6 @@
-﻿namespace StardewUI.Layout;
+﻿using System;
+
+namespace StardewUI.Layout;
 
 /// <summary>
 /// Specifies how to calculate the length of a single dimension (width or height).
@@ -90,26 +92,26 @@ public readonly record struct Length(LengthType Type, float Value)
     /// <returns></returns>
     public readonly float Resolve(float availableLength, Func<float> getContentLength)
     {
-        return Type switch
+        return this.Type switch
         {
-            LengthType.Px => Value,
-            LengthType.Percent => availableLength * Value / 100,
+            LengthType.Px => this.Value,
+            LengthType.Percent => availableLength * this.Value / 100,
             LengthType.Stretch => availableLength,
             LengthType.Content => getContentLength(),
-            _ => throw new NotImplementedException($"Invalid length type: {Type}"),
+            _ => throw new NotImplementedException($"Invalid length type: {this.Type}"),
         };
     }
 
     /// <inheritdoc />
     public override string ToString()
     {
-        return Type switch
+        return this.Type switch
         {
             LengthType.Content => "content",
             LengthType.Stretch => "stretch",
-            LengthType.Px => $"{Value}px",
-            LengthType.Percent => $"{Value}%",
-            _ => $"({Type}, {Value})",
+            LengthType.Px => $"{this.Value}px",
+            LengthType.Percent => $"{this.Value}%",
+            _ => $"({this.Type}, {this.Value})",
         };
     }
 }

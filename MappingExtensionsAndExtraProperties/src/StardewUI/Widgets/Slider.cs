@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Input;
@@ -25,8 +26,8 @@ public class Slider : ComponentView
     /// </summary>
     public Sprite? BackgroundSprite
     {
-        get => backgroundImage.Sprite;
-        set => backgroundImage.Sprite = value;
+        get => this.backgroundImage.Sprite;
+        set => this.backgroundImage.Sprite = value;
     }
 
     /// <summary>
@@ -34,8 +35,8 @@ public class Slider : ComponentView
     /// </summary>
     public Sprite? ThumbSprite
     {
-        get => thumbImage.Sprite;
-        set => thumbImage.Sprite = value;
+        get => this.thumbImage.Sprite;
+        set => this.thumbImage.Sprite = value;
     }
 
     /// <summary>
@@ -43,13 +44,13 @@ public class Slider : ComponentView
     /// </summary>
     public float Interval
     {
-        get => interval;
+        get => this.interval;
         set
         {
-            if (value != interval)
+            if (value != this.interval)
             {
-                interval = value;
-                OnPropertyChanged(nameof(Interval));
+                this.interval = value;
+                this.OnPropertyChanged(nameof(this.Interval));
             }
         }
     }
@@ -59,22 +60,23 @@ public class Slider : ComponentView
     /// </summary>
     public float Max
     {
-        get => max;
+        get => this.max;
         set
         {
-            if (value == max)
+            if (value == this.max)
             {
                 return;
             }
-            if (Min > value)
+            if (this.Min > value)
             {
-                Min = value;
+                this.Min = value;
             }
-            max = value;
-            OnPropertyChanged(nameof(Max));
-            if (Value > max)
+
+            this.max = value;
+            this.OnPropertyChanged(nameof(this.Max));
+            if (this.Value > this.max)
             {
-                Value = max;
+                this.Value = this.max;
             }
         }
     }
@@ -84,22 +86,23 @@ public class Slider : ComponentView
     /// </summary>
     public float Min
     {
-        get => min;
+        get => this.min;
         set
         {
-            if (value == min)
+            if (value == this.min)
             {
                 return;
             }
-            if (Max < value)
+            if (this.Max < value)
             {
-                Max = value;
+                this.Max = value;
             }
-            min = value;
-            OnPropertyChanged(nameof(Min));
-            if (Value < min)
+
+            this.min = value;
+            this.OnPropertyChanged(nameof(this.Min));
+            if (this.Value < this.min)
             {
-                Value = min;
+                this.Value = this.min;
             }
         }
     }
@@ -109,16 +112,17 @@ public class Slider : ComponentView
     /// </summary>
     public Vector2? ThumbSize
     {
-        get => thumbSize;
+        get => this.thumbSize;
         set
         {
-            if (value != thumbSize)
+            if (value != this.thumbSize)
             {
                 return;
             }
-            thumbSize = value;
-            thumbImage.Layout = GetThumbImageLayout(value);
-            OnPropertyChanged(nameof(ThumbSize));
+
+            this.thumbSize = value;
+            this.thumbImage.Layout = GetThumbImageLayout(value);
+            this.OnPropertyChanged(nameof(this.ThumbSize));
         }
     }
 
@@ -127,13 +131,13 @@ public class Slider : ComponentView
     /// </summary>
     public float TrackWidth
     {
-        get => sliderPanel.Layout.Width.Value;
+        get => this.sliderPanel.Layout.Width.Value;
         set
         {
-            if (sliderPanel.Layout.Width.Type != LengthType.Px || sliderPanel.Layout.Width.Value != value)
+            if (this.sliderPanel.Layout.Width.Type != LengthType.Px || this.sliderPanel.Layout.Width.Value != value)
             {
-                sliderPanel.Layout = LayoutParameters.FixedSize(value, TRACK_HEIGHT);
-                OnPropertyChanged(nameof(TrackWidth));
+                this.sliderPanel.Layout = LayoutParameters.FixedSize(value, TRACK_HEIGHT);
+                this.OnPropertyChanged(nameof(this.TrackWidth));
             }
         }
     }
@@ -143,19 +147,19 @@ public class Slider : ComponentView
     /// </summary>
     public float Value
     {
-        get => value;
+        get => this.value;
         set
         {
-            var clamped = Math.Clamp(value, min, max);
+            float clamped = Math.Clamp(value, this.min, this.max);
             if (clamped == this.value)
             {
                 return;
             }
             this.value = clamped;
-            UpdatePosition();
-            UpdateValueLabel();
-            ValueChange?.Invoke(this, EventArgs.Empty);
-            OnPropertyChanged(nameof(Value));
+            this.UpdatePosition();
+            this.UpdateValueLabel();
+            this.ValueChange?.Invoke(this, EventArgs.Empty);
+            this.OnPropertyChanged(nameof(this.Value));
         }
     }
 
@@ -164,14 +168,14 @@ public class Slider : ComponentView
     /// </summary>
     public Color? ValueColor
     {
-        get => valueLabel.Color;
+        get => this.valueLabel.Color;
         set
         {
             var color = value ?? Game1.textColor;
-            if (color != valueLabel.Color)
+            if (color != this.valueLabel.Color)
             {
-                valueLabel.Color = color;
-                OnPropertyChanged(nameof(ValueColor));
+                this.valueLabel.Color = color;
+                this.OnPropertyChanged(nameof(this.ValueColor));
             }
         }
     }
@@ -181,14 +185,14 @@ public class Slider : ComponentView
     /// </summary>
     public Func<float, string> ValueFormat
     {
-        get => valueFormat;
+        get => this.valueFormat;
         set
         {
-            if (value != valueFormat)
+            if (value != this.valueFormat)
             {
-                valueFormat = value;
-                UpdateValueLabel();
-                OnPropertyChanged(nameof(ValueFormat));
+                this.valueFormat = value;
+                this.UpdateValueLabel();
+                this.OnPropertyChanged(nameof(this.ValueFormat));
             }
         }
     }
@@ -211,7 +215,7 @@ public class Slider : ComponentView
     /// <inheritdoc />
     public override FocusSearchResult? FocusSearch(Vector2 position, Direction direction)
     {
-        if (ContentBounds.ContainsPoint(position) && TryMoveValue(direction))
+        if (this.ContentBounds.ContainsPoint(position) && this.TryMoveValue(direction))
         {
             // Fake a focus search "into" the slider so that we keep focus on the thumb.
             return base.FocusSearch(new(0, -1), Direction.South);
@@ -222,46 +226,46 @@ public class Slider : ComponentView
     /// <inheritdoc />
     protected override IView CreateView()
     {
-        backgroundImage = new()
+        this.backgroundImage = new()
         {
             Layout = LayoutParameters.Fill(),
             Sprite = UiSprites.SliderBackground,
             Fit = ImageFit.Stretch,
         };
-        thumbImage = new()
+        this.thumbImage = new()
         {
-            Layout = GetThumbImageLayout(thumbSize),
+            Layout = GetThumbImageLayout(this.thumbSize),
             Sprite = UiSprites.SliderButton,
             Fit = ImageFit.Stretch,
             Focusable = true,
             Draggable = true,
             ZIndex = 1,
         };
-        thumbImage.DragStart += Thumb_DragStart;
-        thumbImage.Drag += Thumb_Drag;
-        thumbImage.DragEnd += Thumb_DragEnd;
-        thumbImage.LeftClick += Thumb_LeftClick;
-        sliderPanel = new Panel()
+        this.thumbImage.DragStart += this.Thumb_DragStart;
+        this.thumbImage.Drag += this.Thumb_Drag;
+        this.thumbImage.DragEnd += this.Thumb_DragEnd;
+        this.thumbImage.LeftClick += this.Thumb_LeftClick;
+        this.sliderPanel = new Panel()
         {
             Layout = LayoutParameters.FixedSize(DEFAULT_TRACK_WIDTH, TRACK_HEIGHT),
-            Children = [backgroundImage, thumbImage],
+            Children = [this.backgroundImage, this.thumbImage],
         };
-        sliderPanel.LeftClick += Track_LeftClick;
-        valueLabel = Label.Simple("");
-        valueLabel.Margin = new(Left: 8);
-        UpdateValueLabel();
+        this.sliderPanel.LeftClick += this.Track_LeftClick;
+        this.valueLabel = Label.Simple("");
+        this.valueLabel.Margin = new(Left: 8);
+        this.UpdateValueLabel();
         return new Lane()
         {
             Layout = LayoutParameters.FitContent(),
             VerticalContentAlignment = Alignment.Middle,
-            Children = [sliderPanel, valueLabel],
+            Children = [this.sliderPanel, this.valueLabel],
         };
     }
 
     /// <inheritdoc />
     protected override void OnLayout()
     {
-        UpdatePosition();
+        this.UpdatePosition();
     }
 
     private static LayoutParameters GetThumbImageLayout(Vector2? thumbSize)
@@ -273,13 +277,13 @@ public class Slider : ComponentView
 
     private void SetValueFromProgress(float progress)
     {
-        var exactValueAboveMin = progress * (Max - Min);
-        var intervalCount = MathF.Round(exactValueAboveMin / Interval);
-        var newValue = Min + intervalCount * Interval;
-        if (newValue != Value)
+        float exactValueAboveMin = progress * (this.Max - this.Min);
+        float intervalCount = MathF.Round(exactValueAboveMin / this.Interval);
+        float newValue = this.Min + intervalCount * this.Interval;
+        if (newValue != this.Value)
         {
             Game1.playSound("stoneStep");
-            Value = newValue;
+            this.Value = newValue;
         }
     }
 
@@ -288,39 +292,39 @@ public class Slider : ComponentView
 
     private void Thumb_Drag(object? sender, PointerEventArgs e)
     {
-        if (!initialThumbDragCursorOffset.HasValue)
+        if (!this.initialThumbDragCursorOffset.HasValue)
         {
             return;
         }
 
-        var trackWidth = sliderPanel.InnerSize.X;
-        var availableWidth = trackWidth - thumbImage.ContentSize.X;
+        float trackWidth = this.sliderPanel.InnerSize.X;
+        float availableWidth = trackWidth - this.thumbImage.ContentSize.X;
         if (availableWidth <= 0)
         {
             return;
         }
 
-        var targetDistance = e.Position.X - initialThumbDragCursorOffset.Value;
-        var targetThumbStart = Math.Clamp(targetDistance, 0, availableWidth);
-        var progress = targetThumbStart / availableWidth;
-        SetValueFromProgress(progress);
+        float targetDistance = e.Position.X - this.initialThumbDragCursorOffset.Value;
+        float targetThumbStart = Math.Clamp(targetDistance, 0, availableWidth);
+        float progress = targetThumbStart / availableWidth;
+        this.SetValueFromProgress(progress);
     }
 
     private void Thumb_DragEnd(object? sender, PointerEventArgs e)
     {
-        initialThumbDragCursorOffset = null;
+        this.initialThumbDragCursorOffset = null;
     }
 
     private void Thumb_DragStart(object? sender, PointerEventArgs e)
     {
-        var cursorOffset = e.Position.X - thumbImage.Margin.Left;
-        initialThumbDragCursorOffset = cursorOffset >= 0 ? cursorOffset : null;
+        float cursorOffset = e.Position.X - this.thumbImage.Margin.Left;
+        this.initialThumbDragCursorOffset = cursorOffset >= 0 ? cursorOffset : null;
     }
 
     private void Thumb_LeftClick(object? sender, ClickEventArgs e)
     {
         // Prevent clicks on the button from being treated as clicks on the track.
-        if (e.Position.X >= thumbImage.Margin.Left)
+        if (e.Position.X >= this.thumbImage.Margin.Left)
         {
             e.Handled = true;
         }
@@ -332,29 +336,29 @@ public class Slider : ComponentView
         {
             return;
         }
-        var trackWidth = sliderPanel.InnerSize.X;
-        var thumbWidth = thumbImage.ContentSize.X;
-        var progress = Math.Clamp((e.Position.X - thumbWidth / 2) / (trackWidth - thumbWidth), 0, 1);
-        SetValueFromProgress(progress);
+        float trackWidth = this.sliderPanel.InnerSize.X;
+        float thumbWidth = this.thumbImage.ContentSize.X;
+        float progress = Math.Clamp((e.Position.X - thumbWidth / 2) / (trackWidth - thumbWidth), 0, 1);
+        this.SetValueFromProgress(progress);
     }
 
     private bool TryMoveValue(Direction direction)
     {
-        var interval = direction switch
+        float interval = direction switch
         {
-            Direction.East => Interval,
-            Direction.West => -Interval,
+            Direction.East => this.Interval,
+            Direction.West => -this.Interval,
             _ => 0,
         };
         if (interval == 0)
         {
             return false;
         }
-        var nextValue = Math.Clamp(Value + interval, Min, Max);
-        if (nextValue != Value)
+        float nextValue = Math.Clamp(this.Value + interval, this.Min, this.Max);
+        if (nextValue != this.Value)
         {
             Game1.playSound("stoneStep");
-            Value = nextValue;
+            this.Value = nextValue;
             return true;
         }
         return false;
@@ -362,27 +366,28 @@ public class Slider : ComponentView
 
     private void UpdatePosition()
     {
-        if (sliderPanel is null)
+        if (this.sliderPanel is null)
         {
             return;
         }
-        if (Max == Min)
+        if (this.Max == this.Min)
         {
-            thumbImage.Margin = new(0);
+            this.thumbImage.Margin = new(0);
             return;
         }
-        var trackWidth = sliderPanel.ContentSize.X;
-        var availableWidth = trackWidth - thumbImage.ContentSize.X;
-        var progress = (Value - Min) / (Max - Min);
-        thumbImage.Margin = new(Left: (int)Math.Round(availableWidth * progress));
+        float trackWidth = this.sliderPanel.ContentSize.X;
+        float availableWidth = trackWidth - this.thumbImage.ContentSize.X;
+        float progress = (this.Value - this.Min) / (this.Max - this.Min);
+        this.thumbImage.Margin = new(Left: (int)Math.Round(availableWidth * progress));
     }
 
     private void UpdateValueLabel()
     {
-        if (valueLabel is null)
+        if (this.valueLabel is null)
         {
             return;
         }
-        valueLabel.Text = ValueFormat(Value);
+
+        this.valueLabel.Text = this.ValueFormat(this.Value);
     }
 }

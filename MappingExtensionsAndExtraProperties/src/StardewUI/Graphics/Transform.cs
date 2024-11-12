@@ -42,6 +42,6 @@ public class Transform
     /// <returns>A new <see cref="Transform"/> with the specified translation added to any previous transform.</returns>
     public Transform Translate(Vector2 translation)
     {
-        return new Transform { Translation = Translation + translation };
+        return new Transform { Translation = this.Translation + translation };
     }
 }

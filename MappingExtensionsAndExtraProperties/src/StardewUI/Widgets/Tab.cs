@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Layout;
@@ -34,25 +35,26 @@ public class Tab : ComponentView<Panel>
     /// </remarks>
     public bool Active
     {
-        get => isActive;
+        get => this.isActive;
         set
         {
-            if (value != isActive)
+            if (value != this.isActive)
             {
-                isActive = value;
-                if (Group is not null && !string.IsNullOrEmpty(GroupKey))
+                this.isActive = value;
+                if (this.Group is not null && !string.IsNullOrEmpty(this.GroupKey))
                 {
-                    Group.Key = GroupKey;
+                    this.Group.Key = this.GroupKey;
                 }
                 if (value)
                 {
-                    Activate?.Invoke(this, EventArgs.Empty);
+                    this.Activate?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
-                    Deactivate?.Invoke(this, EventArgs.Empty);
+                    this.Deactivate?.Invoke(this, EventArgs.Empty);
                 }
-                OnPropertyChanged(nameof(Active));
+
+                this.OnPropertyChanged(nameof(this.Active));
             }
         }
     }
@@ -62,13 +64,13 @@ public class Tab : ComponentView<Panel>
     /// </summary>
     public Vector2 ActiveOffset
     {
-        get => activeOffset;
+        get => this.activeOffset;
         set
         {
-            if (value != activeOffset)
+            if (value != this.activeOffset)
             {
-                activeOffset = value;
-                OnPropertyChanged(nameof(ActiveOffset));
+                this.activeOffset = value;
+                this.OnPropertyChanged(nameof(this.ActiveOffset));
             }
         }
     }
@@ -78,13 +80,13 @@ public class Tab : ComponentView<Panel>
     /// </summary>
     public Sprite? Background
     {
-        get => backgroundImage.Sprite;
+        get => this.backgroundImage.Sprite;
         set
         {
-            if (value != backgroundImage.Sprite)
+            if (value != this.backgroundImage.Sprite)
             {
-                backgroundImage.Sprite = value;
-                OnPropertyChanged(nameof(Background));
+                this.backgroundImage.Sprite = value;
+                this.OnPropertyChanged(nameof(this.Background));
             }
         }
     }
@@ -94,13 +96,13 @@ public class Tab : ComponentView<Panel>
     /// </summary>
     public SimpleRotation? BackgroundRotation
     {
-        get => backgroundImage.Rotation;
+        get => this.backgroundImage.Rotation;
         set
         {
-            if (backgroundImage.Rotation != value)
+            if (this.backgroundImage.Rotation != value)
             {
-                backgroundImage.Rotation = value;
-                OnPropertyChanged(nameof(BackgroundRotation));
+                this.backgroundImage.Rotation = value;
+                this.OnPropertyChanged(nameof(this.BackgroundRotation));
             }
         }
     }
@@ -110,13 +112,13 @@ public class Tab : ComponentView<Panel>
     /// </summary>
     public IView? Content
     {
-        get => contentFrame.Content;
+        get => this.contentFrame.Content;
         set
         {
-            if (contentFrame.Content != value)
+            if (this.contentFrame.Content != value)
             {
-                contentFrame.Content = value;
-                OnPropertyChanged(nameof(Content));
+                this.contentFrame.Content = value;
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -131,13 +133,13 @@ public class Tab : ComponentView<Panel>
     /// </remarks>
     public Edges ContentMargin
     {
-        get => contentFrame.Margin;
+        get => this.contentFrame.Margin;
         set
         {
-            if (contentFrame.Margin != value)
+            if (this.contentFrame.Margin != value)
             {
-                contentFrame.Margin = value;
-                OnPropertyChanged(nameof(ContentMargin));
+                this.contentFrame.Margin = value;
+                this.OnPropertyChanged(nameof(this.ContentMargin));
             }
         }
     }
@@ -156,23 +158,25 @@ public class Tab : ComponentView<Panel>
     /// </remarks>
     public SelectionGroup? Group
     {
-        get => group;
+        get => this.group;
         set
         {
-            if (value == group)
+            if (value == this.group)
             {
                 return;
             }
-            if (group is not null)
+            if (this.group is not null)
             {
-                group.Change -= Group_Change;
+                this.group.Change -= this.Group_Change;
             }
-            group = value;
+
+            this.group = value;
             if (value is not null)
             {
-                value.Change += Group_Change;
+                value.Change += this.Group_Change;
             }
-            OnPropertyChanged(nameof(Group));
+
+            this.OnPropertyChanged(nameof(this.Group));
         }
     }
 
@@ -181,14 +185,14 @@ public class Tab : ComponentView<Panel>
     /// </summary>
     public string GroupKey
     {
-        get => groupKey;
+        get => this.groupKey;
         set
         {
-            if (value != groupKey)
+            if (value != this.groupKey)
             {
-                groupKey = value;
-                UpdateGroupDefault();
-                OnPropertyChanged(nameof(GroupKey));
+                this.groupKey = value;
+                this.UpdateGroupDefault();
+                this.OnPropertyChanged(nameof(this.GroupKey));
             }
         }
     }
@@ -212,9 +216,9 @@ public class Tab : ComponentView<Panel>
     /// <inheritdoc />
     public override void Draw(ISpriteBatch b)
     {
-        if (Active)
+        if (this.Active)
         {
-            b.Translate(ActiveOffset);
+            b.Translate(this.ActiveOffset);
         }
         base.Draw(b);
     }
@@ -222,10 +226,10 @@ public class Tab : ComponentView<Panel>
     /// <inheritdoc />
     public override void Dispose()
     {
-        if (group is not null)
+        if (this.group is not null)
         {
-            group.Change -= Group_Change;
-            group = null;
+            this.group.Change -= this.Group_Change;
+            this.group = null;
         }
         base.Dispose();
         GC.SuppressFinalize(this);
@@ -236,9 +240,9 @@ public class Tab : ComponentView<Panel>
     {
         if (e.IsPrimaryButton())
         {
-            if (!Active)
+            if (!this.Active)
             {
-                Active = true;
+                this.Active = true;
                 Game1.playSound("smallSelect");
             }
             e.Handled = true;
@@ -249,26 +253,26 @@ public class Tab : ComponentView<Panel>
     /// <inheritdoc />
     protected override Panel CreateView()
     {
-        return new() { Focusable = true, Children = [backgroundImage, contentFrame] };
+        return new() { Focusable = true, Children = [this.backgroundImage, this.contentFrame] };
     }
 
     private void Group_Change(object? sender, EventArgs e)
     {
-        if (sender != Group)
+        if (sender != this.Group)
         {
             return;
         }
-        if (Group is not null && !string.IsNullOrEmpty(GroupKey))
+        if (this.Group is not null && !string.IsNullOrEmpty(this.GroupKey))
         {
-            Active = Group.Key == GroupKey;
+            this.Active = this.Group.Key == this.GroupKey;
         }
     }
 
     private void UpdateGroupDefault()
     {
-        if (Group is not null && string.IsNullOrEmpty(Group.Key) && !string.IsNullOrEmpty(GroupKey))
+        if (this.Group is not null && string.IsNullOrEmpty(this.Group.Key) && !string.IsNullOrEmpty(this.GroupKey))
         {
-            Group.Key = GroupKey;
+            this.Group.Key = this.GroupKey;
         }
     }
 }

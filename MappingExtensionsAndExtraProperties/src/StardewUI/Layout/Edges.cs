@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 
@@ -22,17 +23,17 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
     /// <summary>
     /// Gets the total value for all horizontal edges (<see cref="Left"/> + <see cref="Right"/>).
     /// </summary>
-    public int Horizontal => Left + Right;
+    public int Horizontal => this.Left + this.Right;
 
     /// <summary>
     /// The total size occupied by all edges.
     /// </summary>
-    public Vector2 Total => new(Left + Right, Top + Bottom);
+    public Vector2 Total => new(this.Left + this.Right, this.Top + this.Bottom);
 
     /// <summary>
     /// Gets the total value for all vertical edges (<see cref="Top"/> + <see cref="Bottom"/>).
     /// </summary>
-    public int Vertical => Top + Bottom;
+    public int Vertical => this.Top + this.Bottom;
 
     /// <summary>
     /// Parses an <see cref="Edges"/> value from a comma-separated string representation.
@@ -100,17 +101,17 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
         {
             return false;
         }
-        return other.Left == Left && other.Top == Top && other.Right == Right && other.Bottom == Bottom;
+        return other.Left == this.Left && other.Top == this.Top && other.Right == this.Right && other.Bottom == this.Bottom;
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
         var hashCode = new HashCode();
-        hashCode.Add(Left);
-        hashCode.Add(Top);
-        hashCode.Add(Right);
-        hashCode.Add(Bottom);
+        hashCode.Add(this.Left);
+        hashCode.Add(this.Top);
+        hashCode.Add(this.Right);
+        hashCode.Add(this.Bottom);
         return hashCode.ToHashCode();
     }
 
@@ -119,7 +120,7 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
     /// </summary>
     public Edges HorizontalOnly()
     {
-        return new(Left, 0, Right, 0);
+        return new(this.Left, 0, this.Right, 0);
     }
 
     /// <summary>
@@ -131,9 +132,9 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
     {
         return rotation switch
         {
-            SimpleRotation.QuarterClockwise => new(Bottom, Left, Top, Right),
-            SimpleRotation.QuarterCounterclockwise => new(Top, Right, Bottom, Left),
-            SimpleRotation.Half => new(Right, Bottom, Left, Top),
+            SimpleRotation.QuarterClockwise => new(this.Bottom, this.Left, this.Top, this.Right),
+            SimpleRotation.QuarterCounterclockwise => new(this.Top, this.Right, this.Bottom, this.Left),
+            SimpleRotation.Half => new(this.Right, this.Bottom, this.Left, this.Top),
             _ => this,
         };
     }
@@ -141,7 +142,7 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{Left}, {Top}, {Right}, {Bottom}";
+        return $"{this.Left}, {this.Top}, {this.Right}, {this.Bottom}";
     }
 
     /// <summary>
@@ -149,7 +150,7 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
     /// </summary>
     public Edges VerticalOnly()
     {
-        return new(0, Top, 0, Bottom);
+        return new(0, this.Top, 0, this.Bottom);
     }
 
     /// <summary>
@@ -230,7 +231,7 @@ public record Edges(int Left = 0, int Top = 0, int Right = 0, int Bottom = 0)
     private static int ReadNextEdge(ref ReadOnlySpan<char> remaining)
     {
         int nextSeparatorIndex = remaining.IndexOf(',');
-        var value = nextSeparatorIndex >= 0 ? int.Parse(remaining[0..nextSeparatorIndex]) : int.Parse(remaining);
+        int value = nextSeparatorIndex >= 0 ? int.Parse(remaining[0..nextSeparatorIndex]) : int.Parse(remaining);
         remaining = nextSeparatorIndex >= 0 ? remaining[(nextSeparatorIndex + 1)..] : [];
         return value;
     }

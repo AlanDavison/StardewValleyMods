@@ -1,4 +1,6 @@
-﻿namespace StardewUI.Diagnostics;
+﻿using System;
+
+namespace StardewUI.Diagnostics;
 
 /// <summary>
 /// Abstract output writer for performance traces.

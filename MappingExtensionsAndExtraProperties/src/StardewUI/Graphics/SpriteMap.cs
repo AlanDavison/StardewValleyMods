@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
@@ -63,7 +66,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// width and height would place the sprite outside the texture bounds.</exception>
     public SpriteMapBuilder<T> Add(T key, int? width = null, int? height = null)
     {
-        return Add(key, new Rectangle(cursorX, cursorY, width ?? spriteWidth, height ?? spriteHeight));
+        return this.Add(key, new Rectangle(this.cursorX, this.cursorY, width ?? this.spriteWidth, height ?? this.spriteHeight));
     }
 
     /// <summary>
@@ -94,20 +97,21 @@ public class SpriteMapBuilder<T>(Texture2D texture)
                 $"Rectangle {sourceRect} has invalid zero or negative height."
             );
         }
-        if (!IsInBounds(sourceRect))
+        if (!this.IsInBounds(sourceRect))
         {
             throw new ArgumentException(
                 $"Rectangle {sourceRect} is outside the texture bounds ({texture.Width}, {texture.Height}).",
                 nameof(sourceRect)
             );
         }
-        sprites.Add(key, new(texture, sourceRect));
-        cursorX = sourceRect.Right + paddingX;
-        cursorY = sourceRect.Top;
-        if (cursorX >= texture.Width)
+
+        this.sprites.Add(key, new(texture, sourceRect));
+        this.cursorX = sourceRect.Right + this.paddingX;
+        this.cursorY = sourceRect.Top;
+        if (this.cursorX >= texture.Width)
         {
-            cursorX = 0;
-            cursorY += sourceRect.Height + paddingY;
+            this.cursorX = 0;
+            this.cursorY += sourceRect.Height + this.paddingY;
         }
         return this;
     }
@@ -128,7 +132,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     {
         foreach (var key in keys)
         {
-            Add(key);
+            this.Add(key);
         }
         return this;
     }
@@ -147,7 +151,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// there are still elements remaining to be added.</exception>
     public SpriteMapBuilder<T> Add(params T[] keys)
     {
-        return Add(keys.AsEnumerable());
+        return this.Add(keys.AsEnumerable());
     }
 
     /// <summary>
@@ -155,7 +159,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// </summary>
     public SpriteMap<T> Build()
     {
-        return new(sprites, defaultSprite);
+        return new(this.sprites, this.defaultSprite);
     }
 
     /// <summary>
@@ -165,7 +169,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> Default(T key)
     {
-        defaultSprite = sprites[key];
+        this.defaultSprite = this.sprites[key];
         return this;
     }
 
@@ -176,7 +180,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> Default(Sprite sprite)
     {
-        defaultSprite = sprite;
+        this.defaultSprite = sprite;
         return this;
     }
 
@@ -188,8 +192,8 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> MoveBy(int x, int y)
     {
-        cursorX += x;
-        cursorY += y;
+        this.cursorX += x;
+        this.cursorY += y;
         return this;
     }
 
@@ -200,7 +204,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> MoveBy(Point p)
     {
-        return MoveBy(p.X, p.Y);
+        return this.MoveBy(p.X, p.Y);
     }
 
     /// <summary>
@@ -215,8 +219,8 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> MoveTo(int x, int y)
     {
-        cursorX = x;
-        cursorY = y;
+        this.cursorX = x;
+        this.cursorY = y;
         return this;
     }
 
@@ -231,7 +235,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> MoveTo(Point p)
     {
-        return MoveTo(p.X, p.Y);
+        return this.MoveTo(p.X, p.Y);
     }
 
     /// <summary>
@@ -247,8 +251,8 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> Padding(int x, int y)
     {
-        paddingX = x;
-        paddingY = y;
+        this.paddingX = x;
+        this.paddingY = y;
         return this;
     }
 
@@ -263,7 +267,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> Padding(Point p)
     {
-        return Padding(p.X, p.Y);
+        return this.Padding(p.X, p.Y);
     }
 
     /// <summary>
@@ -277,8 +281,8 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> Size(int width, int height)
     {
-        spriteWidth = width;
-        spriteHeight = height;
+        this.spriteWidth = width;
+        this.spriteHeight = height;
         return this;
     }
 
@@ -292,7 +296,7 @@ public class SpriteMapBuilder<T>(Texture2D texture)
     /// <returns>The current builder instance.</returns>
     public SpriteMapBuilder<T> Size(Point p)
     {
-        return Size(p.X, p.Y);
+        return this.Size(p.X, p.Y);
     }
 
     private bool IsInBounds(Rectangle sourceRect)

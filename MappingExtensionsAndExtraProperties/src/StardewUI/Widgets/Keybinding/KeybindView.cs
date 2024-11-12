@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -24,16 +25,17 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public int ButtonHeight
     {
-        get => buttonHeight;
+        get => this.buttonHeight;
         set
         {
-            if (value == buttonHeight)
+            if (value == this.buttonHeight)
             {
                 return;
             }
-            buttonHeight = value;
-            UpdateContent();
-            OnPropertyChanged(nameof(ButtonHeight));
+
+            this.buttonHeight = value;
+            this.UpdateContent();
+            this.OnPropertyChanged(nameof(this.ButtonHeight));
         }
     }
 
@@ -43,16 +45,17 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public int? ButtonMinWidth
     {
-        get => buttonMinWidth;
+        get => this.buttonMinWidth;
         set
         {
-            if (value == buttonMinWidth)
+            if (value == this.buttonMinWidth)
             {
                 return;
             }
-            buttonMinWidth = value;
-            UpdateContent();
-            OnPropertyChanged(nameof(ButtonMinWidth));
+
+            this.buttonMinWidth = value;
+            this.UpdateContent();
+            this.OnPropertyChanged(nameof(this.ButtonMinWidth));
         }
     }
 
@@ -61,19 +64,21 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public string EmptyText
     {
-        get => emptyText;
+        get => this.emptyText;
         set
         {
-            if (value == emptyText)
+            if (value == this.emptyText)
             {
                 return;
             }
-            emptyText = value;
-            if (View?.Children.Count == 1 && View.Children[0] is Label label)
+
+            this.emptyText = value;
+            if (this.View?.Children.Count == 1 && this.View.Children[0] is Label label)
             {
                 label.Text = value;
             }
-            OnPropertyChanged(nameof(EmptyText));
+
+            this.OnPropertyChanged(nameof(this.EmptyText));
         }
     }
 
@@ -87,16 +92,17 @@ public class KeybindView : ComponentView<Lane>
     /// </remarks>
     public SpriteFont Font
     {
-        get => font;
+        get => this.font;
         set
         {
-            if (value == font)
+            if (value == this.font)
             {
                 return;
             }
-            font = value;
-            UpdateContent();
-            OnPropertyChanged(nameof(Font));
+
+            this.font = value;
+            this.UpdateContent();
+            this.OnPropertyChanged(nameof(this.Font));
         }
     }
 
@@ -105,24 +111,25 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public Keybind Keybind
     {
-        get => keybind;
+        get => this.keybind;
         set
         {
-            if (value.Buttons.SequenceEqual(keybind.Buttons))
+            if (value.Buttons.SequenceEqual(this.keybind.Buttons))
             {
                 return;
             }
-            keybind = value;
-            UpdateContent();
-            OnPropertyChanged(nameof(Keybind));
+
+            this.keybind = value;
+            this.UpdateContent();
+            this.OnPropertyChanged(nameof(this.Keybind));
         }
     }
 
     /// <inheritdoc cref="View.Margin" />
     public Edges Margin
     {
-        get => View.Margin;
-        set => View.Margin = value;
+        get => this.View.Margin;
+        set => this.View.Margin = value;
     }
 
     /// <summary>
@@ -130,16 +137,17 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public float Spacing
     {
-        get => spacing;
+        get => this.spacing;
         set
         {
-            if (value == spacing)
+            if (value == this.spacing)
             {
                 return;
             }
-            spacing = value;
-            UpdateContent();
-            OnPropertyChanged(nameof(Spacing));
+
+            this.spacing = value;
+            this.UpdateContent();
+            this.OnPropertyChanged(nameof(this.Spacing));
         }
     }
 
@@ -148,16 +156,17 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public ISpriteMap<SButton>? SpriteMap
     {
-        get => spriteMap;
+        get => this.spriteMap;
         set
         {
-            if (value == spriteMap)
+            if (value == this.spriteMap)
             {
                 return;
             }
-            spriteMap = value;
-            UpdateContent();
-            OnPropertyChanged(nameof(SpriteMap));
+
+            this.spriteMap = value;
+            this.UpdateContent();
+            this.OnPropertyChanged(nameof(this.SpriteMap));
         }
     }
 
@@ -166,19 +175,21 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public Color TextColor
     {
-        get => textColor;
+        get => this.textColor;
         set
         {
-            if (value == textColor)
+            if (value == this.textColor)
             {
                 return;
             }
-            textColor = value;
-            if (View?.Children.Count == 1 && View.Children[0] is Label label)
+
+            this.textColor = value;
+            if (this.View?.Children.Count == 1 && this.View.Children[0] is Label label)
             {
                 label.Color = value;
             }
-            OnPropertyChanged(nameof(TextColor));
+
+            this.OnPropertyChanged(nameof(this.TextColor));
         }
     }
 
@@ -187,16 +198,17 @@ public class KeybindView : ComponentView<Lane>
     /// </summary>
     public Color TintColor
     {
-        get => tintColor;
+        get => this.tintColor;
         set
         {
-            if (value == tintColor)
+            if (value == this.tintColor)
             {
                 return;
             }
-            tintColor = value;
-            UpdateTint();
-            OnPropertyChanged(nameof(TintColor));
+
+            this.tintColor = value;
+            this.UpdateTint();
+            this.OnPropertyChanged(nameof(this.TintColor));
         }
     }
 
@@ -214,38 +226,38 @@ public class KeybindView : ComponentView<Lane>
     protected override Lane CreateView()
     {
         var lane = new Lane() { Layout = LayoutParameters.FitContent(), VerticalContentAlignment = Alignment.Middle };
-        UpdateContent(lane);
+        this.UpdateContent(lane);
         return lane;
     }
 
     private IView CreateButtonImage(SButton button)
     {
         bool isPlaceholder = false;
-        var sprite = SpriteMap?.Get(button, out isPlaceholder);
+        var sprite = this.SpriteMap?.Get(button, out isPlaceholder);
         var image = new Image()
         {
             Layout = new()
             {
                 Width = Length.Content(),
-                Height = Length.Px(buttonHeight),
-                MinWidth = buttonMinWidth,
+                Height = Length.Px(this.buttonHeight),
+                MinWidth = this.buttonMinWidth,
             },
             Fit = isPlaceholder ? ImageFit.Stretch : ImageFit.Contain,
             Sprite = sprite,
-            Tint = tintColor,
+            Tint = this.tintColor,
         };
-        return isPlaceholder ? FillPlaceholder(image, button) : image;
+        return isPlaceholder ? this.FillPlaceholder(image, button) : image;
     }
 
     private IView FillPlaceholder(Image image, SButton button)
     {
-        var label = Label.Simple(ButtonName.ForButton(button), font, textColor);
+        var label = Label.Simple(ButtonName.ForButton(button), this.font, this.textColor);
         label.Margin = (image.Sprite!.FixedEdges ?? Edges.NONE) * (image.Sprite!.SliceSettings?.Scale ?? 1);
         image.Layout = new()
         {
             Width = Length.Stretch(),
             Height = image.Layout.Height,
-            MinWidth = buttonMinWidth,
+            MinWidth = this.buttonMinWidth,
         };
         return new Panel()
         {
@@ -258,21 +270,21 @@ public class KeybindView : ComponentView<Lane>
 
     private void UpdateContent(Lane? lane = null)
     {
-        lane ??= View;
-        lane.Children = keybind.IsBound
-            ? keybind
-                .Buttons.SelectMany(button => new IView[] { Label.Simple("+", font), CreateButtonImage(button) })
+        lane ??= this.View;
+        lane.Children = this.keybind.IsBound
+            ? this.keybind
+                .Buttons.SelectMany(button => new IView[] { Label.Simple("+", this.font), this.CreateButtonImage(button) })
                 .Skip(1)
                 .ToList()
-            : [Label.Simple(EmptyText, font)];
-        UpdateTint(lane);
+            : [Label.Simple(this.EmptyText, this.font)];
+        this.UpdateTint(lane);
     }
 
     private void UpdateTint()
     {
-        if (View is not null)
+        if (this.View is not null)
         {
-            UpdateTint(View);
+            this.UpdateTint(this.View);
         }
     }
 
@@ -280,12 +292,12 @@ public class KeybindView : ComponentView<Lane>
     {
         if (view is Image image)
         {
-            image.Tint = tintColor;
+            image.Tint = this.tintColor;
             return;
         }
         foreach (var child in view.GetChildren())
         {
-            UpdateTint(child.View);
+            this.UpdateTint(child.View);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace StardewUI.Widgets;
+﻿using System;
+
+namespace StardewUI.Widgets;
 
 /// <summary>
 /// Marks a child/children property as a named outlet.

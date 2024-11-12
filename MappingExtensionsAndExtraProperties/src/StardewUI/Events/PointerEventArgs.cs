@@ -18,6 +18,6 @@ public class PointerEventArgs(Vector2 position) : BubbleEventArgs, IOffsettable<
     /// <inheritdoc/>
     public PointerEventArgs Offset(Vector2 distance)
     {
-        return new(Position + distance);
+        return new(this.Position + distance);
     }
 }

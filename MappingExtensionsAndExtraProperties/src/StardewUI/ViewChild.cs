@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewUI.Input;
 using StardewUI.Layout;
@@ -21,7 +24,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// </remarks>
     internal WeakViewChild AsWeak()
     {
-        return new(View, Position);
+        return new(this.View, this.Position);
     }
 
     /// <summary>
@@ -29,7 +32,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// </summary>
     public Vector2 Center()
     {
-        return (Position + View.ContentBounds.Center());
+        return (this.Position + this.View.ContentBounds.Center());
     }
 
     /// <summary>
@@ -37,7 +40,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// </summary>
     public Point CenterPoint()
     {
-        return Center().ToPoint();
+        return this.Center().ToPoint();
     }
 
     /// <summary>
@@ -48,7 +51,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// <c>false</c>.</returns>
     public bool ContainsPoint(Vector2 point)
     {
-        return View.ContainsPoint(point - Position);
+        return this.View.ContainsPoint(point - this.Position);
     }
 
     /// <summary>
@@ -64,7 +67,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// if there are no focusable descendants that are possible to reach in that direction.</returns>
     public FocusSearchResult? FocusSearch(Vector2 contentPosition, Direction direction)
     {
-        return View.FocusSearch(contentPosition - Position, direction)?.Offset(Position);
+        return this.View.FocusSearch(contentPosition - this.Position, direction)?.Offset(this.Position);
     }
 
     /// <summary>
@@ -75,7 +78,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// </remarks>
     public Bounds GetActualBounds()
     {
-        return View.ActualBounds.Offset(Position);
+        return this.View.ActualBounds.Offset(this.Position);
     }
 
     /// <summary>
@@ -86,7 +89,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// </remarks>
     public Bounds GetContentBounds()
     {
-        return View.ContentBounds.Offset(Position);
+        return this.View.ContentBounds.Offset(this.Position);
     }
 
     /// <summary>
@@ -95,7 +98,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// </summary>
     public IEnumerable<Bounds> GetFloatingBounds()
     {
-        return View.FloatingBounds.Select(bounds => bounds.Offset(Position));
+        return this.View.FloatingBounds.Select(bounds => bounds.Offset(this.Position));
     }
 
     /// <summary>
@@ -106,7 +109,7 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// <see cref="Position"/> offset by <paramref name="distance"/>.</returns>
     public ViewChild Offset(Vector2 distance)
     {
-        return new(View, Position + distance);
+        return new(this.View, this.Position + distance);
     }
 
     /// <summary>
@@ -118,8 +121,8 @@ public record ViewChild(IView View, Vector2 Position) : IOffsettable<ViewChild>
     /// specified <paramref name="direction"/> from the <paramref name="origin"/>; otherwise <c>false</c>.</returns>
     public bool IsInDirection(Vector2 origin, Direction direction)
     {
-        var relativePosition = origin - Position;
-        var bounds = View.ActualBounds;
+        var relativePosition = origin - this.Position;
+        var bounds = this.View.ActualBounds;
         return direction switch
         {
             Direction.North => relativePosition.Y >= bounds.Top,
@@ -143,7 +146,7 @@ internal class WeakViewChild
     [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Would probably cause a memory leak")]
     public WeakViewChild(IView view, Vector2 position)
     {
-        viewRef = new(view);
+        this.viewRef = new(view);
         this.position = position;
     }
 
@@ -155,9 +158,9 @@ internal class WeakViewChild
     /// <returns><c>true</c> if the underlying <see cref="IView"/> was still alive; otherwise <c>false</c>.</returns>
     public bool TryResolve([MaybeNullWhen(false)] out ViewChild viewChild)
     {
-        if (viewRef.TryGetTarget(out var view))
+        if (this.viewRef.TryGetTarget(out var view))
         {
-            viewChild = new(view, position);
+            viewChild = new(view, this.position);
             return true;
         }
         viewChild = null;

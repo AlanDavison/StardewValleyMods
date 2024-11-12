@@ -21,6 +21,6 @@ public class ButtonEventArgs(Vector2 position, SButton button)
     /// <inheritdoc/>
     public new ButtonEventArgs Offset(Vector2 distance)
     {
-        return new(Position + distance, Button);
+        return new(this.Position + distance, this.Button);
     }
 }

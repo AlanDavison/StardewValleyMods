@@ -1,4 +1,5 @@
-﻿using StardewUI.Layout;
+﻿using System.Collections.Generic;
+using StardewUI.Layout;
 
 namespace StardewUI.Widgets;
 
@@ -29,10 +30,10 @@ public class FormBuilder(int labelWidth, int fieldIndent = 16)
         {
             Name = "Form",
             Layout = LayoutParameters.AutoRow(),
-            Margin = margin,
-            Padding = padding,
+            Margin = this.margin,
+            Padding = this.padding,
             Orientation = Orientation.Vertical,
-            Children = rows,
+            Children = this.rows,
         };
     }
 
@@ -55,7 +56,7 @@ public class FormBuilder(int labelWidth, int fieldIndent = 16)
             ScrollWithChildren = Orientation.Vertical,
             Children = views,
         };
-        rows.Add(row);
+        this.rows.Add(row);
         return this;
     }
 
@@ -83,7 +84,7 @@ public class FormBuilder(int labelWidth, int fieldIndent = 16)
             ScrollWithChildren = Orientation.Vertical,
             Children = view is not null ? [label, view] : [label],
         };
-        rows.Add(row);
+        this.rows.Add(row);
         return this;
     }
 
@@ -95,7 +96,7 @@ public class FormBuilder(int labelWidth, int fieldIndent = 16)
     public FormBuilder AddSection(string title)
     {
         var heading = CreateSectionHeading(title);
-        rows.Add(heading);
+        this.rows.Add(heading);
         return this;
     }
 

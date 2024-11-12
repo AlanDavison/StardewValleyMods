@@ -1,4 +1,8 @@
-﻿namespace StardewUI;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace StardewUI;
 
 /// <summary>
 /// Typesafe heterogeneous container for associating arbitrary data with a view or other UI object.
@@ -61,14 +65,14 @@ public class Tags
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        return obj is Tags other && other.values.Count == values.Count && !other.values.Except(values).Any();
+        return obj is Tags other && other.values.Count == this.values.Count && !other.values.Except(this.values).Any();
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
         var hashCode = new HashCode();
-        foreach (var entry in values.OrderBy(entry => entry.Key))
+        foreach (var entry in this.values.OrderBy(entry => entry.Key))
         {
             hashCode.Add(entry.Key);
             hashCode.Add(entry.Value);
@@ -83,7 +87,7 @@ public class Tags
     /// <returns>The stored value of type <typeparamref name="T"/>, if any; otherwise <c>null</c>.</returns>
     public T? Get<T>()
     {
-        return values.TryGetValue(typeof(T), out var value) ? (T)value : default;
+        return this.values.TryGetValue(typeof(T), out object? value) ? (T)value : default;
     }
 
     /// <summary>
@@ -95,11 +99,11 @@ public class Tags
     {
         if (value is not null)
         {
-            values[typeof(T)] = value;
+            this.values[typeof(T)] = value;
         }
         else
         {
-            values.Remove(typeof(T));
+            this.values.Remove(typeof(T));
         }
     }
 }

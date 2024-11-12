@@ -1,4 +1,6 @@
-﻿namespace StardewUI.Diagnostics;
+﻿using System;
+
+namespace StardewUI.Diagnostics;
 
 /// <summary>
 /// Provides methods to toggle tracing and write to the current trace.
@@ -72,7 +74,7 @@ public static class Trace
         {
             return null;
         }
-        var sliceName = $"{callerName()}.{memberName}";
+        string? sliceName = $"{callerName()}.{memberName}";
         return Writer.BeginSlice(sliceName);
     }
 

@@ -1,4 +1,6 @@
-﻿namespace StardewUI.Input;
+﻿using System;
+
+namespace StardewUI.Input;
 
 /// <summary>
 /// Configures the repeat rate of an action used in an <see cref="ActionState{T}"/>.

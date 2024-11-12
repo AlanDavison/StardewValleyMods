@@ -1,4 +1,5 @@
-﻿using StardewUI.Animation;
+﻿using System;
+using StardewUI.Animation;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Layout;
@@ -20,8 +21,8 @@ public class Scrollbar : ComponentView<Lane>
     /// </summary>
     public ScrollContainer? Container
     {
-        get => container;
-        set => SetContainer(value);
+        get => this.container;
+        set => this.SetContainer(value);
     }
 
     /// <summary>
@@ -29,8 +30,8 @@ public class Scrollbar : ComponentView<Lane>
     /// </summary>
     public Sprite? DownSprite
     {
-        get => downButton.Sprite;
-        set => downButton.Sprite = value;
+        get => this.downButton.Sprite;
+        set => this.downButton.Sprite = value;
     }
 
     /// <summary>
@@ -38,13 +39,13 @@ public class Scrollbar : ComponentView<Lane>
     /// </summary>
     public Edges Margin
     {
-        get => margin;
+        get => this.margin;
         set
         {
             // No OnPropertyChanged here because the margin field is just a lazy initializer for Root.Margin which is
             // already propagated.
-            margin = value;
-            LazyUpdate();
+            this.margin = value;
+            this.LazyUpdate();
         }
     }
 
@@ -54,8 +55,8 @@ public class Scrollbar : ComponentView<Lane>
     /// </summary>
     public Sprite? ThumbSprite
     {
-        get => thumb.Sprite;
-        set => thumb.Sprite = value;
+        get => this.thumb.Sprite;
+        set => this.thumb.Sprite = value;
     }
 
     /// <summary>
@@ -63,8 +64,8 @@ public class Scrollbar : ComponentView<Lane>
     /// </summary>
     public Sprite? TrackSprite
     {
-        get => track.Background;
-        set => track.Background = value;
+        get => this.track.Background;
+        set => this.track.Background = value;
     }
 
     /// <summary>
@@ -72,8 +73,8 @@ public class Scrollbar : ComponentView<Lane>
     /// </summary>
     public Sprite? UpSprite
     {
-        get => upButton.Sprite;
-        set => upButton.Sprite = value;
+        get => this.upButton.Sprite;
+        set => this.upButton.Sprite = value;
     }
 
     private ScrollContainer? container;
@@ -101,31 +102,31 @@ public class Scrollbar : ComponentView<Lane>
     /// </remarks>
     public void SyncPosition()
     {
-        if (Container is null || thumb is null)
+        if (this.Container is null || this.thumb is null)
         {
             return;
         }
-        var progress = Container.ScrollSize > 0 ? Container.ScrollOffset / Container.ScrollSize : 0;
-        var availableLength = Container.Orientation.Get(track.InnerSize) - Container.Orientation.Get(thumb.ContentSize);
-        var position = availableLength * progress;
-        if (Container.Orientation == Orientation.Vertical)
+        float progress = this.Container.ScrollSize > 0 ? this.Container.ScrollOffset / this.Container.ScrollSize : 0;
+        float availableLength = this.Container.Orientation.Get(this.track.InnerSize) - this.Container.Orientation.Get(this.thumb.ContentSize);
+        float position = availableLength * progress;
+        if (this.Container.Orientation == Orientation.Vertical)
         {
-            thumb.Margin = new(Top: (int)position);
+            this.thumb.Margin = new(Top: (int)position);
         }
         else
         {
-            thumb.Margin = new(Left: (int)position);
+            this.thumb.Margin = new(Left: (int)position);
         }
     }
 
     /// <inheritdoc />
     protected override Lane CreateView()
     {
-        upButton = CreateButton("ScrollBackButton", UiSprites.SmallUpArrow, 48, 48);
-        upButton.LeftClick += UpButton_LeftClick;
-        downButton = CreateButton("ScrollForwardButton", UiSprites.SmallDownArrow, 48, 48);
-        downButton.LeftClick += DownButton_LeftClick;
-        thumb = new()
+        this.upButton = CreateButton("ScrollBackButton", UiSprites.SmallUpArrow, 48, 48);
+        this.upButton.LeftClick += this.UpButton_LeftClick;
+        this.downButton = CreateButton("ScrollForwardButton", UiSprites.SmallDownArrow, 48, 48);
+        this.downButton.LeftClick += this.DownButton_LeftClick;
+        this.thumb = new()
         {
             Name = "ScrollbarThumb",
             Layout = LayoutParameters.FitContent(),
@@ -134,23 +135,23 @@ public class Scrollbar : ComponentView<Lane>
             Sprite = UiSprites.VerticalScrollThumb,
             Draggable = true,
         };
-        thumb.DragStart += Thumb_DragStart;
-        thumb.Drag += Thumb_Drag;
-        thumb.DragEnd += Thumb_DragEnd;
-        thumb.LeftClick += Thumb_LeftClick;
-        track = new()
+        this.thumb.DragStart += this.Thumb_DragStart;
+        this.thumb.Drag += this.Thumb_Drag;
+        this.thumb.DragEnd += this.Thumb_DragEnd;
+        this.thumb.LeftClick += this.Thumb_LeftClick;
+        this.track = new()
         {
             Name = "ScrollbarTrack",
             Margin = new(Left: 2, Top: 2, Bottom: 8),
             Background = UiSprites.ScrollBarTrack,
-            Content = thumb,
+            Content = this.thumb,
             ShadowAlpha = 0.4f,
             ShadowCount = 2,
             ShadowOffset = new(-5, 5),
         };
-        track.LeftClick += Track_LeftClick;
-        var lane = new Lane() { Children = [upButton, track, downButton] };
-        Update(lane);
+        this.track.LeftClick += this.Track_LeftClick;
+        var lane = new Lane() { Children = [this.upButton, this.track, this.downButton] };
+        this.Update(lane);
         return lane;
     }
 
@@ -158,13 +159,13 @@ public class Scrollbar : ComponentView<Lane>
 
     private void Container_ScrollChanged(object? sender, EventArgs e)
     {
-        SyncPosition();
-        SyncVisibility(View);
+        this.SyncPosition();
+        this.SyncVisibility(this.View);
     }
 
     private void DownButton_LeftClick(object? sender, ClickEventArgs e)
     {
-        if (Container?.ScrollForward() == true)
+        if (this.Container?.ScrollForward() == true)
         {
             Game1.playSound("shwip");
         }
@@ -172,12 +173,12 @@ public class Scrollbar : ComponentView<Lane>
 
     private void Thumb_Drag(object? sender, PointerEventArgs e)
     {
-        if (Container is null || !initialThumbDragCursorOffset.HasValue)
+        if (this.Container is null || !this.initialThumbDragCursorOffset.HasValue)
         {
             return;
         }
 
-        var availableLength = Container.Orientation.Get(track.InnerSize) - Container.Orientation.Get(thumb.ContentSize);
+        float availableLength = this.Container.Orientation.Get(this.track.InnerSize) - this.Container.Orientation.Get(this.thumb.ContentSize);
         if (availableLength == 0)
         {
             // Shouldn't get here. If we do, there's no way to compute the actual scroll offset based on thumb position.
@@ -186,42 +187,42 @@ public class Scrollbar : ComponentView<Lane>
 
         // Because the thumb technically never changes its _position_ (only its margin), the event position is actually
         // also the position in the track, which simplifies the remaining calculations considerably.
-        var targetDistance = Container.Orientation.Get(e.Position) - initialThumbDragCursorOffset.Value;
-        var targetThumbStart = Math.Clamp(targetDistance, 0, availableLength);
-        Container.ScrollOffset = targetThumbStart / availableLength * Container.ScrollSize;
+        float targetDistance = this.Container.Orientation.Get(e.Position) - this.initialThumbDragCursorOffset.Value;
+        float targetThumbStart = Math.Clamp(targetDistance, 0, availableLength);
+        this.Container.ScrollOffset = targetThumbStart / availableLength * this.Container.ScrollSize;
         // Force immediate sync so that we don't get "feedback" from the cursor still being out of sync with the thumb
         // on next frame.
-        SyncPosition();
+        this.SyncPosition();
     }
 
     private void Thumb_DragEnd(object? sender, PointerEventArgs e)
     {
-        initialThumbDragCursorOffset = null;
+        this.initialThumbDragCursorOffset = null;
     }
 
     private void Thumb_DragStart(object? sender, PointerEventArgs e)
     {
-        if (Container is null)
+        if (this.Container is null)
         {
-            initialThumbDragCursorOffset = null;
+            this.initialThumbDragCursorOffset = null;
             return;
         }
         // The same simplification used in the Drag handler gives us a bit of a wrinkle here; we need to know the cursor
         // offset relative to the actual visible part of the thumb, not the entire view range including margin.
-        var orientationPosition = Container.Orientation.Get(e.Position);
-        var orientationStart = Container.Orientation == Orientation.Vertical ? thumb.Margin.Top : thumb.Margin.Left;
-        var cursorOffset = orientationPosition - orientationStart;
+        float orientationPosition = this.Container.Orientation.Get(e.Position);
+        int orientationStart = this.Container.Orientation == Orientation.Vertical ? this.thumb.Margin.Top : this.thumb.Margin.Left;
+        float cursorOffset = orientationPosition - orientationStart;
         // Negative offset means the "drag" is not actually on the thumb itself, but in the preceding margin.
-        initialThumbDragCursorOffset = cursorOffset >= 0 ? cursorOffset : null;
+        this.initialThumbDragCursorOffset = cursorOffset >= 0 ? cursorOffset : null;
     }
 
     private void Thumb_LeftClick(object? sender, ClickEventArgs e)
     {
         // Prevent clicks on the thumb from being treated as clicks on the track.
-        if (Container is not null)
+        if (this.Container is not null)
         {
-            var orientationStart = Container.Orientation == Orientation.Vertical ? thumb.Margin.Top : thumb.Margin.Left;
-            if (Container.Orientation.Get(e.Position) >= orientationStart)
+            int orientationStart = this.Container.Orientation == Orientation.Vertical ? this.thumb.Margin.Top : this.thumb.Margin.Left;
+            if (this.Container.Orientation.Get(e.Position) >= orientationStart)
             {
                 e.Handled = true;
             }
@@ -230,7 +231,7 @@ public class Scrollbar : ComponentView<Lane>
 
     private void Track_LeftClick(object? sender, ClickEventArgs e)
     {
-        if (Container is null)
+        if (this.Container is null)
         {
             return;
         }
@@ -238,16 +239,16 @@ public class Scrollbar : ComponentView<Lane>
         // a percentage of the scroll size. However, this won't line up consistently with the new thumb position,
         // because the amount by which the thumb can move is smaller than the track size (by exactly the size of the
         // thumb itself). We have to compensate for the thumb size.
-        var cursorDistance = Container.Orientation.Get(e.Position);
-        var trackLength = Container.Orientation.Get(track.InnerSize);
-        var thumbLength = Container.Orientation.Get(thumb.ContentSize);
-        var progress = Math.Clamp((cursorDistance - thumbLength / 2) / (trackLength - thumbLength), 0, 1);
-        Container.ScrollOffset = progress * Container.ScrollSize;
+        float cursorDistance = this.Container.Orientation.Get(e.Position);
+        float trackLength = this.Container.Orientation.Get(this.track.InnerSize);
+        float thumbLength = this.Container.Orientation.Get(this.thumb.ContentSize);
+        float progress = Math.Clamp((cursorDistance - thumbLength / 2) / (trackLength - thumbLength), 0, 1);
+        this.Container.ScrollOffset = progress * this.Container.ScrollSize;
     }
 
     private void UpButton_LeftClick(object? sender, ClickEventArgs e)
     {
-        if (Container?.ScrollBackward() == true)
+        if (this.Container?.ScrollBackward() == true)
         {
             Game1.playSound("shwip");
         }
@@ -271,9 +272,9 @@ public class Scrollbar : ComponentView<Lane>
 
     private void LazyUpdate()
     {
-        if (View is not null)
+        if (this.View is not null)
         {
-            Update(View);
+            this.Update(this.View);
         }
     }
 
@@ -285,51 +286,53 @@ public class Scrollbar : ComponentView<Lane>
         }
         if (this.container is not null)
         {
-            this.container.ScrollChanged -= Container_ScrollChanged;
+            this.container.ScrollChanged -= this.Container_ScrollChanged;
         }
         this.container = container;
         if (container is not null)
         {
-            container.ScrollChanged += Container_ScrollChanged;
+            container.ScrollChanged += this.Container_ScrollChanged;
         }
-        LazyUpdate();
-        OnPropertyChanged(nameof(Container));
+
+        this.LazyUpdate();
+        this.OnPropertyChanged(nameof(this.Container));
     }
 
     private void SyncVisibility(Lane root)
     {
-        root.Visibility = Container?.ScrollSize > 0 ? Visibility.Visible : Visibility.Hidden;
+        root.Visibility = this.Container?.ScrollSize > 0 ? Visibility.Visible : Visibility.Hidden;
     }
 
     private void Update(Lane root)
     {
-        SyncVisibility(root);
-        if (Container is null)
+        this.SyncVisibility(root);
+        if (this.Container is null)
         {
             return;
         }
-        root.Margin = margin;
-        if (Container.Orientation == Orientation.Vertical)
+        root.Margin = this.margin;
+        if (this.Container.Orientation == Orientation.Vertical)
         {
             root.Orientation = Orientation.Vertical;
-            track.Layout = new() { Width = Length.Content(), Height = Length.Stretch() };
-            track.Margin = new(Left: 14, Top: 2, Bottom: 8);
-            upButton.Rotation = null;
-            downButton.Rotation = null;
-            thumb.Layout = new() { Width = Length.Px(24), Height = Length.Px(40) };
-            thumb.Rotation = null;
+            this.track.Layout = new() { Width = Length.Content(), Height = Length.Stretch() };
+            this.track.Margin = new(Left: 14, Top: 2, Bottom: 8);
+            this.upButton.Rotation = null;
+            this.downButton.Rotation = null;
+            this.thumb.Layout = new() { Width = Length.Px(24), Height = Length.Px(40) };
+            this.thumb.Rotation = null;
         }
         else
         {
             root.Orientation = Orientation.Horizontal;
-            track.Layout = new() { Width = Length.Stretch(), Height = Length.Content() };
-            track.Margin = new(Left: 2, Top: 14, Bottom: 8);
-            upButton.Rotation = SimpleRotation.QuarterCounterclockwise; // Left
-            downButton.Rotation = SimpleRotation.QuarterCounterclockwise; // Right
-            thumb.Layout = new() { Width = Length.Px(40), Height = Length.Px(24) };
-            thumb.Rotation = SimpleRotation.QuarterCounterclockwise;
+            this.track.Layout = new() { Width = Length.Stretch(), Height = Length.Content() };
+            this.track.Margin = new(Left: 2, Top: 14, Bottom: 8);
+            this.upButton.Rotation = SimpleRotation.QuarterCounterclockwise; // Left
+            this.downButton.Rotation = SimpleRotation.QuarterCounterclockwise; // Right
+            this.thumb.Layout = new() { Width = Length.Px(40), Height = Length.Px(24) };
+            this.thumb.Rotation = SimpleRotation.QuarterCounterclockwise;
         }
-        SyncPosition();
-        SyncVisibility(root);
+
+        this.SyncPosition();
+        this.SyncVisibility(root);
     }
 }

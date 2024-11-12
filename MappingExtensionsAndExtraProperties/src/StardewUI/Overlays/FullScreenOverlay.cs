@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Layout;
 using StardewUI.Widgets;
 using StardewValley;
@@ -57,7 +58,7 @@ public abstract class FullScreenOverlay : IOverlay
     /// <remarks>
     /// The view provided in a full-screen overlay is a dimming frame with the content view inside.
     /// </remarks>
-    public IView View => overlayView.Value;
+    public IView View => this.overlayView.Value;
 
     /// <inheritdoc />
     public event EventHandler<EventArgs>? Close;
@@ -69,20 +70,20 @@ public abstract class FullScreenOverlay : IOverlay
     /// </summary>
     public FullScreenOverlay()
     {
-        overlayView = new(CreateOverlayView);
+        this.overlayView = new(this.CreateOverlayView);
     }
 
     /// <inheritdoc />
     public void OnClose()
     {
         Game1.playSound("bigDeSelect");
-        Close?.Invoke(this, EventArgs.Empty);
+        this.Close?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
     public virtual void Update(TimeSpan elapsed)
     {
-        View.OnUpdate(elapsed);
+        this.View.OnUpdate(elapsed);
     }
 
     /// <summary>
@@ -102,7 +103,7 @@ public abstract class FullScreenOverlay : IOverlay
     protected TChild RequireView<TChild>(Func<TChild> viewSelector)
         where TChild : IView
     {
-        _ = View;
+        _ = this.View;
         return viewSelector();
     }
 
@@ -113,7 +114,7 @@ public abstract class FullScreenOverlay : IOverlay
             Layout = LayoutParameters.FitContent(),
             HorizontalContentAlignment = Alignment.Middle,
             VerticalContentAlignment = Alignment.Middle,
-            Content = CreateView(),
+            Content = this.CreateView(),
         };
     }
 }

@@ -26,7 +26,7 @@ public record Sprite(
     /// <summary>
     /// The size (width/height) of the sprite, in pixels.
     /// </summary>
-    public Point Size => SourceRect?.Size ?? Texture.Bounds.Size;
+    public Point Size => this.SourceRect?.Size ?? this.Texture.Bounds.Size;
 }
 
 /// <summary>
@@ -62,7 +62,7 @@ public record SliceSettings(
     /// <paramref name="newScale"/>.</returns>
     public SliceSettings WithScale(float newScale)
     {
-        return new(CenterX, CenterXPosition, CenterY, CenterYPosition, newScale, EdgesOnly);
+        return new(this.CenterX, this.CenterXPosition, this.CenterY, this.CenterYPosition, newScale, this.EdgesOnly);
     }
 }
 

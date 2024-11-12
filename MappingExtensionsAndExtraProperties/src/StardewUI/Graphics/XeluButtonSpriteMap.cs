@@ -82,16 +82,16 @@ public class XeluButtonSpriteMap(Texture2D gamepad, Texture2D keyboard, Texture2
 
     /// <inheritdoc />
     protected override Sprite KeyboardBlank =>
-        new(keyboard, GetKeyboardBlankSourceRect(), KeyboardFixedEdges, SliceSettings: new(Scale: SliceScale));
+        new(keyboard, this.GetKeyboardBlankSourceRect(), KeyboardFixedEdges, SliceSettings: new(Scale: this.SliceScale));
 
     /// <inheritdoc />
-    protected override Sprite MouseLeft => new(mouse, GetMouseSourceRect(1));
+    protected override Sprite MouseLeft => new(mouse, this.GetMouseSourceRect(1));
 
     /// <inheritdoc />
-    protected override Sprite MouseMiddle => new(mouse, GetMouseSourceRect(2));
+    protected override Sprite MouseMiddle => new(mouse, this.GetMouseSourceRect(2));
 
     /// <inheritdoc />
-    protected override Sprite MouseRight => new(mouse, GetMouseSourceRect(3));
+    protected override Sprite MouseRight => new(mouse, this.GetMouseSourceRect(3));
 
     /// <inheritdoc />
     protected override Sprite? Get(SButton button)
@@ -128,13 +128,13 @@ public class XeluButtonSpriteMap(Texture2D gamepad, Texture2D keyboard, Texture2
             _ => null,
         };
         return gamepadSpriteIndex.HasValue
-            ? new(gamepad, GetSourceRect(gamepadSpriteIndex.Value), SliceSettings: new(Scale: SliceScale))
+            ? new(gamepad, GetSourceRect(gamepadSpriteIndex.Value), SliceSettings: new(Scale: this.SliceScale))
             : null;
     }
 
     private Rectangle GetKeyboardBlankSourceRect()
     {
-        var spriteIndex = KeyboardTheme switch
+        int spriteIndex = this.KeyboardTheme switch
         {
             SpriteTheme.Dark => 0,
             SpriteTheme.Light => 1,
@@ -145,7 +145,7 @@ public class XeluButtonSpriteMap(Texture2D gamepad, Texture2D keyboard, Texture2
 
     private Rectangle GetMouseSourceRect(int buttonIndex)
     {
-        var baseIndex = MouseTheme == SpriteTheme.Dark ? 4 : 0;
+        int baseIndex = this.MouseTheme == SpriteTheme.Dark ? 4 : 0;
         return GetSourceRect(baseIndex + buttonIndex);
     }
 

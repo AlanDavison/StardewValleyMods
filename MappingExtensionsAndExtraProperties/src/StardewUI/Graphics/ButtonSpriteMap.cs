@@ -43,9 +43,9 @@ public abstract class ButtonSpriteMap : ISpriteMap<SButton>
     {
         var mouseSprite = key switch
         {
-            SButton.MouseLeft => MouseLeft,
-            SButton.MouseMiddle => MouseMiddle,
-            SButton.MouseRight => MouseRight,
+            SButton.MouseLeft => this.MouseLeft,
+            SButton.MouseMiddle => this.MouseMiddle,
+            SButton.MouseRight => this.MouseRight,
             _ => null,
         };
         if (mouseSprite is not null)
@@ -53,14 +53,14 @@ public abstract class ButtonSpriteMap : ISpriteMap<SButton>
             isPlaceholder = false;
             return mouseSprite;
         }
-        var exactSprite = Get(key);
+        var exactSprite = this.Get(key);
         if (exactSprite is not null)
         {
             isPlaceholder = false;
             return exactSprite;
         }
         isPlaceholder = true;
-        return key.TryGetController(out _) ? ControllerBlank : KeyboardBlank;
+        return key.TryGetController(out _) ? this.ControllerBlank : this.KeyboardBlank;
     }
 
     /// <summary>

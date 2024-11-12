@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace StardewUI.Graphics;
@@ -121,6 +122,6 @@ public interface ISpriteBatch
     /// <param name="y">The translation's Y component.</param>
     void Translate(float x, float y)
     {
-        Translate(new(x, y));
+        this.Translate(new(x, y));
     }
 }

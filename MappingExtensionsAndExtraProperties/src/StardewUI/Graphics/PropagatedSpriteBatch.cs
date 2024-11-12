@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -24,32 +25,32 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
     /// <inheritdoc />
     public IDisposable Blend(BlendState blendState)
     {
-        var previousRasterizerState = (RasterizerState)rasterizerStateField.GetValue(spriteBatch)!;
-        var previousBlendState = (BlendState)blendStateField.GetValue(spriteBatch)!;
+        var previousRasterizerState = (RasterizerState)rasterizerStateField.GetValue(this.spriteBatch)!;
+        var previousBlendState = (BlendState)blendStateField.GetValue(this.spriteBatch)!;
         var reverter = new BlendReverter(this, previousRasterizerState, previousBlendState);
-        spriteBatch.End();
-        BeginSpriteBatch(previousRasterizerState, blendState);
+        this.spriteBatch.End();
+        this.BeginSpriteBatch(previousRasterizerState, blendState);
         return reverter;
     }
 
     /// <inheritdoc />
     public IDisposable Clip(Rectangle clipRect)
     {
-        var previousRect = spriteBatch.GraphicsDevice.ScissorRectangle;
+        var previousRect = this.spriteBatch.GraphicsDevice.ScissorRectangle;
         // Doing this with reflection in a draw loop sucks for performance, but there seems to be no other way to get
         // access to the previous state. `SpriteBatch.GraphcisDevice.RasterizerState` does not sync with it.
-        var previousRasterizerState = (RasterizerState)rasterizerStateField.GetValue(spriteBatch)!;
-        var location = (clipRect.Location.ToVector2() + transform.Translation).ToPoint();
-        spriteBatch.End();
-        BeginSpriteBatch(new() { ScissorTestEnable = true });
-        spriteBatch.GraphicsDevice.ScissorRectangle = Intersection(previousRect, new(location, clipRect.Size));
+        var previousRasterizerState = (RasterizerState)rasterizerStateField.GetValue(this.spriteBatch)!;
+        var location = (clipRect.Location.ToVector2() + this.transform.Translation).ToPoint();
+        this.spriteBatch.End();
+        this.BeginSpriteBatch(new() { ScissorTestEnable = true });
+        this.spriteBatch.GraphicsDevice.ScissorRectangle = Intersection(previousRect, new(location, clipRect.Size));
         return new ClipReverter(this, previousRasterizerState, previousRect);
     }
 
     /// <inheritdoc />
     public void DelegateDraw(Action<SpriteBatch, Vector2> draw)
     {
-        draw(spriteBatch, transform.Translation);
+        draw(this.spriteBatch, this.transform.Translation);
     }
 
     /// <inheritdoc />
@@ -65,9 +66,9 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
         float layerDepth = 0
     )
     {
-        spriteBatch.Draw(
+        this.spriteBatch.Draw(
             texture,
-            position + transform.Translation,
+            position + this.transform.Translation,
             sourceRectangle,
             color ?? Color.White,
             rotation,
@@ -91,9 +92,9 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
         float layerDepth = 0
     )
     {
-        spriteBatch.Draw(
+        this.spriteBatch.Draw(
             texture,
-            position + transform.Translation,
+            position + this.transform.Translation,
             sourceRectangle,
             color ?? Color.White,
             rotation,
@@ -116,8 +117,8 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
         float layerDepth = 0
     )
     {
-        var location = (destinationRectangle.Location.ToVector2() + transform.Translation).ToPoint();
-        spriteBatch.Draw(
+        var location = (destinationRectangle.Location.ToVector2() + this.transform.Translation).ToPoint();
+        this.spriteBatch.Draw(
             texture,
             new(location, destinationRectangle.Size),
             sourceRectangle,
@@ -142,10 +143,10 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
         float layerDepth = 0
     )
     {
-        spriteBatch.DrawString(
+        this.spriteBatch.DrawString(
             spriteFont,
             text,
-            position + transform.Translation,
+            position + this.transform.Translation,
             color,
             rotation,
             origin ?? Vector2.Zero,
@@ -164,18 +165,18 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
     /// <inheritdoc />
     public void Translate(float x, float y)
     {
-        Translate(new(x, y));
+        this.Translate(new(x, y));
     }
 
     /// <inheritdoc />
     public void Translate(Vector2 translation)
     {
-        transform = transform.Translate(translation);
+        this.transform = this.transform.Translate(translation);
     }
 
     private void BeginSpriteBatch(RasterizerState rasterizerState, BlendState? blendState = null)
     {
-        spriteBatch.Begin(
+        this.spriteBatch.Begin(
             SpriteSortMode.Deferred,
             blendState ?? BlendState.AlphaBlend,
             SamplerState.PointClamp,
@@ -185,10 +186,10 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
 
     private static Rectangle Intersection(Rectangle r1, Rectangle r2)
     {
-        var left = Math.Max(r1.Left, r2.Left);
-        var top = Math.Max(r1.Top, r2.Top);
-        var right = Math.Min(r1.Right, r2.Right);
-        var bottom = Math.Min(r1.Bottom, r2.Bottom);
+        int left = Math.Max(r1.Left, r2.Left);
+        int top = Math.Max(r1.Top, r2.Top);
+        int right = Math.Min(r1.Right, r2.Right);
+        int bottom = Math.Min(r1.Bottom, r2.Bottom);
         return new(left, top, Math.Max(right - left, 0), Math.Max(bottom - top, 0));
     }
 
@@ -227,7 +228,7 @@ public class PropagatedSpriteBatch(SpriteBatch spriteBatch, Transform transform)
 
         public void Dispose()
         {
-            owner.transform = savedTransform;
+            owner.transform = this.savedTransform;
             GC.SuppressFinalize(this);
         }
     }

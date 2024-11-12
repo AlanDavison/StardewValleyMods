@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Input;
 using StardewUI.Layout;
@@ -19,12 +22,12 @@ public class Grid : View
     /// </summary>
     public IList<IView> Children
     {
-        get => children;
+        get => this.children;
         set
         {
-            if (children.SetItems(value))
+            if (this.children.SetItems(value))
             {
-                OnPropertyChanged(nameof(Children));
+                this.OnPropertyChanged(nameof(this.Children));
             }
         }
     }
@@ -35,13 +38,13 @@ public class Grid : View
     /// </summary>
     public Alignment HorizontalItemAlignment
     {
-        get => horizontalItemAlignment;
+        get => this.horizontalItemAlignment;
         set
         {
-            if (value != horizontalItemAlignment)
+            if (value != this.horizontalItemAlignment)
             {
-                horizontalItemAlignment = value;
-                OnPropertyChanged(nameof(HorizontalItemAlignment));
+                this.horizontalItemAlignment = value;
+                this.OnPropertyChanged(nameof(this.HorizontalItemAlignment));
             }
         }
     }
@@ -65,12 +68,12 @@ public class Grid : View
     /// </remarks>
     public GridItemLayout ItemLayout
     {
-        get => itemLayout.Value;
+        get => this.itemLayout.Value;
         set
         {
-            if (itemLayout.SetIfChanged(value))
+            if (this.itemLayout.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(ItemLayout));
+                this.OnPropertyChanged(nameof(this.ItemLayout));
             }
         }
     }
@@ -84,12 +87,12 @@ public class Grid : View
     /// </remarks>
     public Vector2 ItemSpacing
     {
-        get => itemSpacing.Value;
+        get => this.itemSpacing.Value;
         set
         {
-            if (itemSpacing.SetIfChanged(value))
+            if (this.itemSpacing.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(ItemSpacing));
+                this.OnPropertyChanged(nameof(this.ItemSpacing));
             }
         }
     }
@@ -112,12 +115,12 @@ public class Grid : View
     /// </remarks>
     public Orientation PrimaryOrientation
     {
-        get => primaryOrientation.Value;
+        get => this.primaryOrientation.Value;
         set
         {
-            if (primaryOrientation.SetIfChanged(value))
+            if (this.primaryOrientation.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(PrimaryOrientation));
+                this.OnPropertyChanged(nameof(this.PrimaryOrientation));
             }
         }
     }
@@ -128,13 +131,13 @@ public class Grid : View
     /// </summary>
     public Alignment VerticalItemAlignment
     {
-        get => verticalItemAlignment;
+        get => this.verticalItemAlignment;
         set
         {
-            if (value != verticalItemAlignment)
+            if (value != this.verticalItemAlignment)
             {
-                verticalItemAlignment = value;
-                OnPropertyChanged(nameof(VerticalItemAlignment));
+                this.verticalItemAlignment = value;
+                this.OnPropertyChanged(nameof(this.VerticalItemAlignment));
             }
         }
     }
@@ -161,32 +164,32 @@ public class Grid : View
     /// <inheritdoc />
     protected override FocusSearchResult? FindFocusableDescendant(Vector2 contentPosition, Direction direction)
     {
-        var cellPosition = GetCellAt(contentPosition);
-        LogFocusSearch($"Current cell position: {cellPosition}");
+        var cellPosition = this.GetCellAt(contentPosition);
+        this.LogFocusSearch($"Current cell position: {cellPosition}");
         // If we could guarantee that the implementation were perfect, then there would not really be any need to track
         // the previous index. As it is, this helps prevent an infinite loop in case of an unexpected layout bug.
         int previousCheckedIndex = -1;
         while (true)
         {
             cellPosition = Advance(cellPosition, direction);
-            LogFocusSearch($"Searching next cell position: {cellPosition}");
-            var nextIndex = GetChildIndexAt(cellPosition);
+            this.LogFocusSearch($"Searching next cell position: {cellPosition}");
+            int nextIndex = this.GetChildIndexAt(cellPosition);
             if (nextIndex < 0 || nextIndex == previousCheckedIndex)
             {
-                LogFocusSearch("Cell position is out of bounds; ending search.");
+                this.LogFocusSearch("Cell position is out of bounds; ending search.");
                 return null;
             }
             var nextChild =
-                nextIndex < childPositions.Count ? childPositions[nextIndex]
+                nextIndex < this.childPositions.Count ? this.childPositions[nextIndex]
                 // GetChildIndexAt can return a position past the end of the list, only on the final row (if horizontal) or
                 // final column (if vertical). Whether or not this is considered a valid navigation depends on the
                 // direction. Navigating east on the final row, past the last item, should NOT return a value here as it
                 // would be considered exiting the entire grid, but navigating up/down from a different row (or from out of
                 // bounds) should snap to the last or closest item.
-                : direction.GetOrientation() == PrimaryOrientation
-                    ? nextIndex > countBeforeWrap ? childPositions[nextIndex - countBeforeWrap]
+                : direction.GetOrientation() == this.PrimaryOrientation
+                    ? nextIndex > this.countBeforeWrap ? this.childPositions[nextIndex - this.countBeforeWrap]
                         : null
-                : childPositions.LastOrDefault();
+                : this.childPositions.LastOrDefault();
             var found = nextChild?.FocusSearch(contentPosition, direction);
             if (found is not null)
             {
@@ -199,15 +202,15 @@ public class Grid : View
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return childPositions;
+        return this.childPositions;
     }
 
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildrenAt(Vector2 contentPosition)
     {
-        var cellPosition = GetCellAt(contentPosition);
-        var childIndex = GetChildIndexAt(cellPosition);
-        var child = childIndex >= 0 && childIndex < childPositions.Count ? childPositions[childIndex] : null;
+        var cellPosition = this.GetCellAt(contentPosition);
+        int childIndex = this.GetChildIndexAt(cellPosition);
+        var child = childIndex >= 0 && childIndex < this.childPositions.Count ? this.childPositions[childIndex] : null;
         // GetChildIndexAt has some logic to clamp the final row, so double-check to make sure the point is actually
         // inside.
         return (child?.ContainsPoint(contentPosition) ?? false) ? [child] : [];
@@ -216,17 +219,17 @@ public class Grid : View
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return itemLayout.IsDirty
-            || itemSpacing.IsDirty
-            || primaryOrientation.IsDirty
-            || children.IsDirty
-            || children.Any(child => child.IsDirty());
+        return this.itemLayout.IsDirty
+            || this.itemSpacing.IsDirty
+            || this.primaryOrientation.IsDirty
+            || this.children.IsDirty
+            || this.children.Any(child => child.IsDirty());
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        foreach (var (child, position) in childPositions.OrderBy(child => child.View.ZIndex))
+        foreach (var (child, position) in this.childPositions.OrderBy(child => child.View.ZIndex))
         {
             using var _ = b.SaveTransform();
             b.Translate(position);
@@ -237,37 +240,37 @@ public class Grid : View
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        childPositions.Clear();
+        this.childPositions.Clear();
         // TODO: If the secondary orientation specifies Content size, will it be constrained by available size?
         // This is actually something we don't want with an unbounded grid, i.e. it's usually going to be in a scroll
         // container with unknown inner dimension.
-        var limits = Layout.GetLimits(availableSize);
-        var primaryAvailable = PrimaryOrientation.Get(limits);
-        var primarySpacing = PrimaryOrientation.Get(ItemSpacing);
-        var (itemLength, countBeforeWrap) = ItemLayout.GetItemCountAndLength(primaryAvailable, primarySpacing);
+        var limits = this.Layout.GetLimits(availableSize);
+        float primaryAvailable = this.PrimaryOrientation.Get(limits);
+        float primarySpacing = this.PrimaryOrientation.Get(this.ItemSpacing);
+        (float itemLength, int countBeforeWrap) = this.ItemLayout.GetItemCountAndLength(primaryAvailable, primarySpacing);
         this.itemLength = itemLength;
         this.countBeforeWrap = countBeforeWrap;
-        var secondaryOrientation = PrimaryOrientation.Swap();
-        var secondaryAvailable = secondaryOrientation.Get(limits);
-        var secondarySpacing = secondaryOrientation.Get(ItemSpacing);
-        var secondaryUsed = 0.0f;
+        var secondaryOrientation = this.PrimaryOrientation.Swap();
+        float secondaryAvailable = secondaryOrientation.Get(limits);
+        float secondarySpacing = secondaryOrientation.Get(this.ItemSpacing);
+        float secondaryUsed = 0.0f;
         var position = Vector2.Zero;
         int currentCount = 0;
-        var maxSecondary = 0.0f;
+        float maxSecondary = 0.0f;
         int laneStartIndex = 0;
-        secondaryStartPositions.Clear();
-        secondaryStartPositions.Add(0);
-        for (int childIdx = 0; childIdx < Children.Count; childIdx++)
+        this.secondaryStartPositions.Clear();
+        this.secondaryStartPositions.Add(0);
+        for (int childIdx = 0; childIdx < this.Children.Count; childIdx++)
         {
-            var child = Children[childIdx];
+            var child = this.Children[childIdx];
             var childLimits = Vector2.Zero;
-            PrimaryOrientation.Set(ref childLimits, itemLength);
+            this.PrimaryOrientation.Set(ref childLimits, itemLength);
             secondaryOrientation.Set(ref childLimits, secondaryAvailable);
             child.Measure(childLimits);
-            childPositions.Add(new(child, position));
+            this.childPositions.Add(new(child, position));
             currentCount++;
             maxSecondary = MathF.Max(maxSecondary, secondaryOrientation.Get(child.OuterSize));
-            if (currentCount >= countBeforeWrap || childIdx == Children.Count - 1)
+            if (currentCount >= countBeforeWrap || childIdx == this.Children.Count - 1)
             {
                 var cellBounds = childLimits;
                 // Limits will have the primary dimension be the actual length, but secondary dimension is the full
@@ -275,15 +278,14 @@ public class Grid : View
                 secondaryOrientation.Set(ref cellBounds, maxSecondary);
                 // We didn't know the max-secondary value until after iterating all the children in this row/column, so
                 // we now need to make a second pass to apply alignment.
-                for (int i = laneStartIndex; i < childPositions.Count; i++)
+                for (int i = laneStartIndex; i < this.childPositions.Count; i++)
                 {
-                    var positionOffset = new Vector2(
-                        HorizontalItemAlignment.Align(child.OuterSize.X, cellBounds.X),
-                        VerticalItemAlignment.Align(child.OuterSize.Y, cellBounds.Y)
+                    var positionOffset = new Vector2(this.HorizontalItemAlignment.Align(child.OuterSize.X, cellBounds.X), this.VerticalItemAlignment.Align(child.OuterSize.Y, cellBounds.Y)
                     );
-                    childPositions[i] = new(childPositions[i].View, childPositions[i].Position + positionOffset);
+                    this.childPositions[i] = new(this.childPositions[i].View, this.childPositions[i].Position + positionOffset);
                 }
-                PrimaryOrientation.Set(ref position, 0);
+
+                this.PrimaryOrientation.Set(ref position, 0);
                 secondaryOrientation.Update(ref position, v => v + maxSecondary + secondarySpacing);
                 if (laneStartIndex > 0)
                 {
@@ -291,14 +293,14 @@ public class Grid : View
                 }
                 secondaryUsed += maxSecondary;
                 secondaryAvailable -= maxSecondary + secondarySpacing;
-                secondaryStartPositions.Add(secondaryUsed);
+                this.secondaryStartPositions.Add(secondaryUsed);
                 maxSecondary = 0;
                 currentCount = 0;
-                laneStartIndex = childPositions.Count;
+                laneStartIndex = this.childPositions.Count;
             }
             else
             {
-                PrimaryOrientation.Update(ref position, v => v + itemLength + primarySpacing);
+                this.PrimaryOrientation.Update(ref position, v => v + itemLength + primarySpacing);
             }
         }
         if (laneStartIndex > 0)
@@ -308,21 +310,21 @@ public class Grid : View
         secondaryUsed += maxSecondary;
         var accumulatedSize = limits;
         secondaryOrientation.Set(ref accumulatedSize, secondaryUsed);
-        ContentSize = Layout.Resolve(availableSize, () => accumulatedSize);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => accumulatedSize);
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        itemLayout.ResetDirty();
-        itemSpacing.ResetDirty();
-        primaryOrientation.ResetDirty();
-        children.ResetDirty();
+        this.itemLayout.ResetDirty();
+        this.itemSpacing.ResetDirty();
+        this.primaryOrientation.ResetDirty();
+        this.children.ResetDirty();
     }
 
     private static CellPosition Advance(CellPosition position, Direction direction)
     {
-        var (column, row) = position;
+        (int column, int row) = position;
         return direction switch
         {
             Direction.North => new(column, row - 1),
@@ -335,61 +337,61 @@ public class Grid : View
 
     private int FindPrimaryIndex(Vector2 position)
     {
-        var axisPosition = PrimaryOrientation.Get(position);
+        float axisPosition = this.PrimaryOrientation.Get(position);
         if (axisPosition < 0)
         {
             return -1;
         }
-        else if (axisPosition >= PrimaryOrientation.Get(ContentSize))
+        else if (axisPosition >= this.PrimaryOrientation.Get(this.ContentSize))
         {
-            return countBeforeWrap;
+            return this.countBeforeWrap;
         }
-        var cellLength = itemLength + PrimaryOrientation.Get(ItemSpacing);
-        return Math.Clamp((int)(axisPosition / cellLength), 0, countBeforeWrap);
+        float cellLength = this.itemLength + this.PrimaryOrientation.Get(this.ItemSpacing);
+        return Math.Clamp((int)(axisPosition / cellLength), 0, this.countBeforeWrap);
     }
 
     private int FindSecondaryIndex(Vector2 position)
     {
-        var secondaryOrientation = PrimaryOrientation.Swap();
-        var axisPosition = secondaryOrientation.Get(position);
+        var secondaryOrientation = this.PrimaryOrientation.Swap();
+        float axisPosition = secondaryOrientation.Get(position);
         if (axisPosition < 0)
         {
             return -1;
         }
-        else if (axisPosition >= secondaryOrientation.Get(ContentSize))
+        else if (axisPosition >= secondaryOrientation.Get(this.ContentSize))
         {
-            return secondaryStartPositions.Count;
+            return this.secondaryStartPositions.Count;
         }
-        var index = secondaryStartPositions.BinarySearch(axisPosition);
-        return index >= 0 ? index : Math.Clamp(~index - 1, 0, secondaryStartPositions.Count - 1);
+        int index = this.secondaryStartPositions.BinarySearch(axisPosition);
+        return index >= 0 ? index : Math.Clamp(~index - 1, 0, this.secondaryStartPositions.Count - 1);
     }
 
     private CellPosition GetCellAt(Vector2 position)
     {
-        var primaryIndex = FindPrimaryIndex(position);
-        var secondaryIndex = FindSecondaryIndex(position);
-        return PrimaryOrientation == Orientation.Horizontal
+        int primaryIndex = this.FindPrimaryIndex(position);
+        int secondaryIndex = this.FindSecondaryIndex(position);
+        return this.PrimaryOrientation == Orientation.Horizontal
             ? new(primaryIndex, secondaryIndex)
             : new(secondaryIndex, primaryIndex);
     }
 
     private int GetChildIndexAt(CellPosition position)
     {
-        var (column, row) = position;
+        (int column, int row) = position;
         if (column < 0 || row < 0)
         {
             return -1;
         }
-        var (primary, secondary) = PrimaryOrientation == Orientation.Horizontal ? (column, row) : (row, column);
+        (int primary, int secondary) = this.PrimaryOrientation == Orientation.Horizontal ? (column, row) : (row, column);
         // Usually, going out of bounds on either axis isn't valid. The one special case we allow for focus search is
         // having a column > max on the final row, or vice versa for vertical orientation. Consequently, we allow
         // exceeding the actual item count in that specific case, and the caller must confirm if the navigation is valid
         // (i.e. was in the perpendicular direction).
-        if (secondary >= secondaryStartPositions.Count)
+        if (secondary >= this.secondaryStartPositions.Count)
         {
             return -1;
         }
-        return secondary * countBeforeWrap + Math.Min(primary, countBeforeWrap - 1);
+        return secondary * this.countBeforeWrap + Math.Min(primary, this.countBeforeWrap - 1);
     }
 }
 
@@ -408,8 +410,8 @@ public abstract record GridItemLayout
         /// <inheritdoc />
         public override (float, int) GetItemCountAndLength(float available, float spacing)
         {
-            var validCount = Math.Max(ItemCount, 1);
-            var length = (available + spacing) / validCount - spacing;
+            int validCount = Math.Max(this.ItemCount, 1);
+            float length = (available + spacing) / validCount - spacing;
             return (length, validCount);
         }
     }
@@ -424,15 +426,15 @@ public abstract record GridItemLayout
         /// <inheritdoc />
         public override (float, int) GetItemCountAndLength(float available, float spacing)
         {
-            if (Px + spacing <= 0) // Invalid layout
+            if (this.Px + spacing <= 0) // Invalid layout
             {
                 return (1.0f, 1);
             }
-            var exactCount = (available + spacing) / (Px + spacing);
+            float exactCount = (available + spacing) / (this.Px + spacing);
             // Rounding this wouldn't be good, since that could overflow; but we also don't want tiny floating-point
             // errors to cause premature wrapping. OK solution is to truncate after adding some epsilon.
-            var approximateCount = Math.Max((int)(exactCount + 4 * float.Epsilon), 1);
-            return (Px, approximateCount);
+            int approximateCount = Math.Max((int)(exactCount + 4 * float.Epsilon), 1);
+            return (this.Px, approximateCount);
         }
     }
 

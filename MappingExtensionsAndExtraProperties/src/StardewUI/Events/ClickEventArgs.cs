@@ -26,7 +26,7 @@ public class ClickEventArgs(Vector2 position, SButton button) : PointerEventArgs
     /// </returns>
     public bool IsPrimaryButton()
     {
-        return ButtonResolver.GetButtonAction(Button) == ButtonAction.Primary;
+        return ButtonResolver.GetButtonAction(this.Button) == ButtonAction.Primary;
     }
 
     /// <summary>
@@ -38,12 +38,12 @@ public class ClickEventArgs(Vector2 position, SButton button) : PointerEventArgs
     /// </returns>
     public bool IsSecondaryButton()
     {
-        return ButtonResolver.GetButtonAction(Button) == ButtonAction.Secondary;
+        return ButtonResolver.GetButtonAction(this.Button) == ButtonAction.Secondary;
     }
 
     /// <inheritdoc/>
     public new ClickEventArgs Offset(Vector2 distance)
     {
-        return new(Position + distance, Button);
+        return new(this.Position + distance, this.Button);
     }
 }

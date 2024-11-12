@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.Xna.Framework;
 
 namespace StardewUI.Layout;
@@ -77,7 +79,7 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
     /// <c>false</c>.</returns>
     public bool EqualsIgnoringOffset(NineGridPlacement other)
     {
-        return other.HorizontalAlignment == HorizontalAlignment && other.VerticalAlignment == VerticalAlignment;
+        return other.HorizontalAlignment == this.HorizontalAlignment && other.VerticalAlignment == this.VerticalAlignment;
     }
 
     /// <summary>
@@ -100,15 +102,15 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
     /// alignment matches the current <see cref="HorizontalAlignment"/> and <see cref="VerticalAlignment"/>.</returns>
     public Edges GetMargin()
     {
-        var (x, y) = Offset;
-        var (marginLeft, marginRight) = HorizontalAlignment switch
+        (int x, int y) = this.Offset;
+        (int marginLeft, int marginRight) = this.HorizontalAlignment switch
         {
             Alignment.Start => (x, 0),
             Alignment.Middle => (x, -x),
             Alignment.End => (0, -x),
             _ => (0, 0),
         };
-        var (marginTop, marginBottom) = VerticalAlignment switch
+        (int marginTop, int marginBottom) = this.VerticalAlignment switch
         {
             Alignment.Start => (y, 0),
             Alignment.Middle => (y, -y),
@@ -130,7 +132,7 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
     {
         foreach (var direction in neighborDirections)
         {
-            if (Snap(direction, avoidMiddle) is NineGridPlacement neighbor)
+            if (this.Snap(direction, avoidMiddle) is NineGridPlacement neighbor)
             {
                 yield return new(direction, neighbor);
             }
@@ -144,7 +146,7 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
     /// <returns>The aligned position, relative to the container.</returns>
     public Vector2 GetPosition(Vector2 size)
     {
-        return GetPosition(size, HorizontalAlignment, VerticalAlignment) + Offset.ToVector2();
+        return GetPosition(size, this.HorizontalAlignment, this.VerticalAlignment) + this.Offset.ToVector2();
     }
 
     /// <summary>
@@ -152,7 +154,7 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
     /// </summary>
     public bool IsMiddle()
     {
-        return HorizontalAlignment == Alignment.Middle && VerticalAlignment == Alignment.Middle;
+        return this.HorizontalAlignment == Alignment.Middle && this.VerticalAlignment == Alignment.Middle;
     }
 
     /// <summary>
@@ -173,7 +175,7 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
             Direction.East => new(distance, 0),
             _ => Point.Zero,
         };
-        return new(HorizontalAlignment, VerticalAlignment, Offset + newOffset);
+        return new(this.HorizontalAlignment, this.VerticalAlignment, this.Offset + newOffset);
     }
 
     /// <summary>
@@ -193,8 +195,8 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
     /// </returns>
     public NineGridPlacement? Snap(Direction direction, bool avoidMiddle = false)
     {
-        Alignment? horizontal = HorizontalAlignment;
-        Alignment? vertical = VerticalAlignment;
+        Alignment? horizontal = this.HorizontalAlignment;
+        Alignment? vertical = this.VerticalAlignment;
         switch (direction)
         {
             case Direction.North:
@@ -243,13 +245,13 @@ public record NineGridPlacement(Alignment HorizontalAlignment, Alignment Vertica
 
     private static Vector2 GetPosition(Vector2 size, Alignment horizontalAlignment, Alignment verticalAlignment)
     {
-        var x = horizontalAlignment switch
+        float x = horizontalAlignment switch
         {
             Alignment.Middle => size.X / 2,
             Alignment.End => size.X,
             _ => 0,
         };
-        var y = verticalAlignment switch
+        float y = verticalAlignment switch
         {
             Alignment.Middle => size.Y / 2,
             Alignment.End => size.Y,

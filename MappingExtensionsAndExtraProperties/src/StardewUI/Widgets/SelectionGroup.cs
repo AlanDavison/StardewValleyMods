@@ -1,4 +1,6 @@
-﻿namespace StardewUI.Widgets;
+﻿using System;
+
+namespace StardewUI.Widgets;
 
 /// <summary>
 /// Provides a single selection key with change notifications.
@@ -18,13 +20,13 @@ public class SelectionGroup
     /// </summary>
     public string? Key
     {
-        get => key;
+        get => this.key;
         set
         {
-            if (value != key)
+            if (value != this.key)
             {
-                key = value;
-                Change?.Invoke(this, EventArgs.Empty);
+                this.key = value;
+                this.Change?.Invoke(this, EventArgs.Empty);
             }
         }
     }

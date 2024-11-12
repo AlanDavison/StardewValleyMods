@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewUI.Graphics;
@@ -49,13 +52,13 @@ public class Label : View
     /// </remarks>
     public bool Bold
     {
-        get => bold;
+        get => this.bold;
         set
         {
-            if (value != bold)
+            if (value != this.bold)
             {
-                bold = value;
-                OnPropertyChanged(nameof(Bold));
+                this.bold = value;
+                this.OnPropertyChanged(nameof(this.Bold));
             }
         }
     }
@@ -65,13 +68,13 @@ public class Label : View
     /// </summary>
     public Color Color
     {
-        get => color;
+        get => this.color;
         set
         {
-            if (value != color)
+            if (value != this.color)
             {
-                color = value;
-                OnPropertyChanged(nameof(Color));
+                this.color = value;
+                this.OnPropertyChanged(nameof(this.Color));
             }
         }
     }
@@ -81,12 +84,12 @@ public class Label : View
     /// </summary>
     public SpriteFont Font
     {
-        get => font.Value;
+        get => this.font.Value;
         set
         {
-            if (font.SetIfChanged(value))
+            if (this.font.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Font));
+                this.OnPropertyChanged(nameof(this.Font));
             }
         }
     }
@@ -119,13 +122,13 @@ public class Label : View
     /// </remarks>
     public Alignment HorizontalAlignment
     {
-        get => horizontalAlignment;
+        get => this.horizontalAlignment;
         set
         {
-            if (value != horizontalAlignment)
+            if (value != this.horizontalAlignment)
             {
-                horizontalAlignment = value;
-                OnPropertyChanged(nameof(HorizontalAlignment));
+                this.horizontalAlignment = value;
+                this.OnPropertyChanged(nameof(this.HorizontalAlignment));
             }
         }
     }
@@ -135,12 +138,12 @@ public class Label : View
     /// </summary>
     public int MaxLines
     {
-        get => maxLines.Value;
+        get => this.maxLines.Value;
         set
         {
-            if (maxLines.SetIfChanged(value))
+            if (this.maxLines.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(MaxLines));
+                this.OnPropertyChanged(nameof(this.MaxLines));
             }
         }
     }
@@ -153,12 +156,12 @@ public class Label : View
     /// </remarks>
     public float Scale
     {
-        get => scale.Value;
+        get => this.scale.Value;
         set
         {
-            if (scale.SetIfChanged(value))
+            if (this.scale.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Scale));
+                this.OnPropertyChanged(nameof(this.Scale));
             }
         }
     }
@@ -171,13 +174,13 @@ public class Label : View
     /// </remarks>
     public float ShadowAlpha
     {
-        get => shadowAlpha;
+        get => this.shadowAlpha;
         set
         {
-            if (value != shadowAlpha)
+            if (value != this.shadowAlpha)
             {
-                shadowAlpha = value;
-                OnPropertyChanged(nameof(ShadowAlpha));
+                this.shadowAlpha = value;
+                this.OnPropertyChanged(nameof(this.ShadowAlpha));
             }
         }
     }
@@ -187,13 +190,13 @@ public class Label : View
     /// </summary>
     public Color ShadowColor
     {
-        get => shadowColor;
+        get => this.shadowColor;
         set
         {
-            if (value != shadowColor)
+            if (value != this.shadowColor)
             {
-                shadowColor = value;
-                OnPropertyChanged(nameof(shadowColor));
+                this.shadowColor = value;
+                this.OnPropertyChanged(nameof(this.shadowColor));
             }
         }
     }
@@ -207,13 +210,13 @@ public class Label : View
     /// </remarks>
     public ShadowLayers ShadowLayers
     {
-        get => shadowLayers;
+        get => this.shadowLayers;
         set
         {
-            if (value != shadowLayers)
+            if (value != this.shadowLayers)
             {
-                shadowLayers = value;
-                OnPropertyChanged(nameof(ShadowLayers));
+                this.shadowLayers = value;
+                this.OnPropertyChanged(nameof(this.ShadowLayers));
             }
         }
     }
@@ -224,13 +227,13 @@ public class Label : View
     /// </summary>
     public Vector2 ShadowOffset
     {
-        get => shadowOffset;
+        get => this.shadowOffset;
         set
         {
-            if (value != shadowOffset)
+            if (value != this.shadowOffset)
             {
-                shadowOffset = value;
-                OnPropertyChanged(nameof(ShadowOffset));
+                this.shadowOffset = value;
+                this.OnPropertyChanged(nameof(this.ShadowOffset));
             }
         }
     }
@@ -240,12 +243,12 @@ public class Label : View
     /// </summary>
     public string Text
     {
-        get => text.Value;
+        get => this.text.Value;
         set
         {
-            if (text.SetIfChanged(value))
+            if (this.text.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Text));
+                this.OnPropertyChanged(nameof(this.Text));
             }
         }
     }
@@ -274,12 +277,12 @@ public class Label : View
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        if (ShadowAlpha > 0 && ShadowLayers > 0)
+        if (this.ShadowAlpha > 0 && this.ShadowLayers > 0)
         {
-            var shadowAlphaColor = ShadowColor * ShadowAlpha;
+            var shadowAlphaColor = this.ShadowColor * this.ShadowAlpha;
             foreach (var layer in shadowLayerOrder)
             {
-                if ((ShadowLayers & layer) == 0)
+                if ((this.ShadowLayers & layer) == 0)
                 {
                     continue;
                 }
@@ -287,31 +290,31 @@ public class Label : View
                 b.Translate(
                     layer switch
                     {
-                        ShadowLayers.Diagonal => ShadowOffset,
-                        ShadowLayers.Horizontal => new(ShadowOffset.X, 0),
-                        ShadowLayers.Vertical => new(0, ShadowOffset.Y),
+                        ShadowLayers.Diagonal => this.ShadowOffset,
+                        ShadowLayers.Horizontal => new(this.ShadowOffset.X, 0),
+                        ShadowLayers.Vertical => new(0, this.ShadowOffset.Y),
                         _ => throw new InvalidOperationException($"Invalid shadow layer {layer}"),
                     }
                 );
                 DrawText(shadowAlphaColor);
             }
         }
-        DrawText(Color);
+        DrawText(this.Color);
 
         void DrawText(Color color)
         {
-            var y = 0;
-            foreach (var line in lines)
+            int y = 0;
+            foreach (string? line in this.lines)
             {
-                var x = GetAlignedLeft(line);
-                b.DrawString(Font, line, new(x, y), color, scale: Scale);
-                if (Bold)
+                float x = this.GetAlignedLeft(line);
+                b.DrawString(this.Font, line, new(x, y), color, scale: this.Scale);
+                if (this.Bold)
                 {
-                    b.DrawString(Font, line, new(x + 1, y), color, scale: Scale);
-                    b.DrawString(Font, line, new(x, y + 1), color, scale: Scale);
-                    b.DrawString(Font, line, new(x + 1, y + 1), color, scale: Scale);
+                    b.DrawString(this.Font, line, new(x + 1, y), color, scale: this.Scale);
+                    b.DrawString(this.Font, line, new(x, y + 1), color, scale: this.Scale);
+                    b.DrawString(this.Font, line, new(x + 1, y + 1), color, scale: this.Scale);
                 }
-                y += Font.LineSpacing;
+                y += this.Font.LineSpacing;
             }
         }
     }
@@ -319,7 +322,7 @@ public class Label : View
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return font.IsDirty || maxLines.IsDirty || scale.IsDirty || text.IsDirty;
+        return this.font.IsDirty || this.maxLines.IsDirty || this.scale.IsDirty || this.text.IsDirty;
     }
 
     /// <inheritdoc />
@@ -327,40 +330,40 @@ public class Label : View
     {
         // For text, we need to always perform the line-breaking algorithm on layout (so that it is
         // available on draw) even if the layout size is not content-dependent.
-        var maxTextSize = Layout.GetLimits(availableSize);
-        BreakLines(maxTextSize.X, out var maxLineWidth);
-        ContentSize = Layout.Resolve(availableSize, () => new(maxLineWidth, lines.Count * Font.LineSpacing * Scale));
+        var maxTextSize = this.Layout.GetLimits(availableSize);
+        this.BreakLines(maxTextSize.X, out float maxLineWidth);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => new(maxLineWidth, this.lines.Count * this.Font.LineSpacing * this.Scale));
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        font.ResetDirty();
-        maxLines.ResetDirty();
-        scale.ResetDirty();
-        text.ResetDirty();
+        this.font.ResetDirty();
+        this.maxLines.ResetDirty();
+        this.scale.ResetDirty();
+        this.text.ResetDirty();
     }
 
     private void BreakLines(float availableWidth, out float maxLineWidth)
     {
         // To incorporate font scaling more cheaply, without having to perform float multiplications for every word,
         // we can instead invert the scaling on available width, and reapply it at the end.
-        availableWidth /= Scale;
-        var rawLines = Text.Replace("\r\n", "\n").Split('\n').Select(line => line.Split(' ')).ToList();
+        availableWidth /= this.Scale;
+        var rawLines = this.Text.Replace("\r\n", "\n").Split('\n').Select(line => line.Split(' ')).ToList();
         // Greedy breaking algorithm. Knuth *probably* isn't necessary in a use case like this?
         maxLineWidth = 0.0f;
-        lines = [];
-        var spacing = Font.MeasureString(" ").X;
-        foreach (var line in rawLines)
+        this.lines = [];
+        float spacing = this.Font.MeasureString(" ").X;
+        foreach (string[]? line in rawLines)
         {
             var sb = new StringBuilder();
-            var remainingWidth = availableWidth;
+            float remainingWidth = availableWidth;
             // Track isFirstWord explicitly instead of checking sb.Length == 0 because the first "word" can be empty when
             // there is a leading space - and leading spaces should actually render, it's not our job to trim here.
             bool isFirstWord = true;
-            foreach (var word in line)
+            foreach (string? word in line)
             {
-                var wordWidth = Font.MeasureString(word).X;
+                float wordWidth = this.Font.MeasureString(word).X;
                 if (isFirstWord || remainingWidth >= wordWidth + spacing)
                 {
                     if (!isFirstWord)
@@ -371,7 +374,7 @@ public class Label : View
                 }
                 else
                 {
-                    var fittedLine = sb.ToString();
+                    string? fittedLine = sb.ToString();
                     // It might seem mathematically that we can use "availableWidth - remainingWidth" as the line width
                     // here, but in fact this is inaccurate because of kerning. Instead we need to re-measure the entire
                     // line in order to get an accurate width.
@@ -380,17 +383,17 @@ public class Label : View
                     // to be a lot less noticeable of an issue than having a wrong final content size on single-line
                     // text (where the more spaces are added, the bigger a "phantom margin" appears between the text and
                     // whatever follows it in the layout).
-                    maxLineWidth = MathF.Max(maxLineWidth, Font.MeasureString(fittedLine).X);
-                    lines.Add(fittedLine);
-                    if (MaxLines > 0 && lines.Count == MaxLines)
+                    maxLineWidth = MathF.Max(maxLineWidth, this.Font.MeasureString(fittedLine).X);
+                    this.lines.Add(fittedLine);
+                    if (this.MaxLines > 0 && this.lines.Count == this.MaxLines)
                     {
                         // There's a chance that adding the ellipsis could make the line too long; we're ignoring that
                         // for the time being. If it causes serious issues later on, the fix would be to trim 1-2
                         // characters at a time and re-measure until the line is short enough.
                         // In practice, this is unlikely to happen because of the previous issue - any line that
                         // actually spaces will break slightly sooner than the true formatted width dictates.
-                        lines[^1] += " ...";
-                        maxLineWidth *= Scale;
+                        this.lines[^1] += " ...";
+                        maxLineWidth *= this.Scale;
                         return;
                     }
                     sb.Clear();
@@ -400,27 +403,27 @@ public class Label : View
                 remainingWidth -= wordWidth;
                 isFirstWord = false;
             }
-            var lastLine = sb.ToString();
-            maxLineWidth = MathF.Max(maxLineWidth, Font.MeasureString(lastLine).X);
-            lines.Add(lastLine);
+            string? lastLine = sb.ToString();
+            maxLineWidth = MathF.Max(maxLineWidth, this.Font.MeasureString(lastLine).X);
+            this.lines.Add(lastLine);
         }
-        maxLineWidth *= Scale;
+        maxLineWidth *= this.Scale;
     }
 
     private float GetAlignedLeft(string text)
     {
-        switch (HorizontalAlignment)
+        switch (this.HorizontalAlignment)
         {
             case Alignment.Start:
                 return 0;
             case Alignment.Middle:
-                var textWidth = Font.MeasureString(text).X * Scale;
-                return ContentSize.X / 2 - textWidth / 2;
+                float textWidth = this.Font.MeasureString(text).X * this.Scale;
+                return this.ContentSize.X / 2 - textWidth / 2;
             case Alignment.End:
-                textWidth = Font.MeasureString(text).X * Scale;
-                return ContentSize.X - textWidth;
+                textWidth = this.Font.MeasureString(text).X * this.Scale;
+                return this.ContentSize.X - textWidth;
             default:
-                throw new NotImplementedException($"Invalid alignment type: {HorizontalAlignment}");
+                throw new NotImplementedException($"Invalid alignment type: {this.HorizontalAlignment}");
         }
     }
 }

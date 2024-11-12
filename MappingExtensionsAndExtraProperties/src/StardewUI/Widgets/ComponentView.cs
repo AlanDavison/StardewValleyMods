@@ -38,7 +38,7 @@ public abstract class ComponentView<T> : DecoratorView<T>
     /// </summary>
     public ComponentView()
     {
-        View = CreateView();
+        this.View = this.CreateView();
     }
 
     /// <summary>

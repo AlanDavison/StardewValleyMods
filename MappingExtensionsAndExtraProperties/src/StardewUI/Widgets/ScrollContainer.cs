@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Input;
@@ -43,21 +46,23 @@ public class ScrollContainer : View
     /// </summary>
     public IView? Content
     {
-        get => content.Value;
+        get => this.content.Value;
         set
         {
-            if (value != content.Value)
+            if (value != this.content.Value)
             {
-                if (content.Value is not null)
+                if (this.content.Value is not null)
                 {
-                    content.Value.PropertyChanged -= Content_PropertyChanged;
+                    this.content.Value.PropertyChanged -= this.Content_PropertyChanged;
                 }
-                content.Value = value;
+
+                this.content.Value = value;
                 if (value is not null)
                 {
-                    value.PropertyChanged += Content_PropertyChanged;
+                    value.PropertyChanged += this.Content_PropertyChanged;
                 }
-                OnPropertyChanged(nameof(Content));
+
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -71,13 +76,13 @@ public class ScrollContainer : View
     /// </remarks>
     public Orientation Orientation
     {
-        get => orientation.Value;
+        get => this.orientation.Value;
         set
         {
-            if (value != orientation.Value)
+            if (value != this.orientation.Value)
             {
-                orientation.Value = value;
-                OnPropertyChanged(nameof(Orientation));
+                this.orientation.Value = value;
+                this.OnPropertyChanged(nameof(this.Orientation));
             }
         }
     }
@@ -91,13 +96,13 @@ public class ScrollContainer : View
     /// </remarks>
     public float Peeking
     {
-        get => peeking;
+        get => this.peeking;
         set
         {
-            if (peeking != value)
+            if (this.peeking != value)
             {
-                peeking = value;
-                OnPropertyChanged(nameof(Peeking));
+                this.peeking = value;
+                this.OnPropertyChanged(nameof(this.Peeking));
             }
         }
     }
@@ -107,14 +112,14 @@ public class ScrollContainer : View
     /// </summary>
     public float ScrollOffset
     {
-        get => scrollOffset.Value;
+        get => this.scrollOffset.Value;
         set
         {
-            var clamped = Math.Clamp(value, 0, ScrollSize);
-            if (clamped != scrollOffset.Value)
+            float clamped = Math.Clamp(value, 0, this.ScrollSize);
+            if (clamped != this.scrollOffset.Value)
             {
-                scrollOffset.Value = clamped;
-                OnPropertyChanged(nameof(ScrollOffset));
+                this.scrollOffset.Value = clamped;
+                this.OnPropertyChanged(nameof(this.ScrollOffset));
             }
         }
     }
@@ -122,7 +127,7 @@ public class ScrollContainer : View
     /// <summary>
     /// The maximum amount by which the container can be scrolled without exceeding the inner content bounds.
     /// </summary>
-    public float ScrollSize => MathF.Max(Orientation.Get(ContentViewSize) - Orientation.Get(ContentSize), 0);
+    public float ScrollSize => MathF.Max(this.Orientation.Get(this.ContentViewSize) - this.Orientation.Get(this.ContentSize), 0);
 
     /// <summary>
     /// Default scroll distance when calling <see cref="ScrollForward"/> or <see cref="ScrollBackward"/>. Does not
@@ -130,13 +135,13 @@ public class ScrollContainer : View
     /// </summary>
     public float ScrollStep
     {
-        get => scrollStep;
+        get => this.scrollStep;
         set
         {
-            if (value != scrollStep)
+            if (value != this.scrollStep)
             {
-                scrollStep = value;
-                OnPropertyChanged(nameof(ScrollStep));
+                this.scrollStep = value;
+                this.OnPropertyChanged(nameof(this.ScrollStep));
             }
         }
     }
@@ -144,10 +149,10 @@ public class ScrollContainer : View
     /// <summary>
     /// The size of the current content view, or <see cref="Vector2.Zero"/> if there is no content.
     /// </summary>
-    protected Vector2 ContentViewSize => Content?.OuterSize ?? Vector2.Zero;
+    protected Vector2 ContentViewSize => this.Content?.OuterSize ?? Vector2.Zero;
 
     /// <inheritdoc />
-    protected override Vector2 LayoutOffset => -GetScrollOrigin();
+    protected override Vector2 LayoutOffset => -this.GetScrollOrigin();
 
     private readonly DirtyTracker<IView?> content = new(null);
     private readonly DirtyTracker<Orientation> orientation = new(Orientation.Vertical);
@@ -162,9 +167,9 @@ public class ScrollContainer : View
     /// </summary>
     public bool ScrollBackward()
     {
-        var previousOffset = ScrollOffset;
-        ScrollOffset -= ScrollStep;
-        return ScrollOffset != previousOffset;
+        float previousOffset = this.ScrollOffset;
+        this.ScrollOffset -= this.ScrollStep;
+        return this.ScrollOffset != previousOffset;
     }
 
     /// <summary>
@@ -172,9 +177,9 @@ public class ScrollContainer : View
     /// </summary>
     public bool ScrollForward()
     {
-        var previousOffset = ScrollOffset;
-        ScrollOffset += ScrollStep;
-        return ScrollOffset != previousOffset;
+        float previousOffset = this.ScrollOffset;
+        this.ScrollOffset += this.ScrollStep;
+        return this.ScrollOffset != previousOffset;
     }
 
     /// <inheritdoc />
@@ -189,7 +194,7 @@ public class ScrollContainer : View
         // negative position along the scroll axis. For the purposes of computing a new, fresh scroll position, we don't
         // want this; instead, we are trying to compute the correct position from scratch.
         // Note that this only applies to the content view, since children in the path are already parent-relative.
-        var scrollOrigin = GetScrollOrigin();
+        var scrollOrigin = this.GetScrollOrigin();
         descendantList[0] = descendantList[0].Offset(scrollOrigin);
         bool descendantScrolled = false;
         for (int i = descendantList.Length - 2; i >= 0; i--)
@@ -219,17 +224,17 @@ public class ScrollContainer : View
         // large to fit in the scroll view. Therefore, rather than trying to explicitly ignore the content view, a
         // better approach is to start from the bottom up, and stop as soon as we reach any view that's too large to
         // fit completely in the container; the previous (not too large) union are the bounds to scroll into view.
-        var scrollability = TryAccumulateScrollableBounds(descendantList.ToGlobalPositions(), out var scrollableBounds);
+        var scrollability = this.TryAccumulateScrollableBounds(descendantList.ToGlobalPositions(), out var scrollableBounds);
         if (scrollability != ScrollResult.FullyScrollable && scrollability != ScrollResult.PartiallyScrollable)
         {
             return false;
         }
-        var scrollDistance = GetScrollDistance(scrollableBounds);
+        float scrollDistance = this.GetScrollDistance(scrollableBounds);
         if (scrollDistance != 0)
         {
-            var previousOffset = ScrollOffset;
-            ScrollOffset += scrollDistance;
-            distance += Orientation.CreateVector(ScrollOffset - previousOffset);
+            float previousOffset = this.ScrollOffset;
+            this.ScrollOffset += scrollDistance;
+            distance += this.Orientation.CreateVector(this.ScrollOffset - previousOffset);
             return true;
         }
         return descendantScrolled;
@@ -238,26 +243,26 @@ public class ScrollContainer : View
     /// <inheritdoc />
     protected override FocusSearchResult? FindFocusableDescendant(Vector2 contentPosition, Direction direction)
     {
-        return Content?.FocusSearch(contentPosition, direction);
+        return this.Content?.FocusSearch(contentPosition, direction);
     }
 
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return Content is not null ? [new(Content, Vector2.Zero)] : [];
+        return this.Content is not null ? [new(this.Content, Vector2.Zero)] : [];
     }
 
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildrenAt(Vector2 contentPosition)
     {
-        return Content?.ContainsPoint(contentPosition) == true ? [new(Content, Vector2.Zero)] : [];
+        return this.Content?.ContainsPoint(contentPosition) == true ? [new(this.Content, Vector2.Zero)] : [];
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
         // Don't check scrollOffset here as it doesn't require new layout.
-        return orientation.IsDirty || content.IsDirty || (Content?.IsDirty() ?? false);
+        return this.orientation.IsDirty || this.content.IsDirty || (this.Content?.IsDirty() ?? false);
     }
 
     /// <inheritdoc />
@@ -266,44 +271,45 @@ public class ScrollContainer : View
         // Doing this check in Draw is a little unusual, but changes to the scroll position/size generally do not affect
         // layout, so we can't rely on OnMeasureContent to do this check. Even hooking the dirty check isn't guaranted
         // to run if the parent already knows that layout hasn't changed.
-        if (scrollOffset.IsDirty || ScrollSize != previousScrollSize)
+        if (this.scrollOffset.IsDirty || this.ScrollSize != this.previousScrollSize)
         {
-            scrollOffset.ResetDirty();
-            previousScrollSize = ScrollSize;
-            ScrollChanged?.Invoke(this, EventArgs.Empty);
+            this.scrollOffset.ResetDirty();
+            this.previousScrollSize = this.ScrollSize;
+            this.ScrollChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        if (Content is null)
+        if (this.Content is null)
         {
             return;
         }
         // Note, `ContentSize` is the content "viewport" in this case, it is not `Content.OuterSize`.
-        var clipRect = new Rectangle(Point.Zero, ContentSize.ToPoint());
+        var clipRect = new Rectangle(Point.Zero, this.ContentSize.ToPoint());
         using var _ = b.Clip(clipRect);
-        var origin = GetScrollOrigin();
+        var origin = this.GetScrollOrigin();
         b.Translate(-origin);
-        Content.Draw(b);
+        this.Content.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var containerLimits = Layout.GetLimits(availableSize);
+        var containerLimits = this.Layout.GetLimits(availableSize);
 
         var contentLimits = containerLimits;
-        Orientation.Set(ref contentLimits, float.PositiveInfinity);
-        Content?.Measure(contentLimits);
+        this.Orientation.Set(ref contentLimits, float.PositiveInfinity);
+        this.Content?.Measure(contentLimits);
 
-        var contentSize = Layout.Resolve(availableSize, () => ContentViewSize);
-        var maxContentLength = Orientation.Get(containerLimits);
+        var contentSize = this.Layout.Resolve(availableSize, () => this.ContentViewSize);
+        float maxContentLength = this.Orientation.Get(containerLimits);
         if (!float.IsPositiveInfinity(maxContentLength))
         {
-            Orientation.Set(ref contentSize, maxContentLength);
+            this.Orientation.Set(ref contentSize, maxContentLength);
         }
-        ContentSize = Layout.Resolve(availableSize, () => contentSize);
+
+        this.ContentSize = this.Layout.Resolve(availableSize, () => contentSize);
 #pragma warning disable CA2245 // Do not assign a property to itself
         // Property clamps itself, so self-assignment is a cheap way to fix invalid offsets.
-        ScrollOffset = ScrollOffset;
+        this.ScrollOffset = this.ScrollOffset;
 #pragma warning restore CA2245 // Do not assign a property to itself
     }
 
@@ -311,17 +317,17 @@ public class ScrollContainer : View
     protected override void OnPropertyChanged(PropertyChangedEventArgs args)
     {
         base.OnPropertyChanged(args);
-        if (args.PropertyName == nameof(ContentSize))
+        if (args.PropertyName == nameof(this.ContentSize))
         {
-            OnPropertyChanged(nameof(ScrollSize));
+            this.OnPropertyChanged(nameof(this.ScrollSize));
         }
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        content.ResetDirty();
-        orientation.ResetDirty();
+        this.content.ResetDirty();
+        this.orientation.ResetDirty();
     }
 
     private enum ScrollResult
@@ -336,34 +342,34 @@ public class ScrollContainer : View
     {
         if (e.PropertyName == nameof(IView.OuterSize))
         {
-            OnPropertyChanged(nameof(ScrollSize));
+            this.OnPropertyChanged(nameof(this.ScrollSize));
         }
     }
 
     private float GetScrollDistance(Bounds scrollableBounds)
     {
-        var start = Orientation.Get(scrollableBounds.Position);
-        if (start < ScrollOffset + Peeking)
+        float start = this.Orientation.Get(scrollableBounds.Position);
+        if (start < this.ScrollOffset + this.Peeking)
         {
-            return start - ScrollOffset - Peeking;
+            return start - this.ScrollOffset - this.Peeking;
         }
-        var end = Orientation.Get(scrollableBounds.Position + scrollableBounds.Size);
-        var contentLength = Orientation.Get(ContentSize);
-        if (end > ScrollOffset + contentLength - Peeking)
+        float end = this.Orientation.Get(scrollableBounds.Position + scrollableBounds.Size);
+        float contentLength = this.Orientation.Get(this.ContentSize);
+        if (end > this.ScrollOffset + contentLength - this.Peeking)
         {
-            return end - contentLength - ScrollOffset + Peeking;
+            return end - contentLength - this.ScrollOffset + this.Peeking;
         }
         return 0;
     }
 
     private Vector2 GetScrollOrigin()
     {
-        return Orientation.CreateVector(ScrollOffset);
+        return this.Orientation.CreateVector(this.ScrollOffset);
     }
 
     private bool IsFullyScrollable(Bounds bounds)
     {
-        return Orientation.Get(bounds.Size) <= Orientation.Get(ContentSize);
+        return this.Orientation.Get(bounds.Size) <= this.Orientation.Get(this.ContentSize);
     }
 
     private ScrollResult TryAccumulateScrollableBounds(IEnumerable<ViewChild> globalPath, out Bounds bounds)
@@ -374,19 +380,19 @@ public class ScrollContainer : View
             bounds = Bounds.Empty;
             return ScrollResult.NoMoreElements;
         }
-        var descendantResult = TryAccumulateScrollableBounds(rest, out bounds);
+        var descendantResult = this.TryAccumulateScrollableBounds(rest, out bounds);
         switch (descendantResult)
         {
             case ScrollResult.NoMoreElements:
                 bounds = child.GetActualBounds();
-                return IsFullyScrollable(bounds) ? ScrollResult.FullyScrollable : ScrollResult.NotScrollable;
+                return this.IsFullyScrollable(bounds) ? ScrollResult.FullyScrollable : ScrollResult.NotScrollable;
             case ScrollResult.FullyScrollable:
-                if (child.View.ScrollWithChildren != Orientation)
+                if (child.View.ScrollWithChildren != this.Orientation)
                 {
                     return ScrollResult.FullyScrollable;
                 }
                 var unionBounds = bounds.Union(child.GetActualBounds());
-                if (IsFullyScrollable(unionBounds))
+                if (this.IsFullyScrollable(unionBounds))
                 {
                     bounds = unionBounds;
                     return ScrollResult.FullyScrollable;

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace StardewUI.Layout;
 
@@ -18,29 +19,29 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// <summary>
     /// The Y value at the bottom edge of the bounding rectangle.
     /// </summary>
-    public float Bottom => Position.Y + Size.Y;
+    public float Bottom => this.Position.Y + this.Size.Y;
 
     /// <summary>
     /// The X value at the left edge of the bounding rectangle.
     /// </summary>
-    public float Left => Position.X;
+    public float Left => this.Position.X;
 
     /// <summary>
     /// The X value at the right edge of the bounding rectangle.
     /// </summary>
-    public float Right => Position.X + Size.X;
+    public float Right => this.Position.X + this.Size.X;
 
     /// <summary>
     /// The Y value at the top edge of the bounding rectangle.
     /// </summary>
-    public float Top => Position.Y;
+    public float Top => this.Position.Y;
 
     /// <summary>
     /// Gets the point at the center of the bounding rectangle.
     /// </summary>
     public Vector2 Center()
     {
-        return new(Position.X + Size.X / 2, Position.Y + Size.Y / 2);
+        return new(this.Position.X + this.Size.X / 2, this.Position.Y + this.Size.Y / 2);
     }
 
     /// <summary>
@@ -51,7 +52,7 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// bounds do not overlap or only overlap partially.</returns>
     public bool ContainsBounds(Bounds bounds)
     {
-        return Intersection(bounds) == bounds;
+        return this.Intersection(bounds) == bounds;
     }
 
     /// <summary>
@@ -61,7 +62,7 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// <returns><c>true</c> if <paramref name="point"/> is inside these bounds; otherwise <c>false</c>.</returns>
     public bool ContainsPoint(Vector2 point)
     {
-        return point.X >= Left && point.X < Right && point.Y >= Top && point.Y < Bottom;
+        return point.X >= this.Left && point.X < this.Right && point.Y >= this.Top && point.Y < this.Bottom;
     }
 
     /// <summary>
@@ -72,14 +73,14 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// <paramref name="other"/>, or <see cref="Empty"/> if they do not overlap.</returns>
     public Bounds Intersection(Bounds other)
     {
-        var left = MathF.Max(Left, other.Left);
-        var right = MathF.Min(Right, other.Right);
+        float left = MathF.Max(this.Left, other.Left);
+        float right = MathF.Min(this.Right, other.Right);
         if (right <= left)
         {
             return Empty;
         }
-        var top = MathF.Max(Top, other.Top);
-        var bottom = MathF.Min(Bottom, other.Bottom);
+        float top = MathF.Max(this.Top, other.Top);
+        float bottom = MathF.Min(this.Bottom, other.Bottom);
         if (bottom <= top)
         {
             return Empty;
@@ -97,7 +98,7 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// otherwise <c>false</c>.</returns>
     public bool IntersectsWith(Bounds other)
     {
-        return other.Right > Left && other.Left < Right && other.Bottom > Top && other.Top < Bottom;
+        return other.Right > this.Left && other.Left < this.Right && other.Bottom > this.Top && other.Top < this.Bottom;
     }
 
     /// <summary>
@@ -108,7 +109,7 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// the specified <paramref name="distance"/>.</returns>
     public Bounds Offset(Vector2 distance)
     {
-        return new(Position + distance, Size);
+        return new(this.Position + distance, this.Size);
     }
 
     /// <summary>
@@ -119,10 +120,10 @@ public record Bounds(Vector2 Position, Vector2 Size) : IOffsettable<Bounds>
     /// is exactly large enough to contain both bounds.</returns>
     public Bounds Union(Bounds other)
     {
-        var left = MathF.Min(Left, other.Left);
-        var top = MathF.Min(Top, other.Top);
-        var right = MathF.Max(Right, other.Right);
-        var bottom = MathF.Max(Bottom, other.Bottom);
+        float left = MathF.Min(this.Left, other.Left);
+        float top = MathF.Min(this.Top, other.Top);
+        float right = MathF.Max(this.Right, other.Right);
+        float bottom = MathF.Max(this.Bottom, other.Bottom);
         var position = new Vector2(left, top);
         var size = new Vector2(right - left, bottom - top);
         return new(position, size);

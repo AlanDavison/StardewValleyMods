@@ -51,7 +51,7 @@ public class FloatingElement(IView view, FloatingPosition position)
     /// <returns>The current element represented as a <see cref="ViewChild"/>.</returns>
     public ViewChild AsViewChild()
     {
-        return new(View, offset);
+        return new(this.View, this.offset);
     }
 
     /// <summary>
@@ -61,8 +61,8 @@ public class FloatingElement(IView view, FloatingPosition position)
     public void Draw(ISpriteBatch spriteBatch)
     {
         using var _ = spriteBatch.SaveTransform();
-        spriteBatch.Translate(offset);
-        View.Draw(spriteBatch);
+        spriteBatch.Translate(this.offset);
+        this.View.Draw(spriteBatch);
     }
 
     /// <summary>
@@ -81,11 +81,12 @@ public class FloatingElement(IView view, FloatingPosition position)
         // In terms of whether any work needs to be done, that can happen if *either* the floating view's layout changed
         // *or* the parent view's layout was changed for other reasons (meaning, the floating position may have changed,
         // if it is derived from parent bounds, even if the floating view's size is the same).
-        bool wasViewDirty = View.Measure(parentView.OuterSize);
+        bool wasViewDirty = this.View.Measure(parentView.OuterSize);
         if (!wasViewDirty && !wasParentDirty)
         {
             return;
         }
-        offset = Position.GetOffset(View, parentView);
+
+        this.offset = this.Position.GetOffset(this.View, parentView);
     }
 }

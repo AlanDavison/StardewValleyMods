@@ -30,36 +30,36 @@ public class NineSlice(Sprite sprite)
     /// <param name="tint">Optional tint multiplier color.</param>
     public void Draw(ISpriteBatch b, Color? tint = null)
     {
-        if (destinationGrid is null)
+        if (this.destinationGrid is null)
         {
             // Layout has not been performed.
             return;
         }
-        var rotationAngle = rotation?.Angle() ?? 0;
-        for (int sourceY = 0; sourceY < sourceGrid.GetLength(0); sourceY++)
+        float rotationAngle = this.rotation?.Angle() ?? 0;
+        for (int sourceY = 0; sourceY < this.sourceGrid.GetLength(0); sourceY++)
         {
-            for (int sourceX = 0; sourceX < sourceGrid.GetLength(1); sourceX++)
+            for (int sourceX = 0; sourceX < this.sourceGrid.GetLength(1); sourceX++)
             {
-                if ((Sprite.SliceSettings?.EdgesOnly ?? false) && sourceX == 1 && sourceY == 1)
+                if ((this.Sprite.SliceSettings?.EdgesOnly ?? false) && sourceX == 1 && sourceY == 1)
                 {
                     continue;
                 }
-                var (destX, destY) = RotateGridIndices(sourceX, sourceY, rotation);
-                var sourceRect = sourceGrid[sourceY, sourceX];
+                (int destX, int destY) = RotateGridIndices(sourceX, sourceY, this.rotation);
+                var sourceRect = this.sourceGrid[sourceY, sourceX];
                 if (sourceRect.Width == 0 || sourceRect.Height == 0)
                 {
                     // If some or all of the fixed edges are zero, then there is nothing to draw for that part and we
                     // can skip some wasted cycles trying to "draw" it.
                     continue;
                 }
-                var destinationRect = destinationGrid[destY, destX];
-                if (rotation.HasValue)
+                var destinationRect = this.destinationGrid[destY, destX];
+                if (this.rotation.HasValue)
                 {
                     var rotationOrigin = sourceRect.Size.ToVector2() / 2;
                     // DestinationRect behaves in very confusing ways when rotation is involved, so
                     // for these cases, it's easier to place using the point overload after
                     // computing the scale from src:dest.
-                    var destinationSizeInSourceOrientation = rotation.Value.IsQuarter()
+                    var destinationSizeInSourceOrientation = this.rotation.Value.IsQuarter()
                         ? new Point(destinationRect.Height, destinationRect.Width)
                         : destinationRect.Size;
                     var scale = destinationSizeInSourceOrientation.ToVector2() / sourceRect.Size.ToVector2();
@@ -68,11 +68,11 @@ public class NineSlice(Sprite sprite)
                         destinationRect.X + destinationRect.Width / 2f,
                         destinationRect.Y + destinationRect.Height / 2f
                     );
-                    b.Draw(Sprite.Texture, center, sourceRect, tint, rotationAngle, rotationOrigin, scale);
+                    b.Draw(this.Sprite.Texture, center, sourceRect, tint, rotationAngle, rotationOrigin, scale);
                 }
                 else
                 {
-                    b.Draw(Sprite.Texture, destinationRect, sourceRect, tint);
+                    b.Draw(this.Sprite.Texture, destinationRect, sourceRect, tint);
                 }
             }
         }
@@ -85,14 +85,14 @@ public class NineSlice(Sprite sprite)
     /// <param name="rotation">Rotation to apply to the source sprite, if any.</param>
     public void Layout(Rectangle destinationRect, SimpleRotation? rotation = null)
     {
-        var destinationEdges = Sprite.FixedEdges ?? Edges.NONE;
-        var sliceScale = Sprite.SliceSettings?.Scale ?? 1;
+        var destinationEdges = this.Sprite.FixedEdges ?? Edges.NONE;
+        float sliceScale = this.Sprite.SliceSettings?.Scale ?? 1;
         if (rotation is not null)
         {
             destinationEdges = destinationEdges.Rotate(rotation.Value);
         }
         this.rotation = rotation;
-        destinationGrid = GetGrid(destinationRect, destinationEdges, sliceScale: sliceScale);
+        this.destinationGrid = GetGrid(destinationRect, destinationEdges, sliceScale: sliceScale);
     }
 
     private static Rectangle[,] GetGrid(
@@ -104,16 +104,16 @@ public class NineSlice(Sprite sprite)
         float sliceScale = 1
     )
     {
-        var left = bounds.X;
-        var top = bounds.Y;
+        int left = bounds.X;
+        int top = bounds.Y;
         if (sliceScale != 1)
         {
             fixedEdges *= sliceScale;
         }
-        var centerStartX = left + fixedEdges.Left;
-        var centerStartY = top + fixedEdges.Top;
-        var centerEndX = bounds.Right - fixedEdges.Right;
-        var centerEndY = bounds.Bottom - fixedEdges.Bottom;
+        int centerStartX = left + fixedEdges.Left;
+        int centerStartY = top + fixedEdges.Top;
+        int centerEndX = bounds.Right - fixedEdges.Right;
+        int centerEndY = bounds.Bottom - fixedEdges.Bottom;
         if (settings?.CenterX is int cx)
         {
             if (settings.CenterXPosition == SliceCenterPosition.Start)
@@ -136,10 +136,10 @@ public class NineSlice(Sprite sprite)
                 centerEndY = cy;
             }
         }
-        var innerWidth = centerEndX - centerStartX;
-        var innerHeight = centerEndY - centerStartY;
-        var startRight = bounds.Right - fixedEdges.Right;
-        var startBottom = bounds.Bottom - fixedEdges.Bottom;
+        int innerWidth = centerEndX - centerStartX;
+        int innerHeight = centerEndY - centerStartY;
+        int startRight = bounds.Right - fixedEdges.Right;
+        int startBottom = bounds.Bottom - fixedEdges.Bottom;
         return new Rectangle[3, 3]
         {
             {

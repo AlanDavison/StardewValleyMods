@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewUI.Animation;
@@ -165,23 +168,23 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
     /// <inheritdoc />
     protected override IView CreateView()
     {
-        var actionState = BuildActionState();
+        var actionState = this.BuildActionState();
         var view = new PositioningView(this, actionState);
-        view.RightClick += View_RightClick;
+        view.RightClick += this.View_RightClick;
         return view;
     }
 
     private ActionState<PositioningAction> BuildActionState()
     {
         return new ActionState<PositioningAction>()
-            .Bind([.. KeyboardControls.FineUp, .. GamepadControls.FineUp], Nudge(Direction.North), suppress: false)
-            .Bind([.. KeyboardControls.FineDown, .. GamepadControls.FineDown], Nudge(Direction.South), suppress: false)
-            .Bind([.. KeyboardControls.FineLeft, .. GamepadControls.FineLeft], Nudge(Direction.West), suppress: false)
-            .Bind([.. KeyboardControls.FineRight, .. GamepadControls.FineRight], Nudge(Direction.East), suppress: false)
-            .Bind(GamepadControls.GridUp, Snap(Direction.North))
-            .Bind(GamepadControls.GridDown, Snap(Direction.South))
-            .Bind(GamepadControls.GridLeft, Snap(Direction.West))
-            .Bind(GamepadControls.GridRight, Snap(Direction.East))
+            .Bind([.. this.KeyboardControls.FineUp, .. this.GamepadControls.FineUp], Nudge(Direction.North), suppress: false)
+            .Bind([.. this.KeyboardControls.FineDown, .. this.GamepadControls.FineDown], Nudge(Direction.South), suppress: false)
+            .Bind([.. this.KeyboardControls.FineLeft, .. this.GamepadControls.FineLeft], Nudge(Direction.West), suppress: false)
+            .Bind([.. this.KeyboardControls.FineRight, .. this.GamepadControls.FineRight], Nudge(Direction.East), suppress: false)
+            .Bind(this.GamepadControls.GridUp, Snap(Direction.North))
+            .Bind(this.GamepadControls.GridDown, Snap(Direction.South))
+            .Bind(this.GamepadControls.GridLeft, Snap(Direction.West))
+            .Bind(this.GamepadControls.GridRight, Snap(Direction.East))
             .Bind([SButton.D1, SButton.NumPad1], Align(Alignment.Start, Alignment.End))
             .Bind([SButton.D2, SButton.NumPad2], Align(Alignment.Middle, Alignment.End))
             .Bind([SButton.D3, SButton.NumPad3], Align(Alignment.End, Alignment.End))
@@ -212,7 +215,7 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
         {
             public override NineGridPlacement? Apply(NineGridPlacement placement)
             {
-                return new NineGridPlacement(Horizontal, Vertical, Point.Zero);
+                return new NineGridPlacement(this.Horizontal, this.Vertical, Point.Zero);
             }
         }
 
@@ -220,7 +223,7 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
         {
             public override NineGridPlacement? Apply(NineGridPlacement placement)
             {
-                return placement.Nudge(Direction);
+                return placement.Nudge(this.Direction);
             }
         }
 
@@ -228,7 +231,7 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
         {
             public override NineGridPlacement? Apply(NineGridPlacement placement)
             {
-                return placement.Snap(Direction, avoidMiddle: true);
+                return placement.Snap(this.Direction, avoidMiddle: true);
             }
         }
     }
@@ -288,34 +291,36 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
 
         public override void OnUpdate(TimeSpan elapsed)
         {
-            if (Game1.options.gamepadControls != wasGamepadControls)
+            if (Game1.options.gamepadControls != this.wasGamepadControls)
             {
-                CreateAlignmentPrompts();
-                UpdateDirectionalPrompts();
+                this.CreateAlignmentPrompts();
+                this.UpdateDirectionalPrompts();
                 if (Game1.options.gamepadControls)
                 {
-                    dpadAnimator.Reset();
+                    this.dpadAnimator.Reset();
                 }
-                wasGamepadControls = Game1.options.gamepadControls;
+
+                this.wasGamepadControls = Game1.options.gamepadControls;
             }
-            contentFrame.Content = owner.Content;
-            contentFrame.HorizontalContentAlignment = owner.ContentPlacement.HorizontalAlignment;
-            contentFrame.VerticalContentAlignment = owner.ContentPlacement.VerticalAlignment;
-            contentFrame.Margin = owner.ContentPlacement.GetMargin();
-            dragContent.RealView = owner.Content;
+
+            this.contentFrame.Content = owner.Content;
+            this.contentFrame.HorizontalContentAlignment = owner.ContentPlacement.HorizontalAlignment;
+            this.contentFrame.VerticalContentAlignment = owner.ContentPlacement.VerticalAlignment;
+            this.contentFrame.Margin = owner.ContentPlacement.GetMargin();
+            this.dragContent.RealView = owner.Content;
             actionState.Tick(elapsed);
             base.OnUpdate(elapsed);
-            HandleCurrentActions();
+            this.HandleCurrentActions();
         }
 
         protected override Panel CreateView()
         {
-            alignmentPromptsPanel = new Panel() { Layout = LayoutParameters.Fill() };
-            CreateAlignmentPrompts();
-            movementPromptsFrame = new Frame() { Layout = LayoutParameters.FitContent() };
-            var wasdPrompt = CreateDirectionalPrompt();
-            dpadImage = new() { Layout = LayoutParameters.FixedSize(100, 100), Tint = KeyTint };
-            dpadAnimator = new(dpadImage)
+            this.alignmentPromptsPanel = new Panel() { Layout = LayoutParameters.Fill() };
+            this.CreateAlignmentPrompts();
+            this.movementPromptsFrame = new Frame() { Layout = LayoutParameters.FitContent() };
+            var wasdPrompt = this.CreateDirectionalPrompt();
+            this.dpadImage = new() { Layout = LayoutParameters.FixedSize(100, 100), Tint = KeyTint };
+            this.dpadAnimator = new(this.dpadImage)
             {
                 Frames = owner.buttonSpriteMap is not null
                     ?
@@ -339,29 +344,29 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
                 Sprite = owner.buttonSpriteMap?.Get(SButton.LeftThumbstickUp, out _),
                 Tint = KeyTint,
             };
-            controllerMovementPromptsLane = new Lane()
+            this.controllerMovementPromptsLane = new Lane()
             {
                 Layout = LayoutParameters.FitContent(),
-                Children = [stickImage, dpadImage],
+                Children = [stickImage, this.dpadImage],
             };
-            keyboardMovementPromptsLane = new Lane()
+            this.keyboardMovementPromptsLane = new Lane()
             {
                 Layout = LayoutParameters.FitContent(),
                 Orientation = Orientation.Vertical,
                 HorizontalContentAlignment = Alignment.Middle,
-                Children = [dragPrompt, new Spacer() { Layout = LayoutParameters.FixedSize(0, 64) }, wasdPrompt],
+                Children = [this.dragPrompt, new Spacer() { Layout = LayoutParameters.FixedSize(0, 64) }, wasdPrompt],
             };
-            UpdateDirectionalPrompts();
-            contentFrame.DragStart += ContentFrame_DragStart;
-            contentFrame.Drag += ContentFrame_Drag;
-            contentFrame.DragEnd += ContentFrame_DragEnd;
+            this.UpdateDirectionalPrompts();
+            this.contentFrame.DragStart += this.ContentFrame_DragStart;
+            this.contentFrame.Drag += this.ContentFrame_Drag;
+            this.contentFrame.DragEnd += this.ContentFrame_DragEnd;
             // Creating a stretched frame for the drag content isn't strictly necessary for moving the content, but
             // makes it easier to calculate position since the content will be aligned to the top left instead of
             // the viewport center.
             var dragFrame = new Frame()
             {
                 Layout = LayoutParameters.Fill(),
-                Content = dragContent,
+                Content = this.dragContent,
                 PointerEventsEnabled = false,
                 ZIndex = 3,
             };
@@ -370,7 +375,7 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
                 Layout = LayoutParameters.FixedSize(UiViewport.GetMaxSize()),
                 HorizontalContentAlignment = Alignment.Middle,
                 VerticalContentAlignment = Alignment.Middle,
-                Children = [contentFrame, alignmentPromptsPanel, movementPromptsFrame, dragFrame],
+                Children = [this.contentFrame, this.alignmentPromptsPanel, this.movementPromptsFrame, dragFrame],
             };
         }
 
@@ -378,42 +383,42 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
 
         private void ContentFrame_Drag(object? sender, PointerEventArgs e)
         {
-            if (dragContentOffset is null)
+            if (this.dragContentOffset is null)
             {
                 return;
             }
-            var origin = e.Position - dragContentOffset.Value;
-            dragContent.Margin = new(Left: (int)origin.X, Top: (int)origin.Y);
+            var origin = e.Position - this.dragContentOffset.Value;
+            this.dragContent.Margin = new(Left: (int)origin.X, Top: (int)origin.Y);
             e.Handled = true;
         }
 
         private void ContentFrame_DragEnd(object? sender, PointerEventArgs e)
         {
-            if (dragContentOffset is null)
+            if (this.dragContentOffset is null)
             {
                 return;
             }
             Game1.playSound("stoneStep");
-            dragContent.Visibility = Visibility.Hidden;
-            alignmentPromptsPanel.Visibility = Visibility.Visible;
-            movementPromptsFrame.Visibility = Visibility.Visible;
-            var origin = e.Position - dragContentOffset.Value;
-            DropAtPosition(origin);
+            this.dragContent.Visibility = Visibility.Hidden;
+            this.alignmentPromptsPanel.Visibility = Visibility.Visible;
+            this.movementPromptsFrame.Visibility = Visibility.Visible;
+            var origin = e.Position - this.dragContentOffset.Value;
+            this.DropAtPosition(origin);
             e.Handled = true;
         }
 
         private void ContentFrame_DragStart(object? sender, PointerEventArgs e)
         {
-            if (contentFrame.Content is null || contentFrame.GetChildAt(e.Position) is not ViewChild contentChild)
+            if (this.contentFrame.Content is null || this.contentFrame.GetChildAt(e.Position) is not ViewChild contentChild)
             {
-                dragContentOffset = null;
+                this.dragContentOffset = null;
                 return;
             }
             Game1.playSound("drumkit6");
-            dragContentOffset = e.Position - contentChild.Position;
-            alignmentPromptsPanel.Visibility = Visibility.Hidden;
-            movementPromptsFrame.Visibility = Visibility.Hidden;
-            dragContent.Visibility = Visibility.Visible;
+            this.dragContentOffset = e.Position - contentChild.Position;
+            this.alignmentPromptsPanel.Visibility = Visibility.Hidden;
+            this.movementPromptsFrame.Visibility = Visibility.Hidden;
+            this.dragContent.Visibility = Visibility.Visible;
             e.Handled = true;
         }
 
@@ -432,19 +437,18 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
         {
             if (Game1.options.gamepadControls)
             {
-                alignmentPromptsPanel.Children = owner
+                this.alignmentPromptsPanel.Children = owner
                     .ContentPlacement.GetNeighbors(avoidMiddle: true)
-                    .Select(p => CreateAlignmentPrompt(p.Placement, CreateControllerButtonPrompt(p.Direction)))
+                    .Select(p => CreateAlignmentPrompt(p.Placement, this.CreateControllerButtonPrompt(p.Direction)))
                     .ToList();
             }
             else
             {
-                alignmentPromptsPanel.Children = NineGridPlacement
+                this.alignmentPromptsPanel.Children = NineGridPlacement
                     .StandardPlacements.Select(
                         (p, i) =>
                             CreateAlignmentPrompt(
-                                p,
-                                CreateButtonPrompt(
+                                p, this.CreateButtonPrompt(
                                     SButton.NumPad1 + i,
                                     visible: !p.IsMiddle() && !p.EqualsIgnoringOffset(owner.ContentPlacement)
                                 )
@@ -456,7 +460,7 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
 
         private IView CreateButtonPrompt(SButton button, Edges? margin = null, bool visible = true)
         {
-            return CreateButtonPrompt(new Keybind(button), margin, visible);
+            return this.CreateButtonPrompt(new Keybind(button), margin, visible);
         }
 
         private IView CreateButtonPrompt(Keybind keybind, Edges? margin = null, bool visible = true)
@@ -485,15 +489,15 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
         {
             var action = new PositioningAction.Snap(snapDirection);
             var binding = actionState.GetControllerBindings(action).FirstOrDefault();
-            return CreateButtonPrompt(binding ?? new());
+            return this.CreateButtonPrompt(binding ?? new());
         }
 
         private Lane CreateDirectionalPrompt()
         {
-            var northBinding = GetKeyboardNudgeBinding(Direction.North);
-            var southBinding = GetKeyboardNudgeBinding(Direction.South);
-            var westBinding = GetKeyboardNudgeBinding(Direction.West);
-            var eastBinding = GetKeyboardNudgeBinding(Direction.East);
+            var northBinding = this.GetKeyboardNudgeBinding(Direction.North);
+            var southBinding = this.GetKeyboardNudgeBinding(Direction.South);
+            var westBinding = this.GetKeyboardNudgeBinding(Direction.West);
+            var eastBinding = this.GetKeyboardNudgeBinding(Direction.East);
             return new()
             {
                 Layout = LayoutParameters.FitContent(),
@@ -501,19 +505,18 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
                 Orientation = Orientation.Vertical,
                 Children =
                 [
-                    CreateButtonPrompt(northBinding),
+                    this.CreateButtonPrompt(northBinding),
                     new Lane()
                     {
                         Layout = LayoutParameters.FitContent(),
                         VerticalContentAlignment = Alignment.Middle,
                         Children =
                         [
-                            CreateButtonPrompt(westBinding, new(0, -16)),
-                            new Spacer() { Layout = LayoutParameters.FixedSize(48, 0) },
-                            CreateButtonPrompt(eastBinding, new(0, -16)),
+                            this.CreateButtonPrompt(westBinding, new(0, -16)),
+                            new Spacer() { Layout = LayoutParameters.FixedSize(48, 0) }, this.CreateButtonPrompt(eastBinding, new(0, -16)),
                         ],
                     },
-                    CreateButtonPrompt(southBinding),
+                    this.CreateButtonPrompt(southBinding),
                 ],
             };
         }
@@ -526,36 +529,36 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
             //
             // A possibly naive but probably still mostly accurate answer is just to set the alignments to whichever
             // ends up closest, and use the offset to adjust from there.
-            var centerDistanceX = position.X - OuterSize.X / 2f;
+            float centerDistanceX = position.X - this.OuterSize.X / 2f;
             var horizontalAlignment =
                 centerDistanceX < 0
                     ? (position.X < -centerDistanceX)
                         ? Alignment.Start
                         : Alignment.Middle
-                    : ((OuterSize.X - position.X) < centerDistanceX)
+                    : ((this.OuterSize.X - position.X) < centerDistanceX)
                         ? Alignment.End
                         : Alignment.Middle;
-            var centerDistanceY = position.Y - OuterSize.Y / 2f;
+            float centerDistanceY = position.Y - this.OuterSize.Y / 2f;
             var verticalAlignment =
                 centerDistanceY < 0
                     ? (position.Y < -centerDistanceY)
                         ? Alignment.Start
                         : Alignment.Middle
-                    : ((OuterSize.Y - position.Y) < centerDistanceY)
+                    : ((this.OuterSize.Y - position.Y) < centerDistanceY)
                         ? Alignment.End
                         : Alignment.Middle;
             // The position we get is the top-left position, but the content offset is relative to the aligned edge.
             // To get the correct position we must also account for the content size.
-            var contentSize = contentFrame.Content?.OuterSize ?? Vector2.Zero;
+            var contentSize = this.contentFrame.Content?.OuterSize ?? Vector2.Zero;
             // It might appear wrong that we are adding the content size instead of removing it, but we are actually
             // trying to "decompensate" for the content size since the normal layout/alignment will compensate.
-            var placedX = horizontalAlignment switch
+            float placedX = horizontalAlignment switch
             {
                 Alignment.Middle => position.X + contentSize.X / 2,
                 Alignment.End => position.X + contentSize.X,
                 _ => position.X,
             };
-            var placedY = verticalAlignment switch
+            float placedY = verticalAlignment switch
             {
                 Alignment.Middle => position.Y + contentSize.Y / 2,
                 Alignment.End => position.Y + contentSize.Y,
@@ -563,12 +566,11 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
             };
             var placedPosition = new Vector2(placedX, placedY);
             owner.ContentPlacement = NineGridPlacement.AtPosition(
-                placedPosition,
-                OuterSize,
+                placedPosition, this.OuterSize,
                 horizontalAlignment,
                 verticalAlignment
             );
-            CreateAlignmentPrompts();
+            this.CreateAlignmentPrompts();
         }
 
         private Keybind GetKeyboardNudgeBinding(Direction direction)
@@ -592,19 +594,20 @@ public class PositioningOverlay(ISpriteMap<SButton>? buttonSpriteMap, ISpriteMap
             if (wasPlacementChanged)
             {
                 Game1.playSound("drumkit6");
-                CreateAlignmentPrompts();
+                this.CreateAlignmentPrompts();
             }
         }
 
         private void UpdateDirectionalPrompts()
         {
-            if (movementPromptsFrame is null)
+            if (this.movementPromptsFrame is null)
             {
                 return;
             }
-            movementPromptsFrame.Content = Game1.options.gamepadControls
-                ? controllerMovementPromptsLane
-                : keyboardMovementPromptsLane;
+
+            this.movementPromptsFrame.Content = Game1.options.gamepadControls
+                ? this.controllerMovementPromptsLane
+                : this.keyboardMovementPromptsLane;
         }
     }
 }

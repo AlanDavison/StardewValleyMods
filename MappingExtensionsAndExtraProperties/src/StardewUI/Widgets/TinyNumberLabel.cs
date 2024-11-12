@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Layout;
 
@@ -26,7 +28,7 @@ public class TinyNumberLabel : View
     /// </summary>
     public IReadOnlyList<Sprite> DigitSprites
     {
-        get => digitSprites.Value;
+        get => this.digitSprites.Value;
         set
         {
             if (value.Count != 10)
@@ -36,9 +38,9 @@ public class TinyNumberLabel : View
                     nameof(value)
                 );
             }
-            if (digitSprites.SetIfChanged(value))
+            if (this.digitSprites.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(DigitSprites));
+                this.OnPropertyChanged(nameof(this.DigitSprites));
             }
         }
     }
@@ -48,13 +50,13 @@ public class TinyNumberLabel : View
     /// </summary>
     public int Number
     {
-        get => number.Value;
+        get => this.number.Value;
         set
         {
-            if (number.SetIfChanged(value))
+            if (this.number.SetIfChanged(value))
             {
-                digits = [.. GetDigits(value)];
-                OnPropertyChanged(nameof(Number));
+                this.digits = [.. GetDigits(value)];
+                this.OnPropertyChanged(nameof(this.Number));
             }
         }
     }
@@ -64,12 +66,12 @@ public class TinyNumberLabel : View
     /// </summary>
     public float Scale
     {
-        get => scale.Value;
+        get => this.scale.Value;
         set
         {
-            if (scale.SetIfChanged(value))
+            if (this.scale.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Scale));
+                this.OnPropertyChanged(nameof(this.Scale));
             }
         }
     }
@@ -84,17 +86,17 @@ public class TinyNumberLabel : View
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return digitSprites.IsDirty || number.IsDirty || scale.IsDirty;
+        return this.digitSprites.IsDirty || this.number.IsDirty || this.scale.IsDirty;
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
         var digitSprites = this.digitSprites.Value;
-        for (int i = 0; i < digits.Length; i++)
+        for (int i = 0; i < this.digits.Length; i++)
         {
-            var digitSprite = digitSprites[digits[i]];
-            var destinationRect = digitRects[i];
+            var digitSprite = digitSprites[this.digits[i]];
+            var destinationRect = this.digitRects[i];
             b.Draw(digitSprite.Texture, destinationRect, digitSprite.SourceRect, Color.White);
         }
     }
@@ -105,26 +107,27 @@ public class TinyNumberLabel : View
         var digitSprites = this.digitSprites.Value;
         int totalWidth = 0;
         int maxHeight = 0;
-        digitRects = new Rectangle[digits.Length];
-        for (int i = 0; i < digits.Length; i++)
+        this.digitRects = new Rectangle[this.digits.Length];
+        for (int i = 0; i < this.digits.Length; i++)
         {
-            var digitSprite = digitSprites[digits[i]];
+            var digitSprite = digitSprites[this.digits[i]];
             var size = digitSprite.SourceRect?.Size ?? digitSprite.Texture.Bounds.Size;
-            int digitWidth = (int)(size.X * Scale);
-            int digitHeight = (int)(size.Y * Scale);
-            digitRects[i] = new(totalWidth, 0, digitWidth, digitHeight);
+            int digitWidth = (int)(size.X * this.Scale);
+            int digitHeight = (int)(size.Y * this.Scale);
+            this.digitRects[i] = new(totalWidth, 0, digitWidth, digitHeight);
             totalWidth += digitWidth;
             maxHeight = Math.Max(maxHeight, digitHeight);
         }
-        ContentSize = Layout.Resolve(availableSize, () => new(totalWidth, maxHeight));
+
+        this.ContentSize = this.Layout.Resolve(availableSize, () => new(totalWidth, maxHeight));
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        digitSprites.ResetDirty();
-        number.ResetDirty();
-        scale.ResetDirty();
+        this.digitSprites.ResetDirty();
+        this.number.ResetDirty();
+        this.scale.ResetDirty();
     }
 
     private static int GetDigit(int number, int position)
@@ -132,7 +135,7 @@ public class TinyNumberLabel : View
         // Switch-based solution isn't elegant, but is vastly more performant than involving any exponential/logarithmic
         // or floating-point arithmetic, and slightly faster than a lookup table since the compiler can optimize the
         // divisions to multiplications.
-        var n = position switch
+        int n = position switch
         {
             0 => number,
             1 => number / 10,
@@ -157,7 +160,7 @@ public class TinyNumberLabel : View
         bool hasYielded = false;
         for (int i = 9; i >= 0; i--)
         {
-            var digit = GetDigit(number, i);
+            int digit = GetDigit(number, i);
             if (digit == 0 && !hasYielded)
             {
                 continue;

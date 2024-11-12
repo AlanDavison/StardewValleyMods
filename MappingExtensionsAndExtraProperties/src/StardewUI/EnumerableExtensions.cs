@@ -1,4 +1,6 @@
-﻿namespace StardewUI;
+﻿using System.Collections.Generic;
+
+namespace StardewUI;
 
 internal static class EnumerableExtensions
 {

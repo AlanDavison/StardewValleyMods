@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using StardewUI.Animation;
 using StardewUI.Graphics;
 using StardewUI.Input;
@@ -20,12 +22,12 @@ public class Marquee : View
     /// </summary>
     public IView? Content
     {
-        get => content.Value;
+        get => this.content.Value;
         set
         {
-            if (content.SetIfChanged(value))
+            if (this.content.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Content));
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -47,12 +49,12 @@ public class Marquee : View
     /// </remarks>
     public float ExtraDistance
     {
-        get => extraDistance.Value;
+        get => this.extraDistance.Value;
         set
         {
-            if (extraDistance.SetIfChanged(value))
+            if (this.extraDistance.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(ExtraDistance));
+                this.OnPropertyChanged(nameof(this.ExtraDistance));
             }
         }
     }
@@ -62,12 +64,12 @@ public class Marquee : View
     /// </summary>
     public float Speed
     {
-        get => speed.Value;
+        get => this.speed.Value;
         set
         {
-            if (!speed.SetIfChanged(value))
+            if (!this.speed.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Speed));
+                this.OnPropertyChanged(nameof(this.Speed));
             }
         }
     }
@@ -84,81 +86,81 @@ public class Marquee : View
     /// </summary>
     public Marquee()
     {
-        animator = Animator.On(this, x => x.progress, (x, v) => x.progress = v);
-        animator.Loop = true;
+        this.animator = Animator.On(this, x => x.progress, (x, v) => x.progress = v);
+        this.animator.Loop = true;
     }
 
     /// <inheritdoc />
     protected override FocusSearchResult? FindFocusableDescendant(Vector2 contentPosition, Direction direction)
     {
-        return Content?.FocusSearch(contentPosition, direction);
+        return this.Content?.FocusSearch(contentPosition, direction);
     }
 
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return Content is not null ? [new(Content, Vector2.Zero)] : [];
+        return this.Content is not null ? [new(this.Content, Vector2.Zero)] : [];
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return extraDistance.IsDirty || speed.IsDirty || content.IsDirty || (Content?.IsDirty() ?? false);
+        return this.extraDistance.IsDirty || this.speed.IsDirty || this.content.IsDirty || (this.Content?.IsDirty() ?? false);
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        if (Content is null)
+        if (this.Content is null)
         {
             return;
         }
-        var contentLength = Content.OuterSize.X;
-        using var _ = b.Clip(new(0, 0, (int)OuterSize.X, (int)OuterSize.Y));
-        b.Translate(-progress, 0);
-        Content.Draw(b);
-        b.Translate(contentLength + ExtraDistance, 0);
-        Content.Draw(b);
+        float contentLength = this.Content.OuterSize.X;
+        using var _ = b.Clip(new(0, 0, (int)this.OuterSize.X, (int)this.OuterSize.Y));
+        b.Translate(-this.progress, 0);
+        this.Content.Draw(b);
+        b.Translate(contentLength + this.ExtraDistance, 0);
+        this.Content.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var containerLimits = Layout.GetLimits(availableSize);
+        var containerLimits = this.Layout.GetLimits(availableSize);
         var contentLimits = containerLimits;
         contentLimits.X = float.PositiveInfinity;
-        Content?.Measure(contentLimits);
-        ContentSize = Layout.Resolve(availableSize, () => Content?.OuterSize ?? Vector2.Zero);
-        UpdateAnimation();
+        this.Content?.Measure(contentLimits);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => this.Content?.OuterSize ?? Vector2.Zero);
+        this.UpdateAnimation();
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        content.ResetDirty();
-        extraDistance.ResetDirty();
-        speed.ResetDirty();
+        this.content.ResetDirty();
+        this.extraDistance.ResetDirty();
+        this.speed.ResetDirty();
     }
 
     private void UpdateAnimation()
     {
-        if (animator is null)
+        if (this.animator is null)
         {
             return;
         }
-        if (Content is null || Speed == 0)
+        if (this.Content is null || this.Speed == 0)
         {
-            animator.Stop();
+            this.animator.Stop();
             return;
         }
-        var scrollWidth = Content.OuterSize.X + ExtraDistance;
-        var duration = TimeSpan.FromSeconds(scrollWidth / Speed);
+        float scrollWidth = this.Content.OuterSize.X + this.ExtraDistance;
+        var duration = TimeSpan.FromSeconds(scrollWidth / this.Speed);
         var animation = new Animation<float>(0, scrollWidth, duration);
         // Try to save current progress and restore it after restarting animation.
-        var restoredTimeProgress = TimeSpan.FromSeconds(progress / Speed);
+        var restoredTimeProgress = TimeSpan.FromSeconds(this.progress / this.Speed);
         // This will reset the progress to 0.
-        animator.Start(animation);
+        this.animator.Start(animation);
         // Advance back to the adjusted saved position.
-        animator.Tick(restoredTimeProgress);
+        this.animator.Tick(restoredTimeProgress);
     }
 }

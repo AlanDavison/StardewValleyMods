@@ -1,4 +1,7 @@
-﻿namespace StardewUI.Overlays;
+﻿using System;
+using System.Collections.Generic;
+
+namespace StardewUI.Overlays;
 
 /// <summary>
 /// The context of an overlay, e.g. the active overlays for a particular menu or other non-overlay UI.
@@ -28,7 +31,7 @@ public class OverlayContext
     /// </summary>
     public IOverlay? Front
     {
-        get => stack.Count > 0 ? stack[^1] : null;
+        get => this.stack.Count > 0 ? this.stack[^1] : null;
     }
 
     private static OverlayContext? current;
@@ -40,7 +43,7 @@ public class OverlayContext
     /// </summary>
     public IEnumerable<IOverlay> BackToFront()
     {
-        return stack;
+        return this.stack;
     }
 
     /// <summary>
@@ -48,9 +51,9 @@ public class OverlayContext
     /// </summary>
     public IEnumerable<IOverlay> FrontToBack()
     {
-        for (int i = stack.Count - 1; i >= 0; i--)
+        for (int i = this.stack.Count - 1; i >= 0; i--)
         {
-            yield return stack[i];
+            yield return this.stack[i];
         }
     }
 
@@ -73,12 +76,12 @@ public class OverlayContext
     /// <returns>The overlay previously at the front, or <c>null</c> if no overlays were active.</returns>
     public IOverlay? Pop()
     {
-        if (stack.Count == 0)
+        if (this.stack.Count == 0)
         {
             return null;
         }
-        var overlay = stack[^1];
-        stack.RemoveAt(stack.Count - 1);
+        var overlay = this.stack[^1];
+        this.stack.RemoveAt(this.stack.Count - 1);
         overlay.OnClose();
         return overlay;
     }
@@ -93,9 +96,9 @@ public class OverlayContext
     /// <param name="overlay">The overlay to display on top of the current UI and any other overlays.</param>
     public void Push(IOverlay overlay)
     {
-        stack.Remove(overlay);
-        stack.Add(overlay);
-        Pushed?.Invoke(this, EventArgs.Empty);
+        this.stack.Remove(overlay);
+        this.stack.Add(overlay);
+        this.Pushed?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -109,7 +112,7 @@ public class OverlayContext
     /// <returns><c>true</c> if the <paramref name="overlay"/> was removed; <c>false</c> if it was not active.</returns>
     public bool Remove(IOverlay overlay)
     {
-        var removed = stack.Remove(overlay);
+        bool removed = this.stack.Remove(overlay);
         if (removed)
         {
             overlay.OnClose();

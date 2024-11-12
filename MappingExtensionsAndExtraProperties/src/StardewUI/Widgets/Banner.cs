@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Layout;
 using StardewValley;
@@ -21,13 +22,13 @@ public class Banner : View
     /// </summary>
     public Sprite? Background
     {
-        get => background;
+        get => this.background;
         set
         {
-            if (value != background)
+            if (value != this.background)
             {
-                background = value;
-                OnPropertyChanged(nameof(Background));
+                this.background = value;
+                this.OnPropertyChanged(nameof(this.Background));
             }
         }
     }
@@ -43,12 +44,12 @@ public class Banner : View
     /// </remarks>
     public Edges BackgroundBorderThickness
     {
-        get => backgroundBorderThickness.Value;
+        get => this.backgroundBorderThickness.Value;
         set
         {
-            if (backgroundBorderThickness.SetIfChanged(value))
+            if (this.backgroundBorderThickness.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(BackgroundBorderThickness));
+                this.OnPropertyChanged(nameof(this.BackgroundBorderThickness));
             }
         }
     }
@@ -58,12 +59,12 @@ public class Banner : View
     /// </summary>
     public string Text
     {
-        get => text.Value;
+        get => this.text.Value;
         set
         {
-            if (text.SetIfChanged(value))
+            if (this.text.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(Text));
+                this.OnPropertyChanged(nameof(this.Text));
             }
         }
     }
@@ -76,13 +77,13 @@ public class Banner : View
     /// </remarks>
     public float TextShadowAlpha
     {
-        get => textShadowAlpha;
+        get => this.textShadowAlpha;
         set
         {
-            if (value != textShadowAlpha)
+            if (value != this.textShadowAlpha)
             {
-                textShadowAlpha = value;
-                OnPropertyChanged(nameof(TextShadowAlpha));
+                this.textShadowAlpha = value;
+                this.OnPropertyChanged(nameof(this.TextShadowAlpha));
             }
         }
     }
@@ -92,13 +93,13 @@ public class Banner : View
     /// </summary>
     public Color TextShadowColor
     {
-        get => textShadowColor;
+        get => this.textShadowColor;
         set
         {
-            if (value != textShadowColor)
+            if (value != this.textShadowColor)
             {
-                textShadowColor = value;
-                OnPropertyChanged(nameof(textShadowColor));
+                this.textShadowColor = value;
+                this.OnPropertyChanged(nameof(this.textShadowColor));
             }
         }
     }
@@ -112,13 +113,13 @@ public class Banner : View
     /// </remarks>
     public ShadowLayers TextShadowLayers
     {
-        get => textShadowLayers;
+        get => this.textShadowLayers;
         set
         {
-            if (value != textShadowLayers)
+            if (value != this.textShadowLayers)
             {
-                textShadowLayers = value;
-                OnPropertyChanged(nameof(TextShadowLayers));
+                this.textShadowLayers = value;
+                this.OnPropertyChanged(nameof(this.TextShadowLayers));
             }
         }
     }
@@ -129,13 +130,13 @@ public class Banner : View
     /// </summary>
     public Vector2 TextShadowOffset
     {
-        get => textShadowOffset;
+        get => this.textShadowOffset;
         set
         {
-            if (value != textShadowOffset)
+            if (value != this.textShadowOffset)
             {
-                textShadowOffset = value;
-                OnPropertyChanged(nameof(TextShadowOffset));
+                this.textShadowOffset = value;
+                this.OnPropertyChanged(nameof(this.TextShadowOffset));
             }
         }
     }
@@ -161,54 +162,53 @@ public class Banner : View
     /// <inheritdoc />
     protected override Edges GetBorderThickness()
     {
-        return BackgroundBorderThickness;
+        return this.BackgroundBorderThickness;
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return backgroundBorderThickness.IsDirty || text.IsDirty;
+        return this.backgroundBorderThickness.IsDirty || this.text.IsDirty;
     }
 
     /// <inheritdoc />
     protected override void OnDrawBorder(ISpriteBatch b)
     {
-        backgroundSlice?.Draw(b);
+        this.backgroundSlice?.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        var centerX = ContentSize.X / 2;
+        float centerX = this.ContentSize.X / 2;
         b.DelegateDraw(
             (wb, origin) =>
             {
-                if (TextShadowAlpha > 0 && TextShadowLayers > 0)
+                if (this.TextShadowAlpha > 0 && this.TextShadowLayers > 0)
                 {
-                    var shadowAlphaColor = TextShadowColor * TextShadowAlpha;
+                    var shadowAlphaColor = this.TextShadowColor * this.TextShadowAlpha;
                     foreach (var layer in shadowLayerOrder)
                     {
-                        if ((TextShadowLayers & layer) == 0)
+                        if ((this.TextShadowLayers & layer) == 0)
                         {
                             continue;
                         }
                         var offset = layer switch
                         {
-                            ShadowLayers.Diagonal => TextShadowOffset,
-                            ShadowLayers.Horizontal => new(TextShadowOffset.X, 0),
-                            ShadowLayers.Vertical => new(0, TextShadowOffset.Y),
+                            ShadowLayers.Diagonal => this.TextShadowOffset,
+                            ShadowLayers.Horizontal => new(this.TextShadowOffset.X, 0),
+                            ShadowLayers.Vertical => new(0, this.TextShadowOffset.Y),
                             _ => throw new InvalidOperationException($"Invalid shadow layer {layer}"),
                         };
                         SpriteText.drawStringHorizontallyCenteredAt(
-                            wb,
-                            Text,
+                            wb, this.Text,
                             (int)(origin.X + centerX + offset.X),
                             (int)(origin.Y + offset.Y),
                             color: shadowAlphaColor
                         );
                     }
                 }
-                SpriteText.drawStringHorizontallyCenteredAt(wb, Text, (int)(origin.X + centerX), (int)origin.Y);
+                SpriteText.drawStringHorizontallyCenteredAt(wb, this.Text, (int)(origin.X + centerX), (int)origin.Y);
             }
         );
     }
@@ -216,22 +216,23 @@ public class Banner : View
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var width = SpriteText.getWidthOfString(Text);
-        var height = SpriteText.getHeightOfString(Text);
-        textSize = new(width, height);
-        ContentSize = Layout.Resolve(availableSize, () => textSize);
+        int width = SpriteText.getWidthOfString(this.Text);
+        int height = SpriteText.getHeightOfString(this.Text);
+        this.textSize = new(width, height);
+        this.ContentSize = this.Layout.Resolve(availableSize, () => this.textSize);
 
-        if (backgroundSlice?.Sprite != Background)
+        if (this.backgroundSlice?.Sprite != this.Background)
         {
-            backgroundSlice = Background is not null ? new(Background) : null;
+            this.backgroundSlice = this.Background is not null ? new(this.Background) : null;
         }
-        backgroundSlice?.Layout(new(Point.Zero, BorderSize.ToPoint()));
+
+        this.backgroundSlice?.Layout(new(Point.Zero, this.BorderSize.ToPoint()));
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        backgroundBorderThickness.ResetDirty();
-        text.ResetDirty();
+        this.backgroundBorderThickness.ResetDirty();
+        this.text.ResetDirty();
     }
 }

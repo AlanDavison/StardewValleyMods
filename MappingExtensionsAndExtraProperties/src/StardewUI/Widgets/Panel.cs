@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewUI.Graphics;
 using StardewUI.Input;
 using StardewUI.Layout;
@@ -30,12 +33,12 @@ public class Panel : View
     /// </summary>
     public IList<IView> Children
     {
-        get => children;
+        get => this.children;
         set
         {
-            if (children.SetItems(value))
+            if (this.children.SetItems(value))
             {
-                OnPropertyChanged(nameof(Children));
+                this.OnPropertyChanged(nameof(this.Children));
             }
         }
     }
@@ -45,12 +48,12 @@ public class Panel : View
     /// </summary>
     public Alignment HorizontalContentAlignment
     {
-        get => horizontalContentAlignment.Value;
+        get => this.horizontalContentAlignment.Value;
         set
         {
-            if (horizontalContentAlignment.SetIfChanged(value))
+            if (this.horizontalContentAlignment.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(HorizontalContentAlignment));
+                this.OnPropertyChanged(nameof(this.HorizontalContentAlignment));
             }
         }
     }
@@ -60,12 +63,12 @@ public class Panel : View
     /// </summary>
     public Alignment VerticalContentAlignment
     {
-        get => verticalContentAlignment.Value;
+        get => this.verticalContentAlignment.Value;
         set
         {
-            if (verticalContentAlignment.SetIfChanged(value))
+            if (this.verticalContentAlignment.SetIfChanged(value))
             {
-                OnPropertyChanged(nameof(VerticalContentAlignment));
+                this.OnPropertyChanged(nameof(this.VerticalContentAlignment));
             }
         }
     }
@@ -110,7 +113,7 @@ public class Panel : View
     protected override FocusSearchResult? FindFocusableDescendant(Vector2 contentPosition, Direction direction)
     {
         foreach (
-            var childPosition in childPositions
+            var childPosition in this.childPositions
                 .OrderByDescending(child => child.ContainsPoint(contentPosition))
                 .ThenByDescending(child => child.View.ZIndex)
         )
@@ -118,10 +121,10 @@ public class Panel : View
             var (view, position) = childPosition;
             // It's possible to move focus to any panel as long as it's in the search direction, but we want to
             // prioritize the child that already has the focus, which is already in the iteration order above.
-            var isPossibleMatch = childPosition.IsInDirection(contentPosition, direction);
+            bool isPossibleMatch = childPosition.IsInDirection(contentPosition, direction);
             if (isPossibleMatch)
             {
-                LogFocusSearch(
+                this.LogFocusSearch(
                     $"Found candidate child '{childPosition.View.Name}' with bounds: "
                         + $"[{childPosition.Position}, {childPosition.View.OuterSize}]"
                 );
@@ -140,22 +143,22 @@ public class Panel : View
     /// <inheritdoc />
     protected override IEnumerable<ViewChild> GetLocalChildren()
     {
-        return childPositions;
+        return this.childPositions;
     }
 
     /// <inheritdoc />
     protected override bool IsContentDirty()
     {
-        return horizontalContentAlignment.IsDirty
-            || verticalContentAlignment.IsDirty
-            || children.IsDirty
-            || children.Any(child => child.IsDirty());
+        return this.horizontalContentAlignment.IsDirty
+            || this.verticalContentAlignment.IsDirty
+            || this.children.IsDirty
+            || this.children.Any(child => child.IsDirty());
     }
 
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        foreach (var (child, position) in childPositions.OrderBy(child => child.View.ZIndex))
+        foreach (var (child, position) in this.childPositions.OrderBy(child => child.View.ZIndex))
         {
             using var _ = b.SaveTransform();
             b.Translate(position);
@@ -166,14 +169,14 @@ public class Panel : View
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        var limits = Layout.GetLimits(availableSize);
+        var limits = this.Layout.GetLimits(availableSize);
         // Any children set to Stretch should wait until non-Stretch children have measured. That
         // way, they stretch to whatever size the fixed/content children use.
         // Similar to Lane, we don't attempt to perfectly resolve ambiguities such as having one
         // child with stretched width and another with stretched height.
         var deferredChildren = new List<IView>();
         Vector2 maxChildSize = Vector2.Zero;
-        foreach (var child in Children)
+        foreach (var child in this.Children)
         {
             if (child.Layout.Width.Type == LengthType.Stretch || child.Layout.Height.Type == LengthType.Stretch)
             {
@@ -189,32 +192,33 @@ public class Panel : View
             child.Measure(limits);
             maxChildSize = Vector2.Max(maxChildSize, child.OuterSize);
         }
-        var deferredLimits = maxChildSize != Vector2.Zero ? Layout.Resolve(availableSize, () => maxChildSize) : limits;
+        var deferredLimits = maxChildSize != Vector2.Zero ? this.Layout.Resolve(availableSize, () => maxChildSize) : limits;
         foreach (var child in deferredChildren)
         {
             child.Measure(deferredLimits);
             maxChildSize = Vector2.Max(maxChildSize, child.OuterSize);
         }
-        ContentSize = Layout.Resolve(availableSize, () => maxChildSize);
-        UpdateChildPositions();
+
+        this.ContentSize = this.Layout.Resolve(availableSize, () => maxChildSize);
+        this.UpdateChildPositions();
     }
 
     /// <inheritdoc />
     protected override void ResetDirty()
     {
-        horizontalContentAlignment.ResetDirty();
-        verticalContentAlignment.ResetDirty();
-        children.ResetDirty();
+        this.horizontalContentAlignment.ResetDirty();
+        this.verticalContentAlignment.ResetDirty();
+        this.children.ResetDirty();
     }
 
     private void UpdateChildPositions()
     {
-        childPositions.Clear();
-        foreach (var child in Children)
+        this.childPositions.Clear();
+        foreach (var child in this.Children)
         {
-            var left = HorizontalContentAlignment.Align(child.OuterSize.X, ContentSize.X);
-            var top = VerticalContentAlignment.Align(child.OuterSize.Y, ContentSize.Y);
-            childPositions.Add(new(child, new(left, top)));
+            float left = this.HorizontalContentAlignment.Align(child.OuterSize.X, this.ContentSize.X);
+            float top = this.VerticalContentAlignment.Align(child.OuterSize.Y, this.ContentSize.Y);
+            this.childPositions.Add(new(child, new(left, top)));
         }
     }
 }

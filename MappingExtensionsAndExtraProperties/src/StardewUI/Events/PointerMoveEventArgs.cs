@@ -20,6 +20,6 @@ public class PointerMoveEventArgs(Vector2 previousPosition, Vector2 position)
     /// <inheritdoc/>
     public new PointerMoveEventArgs Offset(Vector2 distance)
     {
-        return new(PreviousPosition + distance, Position + distance);
+        return new(this.PreviousPosition + distance, this.Position + distance);
     }
 }

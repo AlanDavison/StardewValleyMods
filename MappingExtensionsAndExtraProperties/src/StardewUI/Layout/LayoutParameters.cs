@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Xna.Framework;
 
@@ -61,8 +62,8 @@ public readonly struct LayoutParameters : IEquatable<LayoutParameters>
     /// </summary>
     public LayoutParameters()
     {
-        Width = Length.Content();
-        Height = Length.Content();
+        this.Width = Length.Content();
+        this.Height = Length.Content();
     }
 
     /// <summary>
@@ -121,30 +122,30 @@ public readonly struct LayoutParameters : IEquatable<LayoutParameters>
     /// </remarks>
     public override bool Equals([NotNullWhen(true)] object? obj)
     {
-        return obj is LayoutParameters other && Equals(other);
+        return obj is LayoutParameters other && this.Equals(other);
     }
 
     /// <inheritdoc />
     public bool Equals(LayoutParameters other)
     {
-        return Width == other.Width
-            && Height == other.Height
-            && MaxWidth == other.MaxWidth
-            && MaxHeight == other.MaxHeight
-            && MinWidth == other.MinWidth
-            && MinHeight == other.MinHeight;
+        return this.Width == other.Width
+            && this.Height == other.Height
+            && this.MaxWidth == other.MaxWidth
+            && this.MaxHeight == other.MaxHeight
+            && this.MinWidth == other.MinWidth
+            && this.MinHeight == other.MinHeight;
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(Width);
-        hash.Add(Height);
-        hash.Add(MaxWidth);
-        hash.Add(MaxHeight);
-        hash.Add(MinWidth);
-        hash.Add(MinHeight);
+        hash.Add(this.Width);
+        hash.Add(this.Height);
+        hash.Add(this.MaxWidth);
+        hash.Add(this.MaxHeight);
+        hash.Add(this.MinWidth);
+        hash.Add(this.MinHeight);
         return hash.ToHashCode();
     }
 
@@ -173,17 +174,14 @@ public readonly struct LayoutParameters : IEquatable<LayoutParameters>
         // but have its height match the content; here we will get a valid value for constrainedWidth and an invalid
         // value for constrainedHeight, which will be translated into a constrained size having the computed width and
         // original (container-available) height.
-        var constrainedWidth = Math.Min(
+        float constrainedWidth = Math.Min(
             // Despite the odd, seemingly-redundant look of this code, it's doing the correct thing:
             // - Always constrain to the max width/height, no matter what else happens;
             // - If the length is not content-dependent, then use it;
             // - Otherwise, set the limit to the maximum size available (which is subsequently constrained by max).
-            Width.Resolve(availableSize.X, () => availableSize.X),
-            MaxWidth ?? float.PositiveInfinity
+            this.Width.Resolve(availableSize.X, () => availableSize.X), this.MaxWidth ?? float.PositiveInfinity
         );
-        var constrainedHeight = Math.Min(
-            Height.Resolve(availableSize.Y, () => availableSize.Y),
-            MaxHeight ?? float.PositiveInfinity
+        float constrainedHeight = Math.Min(this.Height.Resolve(availableSize.Y, () => availableSize.Y), this.MaxHeight ?? float.PositiveInfinity
         );
         return new Vector2(constrainedWidth, constrainedHeight);
     }
@@ -206,11 +204,11 @@ public readonly struct LayoutParameters : IEquatable<LayoutParameters>
             return getLength(contentSize.Value);
         }
 
-        var resolvedWidth = Width.Resolve(availableSize.X, () => Resolve1D(size => size.X));
-        var resolvedHeight = Height.Resolve(availableSize.Y, () => Resolve1D(size => size.Y));
+        float resolvedWidth = this.Width.Resolve(availableSize.X, () => Resolve1D(size => size.X));
+        float resolvedHeight = this.Height.Resolve(availableSize.Y, () => Resolve1D(size => size.Y));
         return new(
-            Math.Clamp(resolvedWidth, MinWidth ?? float.NegativeInfinity, MaxWidth ?? float.PositiveInfinity),
-            Math.Clamp(resolvedHeight, MinHeight ?? float.NegativeInfinity, MaxHeight ?? float.PositiveInfinity)
+            Math.Clamp(resolvedWidth, this.MinWidth ?? float.NegativeInfinity, this.MaxWidth ?? float.PositiveInfinity),
+            Math.Clamp(resolvedHeight, this.MinHeight ?? float.NegativeInfinity, this.MaxHeight ?? float.PositiveInfinity)
         );
     }
 
@@ -218,9 +216,9 @@ public readonly struct LayoutParameters : IEquatable<LayoutParameters>
     public override string ToString()
     {
         var sb = new StringBuilder();
-        Append(Width, MinWidth, MaxWidth);
+        Append(this.Width, this.MinWidth, this.MaxWidth);
         sb.Append(' ');
-        Append(Height, MinHeight, MaxHeight);
+        Append(this.Height, this.MinHeight, this.MaxHeight);
         return sb.ToString();
 
         void Append(Length length, float? min, float? max)

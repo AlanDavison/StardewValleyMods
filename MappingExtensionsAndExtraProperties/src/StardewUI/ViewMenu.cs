@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,7 +39,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <summary>
     /// The view to display with this menu.
     /// </summary>
-    public T View => view;
+    public T View => this.view;
 
     private static readonly Edges DefaultGutter = new(100, 50);
 
@@ -81,20 +84,20 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         Game1.playSound("bigSelect");
 
         this.gutter = gutter;
-        overlayContext.Pushed += OverlayContext_Pushed;
-        view = CreateView();
-        MeasureAndCenterView();
+        this.overlayContext.Pushed += this.OverlayContext_Pushed;
+        this.view = this.CreateView();
+        this.MeasureAndCenterView();
 
         if (forceDefaultFocus || Game1.options.gamepadControls)
         {
-            var focusPosition = view.GetDefaultFocusPath().ToGlobalPositions().LastOrDefault()?.CenterPoint();
+            var focusPosition = this.view.GetDefaultFocusPath().ToGlobalPositions().LastOrDefault()?.CenterPoint();
             if (focusPosition.HasValue)
             {
-                Game1.setMousePosition(new Point(xPositionOnScreen, yPositionOnScreen) + focusPosition.Value, true);
+                Game1.setMousePosition(new Point(this.xPositionOnScreen, this.yPositionOnScreen) + focusPosition.Value, true);
             }
         }
 
-        wasHudDisplayed = Game1.displayHUD;
+        this.wasHudDisplayed = Game1.displayHUD;
         Game1.displayHUD = false;
     }
 
@@ -116,17 +119,17 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     public override void applyMovementKey(int directionValue)
     {
         using var trace = Diagnostics.Trace.Begin(this, nameof(applyMovementKey));
-        using var _ = OverlayContext.PushContext(overlayContext);
+        using var _ = OverlayContext.PushContext(this.overlayContext);
         var direction = (Direction)directionValue;
         var mousePosition = Game1.getMousePosition(true);
-        OnViewOrOverlay(
+        this.OnViewOrOverlay(
             (view, origin) =>
             {
                 var found = view.FocusSearch(mousePosition.ToVector2() - origin, direction);
                 if (found is not null)
                 {
                     FinishFocusSearch(view, origin.ToPoint(), found);
-                    RequestRehover();
+                    this.RequestRehover();
                 }
             }
         );
@@ -150,13 +153,14 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        if (isDisposed)
+        if (this.isDisposed)
         {
             return;
         }
-        isDisposed = true;
-        Game1.displayHUD = wasHudDisplayed;
-        Close?.Invoke(this, EventArgs.Empty);
+
+        this.isDisposed = true;
+        Game1.displayHUD = this.wasHudDisplayed;
+        this.Close?.Invoke(this, EventArgs.Empty);
         GC.SuppressFinalize(this);
     }
 
@@ -171,26 +175,26 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         var viewportBounds = Game1.graphics.GraphicsDevice.Viewport.Bounds;
         if (!Game1.options.showClearBackgrounds)
         {
-            b.Draw(Game1.fadeToBlackRect, viewportBounds, Color.Black * DimmingAmount);
+            b.Draw(Game1.fadeToBlackRect, viewportBounds, Color.Black * this.DimmingAmount);
         }
 
-        using var _ = OverlayContext.PushContext(overlayContext);
+        using var _ = OverlayContext.PushContext(this.overlayContext);
 
-        MeasureAndCenterView();
+        this.MeasureAndCenterView();
 
-        var origin = new Point(xPositionOnScreen, yPositionOnScreen);
+        var origin = new Point(this.xPositionOnScreen, this.yPositionOnScreen);
         var viewBatch = new PropagatedSpriteBatch(b, Transform.FromTranslation(origin.ToVector2()));
-        view.Draw(viewBatch);
+        this.view.Draw(viewBatch);
 
-        foreach (var overlay in overlayContext.BackToFront())
+        foreach (var overlay in this.overlayContext.BackToFront())
         {
             b.Draw(Game1.fadeToBlackRect, viewportBounds, Color.Black * overlay.DimmingAmount);
-            var overlayData = MeasureAndPositionOverlay(overlay);
+            var overlayData = this.MeasureAndPositionOverlay(overlay);
             var overlayBatch = new PropagatedSpriteBatch(b, Transform.FromTranslation(overlayData.Position));
             overlay.View.Draw(overlayBatch);
         }
 
-        if (justPushedOverlay && overlayContext.Front is IOverlay frontOverlay && Game1.options.gamepadControls)
+        if (this.justPushedOverlay && this.overlayContext.Front is IOverlay frontOverlay && Game1.options.gamepadControls)
         {
             var defaultFocusPosition = frontOverlay
                 .View.GetDefaultFocusPath()
@@ -199,22 +203,23 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
                 ?.Center();
             if (defaultFocusPosition.HasValue)
             {
-                var overlayData = GetOverlayLayoutData(frontOverlay);
+                var overlayData = this.GetOverlayLayoutData(frontOverlay);
                 Game1.setMousePosition((overlayData.Position + defaultFocusPosition.Value).ToPoint(), true);
             }
         }
-        justPushedOverlay = false;
 
-        var tooltip = FormatTooltip(hoverPath);
+        this.justPushedOverlay = false;
+
+        string? tooltip = this.FormatTooltip(this.hoverPath);
         if (!string.IsNullOrEmpty(tooltip))
         {
             drawToolTip(b, tooltip, null, null);
         }
 
         Game1.mouseCursorTransparency = 1.0f;
-        if (!IsInputCaptured())
+        if (!this.IsInputCaptured())
         {
-            drawMouse(b);
+            this.drawMouse(b);
         }
     }
 
@@ -225,21 +230,22 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="y">The mouse's current Y position on screen.</param>
     public override void leftClickHeld(int x, int y)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(leftClickHeld));
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.leftClickHeld));
 
-        if (Game1.options.gamepadControls || IsInputCaptured())
+        if (Game1.options.gamepadControls || this.IsInputCaptured())
         {
             // No dragging with gamepad.
             return;
         }
         var dragPosition = new Point(x, y);
-        if (dragPosition == previousDragPosition)
+        if (dragPosition == this.previousDragPosition)
         {
             return;
         }
-        previousDragPosition = dragPosition;
-        using var _ = OverlayContext.PushContext(overlayContext);
-        OnViewOrOverlay((view, origin) => view.OnDrag(new(dragPosition.ToVector2() - origin)));
+
+        this.previousDragPosition = dragPosition;
+        using var _ = OverlayContext.PushContext(this.overlayContext);
+        this.OnViewOrOverlay((view, origin) => view.OnDrag(new(dragPosition.ToVector2() - origin)));
     }
 
     /// <summary>
@@ -253,12 +259,12 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="y">The mouse's current Y position on screen.</param>
     public override void performHoverAction(int x, int y)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(performHoverAction));
-        bool rehover = isRehoverScheduled || rehoverRequestTick.HasValue;
-        if (rehover || (previousHoverPosition.X != x || previousHoverPosition.Y != y))
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.performHoverAction));
+        bool rehover = this.isRehoverScheduled || this.rehoverRequestTick.HasValue;
+        if (rehover || (this.previousHoverPosition.X != x || this.previousHoverPosition.Y != y))
         {
-            using var _ = OverlayContext.PushContext(overlayContext);
-            OnViewOrOverlay((view, origin) => PerformHoverAction(view, origin, x, y));
+            using var _ = OverlayContext.PushContext(this.overlayContext);
+            this.OnViewOrOverlay((view, origin) => this.PerformHoverAction(view, origin, x, y));
         }
 
         // We use two flags for this in order to repeat the re-hover after one frame, because (a) input events won't
@@ -268,10 +274,10 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         //
         // A delay of exactly 1 frame isn't always going to be perfect either, but it handles the majority of cases such
         // as wheel scrolling and controller-triggered tab/page navigation.
-        isRehoverScheduled = rehoverRequestTick.HasValue;
-        if (rehoverRequestTick <= Game1.ticks)
+        this.isRehoverScheduled = this.rehoverRequestTick.HasValue;
+        if (this.rehoverRequestTick <= Game1.ticks)
         {
-            rehoverRequestTick = null;
+            this.rehoverRequestTick = null;
         }
     }
 
@@ -291,13 +297,13 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="b">The button that was pressed.</param>
     public override void receiveGamePadButton(Buttons b)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(receiveGamePadButton));
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.receiveGamePadButton));
 
         // We don't actually dispatch the button to any capturing overlay, just prevent it from affecting the menu.
         //
         // This is because a capturing overlay doesn't necessarily just need to know about the button "press", it cares
         // about the entire press, hold and release cycle, and can handle these directly through InputState or SMAPI.
-        if (IsInputCaptured())
+        if (this.IsInputCaptured())
         {
             return;
         }
@@ -316,21 +322,21 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         // as the button is held, which is generally the behavior that users will be accustomed to. If we override the
         // gamepad controls then we'd have to reimplement the repeating-click logic.
 
-        using var _ = OverlayContext.PushContext(overlayContext);
-        InitiateButtonPress(button);
+        using var _ = OverlayContext.PushContext(this.overlayContext);
+        this.InitiateButtonPress(button);
         switch (button)
         {
             case SButton.LeftTrigger:
-                OnTabbable(p => p.PreviousTab());
+                this.OnTabbable(p => p.PreviousTab());
                 break;
             case SButton.RightTrigger:
-                OnTabbable(p => p.NextTab());
+                this.OnTabbable(p => p.NextTab());
                 break;
             case SButton.LeftShoulder:
-                OnPageable(p => p.PreviousPage());
+                this.OnPageable(p => p.PreviousPage());
                 break;
             case SButton.RightShoulder:
-                OnPageable(p => p.NextPage());
+                this.OnPageable(p => p.NextPage());
                 break;
         }
     }
@@ -341,22 +347,22 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="key">The key that was pressed.</param>
     public override void receiveKeyPress(Keys key)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(receiveKeyPress));
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.receiveKeyPress));
         var realButton = ButtonResolver.GetPressedButton(key.ToSButton());
         // See comments on receiveGamePadButton for why we don't dispatch the key itself.
-        if (IsInputCaptured() || UI.InputHelper.IsSuppressed(realButton))
+        if (this.IsInputCaptured() || UI.InputHelper.IsSuppressed(realButton))
         {
             return;
         }
         var action = ButtonResolver.GetButtonAction(realButton);
-        if (action == ButtonAction.Cancel && overlayContext.Pop() is not null)
+        if (action == ButtonAction.Cancel && this.overlayContext.Pop() is not null)
         {
             return;
         }
         // receiveGamePadButton also initiates this, so ignore it if it appears to be from a controller source.
         if (!realButton.TryGetController(out var _) && !Game1.isAnyGamePadButtonBeingHeld())
         {
-            InitiateButtonPress(realButton);
+            this.InitiateButtonPress(realButton);
         }
         // The choices we have for actually "capturing" the captured input aren't awesome. Since it's a *keyboard*
         // input, we really don't want to let keyboard events through, like having the "e" key dismiss the menu while
@@ -386,8 +392,8 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="playSound">Currently not used.</param>
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(receiveLeftClick));
-        if (IsInputCaptured())
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.receiveLeftClick));
+        if (this.IsInputCaptured())
         {
             return;
         }
@@ -396,8 +402,8 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         {
             return;
         }
-        using var _ = OverlayContext.PushContext(overlayContext);
-        InitiateClick(button, new(x, y));
+        using var _ = OverlayContext.PushContext(this.overlayContext);
+        this.InitiateClick(button, new(x, y));
     }
 
     /// <summary>
@@ -408,8 +414,8 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="playSound">Currently not used.</param>
     public override void receiveRightClick(int x, int y, bool playSound = true)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(receiveRightClick));
-        if (IsInputCaptured())
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.receiveRightClick));
+        if (this.IsInputCaptured())
         {
             return;
         }
@@ -418,8 +424,8 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         {
             return;
         }
-        using var _ = OverlayContext.PushContext(overlayContext);
-        InitiateClick(button, new(x, y));
+        using var _ = OverlayContext.PushContext(this.overlayContext);
+        this.InitiateClick(button, new(x, y));
     }
 
     /// <summary>
@@ -429,16 +435,16 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// and positive values indicate "up".</param>
     public override void receiveScrollWheelAction(int value)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(receiveScrollWheelAction));
-        if (IsInputCaptured())
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.receiveScrollWheelAction));
+        if (this.IsInputCaptured())
         {
             return;
         }
-        using var _ = OverlayContext.PushContext(overlayContext);
+        using var _ = OverlayContext.PushContext(this.overlayContext);
         // IClickableMenu calls the value "direction" but it is actually a magnitude, and always in the Y direction
         // (negative is down).
         var direction = value > 0 ? Direction.North : Direction.South;
-        InitiateWheel(direction);
+        this.InitiateWheel(direction);
     }
 
     /// <summary>
@@ -448,15 +454,15 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="y">The mouse's current Y position on screen.</param>
     public override void releaseLeftClick(int x, int y)
     {
-        using var trace = Diagnostics.Trace.Begin(this, nameof(releaseLeftClick));
-        if (IsInputCaptured())
+        using var trace = Diagnostics.Trace.Begin(this, nameof(this.releaseLeftClick));
+        if (this.IsInputCaptured())
         {
             return;
         }
-        using var _ = OverlayContext.PushContext(overlayContext);
+        using var _ = OverlayContext.PushContext(this.overlayContext);
         var mousePosition = new Point(x, y);
-        previousDragPosition = mousePosition;
-        OnViewOrOverlay((view, origin) => view.OnDrop(new(mousePosition.ToVector2() - origin)));
+        this.previousDragPosition = mousePosition;
+        this.OnViewOrOverlay((view, origin) => view.OnDrop(new(mousePosition.ToVector2() - origin)));
     }
 
     /// <summary>
@@ -466,7 +472,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// be closed if already open; if <c>true</c>, it will be opened if not already open.</param>
     public void SetActive(bool active)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(SetActive));
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.SetActive));
         if (Game1.activeClickableMenu is TitleMenu)
         {
             if (active)
@@ -475,7 +481,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
             }
             else if (TitleMenu.subMenu == this)
             {
-                Game1.playSound(closeSound);
+                Game1.playSound(this.closeSound);
                 TitleMenu.subMenu = null;
             }
         }
@@ -487,7 +493,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
             }
             else if (Game1.activeClickableMenu == this)
             {
-                Game1.playSound(closeSound);
+                Game1.playSound(this.closeSound);
                 Game1.activeClickableMenu = null;
             }
         }
@@ -499,9 +505,9 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <param name="time">The current <see cref="GameTime"/> including the time elapsed since last update tick.</param>
     public override void update(GameTime time)
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(update));
-        View.OnUpdate(time.ElapsedGameTime);
-        foreach (var overlay in overlayContext.FrontToBack())
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.update));
+        this.View.OnUpdate(time.ElapsedGameTime);
+        foreach (var overlay in this.overlayContext.FrontToBack())
         {
             overlay.Update(time.ElapsedGameTime);
         }
@@ -519,7 +525,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     /// <returns>The tooltip string to display, or <c>null</c> to not show any tooltip.</returns>
     protected virtual string? FormatTooltip(IEnumerable<ViewChild> path)
     {
-        var tooltip = hoverPath.Select(x => x.View.Tooltip).LastOrDefault(tooltip => !string.IsNullOrEmpty(tooltip));
+        string? tooltip = this.hoverPath.Select(x => x.View.Tooltip).LastOrDefault(tooltip => !string.IsNullOrEmpty(tooltip));
         return Game1.parseText(tooltip, Game1.smallFont, 640);
     }
 
@@ -539,19 +545,19 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
 
     private OverlayLayoutData GetOverlayLayoutData(IOverlay overlay)
     {
-        var rootPosition = new Vector2(xPositionOnScreen, yPositionOnScreen);
-        return overlayCache.GetValue(overlay, ov => OverlayLayoutData.FromOverlay(view, rootPosition, overlay));
+        var rootPosition = new Vector2(this.xPositionOnScreen, this.yPositionOnScreen);
+        return this.overlayCache.GetValue(overlay, ov => OverlayLayoutData.FromOverlay(this.view, rootPosition, overlay));
     }
 
     private Vector2? GetRootViewPosition(IView view)
     {
-        if (view.Equals(View))
+        if (view.Equals(this.View))
         {
-            return new(xPositionOnScreen, yPositionOnScreen);
+            return new(this.xPositionOnScreen, this.yPositionOnScreen);
         }
-        foreach (var overlay in overlayContext.FrontToBack())
+        foreach (var overlay in this.overlayContext.FrontToBack())
         {
-            if (overlay.View == view && overlayCache.TryGetValue(overlay, out var layoutData))
+            if (overlay.View == view && this.overlayCache.TryGetValue(overlay, out var layoutData))
             {
                 return layoutData.Position;
             }
@@ -562,7 +568,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     private void InitiateButtonPress(SButton button)
     {
         var mousePosition = Game1.getMousePosition(true);
-        OnViewOrOverlay(
+        this.OnViewOrOverlay(
             (view, origin) =>
             {
                 var localPosition = mousePosition.ToVector2() - origin;
@@ -575,18 +581,18 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
                 view.OnButtonPress(args);
             }
         );
-        RequestRehover();
+        this.RequestRehover();
     }
 
     private void InitiateClick(SButton button, Point screenPoint)
     {
-        if (overlayContext.Front is IOverlay overlay)
+        if (this.overlayContext.Front is IOverlay overlay)
         {
-            var overlayData = GetOverlayLayoutData(overlay);
+            var overlayData = this.GetOverlayLayoutData(overlay);
             var overlayLocalPosition = screenPoint.ToVector2() - overlayData.Position;
             if (!overlayData.ContainsPoint(overlayLocalPosition))
             {
-                overlayContext.Pop();
+                this.overlayContext.Pop();
             }
             else
             {
@@ -595,25 +601,25 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
             }
             return;
         }
-        var origin = new Point(xPositionOnScreen, yPositionOnScreen);
+        var origin = new Point(this.xPositionOnScreen, this.yPositionOnScreen);
         var localPosition = (screenPoint - origin).ToVector2();
         if (Game1.keyboardDispatcher.Subscriber is ICaptureTarget captureTarget)
         {
-            var clickPath = view.GetPathToPosition(localPosition);
+            var clickPath = this.view.GetPathToPosition(localPosition);
             if (!clickPath.Select(child => child.View).Contains(captureTarget.CapturingView))
             {
                 captureTarget.ReleaseCapture();
             }
         }
         var args = new ClickEventArgs(localPosition, button);
-        view.OnClick(args);
-        RequestRehover();
+        this.view.OnClick(args);
+        this.RequestRehover();
     }
 
     private void InitiateWheel(Direction direction)
     {
         var mousePosition = Game1.getMousePosition(true);
-        OnViewOrOverlay(
+        this.OnViewOrOverlay(
             (view, origin) =>
             {
                 var localPosition = mousePosition.ToVector2() - origin;
@@ -626,14 +632,14 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
                 }
                 Game1.playSound("shiny4");
                 Refocus(view, origin, localPosition, pathBeforeScroll, direction);
-                RequestRehover();
+                this.RequestRehover();
             }
         );
     }
 
     private bool IsInputCaptured()
     {
-        return overlayContext.FrontToBack().Any(overlay => overlay.CapturingInput);
+        return this.overlayContext.FrontToBack().Any(overlay => overlay.CapturingInput);
     }
 
     [Conditional("DEBUG_FOCUS_SEARCH")]
@@ -644,27 +650,28 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
 
     private void MeasureAndCenterView()
     {
-        using var _ = Diagnostics.Trace.Begin(this, nameof(MeasureAndCenterView));
+        using var _ = Diagnostics.Trace.Begin(this, nameof(this.MeasureAndCenterView));
         var viewportSize = UiViewport.GetMaxSize();
-        var currentGutter = gutter ?? DefaultGutter;
+        var currentGutter = this.gutter ?? DefaultGutter;
         var availableMenuSize = viewportSize.ToVector2() - currentGutter.Total;
-        if (!view.Measure(availableMenuSize))
+        if (!this.view.Measure(availableMenuSize))
         {
             return;
         }
-        RequestRehover();
+
+        this.RequestRehover();
         // Make gutters act as margins; otherwise centering could actually place content in the gutter.
         // For example, if there is an asymmetrical gutter with left = 100 and right = 200, and it takes up the full
         // viewport width, then it will actually occupy the horizontal region from 150 to (viewportWidth - 150), which
         // is the centered region with 300px total margin. In this case we need to push the content left by 50px, or
         // half the difference between the left and right edge.
-        var gutterOffsetX = (currentGutter.Left - currentGutter.Right) / 2;
-        var gutterOffsetY = (currentGutter.Top - currentGutter.Bottom) / 2;
-        width = (int)MathF.Round(view.OuterSize.X);
-        height = (int)MathF.Round(view.OuterSize.Y);
-        xPositionOnScreen = viewportSize.X / 2 - width / 2 + gutterOffsetX;
-        yPositionOnScreen = viewportSize.Y / 2 - height / 2 + gutterOffsetY;
-        Refocus();
+        int gutterOffsetX = (currentGutter.Left - currentGutter.Right) / 2;
+        int gutterOffsetY = (currentGutter.Top - currentGutter.Bottom) / 2;
+        this.width = (int)MathF.Round(this.view.OuterSize.X);
+        this.height = (int)MathF.Round(this.view.OuterSize.Y);
+        this.xPositionOnScreen = viewportSize.X / 2 - this.width / 2 + gutterOffsetX;
+        this.yPositionOnScreen = viewportSize.Y / 2 - this.height / 2 + gutterOffsetY;
+        this.Refocus();
     }
 
     private OverlayLayoutData MeasureAndPositionOverlay(IOverlay overlay)
@@ -675,7 +682,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         {
             isUpdateRequired = overlay.View.Measure(viewportBounds.Size.ToVector2());
         }
-        var overlayData = GetOverlayLayoutData(overlay);
+        var overlayData = this.GetOverlayLayoutData(overlay);
         if (overlay.Parent is not null)
         {
             var availableOverlaySize = viewportBounds.Size.ToVector2() - overlayData.Position;
@@ -684,7 +691,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         if (isUpdateRequired)
         {
             overlayData.Update(overlay);
-            RequestRehover();
+            this.RequestRehover();
         }
         return overlayData;
     }
@@ -696,13 +703,13 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
         // However, it's unnecessarily distracting to do it for mouse controls.
         if (Game1.options.gamepadControls)
         {
-            RestoreFocusToOverlayActivation(overlay);
+            this.RestoreFocusToOverlayActivation(overlay);
         }
     }
 
     private void OnPageable(Action<IPageable> action)
     {
-        if (view is IPageable pageable)
+        if (this.view is IPageable pageable)
         {
             action(pageable);
         }
@@ -710,7 +717,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
 
     private void OnTabbable(Action<ITabbable> action)
     {
-        if (view is ITabbable tabbable)
+        if (this.view is ITabbable tabbable)
         {
             action(tabbable);
         }
@@ -718,15 +725,15 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
 
     private void OnViewOrOverlay(Action<IView, Vector2> action)
     {
-        if (overlayContext.Front is IOverlay overlay)
+        if (this.overlayContext.Front is IOverlay overlay)
         {
-            var overlayData = GetOverlayLayoutData(overlay);
+            var overlayData = this.GetOverlayLayoutData(overlay);
             action(overlay.View, overlayData.Position);
         }
         else
         {
-            var origin = new Vector2(xPositionOnScreen, yPositionOnScreen);
-            action(view, origin);
+            var origin = new Vector2(this.xPositionOnScreen, this.yPositionOnScreen);
+            action(this.view, origin);
         }
     }
 
@@ -734,39 +741,39 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
     {
         if (sender is IOverlay overlay)
         {
-            OnOverlayRemoved(overlay);
+            this.OnOverlayRemoved(overlay);
         }
     }
 
     private void OverlayContext_Pushed(object? sender, EventArgs e)
     {
-        var overlay = overlayContext.Front!;
-        overlayActivationPaths.AddOrUpdate(overlay, hoverPath.Select(child => child.AsWeak()).ToArray());
-        overlay.Close += Overlay_Close;
-        justPushedOverlay = true;
+        var overlay = this.overlayContext.Front!;
+        this.overlayActivationPaths.AddOrUpdate(overlay, this.hoverPath.Select(child => child.AsWeak()).ToArray());
+        overlay.Close += this.Overlay_Close;
+        this.justPushedOverlay = true;
     }
 
     private void PerformHoverAction(IView rootView, Vector2 viewPosition, int mouseX, int mouseY)
     {
         var mousePosition = new Vector2(mouseX, mouseY);
         var localPosition = mousePosition - viewPosition;
-        var previousLocalPosition = previousHoverPosition.ToVector2() - viewPosition;
-        previousHoverPosition = new(mouseX, mouseY);
-        hoverPath = rootView.GetPathToPosition(localPosition).ToArray();
+        var previousLocalPosition = this.previousHoverPosition.ToVector2() - viewPosition;
+        this.previousHoverPosition = new(mouseX, mouseY);
+        this.hoverPath = rootView.GetPathToPosition(localPosition).ToArray();
         rootView.OnPointerMove(new PointerMoveEventArgs(previousLocalPosition, localPosition));
     }
 
     private void Refocus(Direction searchDirection = Direction.South)
     {
-        if (hoverPath.Length == 0 || !Game1.options.gamepadControls || !Game1.options.gamepadControls)
+        if (this.hoverPath.Length == 0 || !Game1.options.gamepadControls || !Game1.options.gamepadControls)
         {
             return;
         }
-        var previousLeaf = hoverPath.ToGlobalPositions().Last();
-        OnViewOrOverlay(
+        var previousLeaf = this.hoverPath.ToGlobalPositions().Last();
+        this.OnViewOrOverlay(
             (view, origin) =>
             {
-                var newLeaf = view.ResolveChildPath(hoverPath.Select(x => x.View)).ToGlobalPositions().LastOrDefault();
+                var newLeaf = view.ResolveChildPath(this.hoverPath.Select(x => x.View)).ToGlobalPositions().LastOrDefault();
                 if (
                     newLeaf?.View == previousLeaf.View
                     && (
@@ -775,7 +782,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
                     )
                 )
                 {
-                    Refocus(view, origin, previousHoverPosition.ToVector2(), hoverPath, searchDirection);
+                    Refocus(view, origin, this.previousHoverPosition.ToVector2(), this.hoverPath, searchDirection);
                 }
             }
         );
@@ -838,20 +845,20 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
 
     private void RequestRehover()
     {
-        rehoverRequestTick = Game1.ticks;
+        this.rehoverRequestTick = Game1.ticks;
     }
 
     private void RestoreFocusToOverlayActivation(IOverlay overlay)
     {
-        var overlayData = GetOverlayLayoutData(overlay);
-        if (overlayActivationPaths.TryGetValue(overlay, out var activationPath) && activationPath.Length > 0)
+        var overlayData = this.GetOverlayLayoutData(overlay);
+        if (this.overlayActivationPaths.TryGetValue(overlay, out var activationPath) && activationPath.Length > 0)
         {
             var strongActivationPath = activationPath
                 .Select(x => x.TryResolve(out var viewChild) ? viewChild : null)
                 .ToList();
             if (strongActivationPath.Count > 0 && strongActivationPath.All(child => child is not null))
             {
-                var rootPosition = GetRootViewPosition(strongActivationPath[0]!.View);
+                var rootPosition = this.GetRootViewPosition(strongActivationPath[0]!.View);
                 if (rootPosition is not null)
                 {
                     var position = strongActivationPath!.ToGlobalPositions().Last().Center();
@@ -894,54 +901,50 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
 
         public bool ContainsPoint(Vector2 point)
         {
-            return unionBounds.ContainsPoint(point) && interactableBounds.Any(bounds => bounds.ContainsPoint(point));
+            return this.unionBounds.ContainsPoint(point) && this.interactableBounds.Any(bounds => bounds.ContainsPoint(point));
         }
 
         public void Update(IOverlay overlay)
         {
-            using var _ = Diagnostics.Trace.Begin(this, nameof(Update));
-            var immediateParent = GetImmediateParent();
+            using var _ = Diagnostics.Trace.Begin(this, nameof(this.Update));
+            var immediateParent = this.GetImmediateParent();
             if (overlay.Parent != immediateParent?.View)
             {
-                ParentPath =
+                this.ParentPath =
                     (
                         overlay.Parent is not null
                             ? root.View.GetPathToView(overlay.Parent)?.ToGlobalPositions().ToArray()
                             : null
                     ) ?? [];
             }
-            immediateParent = GetImmediateParent();
-            ParentBounds = immediateParent is not null
+            immediateParent = this.GetImmediateParent();
+            this.ParentBounds = immediateParent is not null
                 ? immediateParent.GetContentBounds().Offset(root.Position)
                 : GetUiViewportBounds();
-            var x = ResolveAlignments(
-                overlay.HorizontalParentAlignment,
-                ParentBounds.Left,
-                ParentBounds.Right,
+            float x = ResolveAlignments(
+                overlay.HorizontalParentAlignment, this.ParentBounds.Left, this.ParentBounds.Right,
                 overlay.HorizontalAlignment,
                 overlay.View.OuterSize.X
             );
-            var y = ResolveAlignments(
-                overlay.VerticalParentAlignment,
-                ParentBounds.Top,
-                ParentBounds.Bottom,
+            float y = ResolveAlignments(
+                overlay.VerticalParentAlignment, this.ParentBounds.Top, this.ParentBounds.Bottom,
                 overlay.VerticalAlignment,
                 overlay.View.OuterSize.Y
             );
-            Position = new Vector2(x, y);
+            this.Position = new Vector2(x, y);
 
-            interactableBounds = overlay.View.FloatingBounds.Prepend(overlay.View.ActualBounds).ToArray();
-            unionBounds = interactableBounds.Aggregate(Bounds.Empty, (acc, bounds) => acc.Union(bounds));
+            this.interactableBounds = overlay.View.FloatingBounds.Prepend(overlay.View.ActualBounds).ToArray();
+            this.unionBounds = this.interactableBounds.Aggregate(Bounds.Empty, (acc, bounds) => acc.Union(bounds));
         }
 
-        private ViewChild? GetImmediateParent() => ParentPath.Length > 0 ? ParentPath[^1] : null;
+        private ViewChild? GetImmediateParent() => this.ParentPath.Length > 0 ? this.ParentPath[^1] : null;
 
         private static Bounds GetUiViewportBounds()
         {
             var deviceViewport = Game1.graphics.GraphicsDevice.Viewport;
             var uiViewport = Game1.uiViewport;
-            var viewportWidth = Math.Min(deviceViewport.Width, uiViewport.Width);
-            var viewportHeight = Math.Min(deviceViewport.Height, uiViewport.Height);
+            int viewportWidth = Math.Min(deviceViewport.Width, uiViewport.Width);
+            int viewportHeight = Math.Min(deviceViewport.Height, uiViewport.Height);
             return new(new(0, 0), new(viewportWidth, viewportHeight));
         }
 
@@ -953,7 +956,7 @@ public abstract class ViewMenu<T> : IClickableMenu, IDisposable
             float childLength
         )
         {
-            var anchor = parentAlignment switch
+            float anchor = parentAlignment switch
             {
                 Alignment.Start => parentStart,
                 Alignment.Middle => (parentEnd - parentStart) / 2,

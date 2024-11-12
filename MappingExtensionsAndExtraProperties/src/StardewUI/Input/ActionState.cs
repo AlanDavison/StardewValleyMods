@@ -1,4 +1,7 @@
-﻿using StardewModdingAPI;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 
 namespace StardewUI.Input;
@@ -25,7 +28,7 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     /// <returns>The current instance.</returns>
     public ActionState<T> Bind(SButton button, T action, ActionRepeat? repeat = null, bool? suppress = null)
     {
-        return Bind(new Keybind(button), action, repeat, suppress);
+        return this.Bind(new Keybind(button), action, repeat, suppress);
     }
 
     /// <summary>
@@ -49,7 +52,7 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     {
         foreach (var button in buttons)
         {
-            Bind(button, action, repeat, suppress);
+            this.Bind(button, action, repeat, suppress);
         }
         return this;
     }
@@ -64,14 +67,14 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     /// <returns>The current instance.</returns>
     public ActionState<T> Bind(Keybind keybind, T action, ActionRepeat? repeat = null, bool? suppress = null)
     {
-        var id = keybind.ToString();
+        string? id = keybind.ToString();
         var registeredAction = new RegisteredAction(
             keybind,
             action,
             repeat ?? defaultRepeat ?? ActionRepeat.Default,
             suppress ?? defaultSuppress
         );
-        if (!registeredActions.TryAdd(id, registeredAction))
+        if (!this.registeredActions.TryAdd(id, registeredAction))
         {
             throw new InvalidOperationException($"The keybind {id} has already been registered.");
         }
@@ -96,7 +99,7 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     {
         foreach (var keybind in keybinds)
         {
-            Bind(keybind, action, repeat, suppress);
+            this.Bind(keybind, action, repeat, suppress);
         }
         return this;
     }
@@ -113,7 +116,7 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     {
         foreach (var keybind in keybindList.Keybinds)
         {
-            Bind(keybind, action, repeat, suppress);
+            this.Bind(keybind, action, repeat, suppress);
         }
         return this;
     }
@@ -126,7 +129,7 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     /// use at least one controller button.</returns>
     public IEnumerable<Keybind> GetControllerBindings(T action)
     {
-        return GetBindings(action, keybind => keybind.Buttons.Any(button => button.TryGetController(out _)));
+        return this.GetBindings(action, keybind => keybind.Buttons.Any(button => button.TryGetController(out _)));
     }
 
     /// <summary>
@@ -141,9 +144,9 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     /// <returns>Sequence of actions that should be handled this frame.</returns>
     public IEnumerable<T> GetCurrentActions()
     {
-        foreach (var id in readyActions)
+        foreach (string? id in this.readyActions)
         {
-            if (registeredActions.TryGetValue(id, out var registeredAction))
+            if (this.registeredActions.TryGetValue(id, out var registeredAction))
             {
                 yield return registeredAction.Action;
             }
@@ -158,7 +161,7 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     /// use at least one keyboard key.</returns>
     public IEnumerable<Keybind> GetKeyboardBindings(T action)
     {
-        return GetBindings(action, keybind => keybind.Buttons.Any(button => button.TryGetKeyboard(out _)));
+        return this.GetBindings(action, keybind => keybind.Buttons.Any(button => button.TryGetKeyboard(out _)));
     }
 
     /// <summary>
@@ -167,24 +170,24 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
     /// <param name="elapsed">Time elapsed since last game tick.</param>
     internal void Tick(TimeSpan elapsed)
     {
-        foreach (var (id, registeredAction) in registeredActions)
+        foreach ((string? id, var registeredAction) in this.registeredActions)
         {
-            var wasReady = registeredAction.IsReady;
+            bool wasReady = registeredAction.IsReady;
             registeredAction.Tick(elapsed);
             if (registeredAction.IsReady && !wasReady)
             {
-                readyActions.Add(id);
+                this.readyActions.Add(id);
             }
             else if (!registeredAction.IsReady && wasReady)
             {
-                readyActions.Remove(id);
+                this.readyActions.Remove(id);
             }
         }
     }
 
     private IEnumerable<Keybind> GetBindings(T action, Predicate<Keybind> predicate)
     {
-        foreach (var registeredAction in registeredActions.Values)
+        foreach (var registeredAction in this.registeredActions.Values)
         {
             if (Equals(registeredAction.Action, action) && predicate(registeredAction.Keybind))
             {
@@ -208,31 +211,31 @@ public class ActionState<T>(ActionRepeat? defaultRepeat = null, bool defaultSupp
 
         public void Tick(TimeSpan elapsed)
         {
-            if (Keybind.GetState() != SButtonState.Pressed && Keybind.GetState() != SButtonState.Held)
+            if (this.Keybind.GetState() != SButtonState.Pressed && this.Keybind.GetState() != SButtonState.Held)
             {
-                IsActive = false;
-                IsReady = false;
-                timeSinceFirst = TimeSpan.Zero;
-                timeSinceLast = TimeSpan.Zero;
+                this.IsActive = false;
+                this.IsReady = false;
+                this.timeSinceFirst = TimeSpan.Zero;
+                this.timeSinceLast = TimeSpan.Zero;
                 return;
             }
-            if (IsActive)
+            if (this.IsActive)
             {
-                timeSinceFirst += elapsed;
-                timeSinceLast += elapsed;
-                IsReady = timeSinceFirst >= repeat.InitialDelay && timeSinceLast >= repeat.RepeatInterval;
-                if (IsReady)
+                this.timeSinceFirst += elapsed;
+                this.timeSinceLast += elapsed;
+                this.IsReady = this.timeSinceFirst >= repeat.InitialDelay && this.timeSinceLast >= repeat.RepeatInterval;
+                if (this.IsReady)
                 {
-                    timeSinceLast = TimeSpan.Zero;
+                    this.timeSinceLast = TimeSpan.Zero;
                 }
             }
             else
             {
-                IsActive = true;
-                IsReady = true;
+                this.IsActive = true;
+                this.IsReady = true;
                 if (suppress)
                 {
-                    foreach (var button in Keybind.Buttons)
+                    foreach (var button in this.Keybind.Buttons)
                     {
                         UI.InputHelper.Suppress(button);
                     }

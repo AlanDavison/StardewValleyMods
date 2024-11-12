@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewUI.Events;
 using StardewUI.Graphics;
 using StardewUI.Layout;
@@ -21,13 +23,13 @@ public class ScrollableFrameView : ComponentView
     /// </summary>
     public IView? Content
     {
-        get => contentContainer.Content;
+        get => this.contentContainer.Content;
         set
         {
-            if (value != contentContainer.Content)
+            if (value != this.contentContainer.Content)
             {
-                contentContainer.Content = value;
-                OnPropertyChanged(nameof(Content));
+                this.contentContainer.Content = value;
+                this.OnPropertyChanged(nameof(this.Content));
             }
         }
     }
@@ -41,13 +43,13 @@ public class ScrollableFrameView : ComponentView
     /// </remarks>
     public LayoutParameters ContentLayout
     {
-        get => contentContainer.Layout;
+        get => this.contentContainer.Layout;
         set
         {
-            if (value != contentContainer.Layout)
+            if (value != this.contentContainer.Layout)
             {
-                contentContainer.Layout = value;
-                OnPropertyChanged(nameof(ContentLayout));
+                this.contentContainer.Layout = value;
+                this.OnPropertyChanged(nameof(this.ContentLayout));
             }
         }
     }
@@ -61,13 +63,13 @@ public class ScrollableFrameView : ComponentView
     /// </remarks>
     public IView? Footer
     {
-        get => footerContainer.Children.FirstOrDefault();
+        get => this.footerContainer.Children.FirstOrDefault();
         set
         {
-            if (value != footerContainer.Children.FirstOrDefault())
+            if (value != this.footerContainer.Children.FirstOrDefault())
             {
-                footerContainer.Children = value is not null ? [value] : [];
-                OnPropertyChanged(nameof(Footer));
+                this.footerContainer.Children = value is not null ? [value] : [];
+                this.OnPropertyChanged(nameof(this.Footer));
             }
         }
     }
@@ -82,13 +84,13 @@ public class ScrollableFrameView : ComponentView
     /// </remarks>
     public LayoutParameters FrameLayout
     {
-        get => contentFrame.Layout;
+        get => this.contentFrame.Layout;
         set
         {
-            if (value != contentFrame.Layout)
+            if (value != this.contentFrame.Layout)
             {
-                contentFrame.Layout = value;
-                OnPropertyChanged(nameof(FrameLayout));
+                this.contentFrame.Layout = value;
+                this.OnPropertyChanged(nameof(this.FrameLayout));
             }
         }
     }
@@ -102,13 +104,13 @@ public class ScrollableFrameView : ComponentView
     /// </remarks>
     public IView? Sidebar
     {
-        get => sidebarContainer.Children[0];
+        get => this.sidebarContainer.Children[0];
         set
         {
-            if (value != sidebarContainer.Children.FirstOrDefault())
+            if (value != this.sidebarContainer.Children.FirstOrDefault())
             {
-                sidebarContainer.Children = value is not null ? [value] : [];
-                OnPropertyChanged(nameof(Sidebar));
+                this.sidebarContainer.Children = value is not null ? [value] : [];
+                this.OnPropertyChanged(nameof(this.Sidebar));
             }
         }
     }
@@ -124,20 +126,22 @@ public class ScrollableFrameView : ComponentView
     /// </remarks>
     public int SidebarWidth
     {
-        get => sidebarWidth;
+        get => this.sidebarWidth;
         set
         {
-            if (sidebarWidth == value)
+            if (this.sidebarWidth == value)
             {
                 return;
             }
-            sidebarWidth = value;
-            if (View is not null)
+
+            this.sidebarWidth = value;
+            if (this.View is not null)
             {
-                sidebarContainer.Layout = new() { Width = Length.Px(sidebarWidth), Height = Length.Content() };
-                scrollbar.Layout = new() { Width = Length.Px(sidebarWidth), Height = Length.Stretch() };
+                this.sidebarContainer.Layout = new() { Width = Length.Px(this.sidebarWidth), Height = Length.Content() };
+                this.scrollbar.Layout = new() { Width = Length.Px(this.sidebarWidth), Height = Length.Stretch() };
             }
-            OnPropertyChanged(nameof(SidebarWidth));
+
+            this.OnPropertyChanged(nameof(this.SidebarWidth));
         }
     }
 
@@ -149,15 +153,15 @@ public class ScrollableFrameView : ComponentView
     /// </remarks>
     public string? Title
     {
-        get => banner.Text;
+        get => this.banner.Text;
         set
         {
-            var text = value ?? "";
-            if (text != banner.Text)
+            string? text = value ?? "";
+            if (text != this.banner.Text)
             {
-                banner.Text = text;
-                banner.Visibility = !string.IsNullOrEmpty(value) ? Visibility.Visible : Visibility.Hidden;
-                OnPropertyChanged(nameof(Title));
+                this.banner.Text = text;
+                this.banner.Visibility = !string.IsNullOrEmpty(value) ? Visibility.Visible : Visibility.Hidden;
+                this.OnPropertyChanged(nameof(this.Title));
             }
         }
     }
@@ -176,10 +180,10 @@ public class ScrollableFrameView : ComponentView
     /// <inheritdoc />
     public override bool Measure(Vector2 availableSize)
     {
-        var wasDirty = base.Measure(availableSize);
+        bool wasDirty = base.Measure(availableSize);
         if (wasDirty)
         {
-            footerContainer.Margin = new(Top: (int)MathF.Ceiling(scrollingLayout.OuterSize.Y));
+            this.footerContainer.Margin = new(Top: (int)MathF.Ceiling(this.scrollingLayout.OuterSize.Y));
         }
         return wasDirty;
     }
@@ -187,7 +191,7 @@ public class ScrollableFrameView : ComponentView
     /// <inheritdoc />
     public override void OnWheel(WheelEventArgs e)
     {
-        if (e.Handled || scrollbar.Container is not ScrollContainer container)
+        if (e.Handled || this.scrollbar.Container is not ScrollContainer container)
         {
             return;
         }
@@ -211,7 +215,7 @@ public class ScrollableFrameView : ComponentView
     /// <inheritdoc />
     protected override IView CreateView()
     {
-        banner = new Banner()
+        this.banner = new Banner()
         {
             Layout = LayoutParameters.FitContent(),
             Margin = new(Top: -85),
@@ -222,48 +226,48 @@ public class ScrollableFrameView : ComponentView
                 * (UiSprites.BannerBackground.SliceSettings?.Scale ?? 1),
             Visibility = Visibility.Hidden,
         };
-        contentContainer = new ScrollContainer()
+        this.contentContainer = new ScrollContainer()
         {
             Name = "ContentScrollContainer",
             Peeking = 16,
             ScrollStep = 64,
             Layout = LayoutParameters.Fill(),
         };
-        contentFrame = new Frame()
+        this.contentFrame = new Frame()
         {
             Name = "ContentFrame",
             Background = UiSprites.MenuBackground,
             Border = UiSprites.MenuBorder,
             BorderThickness = UiSprites.MenuBorderThickness,
             Margin = new(Top: -20),
-            Content = contentContainer,
+            Content = this.contentContainer,
         };
-        sidebarContainer = new Panel()
+        this.sidebarContainer = new Panel()
         {
-            Layout = new() { Width = Length.Px(sidebarWidth), Height = Length.Content() },
+            Layout = new() { Width = Length.Px(this.sidebarWidth), Height = Length.Content() },
             HorizontalContentAlignment = Alignment.End,
         };
-        scrollbar = new()
+        this.scrollbar = new()
         {
             Name = "ContentPageScroll",
-            Layout = new() { Width = Length.Px(sidebarWidth), Height = Length.Stretch() },
+            Layout = new() { Width = Length.Px(this.sidebarWidth), Height = Length.Stretch() },
             Margin = new(Top: 10, Bottom: 20),
-            Container = contentContainer,
+            Container = this.contentContainer,
         };
-        scrollingLayout = new Lane()
+        this.scrollingLayout = new Lane()
         {
             Name = "ScrollableFrameScrollingLayout",
             Layout = LayoutParameters.FitContent(),
-            Children = [sidebarContainer, contentFrame, scrollbar],
+            Children = [this.sidebarContainer, this.contentFrame, this.scrollbar],
             ZIndex = 1,
         };
-        footerContainer = new Panel() { Name = "ScrollableFrameFooter", Layout = LayoutParameters.FitContent() };
+        this.footerContainer = new Panel() { Name = "ScrollableFrameFooter", Layout = LayoutParameters.FitContent() };
         return new Panel()
         {
             Name = "ScrollableFrameContentLayout",
             Layout = LayoutParameters.FitContent(),
             HorizontalContentAlignment = Alignment.Middle,
-            Children = [banner, scrollingLayout, footerContainer],
+            Children = [this.banner, this.scrollingLayout, this.footerContainer],
         };
     }
 }

@@ -23,8 +23,8 @@ public class ScrollableView : ComponentView<ScrollContainer>
     /// </summary>
     public IView? Content
     {
-        get => View.Content;
-        set => View.Content = value;
+        get => this.View.Content;
+        set => this.View.Content = value;
     }
 
     /// <summary>
@@ -32,8 +32,8 @@ public class ScrollableView : ComponentView<ScrollContainer>
     /// </summary>
     public float Peeking
     {
-        get => View.Peeking;
-        set => View.Peeking = value;
+        get => this.View.Peeking;
+        set => this.View.Peeking = value;
     }
 
     // Initialized in CreateView
@@ -42,7 +42,7 @@ public class ScrollableView : ComponentView<ScrollContainer>
     /// <inheritdoc />
     public override void OnWheel(WheelEventArgs e)
     {
-        if (e.Handled || scrollbar.Container is not ScrollContainer container)
+        if (e.Handled || this.scrollbar.Container is not ScrollContainer container)
         {
             return;
         }
@@ -67,13 +67,13 @@ public class ScrollableView : ComponentView<ScrollContainer>
     protected override ScrollContainer CreateView()
     {
         var container = new ScrollContainer() { Peeking = 16, ScrollStep = 64 };
-        scrollbar = new Scrollbar()
+        this.scrollbar = new Scrollbar()
         {
             Layout = new() { Width = Length.Px(32), Height = Length.Stretch() },
             Margin = new(Left: 32, Bottom: -8),
             Container = container,
         };
-        container.FloatingElements.Add(new(scrollbar, FloatingPosition.AfterParent));
+        container.FloatingElements.Add(new(this.scrollbar, FloatingPosition.AfterParent));
         return container;
     }
 }

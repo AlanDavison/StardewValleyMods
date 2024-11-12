@@ -19,13 +19,13 @@ public class GhostView : View
     /// </summary>
     public IView? RealView
     {
-        get => realView;
+        get => this.realView;
         set
         {
-            if (value != realView)
+            if (value != this.realView)
             {
-                realView = value;
-                OnPropertyChanged(nameof(RealView));
+                this.realView = value;
+                this.OnPropertyChanged(nameof(this.RealView));
             }
         }
     }
@@ -39,13 +39,13 @@ public class GhostView : View
     /// </remarks>
     public Color TintColor
     {
-        get => tintColor;
+        get => this.tintColor;
         set
         {
-            if (value != tintColor)
+            if (value != this.tintColor)
             {
-                tintColor = value;
-                OnPropertyChanged(nameof(TintColor));
+                this.tintColor = value;
+                this.OnPropertyChanged(nameof(this.TintColor));
             }
         }
     }
@@ -56,7 +56,7 @@ public class GhostView : View
     /// <inheritdoc />
     protected override void OnDrawContent(ISpriteBatch b)
     {
-        if (RealView is null)
+        if (this.RealView is null)
         {
             return;
         }
@@ -65,17 +65,17 @@ public class GhostView : View
             {
                 AlphaSourceBlend = Blend.One,
                 ColorSourceBlend = Blend.BlendFactor,
-                BlendFactor = TintColor,
+                BlendFactor = this.TintColor,
                 AlphaDestinationBlend = Blend.InverseSourceAlpha,
                 ColorDestinationBlend = Blend.InverseSourceAlpha,
             }
         );
-        RealView.Draw(b);
+        this.RealView.Draw(b);
     }
 
     /// <inheritdoc />
     protected override void OnMeasure(Vector2 availableSize)
     {
-        ContentSize = RealView?.ContentBounds.Size ?? Vector2.Zero;
+        this.ContentSize = this.RealView?.ContentBounds.Size ?? Vector2.Zero;
     }
 }
