@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DecidedlyShared.APIs;
-using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Api;
@@ -9,10 +8,13 @@ using MappingExtensionsAndExtraProperties.Commands;
 using MappingExtensionsAndExtraProperties.Features;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
+using MappingExtensionsAndExtraProperties.Models.WarpStations.UI;
 using MappingExtensionsAndExtraProperties.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewUI;
 using StardewValley;
+using Logger = DecidedlyShared.Logging.Logger;
 
 namespace MappingExtensionsAndExtraProperties;
 
@@ -40,9 +42,11 @@ public class ModEntry : Mod
         Parsers.InitialiseParsers(this.logger, helper);
         this.eventCommands = new EventCommands(this.Helper, this.logger);
         ConsoleCommands commands = new ConsoleCommands(this.logger);
+        UI.Initialize(helper, this.Monitor);
 
         helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
         helper.Events.Display.RenderedStep += this.DisplayOnRendered;
+        helper.Events.Input.ButtonPressed += this.InputOnButtonPressed;
         helper.ConsoleCommands.Add(
             "meep_emergency_remove_animals", "Enter MEEP's animal removal mode. PAY ATTENTION TO THE WARNINGS.",
             commands.MeepAnimalWipingMode);
@@ -68,6 +72,14 @@ public class ModEntry : Mod
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
         helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+    }
+
+    private void InputOnButtonPressed(object? sender, ButtonPressedEventArgs e)
+    {
+        if (e.Button == SButton.F7)
+        {
+            Game1.activeClickableMenu = new WarpSystemWindow();
+        }
     }
 
     private void LoadContentPacks()
