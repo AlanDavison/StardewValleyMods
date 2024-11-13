@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Build\Latest.targets"/>
+    <Import Project="..\Build\Common.csproj"/>
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+
+    <PropertyGroup>
+        <Name>Buff Crops</Name>
+        <Description>Give yourself a reason to keep crops fully grown on your farm. Maybe giant crops will be more potent?</Description>
+        <MinimumApiVersion>4.0.0</MinimumApiVersion>
+        <UpdateKeys>Nexus:00000</UpdateKeys>
+        <Version>1.0.0-alpha</Version>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
+        <ContentPacks Include="packs/[CP] Crop Buff Data" Version="$(Version)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>false</EnableHarmony>
+    </PropertyGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Crops",
+            "Fields": {
+                "472": { // Parsnip
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "ForagingLevel 0.01 FarmingLevel 0.01"
+                    }
+                },
+                "745": { // Strawberry
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.02 Luck 0.01 Speed 0.01"
+                    }
+                },
+                "475": { // Potat.
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.01 Immunity 0.02 Stamina 0.01"
+                    }
+                },
+                "476": { // Garlic
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.02 CombatLevel 0.01"
+                    }
+                }
+            }
+        }
+    ]
+}

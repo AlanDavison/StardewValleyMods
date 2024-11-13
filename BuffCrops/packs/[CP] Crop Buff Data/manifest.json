@@ -1,0 +1,17 @@
+{
+    "Name": "[CP] Buff Crops Data",
+    "Author": "DecidedlyHuman",
+    "Version": "1.0.0-alpha",
+    "Description": "Loads vanilla crops up with buff data.",
+    "UniqueID": "DH.BuffCrops.BuffCropDataPack",
+    "UpdateKeys": [],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    },
+    "Dependencies": [
+        {
+            "UniqueID": "6480.giantcrops",
+            "IsRequired": false
+        }
+    ]
+}
