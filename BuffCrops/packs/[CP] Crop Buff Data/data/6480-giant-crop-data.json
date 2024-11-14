@@ -1,0 +1,129 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/GiantCrops",
+            "Fields": {
+                // SPRING
+                "6480.giantcrops_Parsnip": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "ForagingLevel 0.7 FarmingLevel 0.7"
+                    }
+                },
+                "6480.giantcrops_Strawberry": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 1 LuckLevel 0.01 Speed 0.25"
+                    }
+                },
+                "6480.giantcrops_Potato": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.7 Immunity 0.7 Stamina 0.6"
+                    }
+                },
+                "6480.giantcrops_Garlic": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.25 CombatLevel 0.5"
+                    }
+                },
+                "6480.giantcrops_Coffee": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.25 Attack 0.8"
+                    }
+                },
+
+                // SUMMER
+                "6480.giantcrops_Corn": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.25 Attack 0.8"
+                    }
+                },
+                "6480.giantcrops_Blueberries": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.2 Speed 0.1 Attack 0.5"
+                    }
+                },
+                "6480.giantcrops_HotPepper": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.25 Stamina 0.7"
+                    }
+                },
+                "6480.giantcrops_RedCabbage": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MagneticRadius 0.2 MiningLevel 0.2"
+                    }
+                },
+                "6480.giantcrops_Radish": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.2 Defense 0.2"
+                    }
+                },
+                "6480.giantcrops_Starfruit": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MiningLevel 0.5 MagneticRadius 0.6 CombatLevel 0.8"
+                    }
+                },
+                "6480.giantcrops_Tomato": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.2 ForagingLevel 0.01"
+                    }
+                },
+
+                // AUTUMN
+                "6480.giantcrops_Artichoke": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.5 Speed 0.25"
+                    }
+                },
+                "6480.giantcrops_Beet": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.5 FarmingLevel 0.7"
+                    }
+                },
+                "6480.giantcrops_Cranberries": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "CombatLevel 0.5 Attack 0.8"
+                    }
+                },
+                "6480.giantcrops_Eggplant": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.5 ForagingLevel 07"
+                    }
+                },
+                "6480.giantcrops_Yam": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MiningLevel 0.5 MagneticRadius 0.5 Attack 1"
+                    }
+                },
+                "6480.giantcrops_Broccoli": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.5 Speed 0.1"
+                    }
+                },
+
+                // WINTER
+
+                // SPECIAL
+                "6480.giantcrops_AncientFruit": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "AttackMultiplier 0.5 Defense 0.6 WeaponSpeedMultiplier 0.5"
+                    }
+                },
+                "6480.giantcrops_Pineapple": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.1 ForagingLevel 0.2 Immunity 0.2"
+                    }
+                },
+                "6480.giantcrops_Taro": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Attack 0.1 CombatLevel 0.1 MaxStamina 5"
+                    }
+                },
+                "6480.giantcrops_SweetGemBerry": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "CombatLevel 0.5 FarmingLevel 0.5 FishingLevel 0.5 MiningLevel 0.5 LuckLevel 0.5 ForagingLevel 0.5"
+                    }
+                }
+            }
+        }
+    ]
+}

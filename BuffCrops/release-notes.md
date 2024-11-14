@@ -1,9 +1,5 @@
-﻿# Mod Changelog
+# Buff Crops Changelog
 
-## x.x.x
-#### Fixes
-* Fixed a thing.
-#### Tweaks
-* Tweaked a thing.
+## 1.0.0
 #### Additions
-* Added a thing.
+* The mod exists!

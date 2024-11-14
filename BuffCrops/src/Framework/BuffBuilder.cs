@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Buffs;
 using StardewValley.GameData.Buffs;
@@ -17,8 +18,15 @@ public class BuffBuilder
         return this;
     }
 
-    public Buff Build()
+    public Buff Build(string displayName, string description, int duration, Texture2D buffTexture, int iconSheetIndex)
     {
-        return new Buff("DH.BuffCrops.Buff", effects: new BuffEffects(this.buffData));
+        return new Buff(
+            "DH.BuffCropsEvents.Buff",
+            effects: new BuffEffects(this.buffData),
+            displayName: displayName,
+            description: description,
+            duration: duration,
+            iconTexture: buffTexture,
+            iconSheetIndex:iconSheetIndex);
     }
 }

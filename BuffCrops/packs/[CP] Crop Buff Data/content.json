@@ -3,12 +3,24 @@
     "Format": "2.0.0",
     "Changes": [
         {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/BuffCrops/CropBuffImage",
+            "FromFile": "assets/buff-icon.png"
+        },
+        {
             "Action": "Include",
             "FromFile": "data/crop-data.json"
         },
         {
             "Action": "Include",
-            "FromFile": "data/giant-crop-data.json"
+            "FromFile": "data/vanilla-giant-crop-data.json"
+        },
+        {
+            "Action": "Include",
+            "When": {
+                "HasMod": "6480.giantcrops"
+            },
+            "FromFile": "data/6480-giant-crop-data.json"
         }
     ]
 }
