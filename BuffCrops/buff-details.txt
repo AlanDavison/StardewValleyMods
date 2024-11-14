@@ -1,0 +1,101 @@
+SPRING
+Blue Jazz
+    Speed LuckLevel
+Carrot
+    Immunity ForagingLevel
+Cauliflower
+    Immunity Defense
+Coffee Bean
+    Speed Attack
+Garlic
+    Speed CombatLevel    
+Green Bean
+    Immunity Attack
+Kale
+    Immunity FishingLevel MaxStamina
+Parsnip
+    FarmingLevel FishingLevel
+Potato
+    Immunity Defense
+Rhubarb
+    MagneticRadius MiningLevel
+Strawberry
+    LuckLevel FarmingLevel MaxStamina
+Tulip
+    Defense ForagingLevel
+Rice
+    ForagingLevel Speed
+
+SUMMER
+Blueberry
+    Immunity Speed Attack
+Corn
+    Speed Attack
+Hops
+    Immunity Defense
+Hot Pepper
+    Speed Attack Defense
+Melon
+    FarmingLevel ForagingLevel
+Poppy
+    Speed CombatLevel
+Radish
+    Immunity Defense
+Red Cabbage
+    MagneticRadius MiningLevel
+Starfruit
+    MiningLevel MagneticRadius CombatLevel
+Summer Spangle
+    Defense ForagingLevel
+Summer Squash
+    Immunity ForagingLevel
+Sunflower
+    Speed MaxStamina
+Tomato
+    FarmingLevel ForagingLevel
+Wheat
+    Defense FarmingLevel
+
+AUTUMN
+Amaranth
+    Immunity Defense
+Artichoke
+    Defense Speed
+Beet
+    Immunity FarmingLevel
+Bok Choy
+    ForagingLevel FarmingLevel
+Broccoli
+    Immunity Speed
+Cranberries
+    CombatLevel Attack
+Eggplant
+    Defense ForagingLevel
+Fairy Rose
+    Speed Attack
+Grape
+    MaxStamina Speed
+Pumpkin
+    Defense Immunity MagneticRadius
+Yam
+    MiningLevel MagneticRadius Attack
+
+WINTER
+Powdermelon
+    Speed Defense Attack MiningLevel
+
+SPECIAL
+Ancient Fruit
+    AttackMultiplier Defense WeaponSpeedMultiplier
+Cactus Fruit
+    Speed 
+Fiber
+    Defense MagneticRadius
+Pineapple
+    Speed ForagingLevel Immunity
+Taro Root
+    Attack CombatLevel MaxStamina
+Sweet Gem Berry
+    CombatLevel FarmingLevel FishingLevel MiningLevel LuckLevel ForagingLevel
+Tea Leaves
+    Immunity Speed MagneticRadius

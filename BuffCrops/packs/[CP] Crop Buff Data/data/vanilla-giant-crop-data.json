@@ -1,0 +1,44 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/GiantCrops",
+            "Fields": {
+                // SPRING
+                "Cauliflower": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.3 Defense 0.2"
+                    }
+                },
+
+                // SUMMER
+                "Melon": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.5 ForagingLevel 0.5"
+                    }
+                },
+
+                // AUTUMN
+                "Pumpkin": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.5 Immunity 0.7 MagneticRadius 0.6"
+                    }
+                },
+
+                // WINTER
+                "Powdermelon": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.2 Defense 0.3 Attack 0.3 MiningLevel 0.6"
+                    }
+                },
+
+                // SPECIAL
+                "QiFruit": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "CombatLevel 1 FarmingLevel 1 FishingLevel 1 MiningLevel 1 LuckLevel 1 ForagingLevel 1 LuckLevel 1"
+                    }
+                }
+            }
+        }
+    ]
+}
