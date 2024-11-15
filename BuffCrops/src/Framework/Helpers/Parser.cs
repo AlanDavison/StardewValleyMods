@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using StardewValley.GameData.Buffs;
 using TemplateProject.Helpers;
@@ -12,6 +13,47 @@ public class Parser
     public Parser(Logger logger)
     {
         this.logger = logger;
+    }
+
+    public bool TryGetSpaceCoreSkillData(string property, out Dictionary<string, float> skillContribution)
+    {
+        skillContribution = new Dictionary<string, float>();
+
+        try
+        {
+            string[] splitProperty = property.Split(" ");
+
+            /*
+            For this property, we expect an even amount of arguments: skillid amount skillid amount skillid amount
+            */
+
+            if (splitProperty.Length % 2 != 0)
+                return false;
+
+            for (int i = 1; i < splitProperty.Length; i += 2)
+            {
+                if (!float.TryParse(splitProperty[i], out float _))
+                    return false;
+            }
+
+            for (int i = 0; i < splitProperty.Length; i += 2)
+            {
+                if (i < splitProperty.Length)
+                {
+                    if (skillContribution.ContainsKey(splitProperty[i]))
+                        skillContribution[splitProperty[i]] = skillContribution[splitProperty[i]] += float.Parse(splitProperty[i + 1]);
+                    else
+                        skillContribution.Add(splitProperty[i], float.Parse(splitProperty[i + 1]));
+                }
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            this.logger.Exception(e);
+            return false;
+        }
     }
 
     public bool TryGetBuffAttributesData(string property, out BuffAttributesData? parsedProperty)

@@ -27,6 +27,6 @@ public class BuffBuilder
             description: description,
             duration: duration,
             iconTexture: buffTexture,
-            iconSheetIndex:iconSheetIndex);
+            iconSheetIndex:iconSheetIndex) {customFields = {}};
     }
 }

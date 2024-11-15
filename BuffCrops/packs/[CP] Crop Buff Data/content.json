@@ -21,6 +21,13 @@
                 "HasMod": "6480.giantcrops"
             },
             "FromFile": "data/6480-giant-crop-data.json"
+        },
+        {
+            "Action": "Include",
+            "When": {
+                "HasMod": "drbirbdev.SocializingSkill"
+            },
+            "FromFile": "data/socializing-skill-crop-data.json"
         }
     ]
 }

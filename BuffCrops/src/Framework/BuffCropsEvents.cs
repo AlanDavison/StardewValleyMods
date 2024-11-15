@@ -25,6 +25,7 @@ public class BuffCropsEvents
     public void DoDayStart()
     {
         BuffBuilder buffBuilder = new BuffBuilder();
+        Dictionary<string, float> spaceCoreSkillContributions = new Dictionary<string, float>();
 
         try
         {
@@ -51,6 +52,17 @@ public class BuffCropsEvents
                     buffBuilder.AddBuff(newData);
                 }
 
+                if (customFields.ContainsKey("DH.BuffCrops.SpaceCoreSkillContribution"))
+                {
+                    string keyValue = crop.GetData().CustomFields["DH.BuffCrops.SpaceCoreSkillContribution"];
+                    if (!this.parser.TryGetSpaceCoreSkillData(keyValue, out Dictionary<string, float> contributions))
+                        return false;
+
+                    spaceCoreSkillContributions =
+                        DictionaryHelpers.AddDictionaries(spaceCoreSkillContributions, contributions);
+
+                }
+
                 return true;
             });
 
@@ -74,6 +86,17 @@ public class BuffCropsEvents
                     if (newData is not null)
                         buffBuilder.AddBuff(newData);
                 }
+
+                if (customFields.ContainsKey("DH.BuffCrops.SpaceCoreSkillContribution"))
+                {
+                    string keyValue = giantCrop.GetData().CustomFields["DH.BuffCrops.SpaceCoreSkillContribution"];
+                    if (!this.parser.TryGetSpaceCoreSkillData(keyValue, out Dictionary<string, float> contributions))
+                        return;
+
+                    spaceCoreSkillContributions =
+                        DictionaryHelpers.AddDictionaries(spaceCoreSkillContributions, contributions);
+
+                }
             });
 
             Buff buff = buffBuilder.Build(
@@ -83,6 +106,13 @@ public class BuffCropsEvents
                 Game1.content.Load<Texture2D>("Mods/DecidedlyHuman/BuffCrops/CropBuffImage"),
                 0
                 );
+
+            foreach (var kvp in spaceCoreSkillContributions)
+            {
+
+                buff.customFields.Add($"spacechase0.SpaceCore.SkillBuff.{kvp.Key}", MathF.Round(kvp.Value).ToString());
+
+            }
 
             Game1.player.applyBuff(buff);
         }

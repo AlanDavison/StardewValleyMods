@@ -1,0 +1,60 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Crops",
+            "Fields": {
+                // SPRING
+                "429": { // Jazz
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+                "427": { // Tulip
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+
+                // SUMMER
+                "453": { // Poppy
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+                "455": { // Spangle
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+                "431": { // Sunflower
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+
+                // AUTUMN
+                "425": { // Fairy seeds
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+
+                // WINTER
+
+                // SPECIAL
+                "347": { // Rare seed/sweet gem berry
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                },
+                "499": { // Ancient seed (Ancient fruit)
+                    "CustomFields": {
+                        "DH.BuffCrops.SpaceCoreSkillContribution": "drbirbdev.Socializing 0.1"
+                    }
+                }
+
+            }
+        }
+    ]
+}
