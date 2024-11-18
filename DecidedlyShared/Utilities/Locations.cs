@@ -1,6 +1,10 @@
-﻿using System;
+using System;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
+using Netcode;
 using StardewValley;
+using StardewValley.Buildings;
+using StardewValley.Internal;
 using StardewValley.TerrainFeatures;
 
 namespace DecidedlyShared.Utilities
@@ -26,6 +30,21 @@ namespace DecidedlyShared.Utilities
             };
 
             Utility.ForEachLocation(searchAction);
+        }
+
+        public static void ForEachPlantableInterior(Action<GameLocation> action)
+        {
+            Func<Building, bool> searchAction = building =>
+            {
+                if (!building.HasIndoors() || building.GetIndoors() is null)
+                    return true;
+
+                action.Invoke(building.GetIndoors());
+
+                return true;
+            };
+
+            Utility.ForEachBuilding(searchAction);
         }
     }
 }
