@@ -9,6 +9,7 @@ public class CharacterVo
     private string directory;
     private int priority;
     private string character;
+    [JsonProperty("Voiceover")]
     private List<Voiceover> voiceover;
 
     public string FormatVersion => this.formatVersion;

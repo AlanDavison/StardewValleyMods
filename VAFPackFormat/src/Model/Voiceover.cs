@@ -9,5 +9,6 @@ public class Voiceover
     [JsonProperty("VO Files")] private List<VoFile> voFiles;
 
     public string DialoguePath => this.dialoguePath;
+    [JsonProperty("VO Files")]
     public List<VoFile> VoFiles => this.voFiles;
 }

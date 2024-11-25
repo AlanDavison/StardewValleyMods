@@ -1,0 +1,11 @@
+{
+    "Name": "[VAF] Sample Pack",
+    "Author": "DecidedlyHuman",
+    "Version": "1.0.0-alpha",
+    "Description": "VAF's sample pack.",
+    "UniqueID": "dh.vafsample",
+    "UpdateKeys": [],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    }
+}

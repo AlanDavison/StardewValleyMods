@@ -1,0 +1,26 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "VAF/Character/Sebastian",
+            "Fields": {
+                "Format": "1.0.0",
+                "Voiceover": [
+                    {
+                        "Dialogue Path": "assets/Sebastian",
+                        "VO Files": [
+                            {
+                                "Key": "Introduction",
+                                "File": "Introduction.ogg"
+                            },
+                            {
+                                "Key": "Mon" // If the File property is excluded, it's automatically deduced fom the key.
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
