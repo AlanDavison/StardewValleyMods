@@ -168,6 +168,12 @@ public class FarmAnimalSpawnsFeature : Feature
                 };
 
                 babbyAnimal.modData.Add("MEEP_Farm_Animal", "true");
+                babbyAnimal.modData.Add("MEEP_Farm_Animal_ID", animal.Key);
+                babbyAnimal.modData.Add("MEEP_Farm_Animal_Name", animal.Value.DisplayName);
+
+                if (animal.Value.PortraitTexture is not null)
+                    babbyAnimal.modData.Add("MEEP_Farm_Animal_Portrait", animal.Value.PortraitTexture);
+
                 babbyAnimal.Position =
                     new Vector2(animal.Value.HomeTileX * Game1.tileSize, animal.Value.HomeTileY * Game1.tileSize);
                 babbyAnimal.Name = animal.Value.DisplayName is null ? "No Name Boi" : animal.Value.DisplayName;
