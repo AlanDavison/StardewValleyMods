@@ -249,53 +249,72 @@ public class FarmAnimalSpawnsFeature : Feature
 
         try
         {
-            // If we're dealing with one of our spawned animals, we display a nice message.
-            if (spawnedAnimals.ContainsKey(__instance))
+            if (is_auto_pet)
+                return false;
+
+            if (who.currentLocation.Name != __instance.currentLocation.Name)
+                return false;
+
+            if (__instance.modData is null)
+                return true;
+
+            if (!__instance.modData.ContainsKey("MEEP_Farm_Animal"))
+                return true;
+
+            // In case we're a multiplayer client, we load the animal spawn data.
+            if (!Context.IsMainPlayer)
+                animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
+
+            KeyValuePair<string, Animal> data = animalData.First(pair =>
+                pair.Key == __instance.modData?["MEEP_Farm_Animal_ID"]);
+
+            if ((bool)__instance.modData?.ContainsKey("MEEP_Farm_Animal_Portrait"))
             {
-                if (is_auto_pet)
-                    return false;
-
-                if (who.currentLocation.Name != __instance.currentLocation.Name)
-                    return false;
-
-                Vector2 messageSize =
-                    Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
-                NPC npc = new NPC();
-
-                if (spawnedAnimals[__instance].PortraitTexture is not null)
+                if (data.Value is null)
                 {
-                    try
-                    {
-                        npc.Portrait = Game1.content.Load<Texture2D>(spawnedAnimals[__instance].PortraitTexture);
+                    logger.Error("That animal was somehow not found in the spawn data.");
 
-                        npc.Name = spawnedAnimals[__instance].DisplayName;
-                        npc.displayName = spawnedAnimals[__instance].DisplayName;
-
-                        AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
-                            new Dialogue(npc, "", string.Join(" ", spawnedAnimals[__instance].PetMessage.ToList())),
-                            npc);
-
-                        Game1.activeClickableMenu = dialogueBoxWithPortrait;
-
-                        return false;
-                    }
-                    catch (Exception e)
-                    {
-                        logger.Warn($"Portrait key for farm animal {spawnedAnimals[__instance].DisplayName} was present, but invalid.");
-                    }
+                    // It's important that we return false here, because we don't want the default
+                    // animal interaction UI to appear regardless of this failure.
+                    return false;
                 }
 
-                DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
+                try
+                {
+                    Vector2 messageSize =
+                        Geometry.GetLargestString(data.Value.PetMessage, Game1.dialogueFont);
+                    NPC npc = new NPC();
+
+                    npc.Portrait =
+                        Game1.content.Load<Texture2D>(__instance.modData?["MEEP_Farm_Animal_Portrait"]);
+
+                    npc.Name = data.Value.DisplayName;
+                    npc.displayName = data.Value.DisplayName;
+
+                    AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
+                        new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())),
+                        npc);
+
+                    Game1.activeClickableMenu = dialogueBoxWithPortrait;
+                }
+                catch (Exception e)
+                {
+                    logger.Warn(
+                        $"Portrait key for farm animal {data.Value.DisplayName} was present, but invalid.");
+                }
+            }
+            else
+            {
+                DialogueBox dialogue = new DialogueBox(data.Value.PetMessage.ToList());
                 Game1.activeClickableMenu = dialogue;
-
-
-                return false;
             }
 
-            return true;
+            return false;
+
         }
         catch (Exception e)
         {
+            logger.Error("Caught exception handling pet interaction for farm animal with MEEP's modData.");
             logger.Exception(e);
         }
 
