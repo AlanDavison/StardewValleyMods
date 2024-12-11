@@ -137,40 +137,40 @@ public class FarmAnimalSpawnsFeature : Feature
             return;
         }
 
-        foreach (Animal animal in animalData.Values)
+        foreach (KeyValuePair<string, Animal> animal in animalData)
         {
             try
             {
-                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
+                GameLocation targetLocation = Game1.getLocationFromName(animal.Value.LocationId);
 
-                if (!GameStateQuery.CheckConditions(animal.Condition, location: targetLocation))
+                if (!GameStateQuery.CheckConditions(animal.Value.Condition, location: targetLocation))
                 {
-                    logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
+                    logger.Log($"Condition to spawn {animal.Value.DisplayName} was false. Skipping!", LogLevel.Trace);
 
                     continue;
                 }
 
                 if (targetLocation is null)
                 {
-                    logger.Log($"Couldn't parse location name \"{animal.LocationId}\". Animal not spawned.",
+                    logger.Log($"Couldn't parse location name \"{animal.Value.LocationId}\". Animal not spawned.",
                         LogLevel.Error);
                     continue;
                 }
 
                 // Sanity check time.
-                if (animal.SkinId is null)
-                    animal.SkinId = "";
+                if (animal.Value.SkinId is null)
+                    animal.Value.SkinId = "";
 
-                FarmAnimal babbyAnimal = new FarmAnimal(animal.AnimalId, multiplayer.getNewID(), -1L)
+                FarmAnimal babbyAnimal = new FarmAnimal(animal.Value.AnimalId, multiplayer.getNewID(), -1L)
                 {
-                    skinID = { animal.SkinId },
-                    age = { animal.Age }
+                    skinID = { animal.Value.SkinId },
+                    age = { animal.Value.Age }
                 };
 
                 babbyAnimal.modData.Add("MEEP_Farm_Animal", "true");
                 babbyAnimal.Position =
-                    new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
-                babbyAnimal.Name = animal.DisplayName is null ? "No Name Boi" : animal.DisplayName;
+                    new Vector2(animal.Value.HomeTileX * Game1.tileSize, animal.Value.HomeTileY * Game1.tileSize);
+                babbyAnimal.Name = animal.Value.DisplayName is null ? "No Name Boi" : animal.Value.DisplayName;
 
                 // We got a location, so we're good to check our GameStateQuery condition.
 
@@ -179,13 +179,13 @@ public class FarmAnimalSpawnsFeature : Feature
                 babbyAnimal.ReloadTextureIfNeeded();
                 babbyAnimal.allowReproduction.Value = false;
                 babbyAnimal.wasPet.Value = true;
-                spawnedAnimals.Add(babbyAnimal, animal);
+                spawnedAnimals.Add(babbyAnimal, animal.Value);
 
-                logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
+                logger.Log($"Animal {animal.Value.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
             }
             catch (Exception ex)
             {
-                logger.Log($"Caught an exception spawning {animal.AnimalId} spawned in {animal.LocationId}. Skipping!");
+                logger.Log($"Caught an exception spawning {animal.Value.AnimalId} spawned in {animal.Value.LocationId}. Skipping!");
             }
         }
     }
