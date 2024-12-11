@@ -32,7 +32,7 @@ public class FarmAnimalSpawnsFeature : Feature
     private static Logger logger;
     private static Harmony harmony;
     private static IModHelper helper;
-    private static Dictionary<string, Animal> animalData;
+    private static Dictionary<string, Animal> animalData = new Dictionary<string, Animal>();
     private static Dictionary<FarmAnimal, Animal> spawnedAnimals = new Dictionary<FarmAnimal, Animal>();
 
     public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
