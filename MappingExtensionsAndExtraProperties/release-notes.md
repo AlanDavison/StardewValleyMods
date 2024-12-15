@@ -1,4 +1,6 @@
 # MEEP Release Notes
+* 2.4.4
+  * Fix null reference oversight in farm animal spawns feature.
 * 2.4.3
   * Fix a mistake preventing auto petters from working.
 * 2.4.2
