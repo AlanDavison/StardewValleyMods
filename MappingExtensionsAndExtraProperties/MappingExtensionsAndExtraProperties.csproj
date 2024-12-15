@@ -15,6 +15,12 @@
         <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Update="release-notes.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
     <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
         <ContentPacks Include="test-pack/TilePropertyMod" Version="$(Version)" />
     </ItemGroup>
