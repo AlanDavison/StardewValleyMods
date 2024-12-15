@@ -250,7 +250,7 @@ public class FarmAnimalSpawnsFeature : Feature
         try
         {
             if (is_auto_pet)
-                return false;
+                return true;
 
             if (who.currentLocation.Name != __instance.currentLocation.Name)
                 return false;
