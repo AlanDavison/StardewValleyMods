@@ -1,4 +1,6 @@
 # MEEP Release Notes
+* 2.4.3
+  * Fix a mistake preventing auto petters from working.
 * 2.4.2
   * Fix multiplayer farm animal dialogue issue.
 * 2.4.0
