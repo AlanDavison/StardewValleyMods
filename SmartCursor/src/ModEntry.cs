@@ -569,7 +569,7 @@ namespace SmartCursor
             // First, we loop through the location's objects and add them to our breakable resources list.
             foreach (KeyValuePair<Vector2, SObject> pair in location.Objects.Pairs)
             {
-                if (pair.Value.Type.Equals("Litter"))
+                if (pair.Value.Type.Equals("Litter") || (pair.Value.Type.Equals("asdf") && pair.Value.Name.Equals("Artifact Spot")))
                     this.breakableResources.Add(new BreakableEntity(pair.Value, this.config, this.itemExtensionsApi));
             }
 
