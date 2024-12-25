@@ -1,0 +1,25 @@
+﻿{
+    // Keybinds
+    "settings.keybinds.title": "Atalho",
+    "settings.keybinds.hold-to-activate": "Segure para ativar",
+    // Tier ranges
+    "settings.ranges.tier-ranges.title": "Alcance das ferramentas por nível",
+    "settings.ranges.tier-amount-notice": "Você pode escolher o alcance de cada nível de suas ferramentas. Níveis 6 e 7 inutilizáveis a menos que você possua mods para isso.",
+    "settings.ranges.tier-1-range": "Inicial",
+    "settings.ranges.tier-2-range": "Cobre",
+    "settings.ranges.tier-3-range": "Ferro",
+    "settings.ranges.tier-4-range": "Ouro",
+    "settings.ranges.tier-5-range": "Irídio",
+    "settings.ranges.tier-6-range": "Nível 6",
+    "settings.ranges.tier-7-range": "Nível 7",
+    // Toggles
+    "settings.toggles.title": "Marcar como alvo",
+    "settings.toggles.allow-targeting-baby-trees": "Brotos de árvores",
+    "settings.toggles.allow-targeting-baby-trees.tooltip": "Permitir o corte de árvores em crescimento.",
+    "settings.toggles.allow-targeting-tapped-trees": "Torneirinhas",
+    "settings.toggles.allow-targeting-tapped-trees.tooltip": "Permitir o corte de árvores com torneirinha.",
+    "settings.toggles.allow-targeting-giant-crops": "Lavouras gigantes",
+    "settings.toggles.allow-targeting-giant-crops.tooltip": "Permitir o smart cursor a destruir plantas gigantes.",
+    // Messages
+    "messages.gmcm-not-installed": "GMCM não está instalado. Isso não é obrigatório, mas é recomendado."
+}

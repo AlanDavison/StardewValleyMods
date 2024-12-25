@@ -1,5 +1,13 @@
 ﻿# Smart Cursor Changelog
 
+## 1.5.0
+#### Fixes
+* Fixed a very wild interaction with the panning tool.
+* Added more checks to safeguard against other unknown tool interactions.
+#### Additions
+* French translation courtesy of Caranud on Nexus. Thanks!
+* Portuguese translation courtesy of NaoeaDri on Nexus. Thanks!
+
 ## 1.4.0
 #### Additions
 * Item Extensions support, finally!

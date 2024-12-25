@@ -511,8 +511,12 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void InputOnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            // Guard against fishing rod usage.
-            if (Game1.player.CurrentTool is FishingRod)
+            if (Game1.player.CurrentTool is null)
+                return;
+
+            if (Game1.player.CurrentTool is not Pickaxe &&
+                Game1.player.CurrentTool is not Axe &&
+                Game1.player.CurrentTool is not Hoe)
                 return;
 
             if (e.Button == this.config.SmartCursorHold)
