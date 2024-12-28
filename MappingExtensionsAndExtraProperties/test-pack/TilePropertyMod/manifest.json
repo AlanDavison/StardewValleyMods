@@ -1,7 +1,7 @@
 {
     "Name": "MEEP Tile Property Test Mod",
     "Author": "DecidedlyHuman",
-    "Version": "2.4.2",
+    "Version": "2.4.5",
     "Description": "Tile properties for testing.",
     "UniqueID": "meep.test",
     "UpdateKeys": [],
