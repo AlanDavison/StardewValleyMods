@@ -1,4 +1,7 @@
 # Smart Building release notes
+## 1.9.2
+#### Fixes
+* Fix blue grass starters placing normal grass instead.
 ## 1.9.0
 #### Fixes
 * 1.6.9 support!
