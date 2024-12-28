@@ -159,7 +159,7 @@ namespace SmartBuilding.Utilities
                 }
                 else if (itemInfo.ItemType == ItemType.GrassStarter)
                 {
-                    var grassStarter = new Grass(1, 4);
+                    var grassStarter = new Grass(itemInfo.Item.QualifiedItemId.Equals("(O)BlueGrassStarter") ? 7 : 1, 4);
 
                     // At this point, we *need* there to be no TerrainFeature present.
                     if (!here.terrainFeatures.ContainsKey(targetTile))
