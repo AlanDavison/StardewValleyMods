@@ -252,7 +252,7 @@ public class FarmAnimalSpawnsFeature : Feature
             if (is_auto_pet)
                 return true;
 
-            if (who is null || who.currentLocation is null)
+            if (who is null || who.currentLocation is null || __instance.currentLocation is null || __instance.currentLocation.Name is null)
                 return true;
 
             if (who.currentLocation.Name != __instance.currentLocation.Name)
