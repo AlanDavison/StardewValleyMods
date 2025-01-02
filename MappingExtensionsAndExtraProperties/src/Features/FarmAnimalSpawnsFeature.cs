@@ -234,10 +234,25 @@ public class FarmAnimalSpawnsFeature : Feature
         {
             if (ModEntry.AnimalRemovalMode)
             {
-                if (__instance.currentLocation.Animals.ContainsKey(__instance.myID.Value))
-                {
-                    __instance.currentLocation.Animals.Remove(__instance.myID.Value);
-                }
+                // I'm going absolutely bonkers with safety checks here.
+                if (__instance.currentLocation is null || __instance.currentLocation.Animals is null)
+                    return true;
+
+                if (!__instance.currentLocation.Animals.TryGetValue(__instance.myID.Value, out FarmAnimal farmAnimal))
+                    return true;
+
+                if (farmAnimal.currentLocation is null)
+                    return true;
+
+                if (farmAnimal.currentLocation != Game1.player.currentLocation)
+                    return true;
+
+                __instance.currentLocation.Animals.Remove(__instance.myID.Value);
+
+                string removalMessage =
+                    $"REMOVED FARM ANIMAL \"{__instance.myID.Value}\" in {__instance.currentLocation.Name} because we were in animal removal mode.";
+                logger.Log(removalMessage, LogLevel.Info);
+                Game1.addHUDMessage(new HUDMessage(removalMessage));
 
                 return false;
             }
