@@ -230,6 +230,9 @@ public class FarmAnimalSpawnsFeature : Feature
         if (!enabled)
             return true;
 
+        if (is_auto_pet)
+            return true;
+
         try
         {
             if (ModEntry.AnimalRemovalMode)
@@ -244,6 +247,7 @@ public class FarmAnimalSpawnsFeature : Feature
                 if (farmAnimal.currentLocation is null)
                     return true;
 
+                // ReSharper disable once PossibleUnintendedReferenceComparison
                 if (farmAnimal.currentLocation != Game1.player.currentLocation)
                     return true;
 
@@ -264,9 +268,6 @@ public class FarmAnimalSpawnsFeature : Feature
 
         try
         {
-            if (is_auto_pet)
-                return true;
-
             if (who is null || who.currentLocation is null || __instance.currentLocation is null || __instance.currentLocation.Name is null)
                 return true;
 
