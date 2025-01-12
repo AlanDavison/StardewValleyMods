@@ -132,7 +132,7 @@ public class FarmAnimalSpawnsFeature : Feature
         if (multiplayer is null)
         {
             // This is a catastrophic failure.
-            logger.Log("Reflecting to get Game1.Multiplayer failed. As a result, we can't spawn any animals. This should never happen.", LogLevel.Error);
+            logger.Log("Reflecting to get Game1.Multiplayer failed. As a result, we can't spawn any animals. This should never happen, barring a drastic change in the game or .NET.", LogLevel.Error);
 
             return;
         }
@@ -192,6 +192,7 @@ public class FarmAnimalSpawnsFeature : Feature
             catch (Exception ex)
             {
                 logger.Log($"Caught an exception spawning {animal.Value.AnimalId} spawned in {animal.Value.LocationId}. Skipping!");
+                logger.Exception(ex);
             }
         }
     }
