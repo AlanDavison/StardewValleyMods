@@ -1,6 +1,7 @@
 # MEEP Release Notes
 * 2.4.6
   * Fix: Huge oversight in MEEP animal removal command that, if left enabled when auto-petting happened, would remove any auto-pet farm animal while the command is enabled.
+  * Fix: Massively overhaul farm animal spawning and removal. Improved logging for it quite a bit.
 * 2.4.5
   * Finally fully fix null reference oversight in farm animal spawns feature.
 * 2.4.4
