@@ -34,6 +34,8 @@ public class FarmAnimalSpawnsFeature : Feature
     private static IModHelper helper;
     private static Dictionary<string, Animal> animalData = new Dictionary<string, Animal>();
     private static Dictionary<FarmAnimal, Animal> spawnedAnimals = new Dictionary<FarmAnimal, Animal>();
+    private int animalsSpawned = 0;
+    private int animalsRemoved = 0;
 
     public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
     {
@@ -109,10 +111,67 @@ public class FarmAnimalSpawnsFeature : Feature
 
     private void OnEarlyDayEnding(object? sender, EventArgs e)
     {
-        foreach (var animal in spawnedAnimals)
+        if (!Context.IsMainPlayer)
+            return;
+
+        Utility.ForEachLocation(location =>
         {
-            logger.Log($"Removing {animal.Key.displayName} of id {animal.Key.type} in {animal.Key.currentLocation.Name}.", LogLevel.Trace);
-            animal.Key.currentLocation.animals.Remove(animal.Key.myID.Value);
+            if (location.Animals is null)
+                return true;
+
+            List<FarmAnimal> animalsToRemove = new List<FarmAnimal>();
+
+            foreach (FarmAnimal animal in location.Animals.Values)
+            {
+                if (animal.modData is null)
+                    continue;
+
+                if (animal.modData.ContainsKey("MEEP_Farm_Animal_ID"))
+                    animalsToRemove.Add(animal);
+            }
+
+            animalsToRemove.ForEach(this.RemoveFarmAnimal);
+
+            return true;
+        });
+
+        if (this.animalsRemoved != this.animalsSpawned)
+            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this.", LogLevel.Alert);
+
+        this.animalsRemoved = 0;
+    }
+
+    private void RemoveFarmAnimal(FarmAnimal animal)
+    {
+        if (animal.currentLocation is null)
+        {
+            logger.Error($"FarmAnimal {animal.name}'s location was null. Cannot remove it. Animal MEEP ID: {animal.modData["MEEP_Farm_Animal_ID"]}.");
+
+            return;
+        }
+
+        GameLocation location = animal.currentLocation;
+
+        try
+        {
+            if (animal.myID is null)
+            {
+                logger.Error($"Animal {animal.Name}'s myID NetField was somehow null. This should never happen. Cannot safely remove them.");
+
+                return;
+            }
+
+            location.Animals.Remove(animal.myID.Value);
+            this.animalsRemoved++;
+
+            if (animal.currentLocation is not null)
+                logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" in {animal.currentLocation.Name}.", LogLevel.Trace);
+            else
+                logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" . Its current location was null for some reason.", LogLevel.Trace);
+        }
+        catch (Exception e)
+        {
+            logger.Log($"Ran into a problem removing animal {animal.Name}");
         }
     }
 
@@ -120,6 +179,8 @@ public class FarmAnimalSpawnsFeature : Feature
     {
         if (!Context.IsWorldReady || !Context.IsMainPlayer || !this.Enabled)
             return;
+
+        this.animalsSpawned = 0;
 
         // We technically only need to run this once, but this will be a super fast operation because it's cached.
         animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
@@ -139,6 +200,8 @@ public class FarmAnimalSpawnsFeature : Feature
 
         foreach (KeyValuePair<string, Animal> animal in animalData)
         {
+            bool bailEarly = false;
+
             try
             {
                 GameLocation targetLocation = Game1.getLocationFromName(animal.Value.LocationId);
@@ -180,14 +243,42 @@ public class FarmAnimalSpawnsFeature : Feature
 
                 // We got a location, so we're good to check our GameStateQuery condition.
 
+                foreach (FarmAnimal existingAnimal in targetLocation.Animals.Values)
+                {
+                    if (existingAnimal.modData is null)
+                        continue;
+
+                    if (existingAnimal.modData.TryGetValue("MEEP_Farm_Animal_ID", out string id))
+                    {
+                        if (id == animal.Key)
+                        {
+                            logger.Error(
+                                $"Animal {babbyAnimal.Name} already exists with MEEP id {id} in {targetLocation.Name}. This means removal failed to happen for some reason.");
+                            logger.Error("This means no animals will be spawned in this location, even if they don't have a duplicate for safety.");
+                            logger.Log(
+                                "Please report this to DecidedlyHuman on Nexus/Discord with the log from this exact play session, or one where you've slept and had this error occur.", LogLevel.Alert);
+
+                            bailEarly = true;
+                        }
+                        else if (string.IsNullOrWhiteSpace(id))
+                        {
+                            logger.Log($"Something catastrophic happened, and the animal has MEEP's animal key ID, but it's blank. Please report this to DecidedlyHuman alongside this long.", LogLevel.Alert);
+                        }
+                    }
+                }
+
+                if (bailEarly)
+                    continue;
+
                 targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
+                this.animalsSpawned++;
                 babbyAnimal.update(Game1.currentGameTime, targetLocation);
                 babbyAnimal.ReloadTextureIfNeeded();
                 babbyAnimal.allowReproduction.Value = false;
                 babbyAnimal.wasPet.Value = true;
                 spawnedAnimals.Add(babbyAnimal, animal.Value);
 
-                logger.Log($"Animal {animal.Value.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
+                logger.Log($"Animal {animal.Value.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Trace);
             }
             catch (Exception ex)
             {
