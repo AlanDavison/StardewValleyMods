@@ -1,7 +1,9 @@
 # MEEP Release Notes
 * 2.4.6
+  * Fix: Farm animals should no longer duplicate for a small number of users. The cause is still unknown, but it should now be impossible.
   * Fix: Huge oversight in MEEP animal removal command that, if left enabled when auto-petting happened, would remove any auto-pet farm animal while the command is enabled.
-  * Fix: Massively overhaul farm animal spawning and removal. Improved logging for it quite a bit.
+  * Change: Massively overhaul farm animal spawning and removal. Improved logging for it quite a bit.
+  * Change: Reduce a lot of user-visible logging. Most things will be logged to the log file only now.
 * 2.4.5
   * Finally fully fix null reference oversight in farm animal spawns feature.
 * 2.4.4
