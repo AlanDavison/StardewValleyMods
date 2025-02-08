@@ -136,7 +136,7 @@ public class FarmAnimalSpawnsFeature : Feature
         });
 
         if (this.animalsRemoved != this.animalsSpawned)
-            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this.", LogLevel.Alert);
+            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this.", LogLevel.Warn);
 
         this.animalsRemoved = 0;
     }
@@ -165,7 +165,7 @@ public class FarmAnimalSpawnsFeature : Feature
             this.animalsRemoved++;
 
             if (animal.currentLocation is not null)
-                logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" in {animal.currentLocation.Name}.", LogLevel.Trace);
+                logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" in \"{animal.currentLocation.Name}\".", LogLevel.Trace);
             else
                 logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" . Its current location was null for some reason.", LogLevel.Trace);
         }
@@ -256,13 +256,13 @@ public class FarmAnimalSpawnsFeature : Feature
                                 $"Animal {babbyAnimal.Name} already exists with MEEP id {id} in {targetLocation.Name}. This means removal failed to happen for some reason.");
                             logger.Error("This means no animals will be spawned in this location, even if they don't have a duplicate for safety.");
                             logger.Log(
-                                "Please report this to DecidedlyHuman on Nexus/Discord with the log from this exact play session, or one where you've slept and had this error occur.", LogLevel.Alert);
+                                "Please report this to DecidedlyHuman on Nexus/Discord with the log from this exact play session, or one where you've slept and had this error occur.", LogLevel.Warn);
 
                             bailEarly = true;
                         }
                         else if (string.IsNullOrWhiteSpace(id))
                         {
-                            logger.Log($"Something catastrophic happened, and the animal has MEEP's animal key ID, but it's blank. Please report this to DecidedlyHuman alongside this long.", LogLevel.Alert);
+                            logger.Error($"The animal has MEEP's animal key ID, but it's blank. Please report this to the author of the pack that adds this animal.");
                         }
                     }
                 }
@@ -286,6 +286,8 @@ public class FarmAnimalSpawnsFeature : Feature
                 logger.Exception(ex);
             }
         }
+
+        logger.Log($"Spawned {this.animalsSpawned} animals. This is normal, and will not cause or result in lag.", LogLevel.Trace);
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
