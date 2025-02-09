@@ -3,6 +3,9 @@
 
 All releases can be found on my [Nexus page](https://www.nexusmods.com/users/79440738?tab=user+files).
 
+## **Users**: Having an issue with duplicated animals?
+Follow [this link](https://youtu.be/S_mkIA9bPnA) for a guide on how to remove the duplicates that MEEP was unable to remove by itself.
+
 ## What it does
 This mod does nothing on its own. Its primary purpose is to allow map authors to spice up their maps with the new custom tile properties, extra features, etc., that this mod adds.
 
@@ -22,7 +25,7 @@ Click on the link to go to the mini-docs for each one
 | 2.0.0      | [*Letter Type*](docs/tile-properties.md#MEEP_Letter_Type)                                                    | Buildings | This property allows you to specify a vanilla letter background, *or* a custom letter background image.                                                                                                                                                                                                                                                                                              |
 | 2.4.0      | [Farm Animal Spawning](docs/non-map-properties.md#Spawning-farm-animals)                                     | N/A       | MEEP lets you spawn any farm animal in the game (including custom ones added with 1.6's new custom farm animal feature) on a map of your choosing. Farm animals spawned by MEEP can't be milked/sheared/sold, and can display a custom message when you chat with them. Since 2.4.0, this now lets you specify a portrait image for your farm animals to give them dialogue similar to a normal NPC. |
 | **2.4.0**  | [Invulnerable Trees](docs/non-map-properties.md#Making-trees-invulnerable)                                   | N/A       | This lets you mark specific types of custom trees as being indestructible so the player can't chop them down. Good for making decorative custom trees.                                                                                                                                                                                                                                               |
-| **2.4.0** | [Coloured slime event command](docs/non-map-properties.md#Spawning-coloured-slimes-in-events)                | N/A       | This is a new event command, which will let you add custom coloured slimes to your events.                                                                                                                                                                                                                                                                                                           |
+| **2.4.0**  | [Coloured slime event command](docs/non-map-properties.md#Spawning-coloured-slimes-in-events)                | N/A       | This is a new event command, which will let you add custom coloured slimes to your events.                                                                                                                                                                                                                                                                                                           |
 
 
 ## Using the features
