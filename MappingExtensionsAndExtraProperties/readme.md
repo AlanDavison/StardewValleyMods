@@ -1,5 +1,5 @@
 ﻿# Mapping Extensions and Extra Properties (MEEP) Documentation
-**Version 2.4.0 -- The update that gives modders the ability to make their custom trees invulnerable, give their spawned farm animals portraits, and spawn coloured slimes in events.**
+**Version 2.4.x -- The update that gives modders the ability to make their custom trees invulnerable, give their spawned farm animals portraits, and spawn coloured slimes in events.**
 
 All releases can be found on my [Nexus page](https://www.nexusmods.com/users/79440738?tab=user+files).
 
