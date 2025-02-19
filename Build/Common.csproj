@@ -10,6 +10,7 @@
         <UniqueId>$(Author).$(AssemblyName)</UniqueId>
         <EntryDll>$(AssemblyName)</EntryDll>
         <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
+        <DebugType Condition="$(Configuration) != 'Release'">pdbonly</DebugType>
         <LangVersion>12</LangVersion>
     </PropertyGroup>
 
