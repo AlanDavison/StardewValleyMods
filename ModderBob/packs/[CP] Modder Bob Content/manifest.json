@@ -1,0 +1,17 @@
+{
+    "$schema": "https://smapi.io/schemas/manifest.json",
+    "Name": "Modder Bob Content",
+    "Author": "DecidedlyHuman",
+    "Version": "1.0.0-alpha",
+    "Description": "Content for the Modder Bob mod.",
+    "UniqueID": "DecidedlyHuman.ModderBob.Content",
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    },
+    "Dependencies": [
+        {
+            "UniqueID": "DecidedlyHuman.ModderBob",
+            "IsRequired": true
+        }
+    ]
+}

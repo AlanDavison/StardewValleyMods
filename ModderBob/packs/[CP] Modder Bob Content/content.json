@@ -1,0 +1,14 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Format": "2.5.3",
+    "Changes": [
+        {
+            "Action": "Include",
+            "FromFile": "Data/NPCs/NPCData.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "Data/Maps/Patches/MapPatches.json"
+        }
+    ]
+}

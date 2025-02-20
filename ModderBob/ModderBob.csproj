@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Build\Latest.targets"/>
+    <Import Project="..\Build\Common.csproj"/>
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+
+    <PropertyGroup>
+        <Name>Modder Bob</Name>
+        <Description>There's a new villager in town, and he's having some issues. Maybe you can help him out.</Description>
+        <MinimumApiVersion>4.0.0</MinimumApiVersion>
+        <UpdateKeys>Nexus:00000</UpdateKeys>
+        <Version>1.0.0-alpha</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>true</EnableHarmony>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ContentPacks Include="packs/[CP] Modder Bob Content" Version="$(Version)"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="packs\[CP] Modder Bob Content\Assets\Maps\" />
+      <Folder Include="packs\[CP] Modder Bob Content\Assets\NPCs\ModderBob\" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+﻿{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "Include",
+            "FromFile": "Data/Maps/Patches/ForestPatches.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "Data/Maps/Patches/ForestPatches_SVE.json"
+        }
+    ]
+}
