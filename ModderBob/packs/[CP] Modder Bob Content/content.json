@@ -3,8 +3,9 @@
     "Format": "2.5.3",
     "Changes": [
         {
+            "LogName": "Include Modder Bob's data.",
             "Action": "Include",
-            "FromFile": "Data/NPCs/NPCData.json"
+            "FromFile": "Data/NPCs/ModderBob/Include.json"
         },
         {
             "Action": "Include",

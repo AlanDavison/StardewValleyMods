@@ -2,12 +2,20 @@
     "$schema": "https://smapi.io/schemas/content-patcher.json",
     "Changes": [
         {
+            "LogName": "SVE not present. Loading vanilla map patches.",
             "Action": "Include",
-            "FromFile": "Data/Maps/Patches/ForestPatches.json"
+            "FromFile": "Data/Maps/Patches/ForestPatches.json",
+            "When": {
+                "HasMod |contains=FlashShifter.StardewValleyExpandedCP": false
+            }
         },
         {
+            "LogName": "SVE was present. Loading SVE map patches.",
             "Action": "Include",
-            "FromFile": "Data/Maps/Patches/ForestPatches_SVE.json"
+            "FromFile": "Data/Maps/Patches/ForestPatches_SVE.json",
+            "When": {
+                "HasMod |contains=FlashShifter.StardewValleyExpandedCP": true
+            }
         }
     ]
 }

@@ -1,0 +1,25 @@
+﻿{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "Include",
+            "FromFile": "Data/NPCs/ModderBob/Dialogue.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "Data/NPCs/ModderBob/Dispositions.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "Data/NPCs/ModderBob/Events.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "Data/NPCs/ModderBob/GiftTastes.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "Data/NPCs/ModderBob/Schedules.json"
+        }
+    ]
+}

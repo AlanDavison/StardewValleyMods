@@ -1,0 +1,12 @@
+﻿{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Characters/Dialogue/DH_MB_ModderBob",
+            "Entries": {
+
+            }
+        }
+    ]
+}

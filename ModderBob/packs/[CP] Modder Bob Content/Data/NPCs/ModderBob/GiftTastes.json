@@ -1,0 +1,12 @@
+﻿{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/NPCGiftTastes",
+            "Entries": {
+                "DH_MB_ModderBob": "ahh this is spooky what the hell"
+            }
+        }
+    ]
+}
