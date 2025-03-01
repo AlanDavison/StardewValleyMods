@@ -1,0 +1,43 @@
+﻿{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Characters",
+            "Entries": {
+                "DH_MB_ModderBob": {
+                    // Basic details
+                    "DisplayName": "{{i18n: bob.display-name}}",
+                    "Gender": "Male",
+                    "Age": "Adult",
+                    "Manner": "Neutral",
+                    "SocialAnxiety": "Shy",
+                    "Optimism": "Neutral",
+                    "BirthSeason": "summer",
+                    "BirthDay": "8",
+
+                    // Social features
+                    "CanSocialize": "TRUE",
+                    "CanBeRomanced": false, // ...for now?
+                    "CanReceiveGifts": true,
+                    "CanCommentOnPurchasedShopItems": false,
+                    "CanGreetNearbyCharacters": false,
+                    "CanVisitIsland": false,
+                    "Calendar": "HiddenUntilMet",
+                    "IntroductionsQuest": true,
+                    "ItemDeliveryQuests": "FALSE",
+                    "PerfectionScore": false,
+                    "EndSlideShow": "TrailingGroup",
+
+                    // Trash lord affinity
+                    "DumpsterDiveEmote": 32,
+                    "DumpsterDiveFriendshipEffect": 25,
+
+                    // Festivals
+                    "FlowerDanceCanDance": false,
+                    "WinterStarParticipant": "FALSE"
+                }
+            }
+        }
+    ]
+}

@@ -7,7 +7,7 @@
         },
         {
             "Action": "Include",
-            "FromFile": "Data/NPCs/ModderBob/Dispositions.json"
+            "FromFile": "Data/NPCs/ModderBob/Disposition.json"
         },
         {
             "Action": "Include",
