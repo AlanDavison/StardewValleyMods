@@ -1,4 +1,7 @@
 ﻿# Smart Cursor Changelog
+## 1.5.1
+#### Fixes
+* Fix for breaking change in Item Extensions API.
 
 ## 1.5.0
 #### Fixes
