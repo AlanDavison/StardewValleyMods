@@ -9,6 +9,7 @@
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:00000</UpdateKeys>
         <Version>1.0.0-alpha</Version>
+        <DebugType Condition="$(Configuration) != 'Release'">pdbonly</DebugType>
     </PropertyGroup>
 
     <PropertyGroup>
