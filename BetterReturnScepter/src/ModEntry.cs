@@ -6,6 +6,7 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
 
@@ -18,7 +19,8 @@ namespace BetterReturnScepter
         private bool multiObeliskModInstalled;
         private WandPatches patches = null!;
 
-        private readonly PreviousPoint previousPoint = new();
+        private readonly PerScreen<PreviousPoint> previousPoint =
+            new PerScreen<PreviousPoint>(createNewState: () => new PreviousPoint());
         private RodCooldown rodCooldown = null!;
 
         public override void Entry(IModHelper helper)
@@ -64,8 +66,8 @@ namespace BetterReturnScepter
         private void OnDayStarted(object? sender, DayStartedEventArgs e)
         {
             // On the start of the day, we set our previous locations to the player's spawn point.
-            this.previousPoint.Location = Game1.player.currentLocation;
-            this.previousPoint.Tile = Game1.player.Tile;
+            this.previousPoint.Value.Location = Game1.player.lastSleepLocation.Value;
+            this.previousPoint.Value.Tile = Game1.player.Tile;
         }
 
         private void ButtonsChanged(object? sender, ButtonsChangedEventArgs e)
@@ -97,7 +99,7 @@ namespace BetterReturnScepter
                         if (!player.bathingClothes.Value && player.IsLocalPlayer && !player.onBridge.Value)
                         {
                             this.logger.Log(
-                                $"Warping farmer {player.Name} to {this.previousPoint.Location.Name} on tile {this.previousPoint.Tile}",
+                                $"Warping farmer {player.Name} to {this.previousPoint.Value.Location} on tile {this.previousPoint.Value.Tile}",
                                 LogLevel.Trace);
 
                             // We reset our countdown timer and status to zero, because we want it to start from when the player last did a normal warp.
@@ -159,8 +161,8 @@ namespace BetterReturnScepter
                                 if (this.config.CountWarpMenuAsScepterUsage)
                                 {
                                     // The setting to count warp menu usage as scepter usage is enabled, so we set our previous point.
-                                    this.previousPoint.Location = player.currentLocation;
-                                    this.previousPoint.Tile = player.Tile;
+                                    this.previousPoint.Value.Location = player.currentLocation.Name;
+                                    this.previousPoint.Value.Tile = player.Tile;
                                 }
 
                                 // Reset our cooldown.
@@ -184,8 +186,8 @@ namespace BetterReturnScepter
             var player = Game1.player;
 
             // Start the warp to the previous location.
-            Game1.warpFarmer(this.previousPoint.Location.Name, (int)this.previousPoint.Tile.X,
-                (int)this.previousPoint.Tile.Y, 0, false);
+            Game1.warpFarmer(this.previousPoint.Value.Location, (int)this.previousPoint.Value.Tile.X,
+                (int)this.previousPoint.Value.Tile.Y, 0, false);
 
             // This is all taken from the game's code in order to replicate the way the regular warp works.
             Game1.fadeToBlackAlpha = 0.99f;
