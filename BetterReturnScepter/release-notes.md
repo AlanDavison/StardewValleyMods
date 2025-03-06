@@ -1,4 +1,7 @@
 ﻿# Better Return Scepter Changelog
+## 1.2.3
+#### Fixes
+* Fix issue with split-screen co-op.
 
 ## 1.2.1
 #### Fixes
