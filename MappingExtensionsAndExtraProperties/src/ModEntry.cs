@@ -27,7 +27,7 @@ public class ModEntry : Mod
     // Debug/emergency command static mess
     public static bool AnimalRemovalMode = false;
 
-    private ISaveAnywhereApi saveAnywhereApi;
+    private IQuickSaveApi quickSaveApi;
     private ISpaceCoreApi spaceCoreApi;
     private EventCommands eventCommands;
 
@@ -174,32 +174,34 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
     {
-        if (this.Helper.ModRegistry.IsLoaded("Omegasis.SaveAnywhere"))
+        if (this.Helper.ModRegistry.IsLoaded("DLX.QuickSave"))
         {
             // Grab the Save Anywhere API so we can safely destroy our NPCs before it saves.
             try
             {
-                this.saveAnywhereApi = this.Helper.ModRegistry.GetApi<ISaveAnywhereApi>("Omegasis.SaveAnywhere");
-                this.saveAnywhereApi.BeforeSave += this.BeforeSaveAnywhereSave;
-                this.saveAnywhereApi.AfterLoad += this.AfterSaveAnywhereLoad;
+                this.quickSaveApi = this.Helper.ModRegistry.GetApi<IQuickSaveApi>("DLX.QuickSave");
+                this.quickSaveApi.SavingEvent += this.BeforeQuickSaveSave;
+                this.quickSaveApi.LoadedEvent += this.AfterQuickSaveLoad;
             }
             catch (Exception e)
             {
+                this.logger.Log($"Quick Save was loaded, but we couldn't get its API for some reason. Exception follows:");
                 this.logger.Exception(e);
             }
         }
     }
 
-    private void AfterSaveAnywhereLoad(object? sender, EventArgs e)
+    private void AfterQuickSaveLoad(object? sender, ILoadedEventArgs e)
     {
-        this.logger.Log($"Save Anywhere fired its AfterLoad event. Processing our spawn map.", LogLevel.Info);
+        this.logger.Log($"Quick Save fired its LoadedEvent. Processing our spawn map.", LogLevel.Info);
 
         FeatureManager.OnLocationChange(Game1.currentLocation, Game1.currentLocation, Game1.player);
+        FeatureManager.OnDayStart();
     }
 
-    private void BeforeSaveAnywhereSave(object? sender, EventArgs e)
+    private void BeforeQuickSaveSave(object? sender, ISavingEventArgs e)
     {
-        this.logger.Log($"Save Anywhere fired its BeforeSave event. Killing NPCs early.", LogLevel.Info);
+        this.logger.Log($"Quick Save fired its SavingEvent. Treating this as an early day end.", LogLevel.Info);
 
         FeatureManager.EarlyOnDayEnding();
     }
