@@ -189,8 +189,16 @@ public class FarmAnimalSpawnsFeature : Feature
 
         if (FarmAnimalSpawnsFeature.quickSaveApi is not null)
         {
+            logger.Log("Quick Save's API was loaded properly.", LogLevel.Trace);
+
             if (FarmAnimalSpawnsFeature.quickSaveApi.IsLoading)
+            {
+                logger.Log("Quick Save indicated it was loading. Skipping this DayStart.", LogLevel.Trace);
+
                 return;
+            }
+
+            logger.Log("Quick Save did not indicate it was loading. Proceeding with this DayStart as normal.", LogLevel.Trace);
         }
 
         this.animalsSpawned = 0;
@@ -310,6 +318,7 @@ public class FarmAnimalSpawnsFeature : Feature
         }
 
         logger.Log($"Spawned {this.animalsSpawned} animals. This is normal, and will not cause or result in lag.", LogLevel.Trace);
+        logger.Log("Done with this DayStart event.", LogLevel.Trace);
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
