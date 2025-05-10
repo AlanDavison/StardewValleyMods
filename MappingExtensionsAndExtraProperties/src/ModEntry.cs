@@ -138,7 +138,7 @@ public class ModEntry : Mod
         if (farmAnimalSpawningUsed)
         {
             FarmAnimalSpawnsFeature farmAnimals =
-                new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.logger, this.Helper);
+                new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.quickSaveApi, this.logger, this.Helper);
             FeatureManager.AddFeature(farmAnimals);
         }
 

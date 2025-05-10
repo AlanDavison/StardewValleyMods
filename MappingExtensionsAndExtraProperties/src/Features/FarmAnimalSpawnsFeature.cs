@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
@@ -34,16 +35,18 @@ public class FarmAnimalSpawnsFeature : Feature
     private static IModHelper helper;
     private static Dictionary<string, Animal> animalData = new Dictionary<string, Animal>();
     private static Dictionary<FarmAnimal, Animal> spawnedAnimals = new Dictionary<FarmAnimal, Animal>();
+    private static IQuickSaveApi quickSaveApi;
     private int animalsSpawned = 0;
     private int animalsRemoved = 0;
 
-    public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
+    public FarmAnimalSpawnsFeature(Harmony harmony, string id, IQuickSaveApi quickSaveApi, Logger logger, IModHelper helper)
     {
         this.Enabled = false;
         this.FeatureId = id;
         FarmAnimalSpawnsFeature.logger = logger;
         FarmAnimalSpawnsFeature.helper = helper;
         FarmAnimalSpawnsFeature.harmony = harmony;
+        FarmAnimalSpawnsFeature.quickSaveApi = quickSaveApi;
     }
 
     public override void Enable()
@@ -89,6 +92,10 @@ public class FarmAnimalSpawnsFeature : Feature
         FeatureManager.EarlyDayEndingCallback += this.OnEarlyDayEnding;
         FeatureManager.OnDisplayRenderedCallback += this.OnDisplayRenderedCallback;
     }
+
+// IDEA. Maybe instead of removing farm animals on QuickSave save, I could just leave them, and not respawn them on QuickSave load?
+// They would still be removed normally on normal save.
+// HOLY SHIT, THAT'S WHERE IT'S HAPPENING. Day load is being called twice. Once by QuickSSave loaded, and by game loaded, because QuickSave loaded seems to trigger the normal save loaded event.
 
     private void OnDisplayRenderedCallback(object? sender, RenderedStepEventArgs e)
     {
@@ -179,6 +186,12 @@ public class FarmAnimalSpawnsFeature : Feature
     {
         if (!Context.IsWorldReady || !Context.IsMainPlayer || !this.Enabled)
             return;
+
+        if (FarmAnimalSpawnsFeature.quickSaveApi is not null)
+        {
+            if (FarmAnimalSpawnsFeature.quickSaveApi.IsLoading)
+                return;
+        }
 
         this.animalsSpawned = 0;
         Multiplayer multiplayer = Game1.Multiplayer;
