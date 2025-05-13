@@ -9,10 +9,13 @@ namespace BuffCrops.Framework;
 public class BuffBuilder
 {
     private BuffAttributesData buffData = new();
+    private bool empty = true;
+    public bool Empty => this.empty;
 
     public BuffBuilder AddBuff(
         BuffAttributesData data)
     {
+        this.empty = false;
         this.buffData = BuffAttributeDataHelper.Add(this.buffData, data);
 
         return this;
