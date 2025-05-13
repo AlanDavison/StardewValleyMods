@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using BuffCrops.Framework.Helpers;
+using BuffCrops.src.Framework.Helpers;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Buffs;
 using StardewValley.GameData.Crops;
@@ -15,11 +17,13 @@ public class BuffCropsEvents
 {
     private Logger logger;
     private Parser parser;
+    private bool debugMode = false;
 
-    public BuffCropsEvents(Logger logger)
+    public BuffCropsEvents(Logger logger, bool debugMode)
     {
         this.logger = logger;
         this.parser = new Parser(logger);
+        this.debugMode = debugMode;
     }
 
     public void DoDayStart()
@@ -30,6 +34,14 @@ public class BuffCropsEvents
         {
             Utility.ForEachCrop(crop =>
             {
+                if (crop.currentPhase.Value < crop.phaseDays.Count - 1)
+                {
+                    if (this.debugMode)
+                        this.logger.Log($"Crop in {crop.currentLocation.Name} not contributing to buffs because it's not fully grown.", LogLevel.Info);
+
+                    return true;
+                }
+
                 CropData cropData = crop.GetData();
 
                 if (cropData is null)
@@ -47,6 +59,9 @@ public class BuffCropsEvents
 
                     if (newData is null)
                         return true;
+
+                    if (this.debugMode)
+                        this.logger.Log($"Crop in {crop.currentLocation.Name} contributing {BuffUtils.GetBuffInformation(newData)} to buffs.", LogLevel.Info);
 
                     buffBuilder.AddBuff(newData);
                 }
@@ -71,10 +86,19 @@ public class BuffCropsEvents
                     string keyValue = giantCrop.GetData().CustomFields["DH.BuffCrops.BuffContribution"];
                     this.parser.TryGetBuffAttributesData(keyValue, out BuffAttributesData? newData);
 
-                    if (newData is not null)
-                        buffBuilder.AddBuff(newData);
+                    if (newData is null)
+                        return;
+
+                    if (this.debugMode)
+                        this.logger.Log($"Crop in {giantCrop.Location.Name} contributing {BuffUtils.GetBuffInformation(newData)} to buffs.", LogLevel.Info);
+
+                    buffBuilder.AddBuff(newData);
+
                 }
             });
+
+            if (buffBuilder.Empty)
+                return;
 
             Buff buff = buffBuilder.Build(
                 I18n.Dh_BuffCrops_BuffName(),
