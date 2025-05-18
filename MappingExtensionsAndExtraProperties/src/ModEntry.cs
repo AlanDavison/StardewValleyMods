@@ -47,8 +47,6 @@ public class ModEntry : Mod
             "meep_emergency_remove_animals", "Enter MEEP's animal removal mode. PAY ATTENTION TO THE WARNINGS.",
             commands.MeepAnimalWipingMode);
 
-        this.LoadContentPacks();
-
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
         helper.Events.GameLoop.DayEnding += this.OnDayEndingEarly;
 
@@ -174,6 +172,8 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
     {
+        this.logger.Log("MEEP 2.4.7-beta.5 loading...", LogLevel.Info);
+
         if (this.Helper.ModRegistry.IsLoaded("DLX.QuickSave"))
         {
             // Grab the Save Anywhere API so we can safely destroy our NPCs before it saves.
@@ -189,6 +189,8 @@ public class ModEntry : Mod
                 this.logger.Exception(e);
             }
         }
+
+        this.LoadContentPacks();
     }
 
     private void AfterQuickSaveLoad(object? sender, ILoadedEventArgs e)
