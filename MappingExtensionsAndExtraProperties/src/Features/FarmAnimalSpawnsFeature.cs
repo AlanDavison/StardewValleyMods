@@ -319,6 +319,75 @@ public class FarmAnimalSpawnsFeature : Feature
         return true;
     }
 
+    public static bool TryGetAnimalGiftDialogue(FarmAnimal __instance, Farmer who, bool is_auto_pet, out string? giftDialogue)
+    {
+        giftDialogue = null;
+
+        if (!enabled)
+            return true;
+
+        if (is_auto_pet)
+            return true;
+
+        if (who is null)
+            return true;
+
+        if (who.CurrentItem is null)
+            return true;
+
+        if (who.currentLocation is null || __instance.currentLocation is null || __instance.currentLocation.Name is null)
+            return true;
+
+        if (who.currentLocation.Name != __instance.currentLocation.Name)
+            return true;
+
+        if (__instance is null) // This really shouldn't be possible, but you can never know.
+            return true;
+
+        if (__instance.modData is null)
+                return true;
+
+        if (!__instance.modData.ContainsKey("MEEP_Farm_Animal"))
+            return true;
+
+        try
+        {
+            // In case we're a multiplayer client, we load the animal spawn data.
+            if (!Context.IsMainPlayer)
+                animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
+
+            KeyValuePair<string, Animal> data = animalData.First(pair =>
+                pair.Key == __instance.modData?["MEEP_Farm_Animal_ID"]);
+
+            if (data.Value is null || data.Value.PetMessage is null)
+                return true;
+
+            string[] giftMessages = data.Value.PetMessage.Where(message => message.Contains("AcceptGift")).ToArray();
+
+            giftDialogue = $"Given gift {who.CurrentItem.QualifiedItemId}";
+            return true;
+
+            if (giftMessages.Length == 0)
+                return true;
+
+            string itemId = who.CurrentItem.QualifiedItemId;
+            HashSet<string> itemTags = who.CurrentItem.GetContextTags();
+
+            foreach (string message in giftMessages)
+            {
+
+            }
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            logger.Exception(e);
+        }
+
+        return false;
+    }
+
     public static bool FarmAnimalPetPrefix(FarmAnimal __instance, Farmer who, bool is_auto_pet)
     {
         if (!enabled)
@@ -377,9 +446,12 @@ public class FarmAnimalSpawnsFeature : Feature
             if (!__instance.modData.ContainsKey("MEEP_Farm_Animal"))
                 return true;
 
+            if (!TryGetAnimalGiftDialogue(__instance, who, is_auto_pet, out string? giftDialogue))
+                return false;
+
             // In case we're a multiplayer client, we load the animal spawn data.
-            if (!Context.IsMainPlayer)
-                animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
+                if (!Context.IsMainPlayer)
+                    animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
 
             KeyValuePair<string, Animal> data = animalData.First(pair =>
                 pair.Key == __instance.modData?["MEEP_Farm_Animal_ID"]);
@@ -406,10 +478,20 @@ public class FarmAnimalSpawnsFeature : Feature
 
                     npc.Name = data.Value.DisplayName;
                     npc.displayName = data.Value.DisplayName;
+                    AnimalDialogueBox? dialogueBoxWithPortrait = null;
 
-                    AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
-                        new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())),
-                        npc);
+                    if (giftDialogue is null)
+                    {
+                        dialogueBoxWithPortrait = new AnimalDialogueBox(
+                            new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())),
+                            npc);
+                    }
+                    else
+                    {
+                        dialogueBoxWithPortrait = new AnimalDialogueBox(
+                            new Dialogue(npc, "", giftDialogue),
+                            npc);
+                    }
 
                     Game1.activeClickableMenu = dialogueBoxWithPortrait;
                 }
