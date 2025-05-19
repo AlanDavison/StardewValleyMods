@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Build\Latest.targets" />
+    <Import Project="..\Build\Common.csproj" />
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
+
+    <PropertyGroup>
+        <Name>Glowing Paths</Name>
+        <Description>Adds paths that glow!</Description>
+        <MinimumApiVersion>4.0.0</MinimumApiVersion>
+        <UpdateKeys>Nexus:00000</UpdateKeys>
+        <Version>1.0.0-alpha</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>false</EnableHarmony>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
+        <ContentPacks Include="packs/[CP] Glowing Paths Content" Version="$(Version)" />
+    </ItemGroup>
+
+</Project>

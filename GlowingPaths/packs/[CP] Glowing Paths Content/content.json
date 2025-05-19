@@ -1,0 +1,122 @@
+{
+    "Format": "2.6.1",
+    "Changes": [
+        {
+            "Action": "Load",
+            "FromFile": "assets/Paths.png",
+            "Target": "Mods/DecidedlyHuman/GlowingPaths/PathTextures"
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/CraftingRecipes",
+            "Entries": {
+                "DH.GlowingPaths_Item_Torch": "93 1 333 5/Field/DecidedlyHuman.GlowingPaths_GlowingPath_Item 5/false/default",
+                "DH.GlowingPaths_Item_Radioactive": "910 1/Field/DecidedlyHuman.GlowingPaths_GlowingPath_Item 10/false/default/"
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Objects",
+            "Entries": {
+                "DecidedlyHuman.GlowingPaths_GlowingPath_Item": {
+                    "Name": "DH.GlowingPaths_GlowingPath_Item",
+                    "DisplayName": "{{i18n:DH.GlowingFloors_GlowingPath_DisplayName}}",
+                    "Description": "{{i18n:DH.GlowingFloors_GlowingPath_Description}}",
+                    "Type": "Crafting",
+                    "Category": -24,
+                    "Price": 1,
+                    "Texture": "Mods/DecidedlyHuman/GlowingPaths/PathTextures",
+                    "SpriteIndex": 0,
+                    "Edibility": -300,
+                    "IsDrink": false,
+                    "CanBeGivenAsGift": false,
+                    "CanBeTrashed": true,
+                    "ExcludeFromFishingCollection": true,
+                    "ExcludeFromShippingCollection": true,
+                    "ExcludeFromRandomSale": true,
+                    "CustomFields": null
+                }
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/FloorsAndPaths",
+            "Entries": {
+                "DecidedlyHuman.GlowingPaths_GlowingPath": {
+                    "Id": "DecidedlyHuman.GlowingPaths_GlowingPath",
+                    "ItemId": "DecidedlyHuman.GlowingPaths_GlowingPath_Item",
+                    "Texture": "Mods/DecidedlyHuman/GlowingPaths/PathTextures",
+                    "Corner": {
+                        "X": 0,
+                        "Y": 0
+                    },
+                    "WinterTexture": "TerrainFeatures\\Flooring_winter",
+                    "WinterCorner": {
+                        "X": 0,
+                        "Y": 0
+                    },
+                    "PlacementSound": "stoneStep",
+                    "RemovalSound": "hammer",
+                    "RemovalDebrisType": 2,
+                    "FootstepSound": "stoneStep",
+                    "ConnectType": "Default",
+                    "ShadowType": "Contoured",
+                    "CornerSize": 4,
+                    "FarmSpeedBuff": 0.1
+                }
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Objects",
+            "Entries": {
+                "DecidedlyHuman.GlowingPaths_RadioactivePath_Item": {
+                    "Name": "DH.GlowingPaths_RadioactivePath_Item",
+                    "DisplayName": "{{i18n:DH.GlowingFloors_RadioactivePath_DisplayName}}",
+                    "Description": "{{i18n:DH.GlowingFloors_RadioactivePath_Description}}",
+                    "Type": "Crafting",
+                    "Category": -24,
+                    "Price": 1,
+                    "Texture": "Mods/DecidedlyHuman/GlowingPaths/PathTextures",
+                    "SpriteIndex": 4,
+                    "Edibility": -300,
+                    "IsDrink": false,
+                    "CanBeGivenAsGift": false,
+                    "CanBeTrashed": true,
+                    "ExcludeFromFishingCollection": true,
+                    "ExcludeFromShippingCollection": true,
+                    "ExcludeFromRandomSale": true,
+                    "CustomFields": null
+                }
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/FloorsAndPaths",
+            "Entries": {
+                "DecidedlyHuman.GlowingPaths_RadioactivePath": {
+                    "Id": "DecidedlyHuman.GlowingPaths_RadioactivePath",
+                    "ItemId": "DecidedlyHuman.GlowingPaths_RadioactivePath_Item",
+                    "Texture": "Mods/DecidedlyHuman/GlowingPaths/PathTextures",
+                    "Corner": {
+                        "X": 64,
+                        "Y": 0
+                    },
+                    "WinterTexture": "TerrainFeatures\\Flooring_winter",
+                    "WinterCorner": {
+                        "X": 64,
+                        "Y": 0
+                    },
+                    "PlacementSound": "stoneStep",
+                    "RemovalSound": "hammer",
+                    "RemovalDebrisType": 2,
+                    "FootstepSound": "stoneStep",
+                    "ConnectType": "Default",
+                    "ShadowType": "Contoured",
+                    "CornerSize": 4,
+                    "FarmSpeedBuff": 0.1
+                }
+            }
+        }
+    ]
+}
