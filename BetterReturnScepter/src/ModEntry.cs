@@ -89,7 +89,7 @@ namespace BetterReturnScepter
             // If the return sceptre cooldown is over...
             if (this.rodCooldown.CanWarp)
                 // And if the player is holding a return scepter...
-                if (player.CurrentItem is Wand && player.CurrentItem.Name.Equals("Return Scepter"))
+                if (player.CurrentItem is Wand && player.CurrentItem.ItemId.Equals("ReturnScepter"))
                 {
                     // The cooldown is over, and the player is holding a return sceptre. Now we check to see
                     // whether they press the return to previous point bind, or the Multiple Mini-Obelisk menu bind.
