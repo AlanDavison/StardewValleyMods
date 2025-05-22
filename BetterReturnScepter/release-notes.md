@@ -1,4 +1,11 @@
 ﻿# Better Return Scepter Changelog
+
+## 1.2.4
+#### Additions
+* Added a toggle to disable using right click to warp back to your previous spot.
+#### Fixes
+* Minor reliability tweak. Now things will keep working if someone renames the Return Scepter for some reason.
+
 ## 1.2.3
 #### Fixes
 * Fix issue with split-screen co-op.
