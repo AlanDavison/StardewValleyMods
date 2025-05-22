@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <EnableHarmony>false</EnableHarmony>
+        <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
