@@ -200,11 +200,9 @@ namespace BetterReturnScepter
 
         private void RegisterWithGmcm()
         {
-            // Get our API reference.
             var configMenuApi =
                 this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
 
-            // If this is null, GMCM wasn't installed.
             if (configMenuApi == null)
             {
                 this.logger.Log("The user doesn't have GMCM installed. This is not an error.");
@@ -212,12 +210,10 @@ namespace BetterReturnScepter
                 return;
             }
 
-            // Register with GMCM
             configMenuApi.Register(this.ModManifest,
                 () => this.config = new ModConfig(),
                 () => this.Helper.WriteConfig(this.config));
 
-            // The toggle for whether or not we want Multiple Mini-Obelisks support.
             configMenuApi.AddBoolOption(
                 this.ModManifest,
                 name: () => "Multiple Mini-Obelisks mod support",
@@ -226,7 +222,6 @@ namespace BetterReturnScepter
                 getValue: () => this.config.EnableMultiObeliskSupport,
                 setValue: value => this.config.EnableMultiObeliskSupport = value);
 
-            // Whether or not to count using MMO's warp menu as using the return scepter.
             configMenuApi.AddBoolOption(
                 this.ModManifest,
                 name: () => "Count warp menu as using scepter",
@@ -240,26 +235,22 @@ namespace BetterReturnScepter
                 this.ModManifest,
                 () => "Keybinds");
 
-            // The bind for opening MMO's warp menu.
             configMenuApi.AddKeybindList(
                 this.ModManifest,
                 name: () => "Open warp menu",
                 getValue: () => this.config.OpenObeliskWarpMenuKbm,
                 setValue: value => this.config.OpenObeliskWarpMenuKbm = value);
 
-            // Add a nice title for prettiness.
             configMenuApi.AddSectionTitle(
                 this.ModManifest,
                 () => "Controller Keybinds");
 
-            // The controller bind for warping to our last point.
             configMenuApi.AddKeybindList(
                 this.ModManifest,
                 name: () => "Warp to last point",
                 getValue: () => this.config.ReturnToLastPoint,
                 setValue: value => this.config.ReturnToLastPoint = value);
 
-            // The controller bind for opening MMO's warp menu.
             configMenuApi.AddKeybindList(
                 this.ModManifest,
                 name: () => "Open warp menu",
