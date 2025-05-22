@@ -93,7 +93,7 @@ namespace BetterReturnScepter
                 {
                     // The cooldown is over, and the player is holding a return sceptre. Now we check to see
                     // whether they press the return to previous point bind, or the Multiple Mini-Obelisk menu bind.
-                    if (e.Pressed.Contains(SButton.MouseRight) || this.config.ReturnToLastPoint.JustPressed())
+                    if ((e.Pressed.Contains(SButton.MouseRight) && this.config.WarpOnRightClick) || this.config.ReturnToLastPoint.JustPressed())
                     {
                         // The player pressed the return to previous point bind.
                         if (!player.bathingClothes.Value && player.IsLocalPlayer && !player.onBridge.Value)
@@ -230,7 +230,14 @@ namespace BetterReturnScepter
                 getValue: () => this.config.CountWarpMenuAsScepterUsage,
                 setValue: value => this.config.CountWarpMenuAsScepterUsage = value);
 
-            // Add a nice title for prettiness.
+            configMenuApi.AddBoolOption(
+                this.ModManifest,
+                name: () => "Return using right click",
+                tooltip: () =>
+                    "Enable or disable using right click to warp back to your previous spot.",
+                getValue: () => this.config.WarpOnRightClick,
+                setValue: value => this.config.WarpOnRightClick = value);
+
             configMenuApi.AddSectionTitle(
                 this.ModManifest,
                 () => "Keybinds");
