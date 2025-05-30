@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using BetterReturnScepter.HarmonyPatches;
 using BetterReturnScepter.Helpers;
+using DecidedlyShared.Helpers;
 using DecidedlyShared.Logging;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -201,7 +202,10 @@ namespace BetterReturnScepter
         private void RegisterWithGmcm()
         {
             var configMenuApi =
-                this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+                ApiHelper.GetApi<IGenericModConfigMenuApi>(
+                    "spacechase0.GenericModConfigMenu",
+                    (modInfo) => !modInfo.Manifest.Version.IsOlderThan(new SemanticVersion(1, 10, 0)),
+                    this.Helper);
 
             if (configMenuApi == null)
             {

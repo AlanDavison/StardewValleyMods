@@ -7,7 +7,7 @@ using StardewValley;
 
 namespace DecidedlyShared.APIs
 {
-    public interface IGenericModConfigMenuApi
+    public interface IGenericModConfigMenuApi : IInterfaceCore
     {
         /*********
          ** Methods

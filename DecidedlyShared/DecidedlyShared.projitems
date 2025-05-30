@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IDynamicGameAssetsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGrowableBushes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\IInterfaceCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IItemExtensionsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IMoreFertilizersAPI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISaveAnywhereApi.cs" />
@@ -28,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Translations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GameLocationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ApiHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\BuffAttributeDataHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\World.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using DecidedlyShared.APIs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -8,7 +9,7 @@ using StardewValley;
 namespace BetterReturnScepter.Helpers
 {
     /// <summary>The API which lets other mods add a config UI through Generic Mod Config Menu.</summary>
-    public interface IGenericModConfigMenuApi
+    public interface IGenericModConfigMenuApi : IInterfaceCore
     {
         /*********
         ** Methods
