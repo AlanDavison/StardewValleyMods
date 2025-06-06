@@ -27,4 +27,11 @@
         <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.3.1"/>
     </ItemGroup>
 
+    <Target Name="PrintVersionToFile" BeforeTargets="BeforeBuild;BeforeRebuild">
+        <WriteLinesToFile
+            File="version.txt"
+            Lines="$(Version)"
+            Overwrite="true"/>
+    </Target>
+
 </Project>
