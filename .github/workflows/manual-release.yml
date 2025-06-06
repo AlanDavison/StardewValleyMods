@@ -1,0 +1,130 @@
+name: Manual release
+# IMPORTANT NOTE: Parts of this are hardcoded to work with my monorepo. I'll be making a more general, ideally drop
+# in replacement at some point.
+
+on:
+    workflow_dispatch:
+        inputs:
+            project:
+                description: "The project to build (<name>.csproj)."
+                required: true
+            full-release:
+                description: "Create a GitHub release on completion? (yes/no)"
+                required: false
+
+run-name: Build ${{ github.event.inputs.project }}.
+
+jobs:
+    build_and_release:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            id-token: write
+            attestations: write
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
+
+            -   name: Checkout reference assemblies
+                uses: actions/checkout@v4
+                with:
+                    repository: 'StardewModders/mod-reference-assemblies'
+                    path: 'reference-assemblies'
+                    ref: 'SDV1.6.15-SMAPI4.2.1'
+                    fetch-depth: 0
+
+            -   name: Verify project details
+                id: project_details # absolute_csproj_path & csproj_dir
+                run: python Build/verify_project.py "${{ github.event.inputs.project }}"
+
+            -   name: Add ModBuildConfig specific targets file
+                run: |
+                    echo "<Project><PropertyGroup><GamePath>/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/reference-assemblies</GamePath></PropertyGroup></Project>" > ~/stardewvalley.targets
+
+            # Target for being made more general for public release.
+            -   name: Overwrite ModZipPath definition file, because dotnet doesn't get the solution directory macro
+                run: |
+                    echo "<Project><PropertyGroup><ModZipPath>/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/Release/Zip</ModZipPath></PropertyGroup></Project>" > Build/Latest.targets
+
+            -   name: Setup .NET
+                uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: '8.0.x'
+
+            -   name: Build and zip project
+                if: steps.project_details.outputs.absolute_csproj_path != '' && steps.project_details.outputs.csproj_dir != ''
+                run: |
+                    dotnet build "${{ steps.project_details.outputs.absolute_csproj_path }}" \
+                    --configuration Release
+
+            -   name: Get version from build file
+                if: steps.project_details.outputs.csproj_dir != ''
+                id: get_version # project_version
+                run: |
+                    ls -la ${{ steps.project_details.outputs.csproj_dir }}
+                    version=$(cat ${{ steps.project_details.outputs.csproj_dir }}/version.txt)
+                    echo "Version = $version"
+                    echo "project_version=$version" > $GITHUB_OUTPUT
+
+            -   name: Hash artifacts
+                if: github.event.inputs.project != '' && steps.get_version.outputs.project_version != '' && steps.project_details.outputs.csproj_dir != ''
+                id: assembly_hash # file_hash & hash_file
+                run: | # assembly_file here is technically not *super* portable. For public release, extract the assembly name from a csproj somewhere.
+                    assembly_path="${{ steps.project_details.outputs.csproj_dir }}/bin/Release/net6.0"
+                    assembly_file="${{ github.event.inputs.project }}.dll"
+                    hash_file="$assembly_path/${{ github.event.inputs.project }}.dll.sha256"
+                    cd "$assembly_path"
+                    hash=$(sha256sum "$assembly_file")
+                    echo "$hash" > "$hash_file"
+                    echo "file_hash=$hash" >> $GITHUB_OUTPUT
+                    echo "hash_file=$hash_file" >> $GITHUB_OUTPUT
+
+            # Target for being made more general for public release.
+            -   name: Check if artifact exists
+                if: github.event.inputs.project != '' && steps.get_version.outputs.project_version != ''
+                id: artifact_existence # artifact_exists & artifact_path
+                run: |
+                    file_directory="/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/Release/Zip"
+                    file_path="$file_directory/${{ github.event.inputs.project }} ${{ steps.get_version.outputs.project_version }}.zip"
+                    if [ -f "$file_path" ]; then
+                      echo "File found: $file_path"
+                      echo "artifact_exists=true" >> $GITHUB_OUTPUT
+                      echo "artifact_path=$file_path" >> $GITHUB_OUTPUT
+                    else
+                      echo "File not found: $file_path"
+                      echo "artifact_exists=false" >> $GITHUB_OUTPUT
+                    fi
+
+            -   name: Generate artifact attestations
+                uses: actions/attest-build-provenance@v1
+                if: github.event.inputs.project != '' && steps.get_version.outputs.project_version != '' && steps.project_details.outputs.csproj_dir != ''
+                with:
+                    subject-path: |
+                        ${{ steps.project_details.outputs.csproj_dir }}bin/Release/net6.0/${{ github.event.inputs.project }}.dll
+                        ${{ steps.artifact_existence.outputs.artifact_path }}
+
+            -   name: Upload artifact
+                uses: actions/upload-artifact@v4
+                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != ''
+                with:
+                    name: '${{ github.event.inputs.project }} v${{ steps.get_version.outputs.project_version }}'
+                    path: '${{ steps.artifact_existence.outputs.artifact_path }}'
+                    if-no-files-found: 'error'
+
+
+            -   name: Create release and upload artifact
+                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'Yes'
+                uses: ncipollo/release-action@v1
+                with:
+                    artifacts: "${{ steps.assembly_hash.outputs.hash_file }}, ${{ steps.artifact_existence.outputs.artifact_path }}"
+                    token: ${{ secrets.RELEASE_TOKEN }}
+                    tag: ${{ github.event.inputs.project }}/${{ steps.get_version.outputs.project_version }}
+                    name: "Release ${{ github.event.inputs.project }} ${{ steps.get_version.outputs.project_version }}"
+                    body: |
+                        Release for ${{ github.event.inputs.project }} version ${{ steps.get_version.outputs.project_version }}.
+                        Tagged from commit: ${{ github.sha }}
+                        Assembly hash: ${{ steps.assembly_hash.outputs.file_hash }}
+                    draft: false
+                    prerelease: false
