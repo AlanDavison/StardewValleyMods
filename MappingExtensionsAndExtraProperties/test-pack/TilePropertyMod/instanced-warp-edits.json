@@ -1,0 +1,20 @@
+{
+    "Changes": [
+        {
+            "Action": "EditMap",
+            "Target": "Maps/Coop",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 1,
+                        "Y": 4
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "TouchAction": "MEEP_Instanced_Touch_Warp 6 6"
+                    }
+                }
+            ]
+        }
+    ]
+}

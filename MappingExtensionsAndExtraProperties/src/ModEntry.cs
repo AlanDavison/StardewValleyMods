@@ -163,6 +163,8 @@ public class ModEntry : Mod
             FeatureManager.AddFeature(cleanup);
         }
 
+        FeatureManager.AddFeature(new InstancedMapWarp(this.harmony, "DH.InstancedMapWarp", this.logger, this.tileProperties));
+
         FeatureManager.EnableFeatures();
         this.RegisterEventCommands();
     }
