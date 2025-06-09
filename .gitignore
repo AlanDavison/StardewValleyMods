@@ -18,3 +18,6 @@ manifest.json
 # Exclude Krita's backup files.
 *.kra~
 *.kra-autosave.kra
+
+# Exclude our generated version.txt files for Github Actions.
+version.txt
