@@ -115,7 +115,7 @@ jobs:
 
 
             -   name: Create release and upload artifact
-                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == true
+                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'true'
                 uses: ncipollo/release-action@v1
                 with:
                     artifacts: "${{ steps.assembly_hash.outputs.hash_file }}, ${{ steps.artifact_existence.outputs.artifact_path }}"
