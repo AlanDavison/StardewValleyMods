@@ -98,7 +98,7 @@ jobs:
                     fi
 
             -   name: Generate artifact attestations
-                uses: actions/attest-build-provenance@v1
+                uses: actions/attest-build-provenance@v2
                 if: github.event.inputs.project != '' && steps.get_version.outputs.project_version != '' && steps.project_details.outputs.csproj_dir != ''
                 with:
                     subject-path: |
