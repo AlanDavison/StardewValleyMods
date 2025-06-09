@@ -10,7 +10,7 @@ on:
                 required: true
             full-release:
                 description: "Create a GitHub release on completion? (yes/no)"
-                required: false
+                type: "boolean"
 
 run-name: Build ${{ github.event.inputs.project }}.
 
@@ -98,12 +98,13 @@ jobs:
                     fi
 
             -   name: Generate artifact attestations
-                uses: actions/attest-build-provenance@v1
+                uses: actions/attest-build-provenance@v2
+                id: attestation-step
                 if: github.event.inputs.project != '' && steps.get_version.outputs.project_version != '' && steps.project_details.outputs.csproj_dir != ''
                 with:
                     subject-path: |
-                        ${{ steps.project_details.outputs.csproj_dir }}/bin/Release/net6.0/${{ github.event.inputs.project }}.dll
                         ${{ steps.artifact_existence.outputs.artifact_path }}
+                        ${{ steps.project_details.outputs.csproj_dir }}/bin/Release/net6.0/${{ github.event.inputs.project }}.dll
 
             -   name: Upload artifact
                 uses: actions/upload-artifact@v4
@@ -115,7 +116,7 @@ jobs:
 
 
             -   name: Create release and upload artifact
-                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'Yes'
+                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'true'
                 uses: ncipollo/release-action@v1
                 with:
                     artifacts: "${{ steps.assembly_hash.outputs.hash_file }}, ${{ steps.artifact_existence.outputs.artifact_path }}"
@@ -124,7 +125,6 @@ jobs:
                     name: "Release ${{ github.event.inputs.project }} ${{ steps.get_version.outputs.project_version }}"
                     body: |
                         Release for ${{ github.event.inputs.project }} version ${{ steps.get_version.outputs.project_version }}.
-                        Tagged from commit: ${{ github.sha }}
-                        Assembly hash: ${{ steps.assembly_hash.outputs.file_hash }}
+                        View attestation: ${{ steps.attestation-step.outputs.attestation-url }}
                     draft: false
                     prerelease: false
