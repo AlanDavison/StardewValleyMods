@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
 namespace DecidedlyShared.APIs
 {
