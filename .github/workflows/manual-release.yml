@@ -99,6 +99,7 @@ jobs:
 
             -   name: Generate artifact attestations
                 uses: actions/attest-build-provenance@v2
+                id: attestation-step
                 if: github.event.inputs.project != '' && steps.get_version.outputs.project_version != '' && steps.project_details.outputs.csproj_dir != ''
                 with:
                     subject-path: |
@@ -125,6 +126,6 @@ jobs:
                     body: |
                         Release for ${{ github.event.inputs.project }} version ${{ steps.get_version.outputs.project_version }}.
                         Tagged from commit: ${{ github.sha }}
-                        Assembly hash: ${{ steps.assembly_hash.outputs.file_hash }}
+                        View attestation: ${{ steps.attestation-step.outputs.attestation-url }}
                     draft: false
                     prerelease: false
