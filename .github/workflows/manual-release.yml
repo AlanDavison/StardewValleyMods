@@ -10,7 +10,7 @@ on:
                 required: true
             full-release:
                 description: "Create a GitHub release on completion? (yes/no)"
-                required: false
+                type: "boolean"
 
 run-name: Build ${{ github.event.inputs.project }}.
 
@@ -115,7 +115,7 @@ jobs:
 
 
             -   name: Create release and upload artifact
-                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'Yes'
+                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == true
                 uses: ncipollo/release-action@v1
                 with:
                     artifacts: "${{ steps.assembly_hash.outputs.hash_file }}, ${{ steps.artifact_existence.outputs.artifact_path }}"
