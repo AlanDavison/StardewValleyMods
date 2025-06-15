@@ -107,6 +107,9 @@ jobs:
                     path: '${{ steps.artifact_existence.outputs.artifact_path }}'
                     if-no-files-found: 'error'
 
+            -   name: Verify artifact requirements
+                if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'true'
+                run: echo "Artifact requirements validated."
 
             -   name: Create release and upload artifact
                 if: github.event.inputs.project != '' && steps.artifact_existence.outputs.artifact_path != '' && github.event.inputs.full-release == 'true'
