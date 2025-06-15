@@ -1,0 +1,11 @@
+<Project>
+
+    <!-- This is required only for our current GitHub workflow.  -->
+    <Target Name="PrintVersionToFile" BeforeTargets="BeforeBuild;BeforeRebuild">
+        <WriteLinesToFile
+            File="version.txt"
+            Lines="$(Version)"
+            Overwrite="true"/>
+    </Target>
+
+</Project>
