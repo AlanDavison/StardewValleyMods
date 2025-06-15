@@ -39,15 +39,6 @@ jobs:
                 id: project_details # absolute_csproj_path & csproj_dir
                 run: python Build/verify_project.py "${{ github.event.inputs.project }}"
 
-            -   name: Add ModBuildConfig specific targets file
-                run: |
-                    echo "<Project><PropertyGroup><GamePath>/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/reference-assemblies</GamePath></PropertyGroup></Project>" > ~/stardewvalley.targets
-
-            # Target for being made more general for public release.
-            -   name: Overwrite ModZipPath definition file, because dotnet doesn't get the solution directory macro
-                run: |
-                    echo "<Project><PropertyGroup><ModZipPath>/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/Release/Zip</ModZipPath></PropertyGroup></Project>" > Build/Latest.targets
-
             -   name: Setup .NET
                 uses: actions/setup-dotnet@v4
                 with:
@@ -57,6 +48,8 @@ jobs:
                 if: steps.project_details.outputs.absolute_csproj_path != '' && steps.project_details.outputs.csproj_dir != ''
                 run: |
                     dotnet build "${{ steps.project_details.outputs.absolute_csproj_path }}" \
+                    -p:GamePath="/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/reference-assemblies" \
+                    -p:ModZipPath="/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/Release/Zip" \
                     --configuration Release
 
             -   name: Get version from build file
