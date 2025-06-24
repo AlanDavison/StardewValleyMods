@@ -5,7 +5,7 @@
             "Action": "EditData",
             "Target": "Data/NPCGiftTastes",
             "Entries": {
-                "DH_MB_ModderBob": "ahh this is spooky what the hell"
+                "{{Modder_Bob_Internal_ID}}": "ahh this is spooky what the hell"
             }
         }
     ]

@@ -3,7 +3,7 @@
     "Changes": [
         {
             "Action": "EditData",
-            "Target": "Characters/Dialogue/DH_MB_ModderBob",
+            "Target": "Characters/Dialogue/{{Modder_Bob_Internal_ID}}",
             "Entries": {
 
             }

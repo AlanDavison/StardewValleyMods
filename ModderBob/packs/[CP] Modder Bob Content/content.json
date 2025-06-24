@@ -1,6 +1,12 @@
 {
     "$schema": "https://smapi.io/schemas/content-patcher.json",
-    "Format": "2.5.3",
+    "Format": "2.7.0",
+    "DynamicTokens": [
+        {
+            "Name": "Modder_Bob_Internal_ID",
+            "Value": "DecidedlyHuman_ModderBobExpansion_BobInternalID"
+        }
+    ],
     "Changes": [
         {
             "LogName": "Include Modder Bob's data.",

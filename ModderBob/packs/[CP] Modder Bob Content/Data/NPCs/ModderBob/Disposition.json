@@ -5,7 +5,7 @@
             "Action": "EditData",
             "Target": "Data/Characters",
             "Entries": {
-                "DH_MB_ModderBob": {
+                "{{Modder_Bob_Internal_ID}}": {
                     // Basic details
                     "DisplayName": "{{i18n: bob.display-name}}",
                     "Gender": "Male",
