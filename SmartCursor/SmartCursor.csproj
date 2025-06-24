@@ -1,6 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Build\Latest.targets"/>
-    <Import Project="..\Build\Common.csproj"/>
     <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
 
     <PropertyGroup>
@@ -8,7 +6,7 @@
         <Description>Mine like you're in Terraria using the smart cursor feature.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:13268</UpdateKeys>
-        <Version>1.5.0</Version>
+        <Version>1.5.1</Version>
     </PropertyGroup>
 
     <ItemGroup>

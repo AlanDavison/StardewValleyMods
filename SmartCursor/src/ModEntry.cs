@@ -84,10 +84,16 @@ namespace SmartCursor
                 return;
 
             if (this.Helper.ModRegistry.Get("mistyspring.ItemExtensions")!.Manifest.Version.IsOlderThan(
-                    new SemanticVersion(1, 11, 0)))
+                    new SemanticVersion(1, 14, 1)))
+            {
+                this.logger.Warn("Your version of Item Extensions is out of date. Please update it if you can to enable support.");
                 return;
+            }
 
             this.itemExtensionsApi = this.Helper.ModRegistry.GetApi<IItemExtensionsApi>("mistyspring.ItemExtensions");
+
+            if (this.itemExtensionsApi is null)
+                this.logger.Warn("Error getting Item Extensions' API. There may have been a change since the current version of Smart Cursor.");
         }
 
         private void RegisterWithGmcm()

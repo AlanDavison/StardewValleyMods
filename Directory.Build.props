@@ -1,17 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Build\Latest.targets" />
+<Project>
 
+    <!-- Assembly-related settings. -->
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
         <Nullable>enable</Nullable>
-        <Authors>DecidedlyHuman</Authors>
-        <Author>DecidedlyHuman</Author>
-        <UniqueId>$(Author).$(AssemblyName)</UniqueId>
-        <EntryDll>$(AssemblyName)</EntryDll>
-        <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
         <DebugType Condition="$(Configuration) != 'Release'">pdbonly</DebugType>
         <LangVersion>12</LangVersion>
+    </PropertyGroup>
+
+    <!-- ModBuildConfig-related settings. -->
+    <PropertyGroup>
+        <ModZipPath Condition="'$(ModZipPath)' == ''">$(SolutionDir)Release\Zip</ModZipPath>
+        <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
+        <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
+    </PropertyGroup>
+
+    <!-- ModManifestBuilder-related settings. -->
+    <PropertyGroup>
+        <Authors>DecidedlyHuman</Authors>
+        <UniqueId>$(Authors).$(AssemblyName)</UniqueId>
+        <EntryDll>$(AssemblyName)</EntryDll>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
