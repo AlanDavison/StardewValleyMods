@@ -1,6 +1,9 @@
+using System;
+using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Features;
@@ -14,12 +17,14 @@ public class CropSpawnFeature : Feature
     public override bool Enabled { get; internal set; }
     private Logger logger;
     private TilePropertyHandler tilePropertyHandler;
+    private IQuickSaveApi quickSaveApi;
 
-    public CropSpawnFeature(string id, Logger logger, TilePropertyHandler tilePropertyHandler)
+    public CropSpawnFeature(string id, Logger logger, TilePropertyHandler tilePropertyHandler, IQuickSaveApi quickSaveApi)
     {
         this.FeatureId = id;
         this.logger = logger;
         this.tilePropertyHandler = tilePropertyHandler;
+        this.quickSaveApi = quickSaveApi;
     }
 
     public override void Enable()
@@ -34,7 +39,26 @@ public class CropSpawnFeature : Feature
 
     public override void RegisterCallbacks()
     {
-        FeatureManager.OnDayStart();
+        FeatureManager.OnDayStartCallback += this.OnDayStartCallback;
+    }
+
+    private void OnDayStartCallback(object? sender, EventArgs e)
+    {
+        if (this.quickSaveApi is not null)
+        {
+            this.logger.Log("[Crop Spawn Feature] Quick Save's API was loaded properly.", LogLevel.Trace);
+
+            if (this.quickSaveApi.IsLoading)
+            {
+                this.logger.Log("[Crop Spawn Feature] Quick Save indicated it was loading. Skipping this DayStart.", LogLevel.Trace);
+
+                return;
+            }
+
+            this.logger.Log("[Crop Spawn Feature] Quick Save did not indicate it was loading. Proceeding with this DayStart as normal.", LogLevel.Trace);
+        }
+
+
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
