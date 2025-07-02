@@ -10,6 +10,7 @@
 
     <!-- ModBuildConfig-related settings. -->
     <PropertyGroup>
+        <GamePath>/home/alan/.local/share/Steam/steamapps/common/Stardew Valley/</GamePath>
         <ModZipPath Condition="'$(ModZipPath)' == ''">$(SolutionDir)Release\Zip</ModZipPath>
         <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
         <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
