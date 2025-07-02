@@ -18,8 +18,20 @@
             "FromFile": "Data/NPCs/ModderBob/GiftTastes.json"
         },
         {
+            "LogName": "SVE not present. Loading vanilla map patches.",
             "Action": "Include",
-            "FromFile": "Data/NPCs/ModderBob/Schedules.json"
+            "FromFile": "Data/NPCs/ModderBob/Schedule.json",
+            "When": {
+                "HasMod |contains={{SVE_Mod_ID}}": false
+            }
+        },
+        {
+            "LogName": "SVE was present. Loading SVE map patches.",
+            "Action": "Include",
+            "FromFile": "Data/NPCs/ModderBob/Schedule_SVE.json",
+            "When": {
+                "HasMod |contains={{SVE_Mod_ID}}": true
+            }
         }
     ]
 }

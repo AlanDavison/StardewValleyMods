@@ -5,17 +5,21 @@
         {
             "Name": "Modder_Bob_Internal_ID",
             "Value": "DecidedlyHuman_ModderBobExpansion_BobInternalID"
+        },
+        {
+            "Name": "SVE_Mod_ID",
+            "Value": ""
         }
     ],
     "Changes": [
         {
             "LogName": "Include Modder Bob's data.",
             "Action": "Include",
-            "FromFile": "Data/NPCs/ModderBob/Include.json"
+            "FromFile": "Data/NPCs/ModderBob/Includes.json"
         },
         {
             "Action": "Include",
-            "FromFile": "Data/Maps/Patches/MapPatches.json"
+            "FromFile": "Data/Maps/Patches/Includes.json"
         }
     ]
 }

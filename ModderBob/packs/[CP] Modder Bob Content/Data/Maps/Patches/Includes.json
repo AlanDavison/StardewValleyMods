@@ -6,7 +6,7 @@
             "Action": "Include",
             "FromFile": "Data/Maps/Patches/ForestPatches.json",
             "When": {
-                "HasMod |contains=FlashShifter.StardewValleyExpandedCP": false
+                "HasMod |contains={{SVE_Mod_ID}}": false
             }
         },
         {
@@ -14,7 +14,7 @@
             "Action": "Include",
             "FromFile": "Data/Maps/Patches/ForestPatches_SVE.json",
             "When": {
-                "HasMod |contains=FlashShifter.StardewValleyExpandedCP": true
+                "HasMod |contains={{SVE_Mod_ID}}": true
             }
         }
     ]
