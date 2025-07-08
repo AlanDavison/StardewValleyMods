@@ -377,6 +377,22 @@ public class FarmAnimalSpawnsFeature : Feature
             if (!__instance.modData.ContainsKey("MEEP_Farm_Animal"))
                 return true;
 
+            if (!__instance.modData.ContainsKey("MEEP_Farm_Animal_ID"))
+            {
+                logger.Warn($"This animal's ({__instance.Name}) MEEP data didn't contain an ID, but indicated it was a MEEP animal. This should be impossible. Trace dump incoming:");
+                logger.Log($"{__instance.Name}'s modData dump:");
+
+                foreach (var dumpedData in __instance.modData)
+                {
+                    foreach (var dictData in dumpedData)
+                    {
+                        logger.Log($"\t{dictData.Key} : {dictData.Value}");
+                    }
+                }
+
+                return true;
+            }
+
             // In case we're a multiplayer client, we load the animal spawn data.
             if (!Context.IsMainPlayer)
                 animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
