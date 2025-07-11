@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+
+    <PropertyGroup>
+        <Name>Ex-Joja Farm</Name>
+        <Description>Since Grandpa died, Joja started using this land. What were they doing here? What kind of mysteries will you uncover?</Description>
+        <MinimumApiVersion>4.2.1</MinimumApiVersion>
+        <UpdateKeys>Nexus:00000</UpdateKeys>
+        <Version>1.0.0-alpha</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ContentPacks Include="packs/[CP] Ex-Joja Farm Content" Version="$(Version)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="license.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="readme.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="release-notes.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="packs\[CP] Ex-Joja Farm Content\assets\" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>false</EnableHarmony>
+    </PropertyGroup>
+
+</Project>
