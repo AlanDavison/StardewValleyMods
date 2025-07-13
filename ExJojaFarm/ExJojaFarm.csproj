@@ -25,10 +25,6 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="packs\[CP] Ex-Joja Farm Content\assets\" />
-    </ItemGroup>
-
     <PropertyGroup>
         <EnableHarmony>false</EnableHarmony>
     </PropertyGroup>

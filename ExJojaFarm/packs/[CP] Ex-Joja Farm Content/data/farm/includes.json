@@ -1,0 +1,18 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/AdditionalFarms",
+            "Entries": {
+                "FlashShifter.FrontierFarm/FrontierFarm": {
+                    "ID": "FrontierFarm",
+                    "TooltipStringPath": "Strings/UI:FrontierFarm",
+                    "MapName": "Farm_FrontierFarm",
+                    "IconTexture": "Mods/FlashShifter.FrontierFarm/Icon",
+                    "WorldMapTexture": "Mods/FlashShifter.FrontierFarm/WorldMap"
+                }
+            }
+        }
+    ]
+}
