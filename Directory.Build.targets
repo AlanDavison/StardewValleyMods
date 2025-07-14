@@ -1,5 +1,10 @@
 <Project>
 
+    <!-- We need this here for ModManifestBuilder. -->
+    <PropertyGroup>
+        <UniqueId>$(Authors).$(AssemblyName)</UniqueId>
+    </PropertyGroup>
+
     <!-- This is required only for our current GitHub workflow.  -->
     <Target Name="PrintVersionToFile" BeforeTargets="BeforeBuild;BeforeRebuild">
         <WriteLinesToFile
