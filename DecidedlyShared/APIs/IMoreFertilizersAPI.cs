@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
+// ReSharper disable InconsistentNaming
+// ReSharper disable UseSymbolAlias
+// ReSharper disable RedundantNameQualifier
 
 namespace DecidedlyShared.APIs
 {
