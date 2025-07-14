@@ -1,0 +1,37 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "LogName": "Load farm's location data.",
+            "Action": "Include",
+            "FromFile": "data/farm/farm-location.json"
+        },
+        {
+            "LogName": "Apply additional farm data.",
+            "Action": "EditData",
+            "Target": "Data/AdditionalFarms",
+            "Entries": {
+                "{{FarmID}}": {
+                    "ID": "{{FarmID}}",
+                    "TooltipStringPath": "Strings/UI:{{ModId}}_FarmDescription",
+                    "MapName": "{{FarmID}}_Map",
+                    "IconTexture": "Mods/{{ModId}}/FarmIcon"
+                }
+            }
+        },
+        {
+            "LogName": "Load UI strings.",
+            "Action": "EditData",
+            "Target": "Strings/UI",
+            "Entries": {
+                "{{ModId}}_FarmDescription": "{{i18n:EJF.Farm.Description}}"
+            }
+        },
+        {
+            "LogName": "Load farm icon.",
+            "Action": "Load",
+            "Target": "Mods/{{ModId}}/Icon",
+            "FromFile": "assets/farm-icon.png"
+        }
+    ]
+}

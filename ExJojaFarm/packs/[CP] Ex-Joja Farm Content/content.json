@@ -1,6 +1,12 @@
 {
     "$schema": "https://smapi.io/schemas/content-patcher.json",
     "Format": "2.7.0",
+    "DynamicTokens": [
+        {
+            "Name": "FarmID",
+            "Value": "{{ModId}}_Farm"
+        }
+    ],
     "Changes": [
         {
             "Action": "Include",

@@ -1,0 +1,27 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Locations",
+            "Entries": {
+                "{{FarmID}}": {
+                    "DisplayName": "{{i18n:EJF.Farm.Name}}",
+                    "CanPlantHere": true,
+                    "FirstDayWeedMultiplier": 10,
+                    "MinDailyForageSpawn": 2,
+                    "MaxDailyForageSpawn": 6,
+                    "ChanceForClay": 0.1,
+                    "MusicIgnoredInRain": true,
+                    "CanHaveGreenRainSpawns": true,
+                    "ArtifactSpots": [
+                    ],
+                    "Fish": [
+                    ],
+                    "FishAreas": {
+                    }
+                }
+            }
+        },
+    ]
+}
