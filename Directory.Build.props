@@ -19,7 +19,6 @@
     <PropertyGroup>
         <Authors>DecidedlyHuman</Authors>
         <UniqueId>$(Authors).$(AssemblyName)</UniqueId>
-        <EntryDll>$(AssemblyName)</EntryDll>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
