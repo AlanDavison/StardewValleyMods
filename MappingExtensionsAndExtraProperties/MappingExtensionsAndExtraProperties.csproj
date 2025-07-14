@@ -7,6 +7,7 @@
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
         <Version>2.4.7-linqfix.1</Version>
+        <Version>2.4.7-linqfix.2</Version>
     </PropertyGroup>
 
     <PropertyGroup>

@@ -400,6 +400,9 @@ public class FarmAnimalSpawnsFeature : Feature
             KeyValuePair<string, Animal> data = animalData.First(pair =>
                 pair.Key == __instance.modData?["MEEP_Farm_Animal_ID"]);
 
+            if (data.Value.PetMessage is null)
+                return false;
+
             if ((bool)__instance.modData?.ContainsKey("MEEP_Farm_Animal_Portrait"))
             {
                 if (data.Value is null)
