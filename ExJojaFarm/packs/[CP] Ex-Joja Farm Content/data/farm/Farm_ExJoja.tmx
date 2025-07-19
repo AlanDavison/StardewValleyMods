@@ -24,7 +24,7 @@
   <property name="WarpTotemEntry" value="71 6"/>
  </properties>
  <tileset firstgid="1" name="Paths" tilewidth="16" tileheight="16" tilecount="64" columns="4">
-  <image source="../../../../../../StardewValley/Content/Maps/paths" width="64" height="256"/>
+  <image source="paths" width="64" height="256"/>
   <tile id="0">
    <properties>
     <property name="PathType" value="NE"/>
@@ -57,7 +57,7 @@
   </tile>
  </tileset>
  <tileset firstgid="65" name="spring_island_tilesheet_1" tilewidth="16" tileheight="16" tilecount="1280" columns="32">
-  <image source="../../../../../../StardewValley/Content/Maps/spring_island_tilesheet_1" width="512" height="640"/>
+  <image source="spring_island_tilesheet_1" width="512" height="640"/>
   <tile id="305">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
@@ -84,7 +84,7 @@
   </tile>
  </tileset>
  <tileset firstgid="1345" name="spring_outdoorsTileSheet2" tilewidth="16" tileheight="16" tilecount="1120" columns="16">
-  <image source="../../../../../../StardewValley/Content/Maps/spring_outdoorsTileSheet2" width="256" height="1120"/>
+  <image source="spring_outdoorsTileSheet2" width="256" height="1120"/>
   <tile id="536">
    <animation>
     <frame tileid="536" duration="1000"/>
@@ -487,7 +487,7 @@
   </tile>
  </tileset>
  <tileset firstgid="2465" name="spring_outdoorTileSheet_extra" tilewidth="16" tileheight="16" tilecount="64" columns="8">
-  <image source="../../../../../../StardewValley/Content/Maps/spring_outdoorTileSheet_extra" width="128" height="128"/>
+  <image source="spring_outdoorTileSheet_extra" width="128" height="128"/>
   <tile id="0">
    <properties>
     <property name="Buildable" value="T"/>
@@ -527,7 +527,7 @@
   </tile>
  </tileset>
  <tileset firstgid="2529" name="spring_Waterfalls" tilewidth="16" tileheight="16" tilecount="900" columns="36">
-  <image source="../../../../../../StardewValley/Content/Maps/spring_Waterfalls" width="576" height="400"/>
+  <image source="spring_Waterfalls" width="576" height="400"/>
   <tile id="1">
    <animation>
     <frame tileid="1" duration="100"/>
