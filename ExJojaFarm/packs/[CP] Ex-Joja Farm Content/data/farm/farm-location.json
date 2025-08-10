@@ -2,6 +2,13 @@
     "$schema": "https://smapi.io/schemas/content-patcher.json",
     "Changes": [
         {
+            "Action": "Load",
+            "Priority": "Low",
+            "Target": "Maps/{{FarmId}}",
+            "FromFile": "assets/maps/Farm_ExJoja.tmx"
+        },
+        {
+            "LogName": "Patching EJF farm data into Data/Locations.",
             "Action": "EditData",
             "Target": "Data/Locations",
             "Entries": {

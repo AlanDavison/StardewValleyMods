@@ -1,0 +1,15 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "LogName": "Include farm location.",
+            "Action": "Include",
+            "FromFile": "data/farm/farm-location.json"
+        },
+        {
+            "LogName": "Include EJF farm data.",
+            "Action": "Include",
+            "FromFile": "data/farm/farm-data.json"
+        }
+    ]
+}

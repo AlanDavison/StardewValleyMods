@@ -14,7 +14,7 @@
                 "{{FarmID}}": {
                     "ID": "{{FarmID}}",
                     "TooltipStringPath": "Strings/UI:{{ModId}}_FarmDescription",
-                    "MapName": "{{FarmID}}_Map",
+                    "MapName": "{{FarmID}}",
                     "IconTexture": "Mods/{{ModId}}/FarmIcon"
                 }
             }
@@ -30,8 +30,8 @@
         {
             "LogName": "Load farm icon.",
             "Action": "Load",
-            "Target": "Mods/{{ModId}}/Icon",
-            "FromFile": "assets/farm-icon.png"
+            "Target": "Mods/{{ModId}}/FarmIcon",
+            "FromFile": "assets/farm_icon.png"
         }
     ]
 }
