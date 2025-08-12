@@ -2,18 +2,18 @@
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="100" height="100" tilewidth="16" tileheight="16" infinite="0" nextlayerid="22" nextobjectid="99">
  <properties>
   <property name="AllowGrassSurviveInWinter" value="T"/>
-  <property name="BackwoodsEntry" value="87 0"/>
+  <property name="BackwoodsEntry" value="87 3"/>
   <property name="BrookSounds" value="9 8 4 47 11 4"/>
-  <property name="BusStopEntry" value="99 19"/>
+  <property name="BusStopEntry" value="97 19"/>
   <property name="DefaultSiloTile" value="6 11"/>
-  <property name="FarmCaveEntry" value="93 41"/>
+  <property name="FarmCaveEntry" value="93 42"/>
   <property name="FarmHouseEntry" value="75 17"/>
   <property name="FarmHouseFlooring" value="41"/>
   <property name="FarmHouseFurniture" value="1792 8 4 0 312 8 6 2 1680 1 4 0 2802 7 4 0 704 4 4 0 1120 1 6 0 192 1 8 2 1443 8 10 0 1383 1 10 0 1382 3 4 0 1369 1 6 0 1814 2 1 0 1814 4 1 0 1814 6 1 0 1616 3 1 0 1616 5 1 0 2632 7 1 0"/>
   <property name="FarmHouseStarterGift" value="(O)178 15"/>
   <property name="FarmHouseStarterSeedsPosition" value="4 7"/>
   <property name="FarmHouseWallpaper" value="41"/>
-  <property name="ForestEntry" value="70 99"/>
+  <property name="ForestEntry" value="70 98"/>
   <property name="GrandpaShrineLocation" value="44 2"/>
   <property name="GreenhouseLocation" value="40 12"/>
   <property name="MailboxLocation" value="90 17"/>
@@ -21,7 +21,7 @@
   <property name="PetBowlLocation" value="97 13"/>
   <property name="ShippingBinLocation" value="84 13"/>
   <property name="SpouseAreaLocation" value="94 4"/>
-  <property name="Warp" value="100 21 BusStop 11 23 100 22 BusStop 11 23 100 23 BusStop 11 23 52 75 Forest 68 0 53 75 Forest 68 0 63 -1 Backwoods 14 39 64 -1 Backwoods 14 39 88 54 FarmCave 8 11"/>
+  <property name="Warp" value="99 18 BusStop 11 23 99 19 BusStop 11 23 99 20 BusStop 11 23 69 99 Forest 68 0 70 99 Forest 68 0 71 99 Forest 68 0 72 99 Forest 68 0 73 99 Forest 68 0 86 0 Backwoods 14 39 87 0 Backwoods 14 39 88 0 Backwoods 14 39 93 40 FarmCave 8 11"/>
   <property name="WarpTotemEntry" value="58 4"/>
  </properties>
  <tileset firstgid="1" name="Paths" tilewidth="16" tileheight="16" tilecount="64" columns="4">
@@ -2323,12 +2323,14 @@
   <tile id="150" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="151" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
    <animation>
@@ -2339,6 +2341,7 @@
   <tile id="152" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
    <animation>
@@ -2355,12 +2358,14 @@
   <tile id="156" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="175">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2374,6 +2379,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
@@ -2389,6 +2395,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2397,6 +2404,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2404,12 +2412,14 @@
   <tile id="181" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
   </tile>
   <tile id="182" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
   </tile>
@@ -2435,6 +2445,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="t"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2443,6 +2454,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2451,6 +2463,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="t"/>
     <property name="Type" value="Dirt"/>
    </properties>
@@ -2459,6 +2472,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="t"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2467,12 +2481,14 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
    </properties>
   </tile>
   <tile id="205">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2520,6 +2536,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
@@ -2540,6 +2557,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
@@ -2548,12 +2566,14 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
    </properties>
   </tile>
   <tile id="230">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
    </properties>
   </tile>
   <tile id="231" probability="0.01">
@@ -2594,42 +2614,49 @@
   <tile id="250">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="251">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
   </tile>
   <tile id="252">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Dirt"/>
    </properties>
   </tile>
   <tile id="253">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="254" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="255" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="256">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2654,36 +2681,42 @@
   <tile id="275">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="276">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="277">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="278">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="279">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="281">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2718,42 +2751,49 @@
   <tile id="300" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="301">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="302">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="303">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="304" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="305" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="306">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2790,42 +2830,49 @@
   <tile id="325">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="326">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="327">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="328">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="329">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="331">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="332">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2856,96 +2903,112 @@
   <tile id="350">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="351">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="352">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="353">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="354">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="355">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="356">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="357">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="375">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="376">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="377">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="378">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="379">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="380">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="381">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="382">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2958,6 +3021,7 @@
   <tile id="400" probability="0.01">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -2965,6 +3029,7 @@
    <properties>
     <property name="Buildable" type="bool" value="true"/>
     <property name="CanPlantTrees" value="T"/>
+    <property name="Diggable" value="T"/>
     <property name="NoSpawn" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
@@ -2972,36 +3037,42 @@
   <tile id="402">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="403">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="404">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="405">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="406">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
   <tile id="407">
    <properties>
     <property name="Buildable" type="bool" value="true"/>
+    <property name="Diggable" value="T"/>
     <property name="Type" value="Grass"/>
    </properties>
   </tile>
@@ -4180,6 +4251,40 @@
  </tileset>
  <tileset firstgid="5404" name="zzz_dh_ejf_tiles" tilewidth="16" tileheight="16" tilecount="1975" columns="25">
   <image source="zzz_dh_ejf_tiles.png" width="400" height="1264"/>
+  <tile id="375" probability="0.01"/>
+  <tile id="376" probability="0.01"/>
+  <tile id="377" probability="0.01"/>
+  <tile id="378" probability="0.01"/>
+  <tile id="379" probability="0.01"/>
+  <tile id="381" probability="0.01"/>
+  <tile id="382" probability="0.01"/>
+  <tile id="383" probability="0.01"/>
+  <wangsets>
+   <wangset name="Ground" type="corner" tile="-1">
+    <wangcolor name="Slime" color="#ff0000" tile="-1" probability="1"/>
+    <wangtile tileid="375" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="376" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="377" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="378" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="379" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="380" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="381" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="382" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="383" wangid="0,1,0,1,0,1,0,1"/>
+    <wangtile tileid="400" wangid="0,1,0,0,0,1,0,1"/>
+    <wangtile tileid="401" wangid="0,1,0,0,0,0,0,1"/>
+    <wangtile tileid="402" wangid="0,1,0,1,0,0,0,1"/>
+    <wangtile tileid="403" wangid="0,0,0,1,0,0,0,0"/>
+    <wangtile tileid="404" wangid="0,0,0,0,0,1,0,0"/>
+    <wangtile tileid="425" wangid="0,0,0,0,0,1,0,1"/>
+    <wangtile tileid="427" wangid="0,1,0,1,0,0,0,0"/>
+    <wangtile tileid="428" wangid="0,1,0,0,0,0,0,0"/>
+    <wangtile tileid="429" wangid="0,0,0,0,0,0,0,1"/>
+    <wangtile tileid="450" wangid="0,0,0,1,0,1,0,1"/>
+    <wangtile tileid="451" wangid="0,0,0,1,0,1,0,0"/>
+    <wangtile tileid="452" wangid="0,1,0,1,0,1,0,0"/>
+   </wangset>
+  </wangsets>
  </tileset>
  <layer id="1" name="Back" width="100" height="100">
   <data encoding="csv">
@@ -4303,14 +4408,14 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3971,0,0,0,0,0,0,0,0,3971,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,4267,4241,4241,4241,4267,4241,4241,4241,4267,4241,4241,4241,4241,4241,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,4267,4241,4241,4267,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3840,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3865,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4267,4241,4241,4241,4267,4241,4241,4241,4267,4241,4241,4241,4241,4241,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5807,5808,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4241,4241,4241,4241,4241,4241,4241,4241,4241,4241,4267,4241,4241,4267,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5807,5855,5856,5854,5855,5808,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5831,5804,5805,5805,5806,5829,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5807,5856,5829,0,0,5831,5854,5808,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3840,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5832,5806,5829,0,0,5831,5804,5833,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3865,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5831,5854,5855,5855,5856,5829,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5832,5805,5806,5804,5805,5833,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5832,5833,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -4519,10 +4624,10 @@
 3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3848,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3723,3724,3897,3899,0,0,0,0,0,0,0,0,0,0,0,1716,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3748,3749,3922,1811,3925,0,0,0,0,0,0,0,0,1725,1726,1732,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3773,3774,3947,1827,1782,1740,3875,1740,1718,0,0,1719,1720,1741,1742,1748,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3798,3799,3972,1843,1798,1756,1755,1756,1734,0,0,1735,1736,1757,1758,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3823,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3848,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3773,3774,3947,1827,1782,1740,3875,1740,1718,0,0,1719,1720,1741,1742,1748,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3815,3812,3813,
+3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3798,3799,3972,1843,1798,1756,1755,1756,1734,0,0,1735,1736,1757,1758,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3840,0,0,
+3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3823,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3840,0,0,
+3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3848,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3865,0,0,
 3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3873,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2250,2074,2074,
 3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3723,3724,3897,3898,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2250,2410,2266,0,0,
 3624,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3748,3749,3922,3923,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2250,2074,2410,2266,0,0,0,0,
@@ -4833,17 +4938,17 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,18,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,10,0,0,14,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,14,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,30,0,0,14,19,14,14,30,14,0,0,0,0,0,30,0,0,0,0,0,14,14,0,14,14,0,0,14,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,0,0,0,0,0,0,14,14,14,0,0,0,14,14,14,14,0,0,14,0,0,14,0,0,14,0,0,0,0,0,0,0,14,0,14,0,0,14,0,14,0,14,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,0,0,0,12,0,0,0,0,0,0,14,14,0,0,0,0,0,14,0,14,14,0,0,0,0,0,0,14,14,0,0,0,14,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,14,14,14,0,0,14,0,14,14,0,0,0,0,0,14,14,14,19,0,14,14,14,0,0,10,0,0,0,14,14,14,14,0,14,0,14,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,14,14,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,19,14,14,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,0,0,0,0,14,0,14,0,0,0,14,14,14,0,14,14,0,0,14,0,30,14,10,0,14,14,14,0,0,14,0,14,14,0,0,14,0,0,14,14,0,14,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,0,0,0,0,14,0,14,0,0,0,14,14,14,0,14,14,0,0,14,0,0,14,10,0,14,14,14,0,0,14,0,14,14,0,0,14,0,0,14,14,0,14,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,37,37,14,14,0,14,0,0,14,14,0,0,14,0,14,19,14,14,14,0,0,14,0,0,14,0,14,0,14,18,0,0,14,0,14,14,0,14,0,0,14,14,0,14,14,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,37,37,37,37,14,14,0,14,0,0,14,0,19,0,14,0,0,0,0,0,0,0,0,0,0,14,0,0,14,14,14,0,14,0,14,14,0,14,14,14,0,0,0,14,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,37,37,37,37,0,14,14,19,0,0,0,0,0,0,0,14,14,14,14,0,0,14,19,14,0,0,0,14,14,14,0,0,0,14,0,0,14,14,19,14,14,0,14,14,14,19,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,37,37,37,37,0,14,14,19,0,0,0,0,0,0,0,14,14,14,14,0,0,14,30,14,0,0,0,14,14,14,0,0,0,14,0,0,14,14,19,14,14,0,14,14,14,19,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,37,37,37,37,14,0,0,0,0,10,0,14,14,14,0,0,14,0,0,0,14,14,14,0,14,0,0,0,0,0,14,14,14,0,0,14,0,14,14,0,0,0,0,14,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,37,37,37,37,37,37,37,37,37,37,37,37,37,37,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,14,14,14,0,0,14,14,0,0,14,14,10,0,0,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,18,0,17,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,37,37,37,37,37,0,0,0,0,0,11,0,0,0,18,0,0,0,0,0,0,14,14,14,0,0,14,0,14,0,10,0,0,0,0,14,0,0,0,0,14,14,14,0,0,0,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -4937,7 +5042,7 @@
 0,0,4419,4420,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,4419,4445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,4419,4470,4446,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,4419,4445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,4419,4445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3790,3787,3788,
 0,0,0,4419,4470,4446,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,4494,4470,4446,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,4419,4445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -5232,13 +5337,7 @@
  </layer>
  <objectgroup id="9" name="Back"/>
  <objectgroup id="10" name="Back2"/>
- <objectgroup id="11" name="Buildings">
-  <object id="82" name="TileData" x="64" y="80" width="16" height="16">
-   <properties>
-    <property name="Action" value="Message &quot;Farm.1&quot;"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup id="11" name="Buildings"/>
  <objectgroup id="12" name="Buildings2"/>
  <objectgroup id="13" name="Paths">
   <object id="83" name="TileData" x="784" y="240" width="16" height="16">
@@ -5281,7 +5380,7 @@
     <property name="Order" type="int" value="3"/>
    </properties>
   </object>
-  <object id="91" name="TileData" x="896" y="432" width="16" height="16">
+  <object id="91" name="TileData" x="896" y="480" width="16" height="16">
    <properties>
     <property name="Order" type="int" value="7"/>
    </properties>
