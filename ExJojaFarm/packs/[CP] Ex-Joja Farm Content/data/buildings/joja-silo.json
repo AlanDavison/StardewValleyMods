@@ -1,0 +1,36 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Buildings",
+            "Entries": {
+                "DH-EJF_JojaSilo": {
+                    "Name": "[LocalizedText Strings\\Buildings:Silo_Name]",
+                    "Description": "[LocalizedText Strings\\Buildings:Silo_Description]",
+                    "Texture": "Buildings/DH-EJF_JojaSilo",
+                    "DrawShadow": true,
+                    "Size": {
+                        "X": 3,
+                        "Y": 3
+                    },
+                    "FadeWhenBehind": true,
+                    "DrawOffset": "0, 0",
+                    "SortTileOffset": 0.0,
+                    "Builder": null,
+                    "MagicalConstruction": false,
+                    "HayCapacity": 80,
+                    "DefaultAction": "BuildingSilo",
+                    "AllowsFlooringUnderneath": true
+                }
+            }
+
+        },
+        {
+            "Action": "Load",
+            "FromFile": "assets/buildings/joja-silo.png",
+            "Target": "Buildings/DH-EJF_JojaSilo",
+            "Priority": "High"
+        }
+    ]
+}

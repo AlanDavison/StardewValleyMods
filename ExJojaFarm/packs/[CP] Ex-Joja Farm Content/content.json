@@ -11,6 +11,10 @@
         {
             "Action": "Include",
             "FromFile": "data/farm/includes.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "data/buildings/joja-silo.json"
         }
     ]
 }
