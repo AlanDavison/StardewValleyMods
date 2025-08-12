@@ -42,10 +42,14 @@ public class ModEntry : Mod
             return;
         }
 
+        if (!Game1.buildingData.ContainsKey("DH-EJF_JojaSilo"))
+        {
+            ModEntry.StaticLogger.Error("It looks like the starter Joja silo didn't load correctly. Please report this!");
+            return;
+        }
+
         Building defaultSilo = new Building("DH-EJF_JojaSilo", defaultSiloTile);
         defaultSilo.FinishConstruction(true);
-        defaultSilo.LoadFromBuildingData(defaultSilo.GetData(), false, true);
-        defaultSilo.load();
         farm.buildings.Add(defaultSilo);
     }
 }
