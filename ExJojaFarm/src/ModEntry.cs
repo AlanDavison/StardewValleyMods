@@ -37,6 +37,9 @@ public class ModEntry : Mod
         if (__instance.Location is not Farm)
             return;
 
+        if (__instance.growthStage.Value < 5) // 5 is fully grown.
+            return;
+
         Vector2 treeTile = __instance.Tile;
         string tileProperty =
             __instance.Location.doesTileHaveProperty(
@@ -46,10 +49,7 @@ public class ModEntry : Mod
                 "Back3");
 
         if (tileProperty is not null)
-        {
-            if (__instance.growthStage.Value >= 5) // 5 = fully grown.
-                __instance.onGreenRainDay();
-        }
+            __instance.onGreenRainDay();
     }
 
     public static void Farm_OnNewGame_Postfix(Farm __instance)
