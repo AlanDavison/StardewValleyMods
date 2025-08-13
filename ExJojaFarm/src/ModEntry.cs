@@ -1,10 +1,10 @@
 ﻿using DecidedlyShared.Logging;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.TerrainFeatures;
 using Utility = ExJojaFarm.Utilities.Utility;
 
 namespace ExJojaFarm;
@@ -25,6 +25,31 @@ public class ModEntry : Mod
             original: AccessTools.Method(typeof(Farm), nameof(Farm.onNewGame)),
             postfix: new HarmonyMethod(typeof(ModEntry),
                 nameof(ModEntry.Farm_OnNewGame_Postfix)));
+
+        harmony.Patch(
+            original: AccessTools.Method(typeof(Tree), nameof(Tree.dayUpdate)),
+            postfix: new HarmonyMethod(typeof(ModEntry),
+                nameof(ModEntry.Tree_DayUpdate_Postfix)));
+    }
+
+    public static void Tree_DayUpdate_Postfix(Tree __instance)
+    {
+        if (__instance.Location is not Farm)
+            return;
+
+        Vector2 treeTile = __instance.Tile;
+        string tileProperty =
+            __instance.Location.doesTileHaveProperty(
+                (int)treeTile.X,
+                (int)treeTile.Y,
+                "DH.EJF.SlimeGround",
+                "Back3");
+
+        if (tileProperty is not null)
+        {
+            if (__instance.growthStage.Value >= 5) // 5 = fully grown.
+                __instance.onGreenRainDay();
+        }
     }
 
     public static void Farm_OnNewGame_Postfix(Farm __instance)
