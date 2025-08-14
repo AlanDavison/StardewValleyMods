@@ -6,7 +6,8 @@
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
-        <Version>2.4.6</Version>
+        <Version>2.4.7-linqfix.1</Version>
+        <Version>2.4.7-linqfix.2</Version>
     </PropertyGroup>
 
     <PropertyGroup>
