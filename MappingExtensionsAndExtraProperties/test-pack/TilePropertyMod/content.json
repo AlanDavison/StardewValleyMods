@@ -126,6 +126,19 @@
                         "MEEP_CloseupInteraction_Sound": "fishSlap"
                     },
                     "MarkActionApplied": false
+                },
+                "DH.Test.Sap.MonsterKilled.CloseupInteraction.Trigger": {
+                    "Id": "DH.Test.Sap.MonsterKilled.CloseupInteraction.Trigger",
+                    "Trigger": "Spiderbuttons.BETAS_MonsterKilled",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/MEEP/SlimeEggCloseup",
+                        "MEEP_CloseupInteraction_Text": "Maybe I can hatch this...",
+                        "MEEP_CloseupInteraction_Sound": "fishSlap"
+                    },
+                    "MarkActionApplied": false
                 }
             }
         },
