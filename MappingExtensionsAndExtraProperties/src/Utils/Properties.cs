@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
-using xTile.Layers;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
@@ -26,6 +27,81 @@ public class Properties
         pages = new List<MenuPage>();
 
 
+
+        return true;
+    }
+
+    public bool TryGetInteractionReel(
+        Func<List<string>> imagePropertiesProvider,
+        Func<List<string>> textPropertiesProvider,
+        out List<MenuPage> pages)
+    {
+        string[] imageProperties = imagePropertiesProvider.Invoke().ToArray();
+        string[] textProperties = textPropertiesProvider.Invoke().ToArray();
+
+        this.logger.Log($"imageProperties count: {imageProperties.Length}");
+        this.logger.Log($"textProperties count: {textProperties.Length}");
+        foreach (string textProperty in textProperties)
+        {
+            this.logger.Log(textProperty, LogLevel.Info);
+        }
+        pages = new List<MenuPage>();
+        int propertyNumber = 1;
+
+        foreach (string imageProperty in imageProperties)
+        {
+            if (Parsers.TryParseIncludingKey(imageProperty, out CloseupInteractionImage parsedImageProperty))
+            {
+                TextElement textElement = null;
+                string currentTextPropertyKey = $"{CloseupInteractionText.PropertyKey}_{propertyNumber}";
+
+                if (propertyNumber < textProperties.Length)
+                {
+                    if (textProperties[propertyNumber - 1].Contains(currentTextPropertyKey))
+                    {
+                        if (Parsers.TryParseIncludingKey(textProperties[propertyNumber - 1],
+                                out CloseupInteractionText parsedTextProperty))
+                        {
+                            textElement = new TextElement(
+                                "Popup Text Box",
+                                Rectangle.Empty,
+                                this.logger,
+                                600,
+                                parsedTextProperty.Text);
+                        }
+                        else
+                        {
+                            this.logger.Error($"Failed to parse property {currentTextPropertyKey}.");
+                        }
+                    }
+                    else
+                    {
+                        this.logger.Log(
+                            $"Text property {textProperties[propertyNumber]} didn't contain property {currentTextPropertyKey}?",
+                            LogLevel.Info);
+                    }
+                }
+
+                MenuPage page = new MenuPage();
+                UiElement picture = new UiElement(
+                    "Picture",
+                    new Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
+                        parsedImageProperty.SourceRect.Height * 4),
+                    this.logger,
+                    DrawableType.Texture,
+                    parsedImageProperty.Texture,
+                    parsedImageProperty.SourceRect,
+                    Color.White);
+
+                this.logger.Log($"Text element for page: {textElement.Text}");
+                page.page = picture;
+                page.pageText = textElement;
+
+                pages.Add(page);
+            }
+
+            propertyNumber++;
+        }
 
         return true;
     }

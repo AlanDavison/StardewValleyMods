@@ -1,18 +1,17 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
-using MappingExtensionsAndExtraProperties.Models.EventArgs;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using xTile.Dimensions;
+using StardewValley.Delegates;
+using StardewValley.Triggers;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Features;
@@ -53,6 +52,68 @@ public class CloseupInteractionFeature : Feature
 
         GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Image", this.DoCloseupInteraction);
         GameLocation.RegisterTileAction("MEEP_CloseupInteractionReel", this.DoCloseupReel);
+        TriggerActionManager.RegisterAction("MEEP_CloseupInteraction_Action", this.CloseupInteractionAction);
+        TriggerActionManager.RegisterAction("MEEP_CloseupInteractionReel_Action", this.CloseupInteractionReelAction);
+    }
+
+    private bool CloseupInteractionReelAction(string[] args, TriggerActionContext context, out string error)
+    {
+        error = null;
+
+        string[] properties = context.Data.CustomFields.Select<KeyValuePair<string, string>, string>(pair =>
+        {
+            return $"{pair.Key} {pair.Value}";
+        }).ToArray();
+
+        if (propertyUtils.TryGetInteractionReel(
+                () => { return properties.Where(s => s.StartsWith(CloseupInteractionImage.PropertyKey)).ToList(); },
+                () => { return properties.Where(s => s.StartsWith(CloseupInteractionText.PropertyKey)).ToList(); },
+                out List<MenuPage> menuPages))
+        {
+            string? soundCue = properties.FirstOrDefault(s => s.StartsWith(CloseupInteractionSound.PropertyKey));
+            if (Parsers.TryParseIncludingKey(soundCue, out CloseupInteractionSound parsedSoundProperty))
+            {
+                soundCue = parsedSoundProperty.CueName;
+            }
+
+            logger.Log($"Number of pages: {menuPages.Count}", LogLevel.Info);
+
+            CloseupInteraction.DoCloseupReel(menuPages, logger, soundCue ?? "bigSelect");
+        }
+        else
+        {
+            logger.Error($"Problem parsing closeup interaction reel from trigger action {context.Data.Id}.");
+        }
+
+        return true;
+    }
+
+
+    private bool CloseupInteractionAction(string[] args, TriggerActionContext context, out string error)
+    {
+        error = null;
+        CloseupInteractionText? textProperty = null;
+        CloseupInteractionSound? soundProperty = null;
+
+        string[] properties = context.Data.CustomFields.Select<KeyValuePair<string, string>, string>(pair =>
+        {
+            return $"{pair.Key} {pair.Value}";
+        }).ToArray();
+
+        Parsers.TryParseIncludingKey(properties[0], out CloseupInteractionImage imageProperty);
+        if (Parsers.TryParseIncludingKey(properties[1], out CloseupInteractionText parsedTextProperty))
+        {
+            textProperty = parsedTextProperty;
+        }
+
+        if (Parsers.TryParseIncludingKey(properties[2], out CloseupInteractionSound parsedSoundProperty))
+        {
+            soundProperty = parsedSoundProperty;
+        }
+
+        CloseupInteraction.DoCloseupInteraction(imageProperty, textProperty, soundProperty, logger);
+
+        return true;
     }
 
     private bool DoCloseupReel(GameLocation location, string[] propertyArgs, Farmer player, Point tile)
