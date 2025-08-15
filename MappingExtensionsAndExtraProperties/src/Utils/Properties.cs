@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
@@ -54,31 +55,23 @@ public class Properties
             {
                 TextElement textElement = null;
                 string currentTextPropertyKey = $"{CloseupInteractionText.PropertyKey}_{propertyNumber}";
+                string? currentTextProperty = textProperties.FirstOrDefault(s => s.Contains($"{CloseupInteractionText.PropertyKey}_{propertyNumber.ToString()}"));
 
-                if (propertyNumber < textProperties.Length)
+                if (currentTextProperty is not null)
                 {
-                    if (textProperties[propertyNumber - 1].Contains(currentTextPropertyKey))
+                    if (Parsers.TryParseIncludingKey(textProperties[propertyNumber - 1],
+                            out CloseupInteractionText parsedTextProperty))
                     {
-                        if (Parsers.TryParseIncludingKey(textProperties[propertyNumber - 1],
-                                out CloseupInteractionText parsedTextProperty))
-                        {
-                            textElement = new TextElement(
-                                "Popup Text Box",
-                                Rectangle.Empty,
-                                this.logger,
-                                600,
-                                parsedTextProperty.Text);
-                        }
-                        else
-                        {
-                            this.logger.Error($"Failed to parse property {currentTextPropertyKey}.");
-                        }
+                        textElement = new TextElement(
+                            "Popup Text Box",
+                            Rectangle.Empty,
+                            this.logger,
+                            600,
+                            parsedTextProperty.Text);
                     }
                     else
                     {
-                        this.logger.Log(
-                            $"Text property {textProperties[propertyNumber]} didn't contain property {currentTextPropertyKey}?",
-                            LogLevel.Info);
+                        this.logger.Error($"Failed to parse property {currentTextPropertyKey}.");
                     }
                 }
 
@@ -93,9 +86,8 @@ public class Properties
                     parsedImageProperty.SourceRect,
                     Color.White);
 
-                this.logger.Log($"Text element for page: {textElement.Text}");
                 page.page = picture;
-                page.pageText = textElement;
+                if (textElement != null) page.pageText = textElement;
 
                 pages.Add(page);
             }
