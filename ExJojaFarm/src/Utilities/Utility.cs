@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using StardewValley;
 
 namespace ExJojaFarm.Utilities;
 
@@ -31,5 +32,10 @@ public class Utility
         parsedVector = new Vector2(x, y);
 
         return true;
+    }
+
+    public static bool IsExJojaFarm()
+    {
+        return Game1.GetFarmTypeID() == ModEntry.FARM_ID;
     }
 }

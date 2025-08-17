@@ -54,7 +54,7 @@ public class ModEntry : Mod
 
     public static void Farm_OnNewGame_Postfix(Farm __instance)
     {
-        if (Game1.GetFarmTypeID() != ModEntry.FARM_ID)
+        if (!Utility.IsExJojaFarm())
             return;
 
         Farm farm = Game1.getFarm();
