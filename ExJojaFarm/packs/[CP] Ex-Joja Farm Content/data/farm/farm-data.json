@@ -32,6 +32,10 @@
             "Action": "Load",
             "Target": "Mods/{{ModId}}/FarmIcon",
             "FromFile": "assets/farm_icon.png"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "data/farm/tile-properties.json"
         }
     ]
 }

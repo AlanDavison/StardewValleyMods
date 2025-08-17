@@ -23,12 +23,25 @@
                     "CanHaveGreenRainSpawns": true,
                     "ArtifactSpots": [
                     ],
-                    "Fish": [
-                    ],
                     "FishAreas": {
+                        "Global": {
+                            "CrabPotFishTypes": [
+                                "freshwater"
+                            ],
+                            "CrabPotJunkChance": 0.2
+                        },
+                        "SecretFishySpot": {
+                            "CrabPotJunkChance": 1.0,
+                            "Position": {
+                                "X": 32,
+                                "Y": 2,
+                                "Width": 4,
+                                "Height": 4
+                            }
+                        }
                     }
                 }
             }
-        },
+        }
     ]
 }
