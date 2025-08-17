@@ -1,0 +1,71 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Changes": [
+        {
+            "Action": "EditMap",
+            "Target": "Maps/{{FarmId}}",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 5,
+                        "Y": 77
+                    },
+                    "Layer": "Paths",
+                    "SetProperties": {
+                        "DH_Regrow_Log": ""
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 7,
+                        "Y": 84
+                    },
+                    "Layer": "Paths",
+                    "SetProperties": {
+                        "DH_Regrow_Log": ""
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 9,
+                        "Y": 91
+                    },
+                    "Layer": "Paths",
+                    "SetProperties": {
+                        "DH_Regrow_Log": ""
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 81,
+                        "Y": 95
+                    },
+                    "Layer": "Paths",
+                    "SetProperties": {
+                        "DH_Regrow_Log": ""
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 33,
+                        "Y": 95
+                    },
+                    "Layer": "Paths",
+                    "SetProperties": {
+                        "DH_Regrow_Log": ""
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 47,
+                        "Y": 94
+                    },
+                    "Layer": "Paths",
+                    "SetProperties": {
+                        "DH_Regrow_Log": ""
+                    }
+                }
+            ]
+        }
+    ]
+}
