@@ -57,7 +57,12 @@ public class Properties
                 string currentTextPropertyKey = $"{CloseupInteractionText.PropertyKey}_{propertyNumber}";
                 string? currentTextProperty = textProperties.FirstOrDefault(s => s.Contains($"{CloseupInteractionText.PropertyKey}_{propertyNumber.ToString()}"));
 
-                if (currentTextProperty is not null)
+                this.logger.Error($"currentTextProperty: {currentTextProperty}");
+
+                 int i =
+                     "ERROR: FIX OUT OF BOUNDS EXCEPTION WHEN A TEXT PROPERTY IS MISSING IN THE MIDDLE. MIGHT NEED A BIG REWORK. :(";
+
+                if (currentTextProperty is not null && currentTextProperty != "")
                 {
                     if (Parsers.TryParseIncludingKey(textProperties[propertyNumber - 1],
                             out CloseupInteractionText parsedTextProperty))
