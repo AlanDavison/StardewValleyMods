@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ImageElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\VBoxElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\General.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Items.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Sound.cs" />
@@ -58,5 +59,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ResourceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Maps.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Placement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TriggerActionUtils.cs" />
   </ItemGroup>
 </Project>
