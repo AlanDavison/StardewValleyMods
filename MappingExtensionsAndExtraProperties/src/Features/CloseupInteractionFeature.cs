@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
@@ -60,10 +62,15 @@ public class CloseupInteractionFeature : Feature
     {
         error = null;
 
-        string[] properties = context.Data.CustomFields.Select<KeyValuePair<string, string>, string>(pair =>
+        if (!General.TryCombineDictionaryPairs(context.Data.CustomFields, out string[] properties))
         {
-            return $"{pair.Key} {pair.Value}";
-        }).ToArray();
+            string errorContext = TriggerActionUtils.GatherContext("Failed to merge properties for parsing. This should really never happen.",
+                context);
+            logger.Error(errorContext);
+            error = errorContext;
+
+            return false;
+        }
 
         if (propertyUtils.TryGetInteractionReel(
                 () => { return properties.Where(s => s.StartsWith(CloseupInteractionImage.PropertyKey)).ToList(); },
@@ -95,23 +102,81 @@ public class CloseupInteractionFeature : Feature
         CloseupInteractionText? textProperty = null;
         CloseupInteractionSound? soundProperty = null;
 
-        string[] properties = context.Data.CustomFields.Select<KeyValuePair<string, string>, string>(pair =>
+        if (!General.TryCombineDictionaryPairs(context.Data.CustomFields, out string[] properties))
         {
-            return $"{pair.Key} {pair.Value}";
-        }).ToArray();
+            GatherAndLogError(context, out error);
 
-        Parsers.TryParseIncludingKey(properties[0], out CloseupInteractionImage imageProperty);
-        if (Parsers.TryParseIncludingKey(properties[1], out CloseupInteractionText parsedTextProperty))
+            return false;
+        }
+
+        if (!this.TryGetInteractionProperties(properties, logger, out string[] imageProperties, out string[] textProperties,
+                out string? soundProp))
+        {
+            GatherAndLogError(context, out error);
+
+            return false;
+        }
+
+        if (imageProperties.Length > 1) {}
+
+        Parsers.TryParseIncludingKey(imageProperties[0], out CloseupInteractionImage imageProperty);
+        if (textProperties is not null && Parsers.TryParseIncludingKey(textProperties[0], out CloseupInteractionText parsedTextProperty))
         {
             textProperty = parsedTextProperty;
         }
 
-        if (Parsers.TryParseIncludingKey(properties[2], out CloseupInteractionSound parsedSoundProperty))
+        if (soundProp is not null && Parsers.TryParseIncludingKey(soundProp, out CloseupInteractionSound parsedSoundProperty))
         {
             soundProperty = parsedSoundProperty;
         }
 
         CloseupInteraction.DoCloseupInteraction(imageProperty, textProperty, soundProperty, logger);
+
+        return true;
+    }
+
+    private static void GatherAndLogError(TriggerActionContext context, out string error)
+    {
+        string errorContext = TriggerActionUtils.GatherContext("Failed to merge properties for parsing. This should really never happen.",
+            context);
+        logger.Error(errorContext);
+        error = errorContext;
+    }
+
+    private bool TryGetInteractionProperties(string[] properties,
+        Logger logger,
+        out string[] imageProperties,
+        out string[]? textProperties,
+        out string? soundProperty)
+    {
+        imageProperties = [];
+        textProperties = [];
+        soundProperty = null;
+
+        try
+        {
+            imageProperties = properties.Where(s => s.StartsWith("MEEP_CloseupInteraction_Image")).ToArray();
+            textProperties = properties.Where(s => s.StartsWith("MEEP_CloseupInteraction_Text")).ToArray();
+            soundProperty = properties.FirstOrDefault(s => s.StartsWith("MEEP_CloseupInteraction_Sound"));
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        if (imageProperties.Length < 1)
+        {
+            logger.Error($"imageProperties length was less than 1: {imageProperties.Length}");
+            foreach (string property in properties)
+            {
+                logger.Log($"Property: {property}", LogLevel.Info);
+            }
+            return false;
+        }
+
+        if (textProperties.Length < 1)
+            textProperties = null;
+
 
         return true;
     }
