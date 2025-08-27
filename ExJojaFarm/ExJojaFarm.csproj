@@ -29,4 +29,11 @@
         <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+        <!-- enable game debugging -->
+        <StartAction>Program</StartAction>
+        <StartProgram>/home/alan/.local/share/Steam/steamapps/common/Stardew Valley 1.6.15/StardewModdingAPI</StartProgram>
+        <StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
+    </PropertyGroup>
+
 </Project>
