@@ -3,6 +3,7 @@ using DecidedlyShared.Logging;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.TerrainFeatures;
@@ -24,6 +25,7 @@ public class ModEntry : Mod
         ModEntry.Helper = helper;
         ModEntry.StaticLogger = this.logger;
         Harmony harmony = new Harmony(this.ModManifest.UniqueID);
+        helper.Events.Input.ButtonPressed += this.InputOnButtonPressed;
 
         harmony.Patch(
             original: AccessTools.Method(typeof(Farm), nameof(Farm.onNewGame)),
@@ -39,6 +41,19 @@ public class ModEntry : Mod
             original: AccessTools.Method(typeof(Tree), nameof(Tree.dayUpdate)),
             postfix: new HarmonyMethod(typeof(ModEntry),
                 nameof(ModEntry.Tree_DayUpdate_Postfix)));
+    }
+
+    private void InputOnButtonPressed(object? sender, ButtonPressedEventArgs e)
+    {
+        if (e.Button == SButton.F7)
+        {
+            GameLocation location = new GameLocation("Maps/Farm", "Joja Dungeon: Floor 3");
+            location.uniqueName.Value = "Maps/DH/ExJojaFarm/Floor3";
+            location.loadMap("Maps/Farm");
+            // Game1.locations.Add(location);
+            LocationRequest request = new LocationRequest("Maps/DH/ExJojaFarm/Floor3", false, location);
+            Game1.warpFarmer(request, 10, 10, 10);
+        }
     }
 
     public static void Farm_DayUpdate_Postfix(Farm __instance, int dayOfMonth)
