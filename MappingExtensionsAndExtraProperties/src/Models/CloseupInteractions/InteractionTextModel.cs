@@ -1,0 +1,3 @@
+namespace MappingExtensionsAndExtraProperties.Models.CloseupInteractions;
+
+public record InteractionTextModel(string textProperty);

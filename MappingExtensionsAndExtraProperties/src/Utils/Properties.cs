@@ -4,6 +4,7 @@ using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
+using MappingExtensionsAndExtraProperties.Models.CloseupInteractions;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
@@ -39,32 +40,26 @@ public class Properties
     {
         string[] imageProperties = imagePropertiesProvider.Invoke().ToArray();
         string[] textProperties = textPropertiesProvider.Invoke().ToArray();
+        pages = null;
 
-        this.logger.Log($"imageProperties count: {imageProperties.Length}");
-        this.logger.Log($"textProperties count: {textProperties.Length}");
-        foreach (string textProperty in textProperties)
+        if (!InteractionReelModel.TryMakeFromProperties(imageProperties, textProperties, "", this.logger,
+                out var model))
         {
-            this.logger.Log(textProperty, LogLevel.Info);
+            this.logger.Error($"Failed to construct the interaction reel model. Report this to DecidedlyHuman with a full log!");
+            return false;
         }
-        pages = new List<MenuPage>();
-        int propertyNumber = 1;
 
-        foreach (string imageProperty in imageProperties)
+        pages = new List<MenuPage>();
+
+        foreach ((int key, var imageModel) in model.images)
         {
-            if (Parsers.TryParseIncludingKey(imageProperty, out CloseupInteractionImage parsedImageProperty))
+            if (Parsers.TryParseIncludingKey(imageModel.imageProperty, out CloseupInteractionImage parsedImageProperty))
             {
                 TextElement textElement = null;
-                string currentTextPropertyKey = $"{CloseupInteractionText.PropertyKey}_{propertyNumber}";
-                string? currentTextProperty = textProperties.FirstOrDefault(s => s.Contains($"{CloseupInteractionText.PropertyKey}_{propertyNumber.ToString()}"));
 
-                this.logger.Error($"currentTextProperty: {currentTextProperty}");
-
-                 int i =
-                     "ERROR: FIX OUT OF BOUNDS EXCEPTION WHEN A TEXT PROPERTY IS MISSING IN THE MIDDLE. MIGHT NEED A BIG REWORK. :(";
-
-                if (currentTextProperty is not null && currentTextProperty != "")
+                if (model.text.ContainsKey(key))
                 {
-                    if (Parsers.TryParseIncludingKey(textProperties[propertyNumber - 1],
+                    if (Parsers.TryParseIncludingKey(model.text[key].textProperty,
                             out CloseupInteractionText parsedTextProperty))
                     {
                         textElement = new TextElement(
@@ -76,7 +71,7 @@ public class Properties
                     }
                     else
                     {
-                        this.logger.Error($"Failed to parse property {currentTextPropertyKey}.");
+                        this.logger.Error($"Failed to parse property {model.text[key].textProperty}.");
                     }
                 }
 
@@ -96,9 +91,59 @@ public class Properties
 
                 pages.Add(page);
             }
-
-            propertyNumber++;
         }
+
+        return true;
+
+        // foreach (string imageProperty in imageProperties)
+        // {
+        //     if (Parsers.TryParseIncludingKey(imageProperty, out CloseupInteractionImage parsedImageProperty))
+        //     {
+        //         TextElement textElement = null;
+        //         string currentTextPropertyKey = $"{CloseupInteractionText.PropertyKey}_{propertyNumber}";
+        //         string? currentTextProperty = textProperties.FirstOrDefault(s => s.Contains($"{CloseupInteractionText.PropertyKey}_{propertyNumber.ToString()}"));
+        //
+        //         this.logger.Error($"currentTextProperty: {currentTextProperty}");
+        //
+        //         if (currentTextProperty is not null && currentTextProperty != "")
+        //         {
+        //             int index = propertyNumber - 1;
+        //
+        //             if (index < textProperties.Length && Parsers.TryParseIncludingKey(textProperties[index],
+        //                     out CloseupInteractionText parsedTextProperty))
+        //             {
+        //                 textElement = new TextElement(
+        //                     "Popup Text Box",
+        //                     Rectangle.Empty,
+        //                     this.logger,
+        //                     600,
+        //                     parsedTextProperty.Text);
+        //             }
+        //             else
+        //             {
+        //                 this.logger.Error($"Failed to parse property {currentTextPropertyKey}.");
+        //             }
+        //         }
+        //
+        //         MenuPage page = new MenuPage();
+        //         UiElement picture = new UiElement(
+        //             "Picture",
+        //             new Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
+        //                 parsedImageProperty.SourceRect.Height * 4),
+        //             this.logger,
+        //             DrawableType.Texture,
+        //             parsedImageProperty.Texture,
+        //             parsedImageProperty.SourceRect,
+        //             Color.White);
+        //
+        //         page.page = picture;
+        //         if (textElement != null) page.pageText = textElement;
+        //
+        //         pages.Add(page);
+        //     }
+        //
+        //     propertyNumber++;
+        // }
 
         return true;
     }
