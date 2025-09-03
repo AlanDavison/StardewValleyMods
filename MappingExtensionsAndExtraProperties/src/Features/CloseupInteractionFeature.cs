@@ -98,6 +98,8 @@ public class CloseupInteractionFeature : Feature
 
     private bool CloseupInteractionAction(string[] args, TriggerActionContext context, out string error)
     {
+        // TODO: Refactor this to use the same data model method as the reels.
+
         error = null;
         CloseupInteractionText? textProperty = null;
         CloseupInteractionSound? soundProperty = null;
