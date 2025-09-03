@@ -1,4 +1,6 @@
 # MEEP Release Notes
+* 2.5.1
+  * Add SpaceCore as an optional depenency.
 * 2.5.0
   * Fix: A possible error when interacting with a MEEP farm animal that has no dialogue.
   * Fix: Fixed some long-standing issues with MEEP farm animals duplication.

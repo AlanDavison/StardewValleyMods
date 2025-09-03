@@ -6,7 +6,7 @@
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
-        <Version>2.5.0</Version>
+        <Version>2.5.1</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -17,6 +17,10 @@
         <None Update="release-notes.md">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <SMAPIDependency Include="spacechase0.SpaceCore" Version="1.28.0" Required="false"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
