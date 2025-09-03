@@ -94,58 +94,6 @@ public class Properties
         }
 
         return true;
-
-        // foreach (string imageProperty in imageProperties)
-        // {
-        //     if (Parsers.TryParseIncludingKey(imageProperty, out CloseupInteractionImage parsedImageProperty))
-        //     {
-        //         TextElement textElement = null;
-        //         string currentTextPropertyKey = $"{CloseupInteractionText.PropertyKey}_{propertyNumber}";
-        //         string? currentTextProperty = textProperties.FirstOrDefault(s => s.Contains($"{CloseupInteractionText.PropertyKey}_{propertyNumber.ToString()}"));
-        //
-        //         this.logger.Error($"currentTextProperty: {currentTextProperty}");
-        //
-        //         if (currentTextProperty is not null && currentTextProperty != "")
-        //         {
-        //             int index = propertyNumber - 1;
-        //
-        //             if (index < textProperties.Length && Parsers.TryParseIncludingKey(textProperties[index],
-        //                     out CloseupInteractionText parsedTextProperty))
-        //             {
-        //                 textElement = new TextElement(
-        //                     "Popup Text Box",
-        //                     Rectangle.Empty,
-        //                     this.logger,
-        //                     600,
-        //                     parsedTextProperty.Text);
-        //             }
-        //             else
-        //             {
-        //                 this.logger.Error($"Failed to parse property {currentTextPropertyKey}.");
-        //             }
-        //         }
-        //
-        //         MenuPage page = new MenuPage();
-        //         UiElement picture = new UiElement(
-        //             "Picture",
-        //             new Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
-        //                 parsedImageProperty.SourceRect.Height * 4),
-        //             this.logger,
-        //             DrawableType.Texture,
-        //             parsedImageProperty.Texture,
-        //             parsedImageProperty.SourceRect,
-        //             Color.White);
-        //
-        //         page.page = picture;
-        //         if (textElement != null) page.pageText = textElement;
-        //
-        //         pages.Add(page);
-        //     }
-        //
-        //     propertyNumber++;
-        // }
-
-        return true;
     }
 
     // This relies on external things, and is stinky. TODO: Combine this and the item reel property into one later.
