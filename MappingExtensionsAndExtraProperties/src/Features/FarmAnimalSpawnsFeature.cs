@@ -287,7 +287,7 @@ public class FarmAnimalSpawnsFeature : Feature
                         else
                             logger.Error($"Couldn't remove glitched animal {glitchedAnimal.Name}.");
 
-                            return;
+                        return;
                     }
 
                     glitchedAnimal.currentLocation.Animals.Remove(glitchedAnimal.myID.Value);
