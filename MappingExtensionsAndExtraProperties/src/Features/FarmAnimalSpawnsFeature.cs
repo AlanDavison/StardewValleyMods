@@ -93,10 +93,6 @@ public class FarmAnimalSpawnsFeature : Feature
         FeatureManager.OnDisplayRenderedCallback += this.OnDisplayRenderedCallback;
     }
 
-// IDEA. Maybe instead of removing farm animals on QuickSave save, I could just leave them, and not respawn them on QuickSave load?
-// They would still be removed normally on normal save.
-// HOLY SHIT, THAT'S WHERE IT'S HAPPENING. Day load is being called twice. Once by QuickSSave loaded, and by game loaded, because QuickSave loaded seems to trigger the normal save loaded event.
-
     private void OnDisplayRenderedCallback(object? sender, RenderedStepEventArgs e)
     {
         if (ModEntry.AnimalRemovalMode)
@@ -255,8 +251,6 @@ public class FarmAnimalSpawnsFeature : Feature
                 babbyAnimal.Position =
                     new Vector2(animal.Value.HomeTileX * Game1.tileSize, animal.Value.HomeTileY * Game1.tileSize);
                 babbyAnimal.Name = animal.Value.DisplayName is null ? "No Name Boi" : animal.Value.DisplayName;
-
-                // We got a location, so we're good to check our GameStateQuery condition.
 
                 List<FarmAnimal> glitchedAnimals = new List<FarmAnimal>();
                 foreach (FarmAnimal existingAnimal in targetLocation.Animals.Values)
