@@ -4,6 +4,7 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using xTile.ObjectModel;
@@ -34,27 +35,24 @@ public class CloseupInteraction
         menu.MenuOpened();
     }
 
-    public static void DoCloseupInteraction(GameLocation location, int tileX, int tileY,
-        PropertyValue closeupInteractionProperty, Logger logger)
+    public static void GetCloseupInteractionProperties()
     {
-        TilePropertyHandler handler = new TilePropertyHandler(logger);
 
-        // Next, we try to parse our tile property.
-        if (!Parsers.TryParseIncludingKey(closeupInteractionProperty.ToString(),
-                out CloseupInteractionImage closeupInteractionParsed))
-        {
-            // If the parsing failed, we want to nope out.
+    }
 
-            return;
-        }
-
+    public static void DoCloseupInteraction(
+        CloseupInteractionImage closeupInteraction,
+        CloseupInteractionText? closeupInteractionText,
+        CloseupInteractionSound? closeupInteractionSound,
+        Logger logger)
+    {
         // At this point, we have our correctly-parsed tile property, so we create our image container.
         VBoxElement vBox = new VBoxElement(
             "Picture Box",
             new Microsoft.Xna.Framework.Rectangle(
                 0,
                 0,
-                closeupInteractionParsed.SourceRect.Width * 2, closeupInteractionParsed.SourceRect.Height),
+                closeupInteraction.SourceRect.Width * 2, closeupInteraction.SourceRect.Height),
             logger,
             DrawableType.None,
             Game1.menuTexture,
@@ -68,33 +66,23 @@ public class CloseupInteraction
         // And the image element itself.
         vBox.AddChild(new UiElement(
             "Picture",
-            new Microsoft.Xna.Framework.Rectangle(0, 0, closeupInteractionParsed.SourceRect.Width * 4,
-                closeupInteractionParsed.SourceRect.Height * 4),
+            new Microsoft.Xna.Framework.Rectangle(0, 0, closeupInteraction.SourceRect.Width * 4,
+                closeupInteraction.SourceRect.Height * 4),
             logger,
             DrawableType.Texture,
-            closeupInteractionParsed.Texture,
-            closeupInteractionParsed.SourceRect,
+            closeupInteraction.Texture,
+            closeupInteraction.SourceRect,
             Color.White));
 
-        // Next, we want to see if there's a text tile property to display.
-        if (handler.TryGetBuildingProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
-                out PropertyValue closeupTextProperty))
+        if (closeupInteractionText.HasValue)
         {
-            // There is, so we try to parse it.
-            if (Parsers.TryParse(closeupTextProperty.ToString(), out CloseupInteractionText parsedTextProperty))
-            {
-                // It parsed successfully, so we create a text element, and add it to our image container.
-                vBox.AddChild(new TextElement(
-                    "Popup Text Box",
-                    Microsoft.Xna.Framework.Rectangle.Empty,
-                    logger,
-                    600,
-                    parsedTextProperty.Text));
-            }
-            else
-            {
-                logger.Error($"Failed to parse property {closeupTextProperty.ToString()}");
-            }
+            // It parsed successfully, so we create a text element, and add it to our image container.
+            vBox.AddChild(new TextElement(
+                "Popup Text Box",
+                Microsoft.Xna.Framework.Rectangle.Empty,
+                logger,
+                600,
+                closeupInteractionText.Value.Text));
         }
 
         // Finally, we create our menu.
@@ -103,18 +91,53 @@ public class CloseupInteraction
         // And set our container's parent.
         vBox.SetParent(menu);
 
+        if (closeupInteractionSound.HasValue)
+        {
+            logger.Log($"Setting sound cue: {closeupInteractionSound.Value.CueName}");
+            menu.SetOpenSound(closeupInteractionSound.Value.CueName);
+        }
+
+        Game1.activeClickableMenu = menu;
+        menu.MenuOpened();
+    }
+
+    public static void DoCloseupInteraction(GameLocation location, int tileX, int tileY,
+        PropertyValue closeupInteractionProperty, Logger logger)
+    {
+        TilePropertyHandler handler = new TilePropertyHandler(logger);
+        CloseupInteractionImage closeupInteractionParsed;
+        CloseupInteractionText? textProperty = null;
+        CloseupInteractionSound? soundProperty = null;
+
+        // Next, we try to parse our tile property.
+        if (!Parsers.TryParseIncludingKey(closeupInteractionProperty.ToString(),
+                out closeupInteractionParsed))
+        {
+            // If the parsing failed, we want to nope out.
+
+            return;
+        }
+
+        if (handler.TryGetBuildingProperty(tileX, tileY, location, CloseupInteractionText.PropertyKey,
+                out PropertyValue closeupTextProperty))
+        {
+            if (Parsers.TryParse(closeupTextProperty.ToString(), out CloseupInteractionText parsedTextProperty))
+            {
+                textProperty = parsedTextProperty;
+            }
+        }
+
         // Now we check for a sound interaction property.
         if (handler.TryGetBuildingProperty(tileX, tileY, location, CloseupInteractionSound.PropertyKey,
                 out PropertyValue closeupSoundProperty))
         {
             if (Parsers.TryParse(closeupSoundProperty.ToString(), out CloseupInteractionSound parsedSoundProperty))
             {
-                menu.SetOpenSound(parsedSoundProperty.CueName);
+                soundProperty = parsedSoundProperty;
             }
         }
 
-        Game1.activeClickableMenu = menu;
-        menu.MenuOpened();
+        DoCloseupInteraction(closeupInteractionParsed, textProperty, soundProperty, logger);
     }
 
     public static void CreateInteractionUi(CloseupInteractionImage closeupInteractionParsed, Logger logger,

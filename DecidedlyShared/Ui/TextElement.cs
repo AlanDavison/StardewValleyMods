@@ -11,6 +11,8 @@ public class TextElement : UiElement
     private SpriteFont font;
     private int widthConstraint;
 
+    public string Text => this.text;
+
     public TextElement(
         string name, Rectangle bounds, Logger logger, int widthConstraint = 1000, string text = "",
         SpriteFont? font = null, DrawableType type = DrawableType.SlicedBox, Texture2D? texture = null, Rectangle? sourceRect = null, Color? color = null,
@@ -44,19 +46,5 @@ public class TextElement : UiElement
             new Vector2(this.bounds.X + this.leftEdgeSize, this.bounds.Y + this.topEdgeSize),
             Game1.textColor
             );
-
-        // spriteBatch.DrawString(
-        //     ,
-        //     Color.Black);
-
-        // SpriteText.drawString(
-        //     spriteBatch,
-        //     this.text,
-        //     this.bounds.X + this.leftEdgeSize,
-        //     this.bounds.Y + this.topEdgeSize,
-        //     width: this.widthConstraint,
-        //     drawBGScroll: -1,
-        //     scroll_text_alignment: SpriteText.ScrollTextAlignment.Center
-        // );
     }
 }

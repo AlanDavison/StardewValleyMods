@@ -83,6 +83,76 @@
         {
             "Action": "Include",
             "FromFile": "event-commands.json"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/MEEP/SlimeEggCloseup",
+            "FromFile": "assets/slime-egg.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/TriggerActions",
+            "Entries": {
+                "DH.Test.GoldenAnimalCracker.CloseupInteraction.Trigger": {
+                    "Id": "DH.Test.GoldenAnimalCracker.CloseupInteraction.Trigger",
+                    "Trigger": "spacechase0.SpaceCore_OnItemUsed",
+                    "Condition": "ITEM_ID Input GoldenAnimalCracker",
+                    "Actions": [
+                        "MEEP_CloseupInteractionReel_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image_1": "Mods/DecidedlyHuman/PageOne",
+                        "MEEP_CloseupInteraction_Text_1": "Oh, wow. It's the first page!",
+                        "MEEP_CloseupInteraction_Image_2": "Mods/DecidedlyHuman/PageTwo",
+                        "MEEP_CloseupInteraction_Text_2": "Page two?! Do my eyes deceive me?",
+                        "MEEP_CloseupInteraction_Image_3": "Mods/DecidedlyHuman/PageThree",
+                        // "MEEP_CloseupInteraction_Text_3": "I think this one's the third page.",
+                        "MEEP_CloseupInteraction_Image_4": "Mods/DecidedlyHuman/PageFour",
+                        "MEEP_CloseupInteraction_Text_4": "Holy moly, there are four pages? Wow. That's super impressive.",
+                        "MEEP_CloseupInteraction_Sound": "fishSlap"
+                    },
+                    "MarkActionApplied": false
+                },
+                "DH.Test.Sap.CloseupInteraction.Trigger": {
+                    "Id": "DH.Test.Sap.CloseupInteraction.Trigger",
+                    "Trigger": "spacechase0.SpaceCore_OnItemUsed",
+                    "Condition": "ITEM_ID Input 439",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/MEEP/SlimeEggCloseup",
+                        "MEEP_CloseupInteraction_Text": "Maybe I can hatch this...",
+                        "MEEP_CloseupInteraction_Sound": "fishSlap"
+                    },
+                    "MarkActionApplied": false
+                },
+                "DH.Test.Sap.MonsterKilled.CloseupInteraction.Trigger": {
+                    "Id": "DH.Test.Sap.MonsterKilled.CloseupInteraction.Trigger",
+                    "Trigger": "Spiderbuttons.BETAS_MonsterKilled",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/MEEP/SlimeEggCloseup",
+                        "MEEP_CloseupInteraction_Text": "Maybe I can hatch this...",
+                        "MEEP_CloseupInteraction_Sound": "fishSlap"
+                    },
+                    "MarkActionApplied": false
+                }
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "spacechase0.SpaceCore/ObjectExtensionData",
+            "Entries": {
+                "GoldenAnimalCracker": {
+                    "UseForTriggerAction": true
+                },
+                "439": {
+                    "UseForTriggerAction": true
+                }
+            }
         }
     ]
 }

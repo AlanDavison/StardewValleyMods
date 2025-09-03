@@ -1,4 +1,9 @@
 # MEEP Release Notes
+* 2.5.0
+  * Fix: A possible error when interacting with a MEEP farm animal that has no dialogue.
+  * Fix: Fixed some long-standing issues with MEEP farm animals duplication.
+  * Add: Closeup interactions can now be added to items via a trigger action!
+  * Add: Save Anywhere compatibility.
 * 2.4.6
   * Fix: Farm animals should no longer duplicate for a small number of users. The cause is still unknown, but it should now be impossible.
   * Fix: Huge oversight in MEEP animal removal command that, if left enabled when auto-petting happened, would remove any auto-pet farm animal while the command is enabled.
