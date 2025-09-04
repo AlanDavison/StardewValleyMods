@@ -5,7 +5,9 @@ Note that some features (currently event commands) do *not* require any keys in 
 
 ### Closeup interaction trigger actions
 
-**Note**: This feature requires SpaceCore. Remember to mark SpaceCore as a requirement in your mod if you use it. See the [wiki's manifest page](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Manifest) for how to do so.
+**Important notes**:
+* This feature requires SpaceCore. Remember to mark SpaceCore as a requirement in your mod if you use it. See the [wiki's manifest page](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Manifest) for how to do so.
+* When being used with items that can be eaten or otherwise users normally (food, books, etc.), this feature *will not work*.
 
 This feature consists of a few parts.
 
