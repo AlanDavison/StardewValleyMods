@@ -1,0 +1,24 @@
+{
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/TortillaVerse/NormalTortilla",
+            "FromFile": "assets/tortilla.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/TortillaVerse/SmoochTortilla",
+            "FromFile": "assets/tortilla-smooch.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/TortillaVerse/GhostTortilla",
+            "FromFile": "assets/tortilla-ghost.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/TortillaVerse/CropTortilla",
+            "FromFile": "assets/tortilla-crop.png"
+        }
+    ]
+}
