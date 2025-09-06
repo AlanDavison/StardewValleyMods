@@ -1,0 +1,14 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Format": "2.7.5",
+    "Changes": [
+        {
+            "Action": "Include",
+            "FromFile": "data/image-loads.json"
+        },
+        {
+            "Action": "Include",
+            "FromFile": "data/trigger-actions.json"
+        }
+    ]
+}
