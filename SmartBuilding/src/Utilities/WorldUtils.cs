@@ -241,7 +241,8 @@ namespace SmartBuilding.Utilities
                             var hd = (HoeDirt)here.terrainFeatures[targetTile];
 
                             // 0 here means no fertilizer. This is a known change in 1.6.
-                            if (!hd.HasFertilizer())
+                            // Quick and simple campability patch with Ultimate Fertilizer
+                            if (!hd.HasFertilizer()|| !hd.fertilizer.Value.Contains(itemToPlace.ItemId))
                             {
                                 // Next, we want to check if there's already a crop here.
                                 if (hd.crop != null)
@@ -262,7 +263,7 @@ namespace SmartBuilding.Utilities
                                     I18n.SmartBuilding_Error_Fertiliser_AlreadyFertilised(), LogLevel.Warn);
 
                             // Now, we want to run the final check to see if the fertilization was successful.
-                            if (!hd.HasFertilizer())
+                            if (!hd.HasFertilizer()|| !hd.fertilizer.Value.Contains(itemToPlace.ItemId))
                                 // If there's still no fertilizer here, we need to refund the item.
                                 this.playerUtils.RefundItem(itemToPlace,
                                     I18n.SmartBuilding_Error_Fertiliser_IneligibleForFertilisation(), LogLevel.Warn);
