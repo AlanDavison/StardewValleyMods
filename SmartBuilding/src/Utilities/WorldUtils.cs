@@ -240,7 +240,6 @@ namespace SmartBuilding.Utilities
                             // If it is, we want to grab the HoeDirt, check if it's already got a fertiliser, and fertilise if not.
                             var hd = (HoeDirt)here.terrainFeatures[targetTile];
 
-                            // 0 here means no fertilizer. This is a known change in 1.6.
                             // Quick and simple campability patch with Ultimate Fertilizer
                             if (!hd.HasFertilizer() || !hd.fertilizer.Value.Contains(itemToPlace.ItemId))
                             {
