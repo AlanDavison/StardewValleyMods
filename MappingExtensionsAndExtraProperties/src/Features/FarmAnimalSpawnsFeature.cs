@@ -451,9 +451,8 @@ public class FarmAnimalSpawnsFeature : Feature
                     npc.Name = data.Value.DisplayName;
                     npc.displayName = data.Value.DisplayName;
 
-                    AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
-                        new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())),
-                        npc);
+                    DialogueBox dialogueBoxWithPortrait = new DialogueBox(
+                        new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())));
 
                     Game1.activeClickableMenu = dialogueBoxWithPortrait;
                 }
