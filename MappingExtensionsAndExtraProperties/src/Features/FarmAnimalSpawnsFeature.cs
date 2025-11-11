@@ -451,13 +451,33 @@ public class FarmAnimalSpawnsFeature : Feature
                     npc.Name = data.Value.DisplayName;
                     npc.displayName = data.Value.DisplayName;
 
-                    DialogueBox dialogueBoxWithPortrait = new DialogueBox(
-                        new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())));
+                    logger.Log("Before Dialogue instantiation?", LogLevel.Info);
+
+                    //List<Dialogue> animalDialogue = data.Value.PetMessage.Select((s, i) => new Dialogue(npc, "", s) ).ToList();
+                    Dialogue animalDialogue = new Dialogue(npc, "", "");
+
+
+                    logger.Log("After Dialogue instantiation?", LogLevel.Info);
+
+
+                    foreach (string dialogue in data.Value.PetMessage)
+                    {
+                        animalDialogue.dialogues.Add(new DialogueLine(dialogue));
+                    }
+
+                    foreach (var d in animalDialogue.dialogues)
+                    {
+                        logger.Log($"Dialogue line: {d.Text}", LogLevel.Info);
+                    }
+
+                    DialogueBox dialogueBoxWithPortrait = new DialogueBox(animalDialogue);
 
                     Game1.activeClickableMenu = dialogueBoxWithPortrait;
                 }
                 catch (Exception e)
                 {
+                    throw e;
+
                     logger.Warn(
                         $"Portrait key for farm animal {data.Value.DisplayName} was present, but invalid.");
                 }

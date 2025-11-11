@@ -24,8 +24,9 @@
                     "DisplayName": "Animal One Name",
                     "PortraitTexture": "Portraits/Maru",
                     "PetMessage": [
+                        "#$e#oh, are you interested in some bepsi products?$1#$action Spiderbuttons.BETAS_SetHealth 1",
                         "I'm an old chicken! So old I'm even ranting a lot like a complete and utter fool filled with madness, insanity, and cookiness! In fact, I'm going to keep ranting just to be entirely sure this works properly. Otherwise Alan will be sad, and we don't want Alan to be sad and need to restart Stardew one more time, do we?",
-                        "So no UwU from me."
+                        "So no UwU from me.",
                     ],
                     "HomeTileX": 16,
                     "HomeTileY": 5,
