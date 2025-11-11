@@ -6,7 +6,7 @@ The basic format for `CloseupInteraction` is in the following snippet of an `Edi
 
 ```json
 {
-    "Format": "1.28.0",
+    "Format": "2.8.1",
     "Changes": [
         {
             // Apply the tile property
@@ -123,7 +123,7 @@ This one is fairly self-explanatory. You would add the tile property `DHSetMailF
 
 ```json
 {
-    "Format": "1.28.0",
+    "Format": "2.8.1",
     "Changes": [
         {
             // Apply the tile property
@@ -159,7 +159,7 @@ You could also use this for any kind of conditional patch that checks for a mail
 This one is also fairly self-explanatory. It sets a conversation topic whenever a tile is interacted with!
 ```json
 {
-    "Format": "1.28.0",
+    "Format": "2.8.1",
     "Changes": [
         {
             // Apply the tile property
@@ -197,7 +197,7 @@ This tile property will allow you to spawn a "fake" NPC on a given tile. Unlike 
 The most basic setup is as follows:
 ```json
 {
-    "Format": "1.28.0",
+    "Format": "2.8.1",
     "Changes": [
         {
             "Action": "Load",
