@@ -1,7 +1,13 @@
 # Mapping Extensions and Extra Properties (MEEP) Documentation
 **Important**: Remember to read the section on [adding the correct keys to your manifest](../readme.md#Adding-MEEP-feature-keys-to-your-manifest) for the specific features you intend to use first.
 
-## Using the CloseupInteraction tile properties
+## The CloseupInteraction Feature
+
+### Requirements
+* At least one loaded image asset.
+* If loading your own, it should preferably be named using the format `Mods/YourModID/ImageName`, but this is completely arbitrary, and you can use your own naming scheme if you like.
+
+### Usage
 The basic format for `CloseupInteraction` is in the following snippet of an `EditMap` patch using Content Patcher.
 
 ```json
@@ -47,7 +53,13 @@ In `540 305 42 28`, `540` is the x co-ordinate of the top-left corner of the reg
 when running at lower resolutions when combined with the text display option. I recommend you **always test your images
 at a varying UI scale settings and window sizes** if you want to play it safe.
 
-### Using the CloseupInteraction reel tile properties
+## The CloseupInteraction_Reel Feature
+
+### Requirements
+* At least one loaded image asset.
+* If loading your own, it should preferably be named using the format `Mods/YourModID/ImageName`, but this is completely arbitrary, and you can use your own naming scheme if you like.
+
+### Usage
 An example of a closeup interaction reel looks like so:
 ```json
 {
@@ -97,7 +109,12 @@ the image on that page won't have any text beneath it.
 Finally, and most importantly, the `Action` tile property with the value `MEEP_CloseupInteractionReel`. This tells MEEP
 to treat this like a closeup interaction reel.
 
-### Using the MEEP_CloseupInteraction_Sound tile property
+## The MEEP_CloseupInteraction_Sound Feature
+
+### Requirements
+* At least one loaded sound (including ones in the base game).
+
+### Usage
 You can spice up your closeup interactions by specifying that a given sound cue be played when
 the interaction is opened, or the page is turned in the reel.
 
@@ -118,7 +135,12 @@ the interaction is opened, or the page is turned in the reel.
 
 The sound cue must be valid, or MEEP will log an error every time the property is interacted with, and no sound will be played.
 
-## Using the MEEP_SetMailFlag tile property
+## The MEEP_SetMailFlag Feature
+
+### Requirements
+* None.
+
+### Usage
 This one is fairly self-explanatory. You would add the tile property `DHSetMailFlag`, and the value for it is the mail flag you want to be set. for example:
 
 ```json
@@ -155,7 +177,12 @@ With this example, interacting with the tile will bring up the fortune teller im
 
 You could also use this for any kind of conditional patch that checks for a mail flag.
 
-## Using the MEEP_AddConversationTopic tile property
+## The MEEP_AddConversationTopic Feature
+
+### Requirements
+* None.
+
+### Usage
 This one is also fairly self-explanatory. It sets a conversation topic whenever a tile is interacted with!
 ```json
 {
@@ -191,7 +218,13 @@ All you do is add the `MEEP_AddConversationTopic` tile property as you see above
 `DH.MEEP.SeenEvilJojaLetter`: This is the conversation topic you want to add.
 `7`: This is the number of days the conversation topic will remain active.
 
-## Using the MEEP_FakeNPC tile property
+## The MEEP_FakeNPC Feature
+
+### Requirements
+* A loaded [NPC portrait](https://stardewvalleywiki.com/Modding:NPC_data#Portraits) image loaded to `Portraits/YourFakeNPCName`.
+* A loaded [NPC spritesheet](https://stardewvalleywiki.com/Modding:NPC_data#Overworld_sprites) image loaded to `Characters/YourFakeNPCName`.
+
+### Usage
 This tile property will allow you to spawn a "fake" NPC on a given tile. Unlike a "real" NPC, which needs a disposition, and lots of setup, a "fake" NPC needs very, very little. Fake NPCs cannot receive gifts, don't have a schedule, and won't move around. They're intended to be a middle ground between a simple static NPC sprite, and a fully-fledged NPC.
 
 The most basic setup is as follows:
@@ -313,7 +346,12 @@ Do note, however, that using a custom size for your NPC will disable the breathi
 
 Instead, you can just draw the shadows into the NPC sprite. This allows for much nicer looking shadows, too!
 
-## Using the MEEP Letter tile property
+## The MEEP Letter Feature
+
+### Requirements
+* (Optional) A loaded image asset, preferably loaded to something along the lines of `Mods/YourModID/YourCustomLetterBackground`.
+
+### Usage
 The `Letter` tile properties are fairly simple. There are two of them -- `MEEP_Letter`, and `MEEP_Letter_Type`.
 
 ### MEEP_Letter
