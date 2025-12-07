@@ -172,8 +172,6 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
     {
-        this.logger.Log("MEEP 2.4.7-beta.5 loading...", LogLevel.Info);
-
         if (this.Helper.ModRegistry.IsLoaded("DLX.QuickSave"))
         {
             // Grab the Save Anywhere API so we can safely destroy our NPCs before it saves.
