@@ -129,7 +129,9 @@ public class FarmAnimalSpawnsFeature : Feature
                 if (animal.modData is null)
                     continue;
 
-                if (animal.modData.ContainsKey("MEEP_Farm_Animal_ID"))
+                if (animal.modData.ContainsKey("MEEP_Farm_Animal_ID") ||
+                    animal.modData.ContainsKey("MEEP_Farm_Animal") ||
+                    animal.modData.ContainsKey("MEEP_Farm_Animal_Name"))
                     animalsToRemove.Add(animal);
             }
 
@@ -139,7 +141,14 @@ public class FarmAnimalSpawnsFeature : Feature
         });
 
         if (this.animalsRemoved != this.animalsSpawned)
-            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this.", LogLevel.Warn);
+        {
+            logger.Log(
+                "MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this.",
+                LogLevel.Warn);
+
+            logger.Log($"Animals removed: {this.animalsRemoved}", LogLevel.Trace);
+            logger.Log($"Animals spawned: {this.animalsSpawned}", LogLevel.Trace);
+        }
 
         this.animalsRemoved = 0;
     }
