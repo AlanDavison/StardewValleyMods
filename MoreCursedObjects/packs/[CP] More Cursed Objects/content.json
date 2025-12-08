@@ -1,0 +1,10 @@
+{
+    "$schema": "https://smapi.io/schemas/content-patcher.json",
+    "Format": "2.8.0",
+    "Changes": [
+        {
+            "Action": "Include",
+            "FromFile": "data/objects.json"
+        }
+    ]
+}
