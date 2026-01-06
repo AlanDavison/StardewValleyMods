@@ -9,6 +9,7 @@ using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
@@ -97,15 +98,89 @@ public class Properties
     }
 
     // This relies on external things, and is stinky. TODO: Combine this and the item reel property into one later.
-    public bool TryGetInteractionReel(int x, int y, GameLocation location, string key,
+    public bool TryGetInteractionReel(int x, int y, GameLocation location, string key, bool isOnFurniture,
         out List<MenuPage> pages)
     {
         pages = new List<MenuPage>();
         int propertyNumber = 1;
 
+        this.logger.Log($"WE'RE TRYING TO DO THE THING??? Furniture = {isOnFurniture}", LogLevel.Alert);
+
+        if (!isOnFurniture)
+            this.GetPagesFromTiles(x, y, location, key, pages, propertyNumber);
+        else
+            this.GetPagesFromFurniture(x, y, location, key, pages, propertyNumber);
+
+        return pages.Count > 0;
+    }
+
+    private void GetPagesFromFurniture(int x, int y, GameLocation location, string key, List<MenuPage> pages, int propertyNumber)
+    {
+        Furniture furniture = location.GetFurnitureAt(new Vector2(x, y));
+        string propertyValue = "";
+
+        // We're trying to find multiple properties, and we know our syntax for multiple is PropertyName_1, etc.
+        while (furniture.DoesTileHaveProperty(x, y, "Buildings", $"{key}_{propertyNumber}", ref propertyValue))
+        {
+            this.logger.Log("We're actually doing the thing!", LogLevel.Alert);
+
+            if (Parsers.TryParse(propertyValue,
+                    out CloseupInteractionImage parsedImageProperty))
+            {
+                TextElement textElement = null;
+
+                // We've successfully parsed an image reel element, so we want to check for a corresponding description.
+                if (this.properties.TryGetBuildingProperty(x, y, location, $"{CloseupInteractionText.PropertyKey}_{propertyNumber}",
+                        out PropertyValue closeupTextProperty))
+                {
+                    // We found a property, so we parse it.
+                    if (Parsers.TryParse(closeupTextProperty.ToString(), out CloseupInteractionText parsedTextProperty))
+                    {
+                        textElement = new TextElement(
+                            "Popup Text Box",
+                            Microsoft.Xna.Framework.Rectangle.Empty,
+                            this.logger,
+                            600,
+                            parsedTextProperty.Text);
+                    }
+                    else
+                    {
+                        this.logger.Error($"Failed to parse property {closeupTextProperty.ToString()}");
+                    }
+                }
+
+                MenuPage menuPage = new MenuPage();
+                UiElement picture = new UiElement(
+                    "Picture",
+                    new Microsoft.Xna.Framework.Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
+                        parsedImageProperty.SourceRect.Height * 4),
+                    this.logger,
+                    DrawableType.Texture,
+                    parsedImageProperty.Texture,
+                    parsedImageProperty.SourceRect,
+                    Color.White);
+
+                menuPage.page = picture;
+                menuPage.pageText = textElement;
+
+                pages.Add(menuPage);
+            }
+            else
+            {
+                this.logger.Error($"Failed to parse property {propertyValue}");
+            }
+
+            propertyNumber++;
+        }
+    }
+
+    private void GetPagesFromTiles(int x, int y, GameLocation location, string key, List<MenuPage> pages, int propertyNumber)
+    {
         // We're trying to find multiple properties, and we know our syntax for multiple is PropertyName_1, etc.
         while (this.properties.TryGetTileProperty(x, y, location, "Buildings", $"{key}_{propertyNumber}", out PropertyValue property))
         {
+            this.logger.Log("We're actually doing the thing!", LogLevel.Alert);
+
             if (Parsers.TryParse(property.ToString(),
                     out CloseupInteractionImage parsedImageProperty))
             {
@@ -154,7 +229,5 @@ public class Properties
 
             propertyNumber++;
         }
-
-        return pages.Count > 0;
     }
 }

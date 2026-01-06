@@ -54,6 +54,7 @@ public class CloseupInteractionFeature : Feature
 
         GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Image", this.DoCloseupInteraction);
         GameLocation.RegisterTileAction("MEEP_CloseupInteractionReel", this.DoCloseupReel);
+        GameLocation.RegisterTileAction("MEEP_CloseupInteractionReel_Furniture", this.DoCloseupReel);
         TriggerActionManager.RegisterAction("MEEP_CloseupInteraction_Action", this.CloseupInteractionAction);
         TriggerActionManager.RegisterAction("MEEP_CloseupInteractionReel_Action", this.CloseupInteractionReelAction);
     }
@@ -188,8 +189,16 @@ public class CloseupInteractionFeature : Feature
         if (!enabled)
             return false;
 
+        foreach (string propertyArg in propertyArgs)
+        {
+            logger.Log($"Arg: {propertyArg}", LogLevel.Alert);
+        }
+
+        bool isOnFurniture = propertyArgs[0].Equals("MEEP_CloseupInteractionReel_Furniture");
+
         if (propertyUtils.TryGetInteractionReel(tile.X, tile.Y, location,
                 CloseupInteractionImage.PropertyKey,
+                false,
                 out List<MenuPage> pages))
         {
             string cueName = "bigSelect";

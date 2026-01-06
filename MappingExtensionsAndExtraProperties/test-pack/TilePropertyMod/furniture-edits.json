@@ -1,0 +1,30 @@
+{
+    "Changes": [
+        {
+            "Action":"EditData",
+            "Target":"spacechase0.SpaceCore/FurnitureExtensionData",
+            "Entries":
+            {
+                "RetroEndTable":
+                {
+                    "TileProperties": {
+                        "0, 0": {
+                            "Buildings": {
+                                "Action": "MEEP_CloseupInteractionReel_Furniture",
+                                "MEEP_CloseupInteraction_Image_1": "Mods/DecidedlyHuman/PageOne",
+                                "MEEP_CloseupInteraction_Text_1": "Oh, wow. It's the first page!",
+                                "MEEP_CloseupInteraction_Image_2": "Mods/DecidedlyHuman/PageTwo",
+                                "MEEP_CloseupInteraction_Text_2": "Page two?! Do my eyes deceive me?",
+                                "MEEP_CloseupInteraction_Image_3": "Mods/DecidedlyHuman/PageThree",
+                                "MEEP_CloseupInteraction_Text_3": "I think this one's the third page.",
+                                "MEEP_CloseupInteraction_Image_4": "Mods/DecidedlyHuman/PageFour",
+                                "MEEP_CloseupInteraction_Text_4": "Holy moly, there are four pages? Wow. That's super impressive.",
+                                "MEEP_CloseupInteraction_Sound": "shwip"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -90,6 +90,10 @@
             "FromFile": "assets/slime-egg.png"
         },
         {
+            "Action": "Include",
+            "FromFile": "furniture-edits.json"
+        },
+        {
             "Action": "EditData",
             "Target": "Data/TriggerActions",
             "Entries": {
