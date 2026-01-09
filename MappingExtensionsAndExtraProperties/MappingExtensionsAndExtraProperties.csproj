@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
     <PropertyGroup>
@@ -6,7 +6,7 @@
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
-        <Version>2.5.2</Version>
+        <Version>2.5.2-beta.1</Version>
     </PropertyGroup>
 
     <PropertyGroup>
