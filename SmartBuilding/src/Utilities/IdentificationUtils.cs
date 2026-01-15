@@ -163,7 +163,26 @@ namespace SmartBuilding.Utilities
             if (itemName.Contains("Floor") || (itemName.Contains("Path") && item.Category == -24))
                 return ItemType.Floor;
             if (item is Chest)
+            {
+                try
+                {
+                    if ((item as Chest).GlobalInventoryId.Contains("CarryChest"))
+                    {
+                        this.logger.Log(I18n.SmartBuilding_Warning_Chest_AttemptedCarryChestPlacement(), LogLevel.Warn, true);
+
+                        return ItemType.NotPlaceable;
+                    }
+                }
+                catch (InvalidCastException ice)
+                {
+                    this.logger.Error("Caught an exception casting what should be a chest to a chest.");
+                    this.logger.Exception(ice);
+
+                    return ItemType.NotPlaceable;
+                }
+
                 return ItemType.Chest;
+            }
             if (itemName.Contains("Fence"))
                 return ItemType.Fence;
             if (itemName.Equals("Gate") || item.ParentSheetIndex.Equals(325))
