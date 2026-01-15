@@ -79,6 +79,10 @@ public class FarmAnimalSpawnsFeature : Feature
         }
 
         this.Enabled = true;
+
+        // This is necessary in order to have animals spawn on the first day, since we otherwise
+        // add this on day end.
+        Game1.addMorningFluffFunction(this.DayStartAction);
     }
 
     public override void Disable()
@@ -88,7 +92,6 @@ public class FarmAnimalSpawnsFeature : Feature
 
     public override void RegisterCallbacks()
     {
-        FeatureManager.OnDayStartCallback += this.OnDayStart;
         FeatureManager.EarlyDayEndingCallback += this.OnEarlyDayEnding;
         FeatureManager.OnDisplayRenderedCallback += this.OnDisplayRenderedCallback;
     }
@@ -139,9 +142,12 @@ public class FarmAnimalSpawnsFeature : Feature
         });
 
         if (this.animalsRemoved != this.animalsSpawned)
-            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this.", LogLevel.Warn);
+            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this if you notice any problems.", LogLevel.Trace);
 
         this.animalsRemoved = 0;
+
+        // This is a workaround for a vanilla bug.
+        Game1.addMorningFluffFunction(this.DayStartAction);
     }
 
     private void RemoveFarmAnimal(FarmAnimal animal)
@@ -174,19 +180,17 @@ public class FarmAnimalSpawnsFeature : Feature
         }
         catch (Exception e)
         {
-            logger.Log($"Ran into a problem removing animal {animal.Name}");
+            logger.Log($"Ran into a problem removing animal {animal.Name}", LogLevel.Warn);
         }
     }
 
-    private void OnDayStart(object? sender, EventArgs e)
+    private void DayStartAction()
     {
         if (!Context.IsWorldReady || !Context.IsMainPlayer || !this.Enabled)
             return;
 
         if (FarmAnimalSpawnsFeature.quickSaveApi is not null)
         {
-            logger.Log("Quick Save's API was loaded properly.", LogLevel.Trace);
-
             if (FarmAnimalSpawnsFeature.quickSaveApi.IsLoading)
             {
                 logger.Log("Quick Save indicated it was loading. Skipping this DayStart.", LogLevel.Trace);
@@ -267,7 +271,7 @@ public class FarmAnimalSpawnsFeature : Feature
                         {
                             logger.Error(
                                 $"Animal {babbyAnimal.Name} already exists with MEEP id {id} in {targetLocation.Name}. This means removal failed to happen for some reason. Attempting to fix it automatically.");
-                                glitchedAnimals.Add(existingAnimal);
+                            glitchedAnimals.Add(existingAnimal);
                         }
                         else if (string.IsNullOrWhiteSpace(id))
                         {
@@ -306,7 +310,7 @@ public class FarmAnimalSpawnsFeature : Feature
             }
             catch (Exception ex)
             {
-                logger.Log($"Caught an exception spawning {animal.Value.AnimalId} spawned in {animal.Value.LocationId}. Skipping!");
+                logger.Log($"Caught an exception spawning {animal.Value.AnimalId} spawned in {animal.Value.LocationId}. Skipping!", LogLevel.Error);
                 logger.Exception(ex);
             }
         }

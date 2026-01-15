@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
@@ -66,6 +67,35 @@ public class ModEntry : Mod
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
         helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+
+        this.AddDebugKeybinds();
+    }
+
+    [Conditional("DEBUG")]
+    private void AddDebugKeybinds()
+    {
+        this.Helper.Events.Input.ButtonPressed += this.OnDebugButtonPressed;
+    }
+
+    private void OnDebugButtonPressed(object? sender, ButtonPressedEventArgs e)
+    {
+        // Welcome to hot reload city. Population: me.
+
+        if (e.Button == SButton.OemSemicolon)
+        {
+            this.logger.Log($"Printing info of all animals in {Game1.currentLocation.Name}.", LogLevel.Info);
+
+            foreach (FarmAnimal animal in Game1.currentLocation.animals.Values)
+            {
+                this.logger.Log($"{animal.Name} X: {animal.Position.X}.", LogLevel.Info);
+                this.logger.Log($"{animal.Name} Y: {animal.Position.Y}.", LogLevel.Info);
+
+                foreach (string s in animal.modData.Values)
+                {
+                    this.logger.Log($"{animal.Name} modData: {s}", LogLevel.Info);
+                }
+            }
+        }
     }
 
     private void LoadContentPacks()
