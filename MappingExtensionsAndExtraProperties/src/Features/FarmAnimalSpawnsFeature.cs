@@ -317,23 +317,6 @@ public class FarmAnimalSpawnsFeature : Feature
 
         logger.Log($"Spawned {this.animalsSpawned} animals. This is normal, and will not cause or result in lag.", LogLevel.Trace);
         logger.Log("Done with this DayStart event.", LogLevel.Trace);
-
-        // foreach (GameLocation location in Game1.locations)
-        // {
-        //     foreach (FarmAnimal animal in location.animals.Values)
-        //     {
-        //         if (animal.modData.ContainsKey("MEEP_Farm_Animal_ID"))
-        //         {
-        //             logger.Log($"Location: {location.Name}", LogLevel.Info);
-        //
-        //             foreach (string s in animal.modData.Values)
-        //                 logger.Log($"Animal {animal.Name} modData: {s}", LogLevel.Info);
-        //
-        //             logger.Log($"Animal {animal.Name} X: {animal.Position.X}", LogLevel.Info);
-        //             logger.Log($"Animal {animal.Name} Y: {animal.Position.Y}", LogLevel.Info);
-        //         }
-        //     }
-        // }
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
