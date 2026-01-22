@@ -80,9 +80,12 @@ public class FarmAnimalSpawnsFeature : Feature
 
         this.Enabled = true;
 
-        // This is necessary in order to have animals spawn on the first day, since we otherwise
-        // add this on day end.
-        Game1.addMorningFluffFunction(this.DayStartAction);
+        if (Context.IsMainPlayer)
+        {
+            // This is necessary in order to have animals spawn on the first day, since we otherwise
+            // add this on day end.
+            Game1.addMorningFluffFunction(this.DayStartAction);
+        }
     }
 
     public override void Disable()
@@ -269,8 +272,8 @@ public class FarmAnimalSpawnsFeature : Feature
                     {
                         if (id == animal.Key)
                         {
-                            logger.Error(
-                                $"Animal {babbyAnimal.Name} already exists with MEEP id {id} in {targetLocation.Name}. This means removal failed to happen for some reason. Attempting to fix it automatically.");
+                            logger.Log(
+                                $"Animal {babbyAnimal.Name} already exists with MEEP id {id} in {targetLocation.Name}. This means removal failed to happen for some reason. Attempting to fix it automatically.", LogLevel.Trace);
                             glitchedAnimals.Add(existingAnimal);
                         }
                         else if (string.IsNullOrWhiteSpace(id))
@@ -289,13 +292,13 @@ public class FarmAnimalSpawnsFeature : Feature
                         if (gotMeepId)
                             logger.Error($"Couldn't remove glitched animal {glitchedAnimal.Name} with MEEP ID {meepId} because its current location was null. Please report this to DecidedlyHuman for advice on how to manually fix the issue.");
                         else
-                            logger.Error($"Couldn't remove glitched animal {glitchedAnimal.Name}.");
+                            logger.Error($"Couldn't remove glitched animal {glitchedAnimal.Name} because its current location was null. Please report this to DecidedlyHuman for advice on how to manually fix the issue.");
 
                         return;
                     }
 
                     glitchedAnimal.currentLocation.Animals.Remove(glitchedAnimal.myID.Value);
-                    logger.Log($"Removed glitched animal {glitchedAnimal.Name} from {glitchedAnimal.currentLocation.Name}.", LogLevel.Trace);
+                    logger.Log($"Safely removed animal {glitchedAnimal.Name} from {glitchedAnimal.currentLocation.Name}.", LogLevel.Trace);
                 }
 
                 targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
