@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+
+    <PropertyGroup>
+        <Name>Font Master</Name>
+        <Description>An entirely original mod name.</Description>
+        <MinimumApiVersion>4.3.2</MinimumApiVersion>
+        <UpdateKeys>Nexus:00000</UpdateKeys>
+        <Version>0.0.1</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>true</EnableHarmony>
+        <BundleExtraAssemblies>ThirdParty</BundleExtraAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FontStashSharp.MonoGame" Version="1.5.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="assets\" />
+    </ItemGroup>
+
+</Project>
