@@ -279,6 +279,10 @@ public class FarmAnimalSpawnsFeature : Feature
                         else if (string.IsNullOrWhiteSpace(id))
                         {
                             logger.Error($"The animal has MEEP's animal key ID, but it's blank. Please report this to the author of the pack that adds this animal and me (DecidedlyHuman).");
+                            logger.Log($"Use the following information to try to track down the pack that adds the animal:");
+                            logger.Log($"Name: {animal.Value.DisplayName}");
+                            logger.Log($"Animal ID: {animal.Value.AnimalId}");
+                            logger.Log($"Location ID: {animal.Value.LocationId}");
                         }
                     }
                 }
