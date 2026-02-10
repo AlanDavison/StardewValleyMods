@@ -276,7 +276,7 @@ public class FarmAnimalSpawnsFeature : Feature
                     if (existingAnimal.modData is null)
                         continue;
 
-                    bool hasFarmAnimalValue = babbyAnimal.modData.TryGetValue("MEEP_Farm_Animal", out string isMeepAnimal);
+                    bool hasFarmAnimalValue = existingAnimal.modData.TryGetValue("MEEP_Farm_Animal", out string isMeepAnimal);
                     bool hasFarmAnimalId = existingAnimal.modData.TryGetValue("MEEP_Farm_Animal_ID", out string id);
 
                     if (hasFarmAnimalId || hasFarmAnimalValue)
