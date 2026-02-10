@@ -242,6 +242,17 @@ public class FarmAnimalSpawnsFeature : Feature
                 if (animal.Value.SkinId is null)
                     animal.Value.SkinId = "";
 
+                if (string.IsNullOrWhiteSpace(animal.Key))
+                {
+                    logger.Error($"The animal's key in the spawn data dictionary was blank. Not spawning as a precaution. Please report this to the author of the pack that adds this animal and me (DecidedlyHuman).");
+                    logger.Log($"Use the following information to try to track down the pack that adds the animal:", LogLevel.Info);
+                    logger.Log($"Name: {animal.Value.DisplayName}", LogLevel.Info);
+                    logger.Log($"Animal ID: {animal.Value.AnimalId}", LogLevel.Info);
+                    logger.Log($"Location ID: {animal.Value.LocationId}", LogLevel.Info);
+
+                    continue;
+                }
+
                 FarmAnimal babbyAnimal = new FarmAnimal(animal.Value.AnimalId, multiplayer.getNewID(), -1L)
                 {
                     skinID = { animal.Value.SkinId },
