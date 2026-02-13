@@ -10,7 +10,7 @@
 
     <!-- ModBuildConfig-related settings. -->
     <PropertyGroup>
-        <GamePath>/home/alan/.local/share/Steam/steamapps/common/Stardew Valley/</GamePath>
+        <GamePath>/home/alan/.local/share/Steam/steamapps/common/stardew-valley-1.6.16-alpha/</GamePath>
         <ModZipPath Condition="'$(ModZipPath)' == ''">$(SolutionDir)Release\Zip</ModZipPath>
         <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
         <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
@@ -31,9 +31,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.1"/>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0"/>
         <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.0"/>
-        <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.3.1"/>
+        <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.4.1"/>
     </ItemGroup>
 
 </Project>
