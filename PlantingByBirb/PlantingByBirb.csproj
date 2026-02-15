@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared"/>
+
+    <PropertyGroup>
+        <Name>Planting By Birb</Name>
+        <Description>If you have some hoed dirt on your farm, maybe some birds will drop seeds there.</Description>
+        <MinimumApiVersion>4.3.2</MinimumApiVersion>
+        <UpdateKeys>Nexus:42422</UpdateKeys>
+        <Version>1.0.0-alpha</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableHarmony>false</EnableHarmony>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
+        <ContentPacks Include="test-pack/BirbSeedTestMod" Version="1.0.0-alpha" />
+    </ItemGroup>
+
+</Project>

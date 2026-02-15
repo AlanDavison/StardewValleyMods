@@ -1,0 +1,17 @@
+name: Build Plant By Birb.
+
+on:
+    workflow_dispatch:
+
+run-name: Build Plant By Birb.
+permissions:
+    contents: write
+    id-token: write
+    attestations: write
+
+jobs:
+    build:
+        uses: ./.github/workflows/build-mod.yml
+        with:
+            project_name: "PlantByBirb"
+            create_draft_release: true

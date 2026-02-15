@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/Active Development/" />
+  <Folder Name="/Active Development/">
+    <Project Path="PlantingByBirb/PlantingByBirb.csproj" />
+  </Folder>
   <Folder Name="/Deprecated/">
     <Project Path="BetterCrystalariums/BetterCrystalariums.csproj">
       <Build Solution="Debug|*" Project="false" />

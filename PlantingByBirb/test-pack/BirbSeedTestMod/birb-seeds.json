@@ -1,0 +1,56 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "DecidedlyHuman/PlantingByBirb/SeedData",
+            "Entries": {
+                // Spring
+                "597": { // Blue Jazz.
+                    "PlantingWeight": 2
+                },
+                "CarrotSeeds": { // Duh.
+                    "PlantingWeight": 1
+                },
+                "474": { // Cauliflower.
+                    "PlantingWeight": 1
+                },
+                "477": { // Kale.
+                    "PlantingWeight": 1
+                },
+                // Summer
+                "481": { // Blueberry.
+                    "PlantingWeight": 1
+                },
+                "482": { // Hot pepper.
+                    "PlantingWeight": 1
+                },
+                "453": { // Poppy.
+                    "PlantingWeight": 2
+                },
+                "SummerSquashSeeds": { // Summer Squash.
+                    "PlantingWeight": 1
+                },
+                // Autumn
+                "490": { // Pumpkin.
+                    "PlantingWeight": 1
+                },
+                "BroccoliSeeds": { // Broccoli.
+                    "PlantingWeight": 1
+                },
+                "488": { // Eggplant.
+                    "PlantingWeight": 1
+                },
+                "425": { // Fairy Rose.
+                    "PlantingWeight": 2
+                },
+                // Winter
+                "PowdermelonSeeds": { // Powdermelon.
+                    "PlantingWeight": 1
+                },
+                "498": { // Winter seeds.
+                    "PlantingWeight": 2
+                }
+            }
+        }
+    ]
+}
