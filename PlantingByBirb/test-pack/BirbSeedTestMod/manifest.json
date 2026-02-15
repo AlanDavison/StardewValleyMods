@@ -1,0 +1,11 @@
+{
+    "Name": "Planting By Birb Test Mod",
+    "Author": "DecidedlyHuman",
+    "Version": "1.0.0-alpha",
+    "Description": "Birb seeds for testing.",
+    "UniqueID": "DH.BirbSeed.Test",
+    "UpdateKeys": [],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    }
+}
