@@ -19,5 +19,5 @@ manifest.json
 *.kra~
 *.kra-autosave.kra
 
-# Exclude CI version artifacts.
+# Exclude our generated version.txt files for Github Actions.
 version.txt

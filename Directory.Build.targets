@@ -1,11 +1,18 @@
 <Project>
 
-    <!-- This is required only for our current GitHub workflow.  -->
-    <Target Name="PrintVersionToFile" BeforeTargets="BeforeBuild;BeforeRebuild">
-        <WriteLinesToFile
-            File="version.txt"
-            Lines="$(Version)"
-            Overwrite="true"/>
-    </Target>
+    <!-- We need this here for ModManifestBuilder. -->
+    <PropertyGroup>
+        <UniqueId>$(Authors).$(AssemblyName)</UniqueId>
+    </PropertyGroup>
+
+    <!--    And this needs to go here because ModBuildConfig pulls the game path from the targets file later than
+            Directory.Build.props would allow for.
+    -->
+    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+        <!-- enable game debugging -->
+        <StartAction>Program</StartAction>
+        <StartProgram>$(GamePath)\StardewModdingAPI</StartProgram>
+        <StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
+    </PropertyGroup>
 
 </Project>

@@ -1,0 +1,80 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/TriggerActions",
+            "Entries": {
+                "DH.TortillaVerse.BombJumpscare": {
+                    "Id": "DH.TortillaVerse.BombJumpscare",
+                    "Trigger": "Spiderbuttons.BETAS_BombExploded",
+                    "Condition": "RANDOM 0.1",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/TortillaVerse/NormalTortilla",
+                        "MEEP_CloseupInteraction_Text": "TORTILLA SURPRISE!",
+                        "MEEP_CloseupInteraction_Sound": "fishSlap"
+                    },
+                    "MarkActionApplied": false
+                },
+                "DH.TortillaVerse.SmoochTortilla": {
+                    "Id": "DH.TortillaVerse.SmoochTortilla",
+                    "Trigger": "Spiderbuttons.BETAS_NpcKissed",
+                    "Condition": "RANDOM 0.5",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/TortillaVerse/SmoochTortilla",
+                        "MEEP_CloseupInteraction_Text": "Oh, no! You accidentally smooched your tortilla instead of your spouse!",
+                        "MEEP_CloseupInteraction_Sound": "junimoMeep1"
+                    },
+                    "MarkActionApplied": false
+                },
+                "DH.TortillaVerse.AchievementJumpscare": {
+                    "Id": "DH.TortillaVerse.AchievementJumpscare",
+                    "Trigger": "Spiderbuttons.BETAS_AchievementUnlocked",
+                    "Condition": "RANDOM 0.5",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/TortillaVerse/GhostTortilla",
+                        "MEEP_CloseupInteraction_Text": "Spooky achievement ghost tortilla!",
+                        "MEEP_CloseupInteraction_Sound": "cursed_mannequin"
+                    },
+                    "MarkActionApplied": false
+                },
+                "DH.TortillaVerse.ShakenJumpscare": {
+                    "Id": "DH.TortillaVerse.ShakenJumpscare",
+                    "Trigger": "Spiderbuttons.BETAS_FloraShaken",
+                    "Condition": "RANDOM 0.5",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/TortillaVerse/GhostTortilla",
+                        "MEEP_CloseupInteraction_Text": "Spooky achievement ghost tortilla!",
+                        "MEEP_CloseupInteraction_Sound": "cursed_mannequin"
+                    },
+                    "MarkActionApplied": false
+                },
+                "DH.TortillaVerse.CropHarvestJumpscare": {
+                    "Id": "DH.TortillaVerse.CropHarvestJumpscare",
+                    "Trigger": "Spiderbuttons.BETAS_CropHarvested",
+                    "Condition": "RANDOM 0.01",
+                    "Actions": [
+                        "MEEP_CloseupInteraction_Action"
+                    ],
+                    "CustomFields": {
+                        "MEEP_CloseupInteraction_Image": "Mods/DecidedlyHuman/TortillaVerse/CropTortilla",
+                        "MEEP_CloseupInteraction_Text": "Oh no! Your tortilla got covered in crops!",
+                        "MEEP_CloseupInteraction_Sound": "harvest"
+                    },
+                    "MarkActionApplied": false
+                }
+            }
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+// ReSharper disable InconsistentNaming
 
 namespace DecidedlyShared.APIs
 {

@@ -1,0 +1,65 @@
+<Solution>
+  <Folder Name="/Active Development/" />
+  <Folder Name="/Deprecated/">
+    <Project Path="BetterCrystalariums/BetterCrystalariums.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="DialogueTester/DialogueTester.csproj">
+      <Build Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Experiments/">
+    <Project Path="AnotherClickMovementExperience/AnotherClickMovementExperience.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="BridgeOnTheWater/BridgeOnTheWater.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="FarmInTheSky/FarmInTheSky.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="RPGBatles/RPGBattles.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="SARDIS/SARDIS.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="TeleportAnywhere/TeleportAnywhere.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="TerrainFeatureRefresh/TerrainFeatureRefresh.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="UITestbed/UITestbed.csproj">
+      <Build Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Experiments/Jokes/">
+    <Project Path="EveryoneIsGrandpa/EveryoneIsGrandpa.csproj">
+      <Build Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/High Priority — Favours/" />
+  <Folder Name="/Misc/" />
+  <Folder Name="/Unreleased/" />
+  <Folder Name="/_Released/">
+    <Project Path="CarryYourPet/CarryYourPet.csproj" />
+    <Project Path="MappingExtensionsAndExtraProperties/MappingExtensionsAndExtraProperties.csproj" />
+    <Project Path="SmartBuilding/SmartBuilding.csproj" />
+    <Project Path="SmartCursor/SmartCursor.csproj" />
+    <Project Path="ZoomPerMap/ZoomPerMap.csproj" />
+  </Folder>
+  <Folder Name="/_Released/Bug Reports Only/">
+    <Project Path="BetterReturnScepter/BetterReturnScepter.csproj" />
+    <Project Path="BuffCrops/BuffCrops.csproj" />
+    <Project Path="DefaultWindowSize/DefaultWindowSize.csproj" />
+    <Project Path="GiveMeMyCursorBack/GiveMeMyCursorBack.csproj" />
+    <Project Path="PlayerCoordinates/PlayerCoordinates.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="SaveLoadedNotifier/SaveLoadedNotifier.csproj" />
+  </Folder>
+  <Folder Name="/_Released/Shared/">
+    <Project Path="DecidedlyShared/DecidedlyShared.shproj" />
+  </Folder>
+</Solution>

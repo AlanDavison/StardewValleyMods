@@ -1,0 +1,25 @@
+{
+    "Name": "Absurd Tortilla Jumpscares",
+    "Author": "DecidedlyHuman",
+    "Version": "1.0.0",
+    "Description": "Spooky tortillas.",
+    "UniqueID": "DH.TortillaVerse.AbsurdTortillaJumpscares",
+    "UpdateKeys": ["Nexus:37319"],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    },
+    "Dependencies": [
+        {
+            "UniqueID": "DecidedlyHuman.MappingExtensionsAndExtraProperties",
+            "Version": "2.5.0",
+            "IsRequired": true
+        },
+        {
+            "UniqueID": "Spiderbuttons.BETAS",
+            "Version": "3.1.1",
+            "IsRequired": true
+        }
+    ],
+    "DH.MEEP": "2.5.0",
+    "DH.MEEP.CloseupInteractions": ""
+}

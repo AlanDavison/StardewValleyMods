@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
+using MappingExtensionsAndExtraProperties.Models.CloseupInteractions;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
-using xTile.Layers;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
@@ -26,6 +29,69 @@ public class Properties
         pages = new List<MenuPage>();
 
 
+
+        return true;
+    }
+
+    public bool TryGetInteractionReel(
+        Func<List<string>> imagePropertiesProvider,
+        Func<List<string>> textPropertiesProvider,
+        out List<MenuPage> pages)
+    {
+        string[] imageProperties = imagePropertiesProvider.Invoke().ToArray();
+        string[] textProperties = textPropertiesProvider.Invoke().ToArray();
+        pages = null;
+
+        if (!InteractionReelModel.TryMakeFromProperties(imageProperties, textProperties, "", this.logger,
+                out var model))
+        {
+            this.logger.Error($"Failed to construct the interaction reel model. Report this to DecidedlyHuman with a full log!");
+            return false;
+        }
+
+        pages = new List<MenuPage>();
+
+        foreach ((int key, var imageModel) in model.images)
+        {
+            if (Parsers.TryParseIncludingKey(imageModel.imageProperty, out CloseupInteractionImage parsedImageProperty))
+            {
+                TextElement textElement = null;
+
+                if (model.text.ContainsKey(key))
+                {
+                    if (Parsers.TryParseIncludingKey(model.text[key].textProperty,
+                            out CloseupInteractionText parsedTextProperty))
+                    {
+                        textElement = new TextElement(
+                            "Popup Text Box",
+                            Rectangle.Empty,
+                            this.logger,
+                            600,
+                            parsedTextProperty.Text);
+                    }
+                    else
+                    {
+                        this.logger.Error($"Failed to parse property {model.text[key].textProperty}.");
+                    }
+                }
+
+                MenuPage page = new MenuPage();
+                UiElement picture = new UiElement(
+                    "Picture",
+                    new Rectangle(0, 0, parsedImageProperty.SourceRect.Width * 4,
+                        parsedImageProperty.SourceRect.Height * 4),
+                    this.logger,
+                    DrawableType.Texture,
+                    parsedImageProperty.Texture,
+                    parsedImageProperty.SourceRect,
+                    Color.White);
+
+                page.page = picture;
+                if (textElement != null) page.pageText = textElement;
+
+                pages.Add(page);
+            }
+        }
 
         return true;
     }

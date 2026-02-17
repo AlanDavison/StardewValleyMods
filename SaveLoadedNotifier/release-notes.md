@@ -1,5 +1,9 @@
 ﻿# Into the Game Changelog
 
+## 1.3.0
+### Changes
+* Switch to using a better event to allow the notification to happen at a later, more accurate stage.
+
 ## 1.2.2
 #### Fixes
 * Updated for Stardew Valley 1.6.9.

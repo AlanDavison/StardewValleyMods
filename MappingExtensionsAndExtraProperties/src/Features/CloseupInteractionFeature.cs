@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
-using MappingExtensionsAndExtraProperties.Models.EventArgs;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using xTile.Dimensions;
+using StardewValley.Delegates;
+using StardewValley.Triggers;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Features;
@@ -53,6 +54,133 @@ public class CloseupInteractionFeature : Feature
 
         GameLocation.RegisterTileAction("MEEP_CloseupInteraction_Image", this.DoCloseupInteraction);
         GameLocation.RegisterTileAction("MEEP_CloseupInteractionReel", this.DoCloseupReel);
+        TriggerActionManager.RegisterAction("MEEP_CloseupInteraction_Action", this.CloseupInteractionAction);
+        TriggerActionManager.RegisterAction("MEEP_CloseupInteractionReel_Action", this.CloseupInteractionReelAction);
+    }
+
+    private bool CloseupInteractionReelAction(string[] args, TriggerActionContext context, out string error)
+    {
+        error = null;
+
+        if (!General.TryCombineDictionaryPairs(context.Data.CustomFields, out string[] properties))
+        {
+            string errorContext = TriggerActionUtils.GatherContext("Failed to merge properties for parsing. This should really never happen.",
+                context);
+            logger.Error(errorContext);
+            error = errorContext;
+
+            return false;
+        }
+
+        if (propertyUtils.TryGetInteractionReel(
+                () => { return properties.Where(s => s.StartsWith(CloseupInteractionImage.PropertyKey)).ToList(); },
+                () => { return properties.Where(s => s.StartsWith(CloseupInteractionText.PropertyKey)).ToList(); },
+                out List<MenuPage> menuPages))
+        {
+            string? soundCue = properties.FirstOrDefault(s => s.StartsWith(CloseupInteractionSound.PropertyKey));
+            if (Parsers.TryParseIncludingKey(soundCue, out CloseupInteractionSound parsedSoundProperty))
+            {
+                soundCue = parsedSoundProperty.CueName;
+            }
+
+            logger.Log($"Number of pages: {menuPages.Count}", LogLevel.Info);
+
+            CloseupInteraction.DoCloseupReel(menuPages, logger, soundCue ?? "bigSelect");
+        }
+        else
+        {
+            logger.Error($"Problem parsing closeup interaction reel from trigger action {context.Data.Id}.");
+        }
+
+        return true;
+    }
+
+
+    private bool CloseupInteractionAction(string[] args, TriggerActionContext context, out string error)
+    {
+        // TODO: Refactor this to use the same data model method as the reels.
+
+        error = null;
+        CloseupInteractionText? textProperty = null;
+        CloseupInteractionSound? soundProperty = null;
+
+        if (!General.TryCombineDictionaryPairs(context.Data.CustomFields, out string[] properties))
+        {
+            GatherAndLogError(context, out error);
+
+            return false;
+        }
+
+        if (!this.TryGetInteractionProperties(properties, logger, out string[] imageProperties, out string[] textProperties,
+                out string? soundProp))
+        {
+            GatherAndLogError(context, out error);
+
+            return false;
+        }
+
+        if (imageProperties.Length > 1) {}
+
+        Parsers.TryParseIncludingKey(imageProperties[0], out CloseupInteractionImage imageProperty);
+        if (textProperties is not null && Parsers.TryParseIncludingKey(textProperties[0], out CloseupInteractionText parsedTextProperty))
+        {
+            textProperty = parsedTextProperty;
+        }
+
+        if (soundProp is not null && Parsers.TryParseIncludingKey(soundProp, out CloseupInteractionSound parsedSoundProperty))
+        {
+            soundProperty = parsedSoundProperty;
+        }
+
+        CloseupInteraction.DoCloseupInteraction(imageProperty, textProperty, soundProperty, logger);
+
+        return true;
+    }
+
+    private static void GatherAndLogError(TriggerActionContext context, out string error)
+    {
+        string errorContext = TriggerActionUtils.GatherContext("Failed to merge properties for parsing. This should really never happen.",
+            context);
+        logger.Error(errorContext);
+        error = errorContext;
+    }
+
+    private bool TryGetInteractionProperties(string[] properties,
+        Logger logger,
+        out string[] imageProperties,
+        out string[]? textProperties,
+        out string? soundProperty)
+    {
+        imageProperties = [];
+        textProperties = [];
+        soundProperty = null;
+
+        try
+        {
+            imageProperties = properties.Where(s => s.StartsWith("MEEP_CloseupInteraction_Image")).ToArray();
+            textProperties = properties.Where(s => s.StartsWith("MEEP_CloseupInteraction_Text")).ToArray();
+            soundProperty = properties.FirstOrDefault(s => s.StartsWith("MEEP_CloseupInteraction_Sound"));
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        if (imageProperties.Length < 1)
+        {
+            logger.Error($"imageProperties length was less than 1: {imageProperties.Length}");
+            foreach (string property in properties)
+            {
+                logger.Log($"Property: {property}", LogLevel.Info);
+            }
+            return false;
+        }
+
+        if (textProperties.Length < 1)
+            textProperties = null;
+
+
+        return true;
     }
 
     private bool DoCloseupReel(GameLocation location, string[] propertyArgs, Farmer player, Point tile)

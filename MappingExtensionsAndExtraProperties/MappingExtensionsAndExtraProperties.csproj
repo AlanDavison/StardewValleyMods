@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
     <PropertyGroup>
@@ -6,7 +6,7 @@
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
-        <Version>2.4.6</Version>
+        <Version>2.5.2</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -19,12 +19,15 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <SMAPIDependency Include="spacechase0.SpaceCore" Version="1.28.0" Required="false"/>
+    </ItemGroup>
+
     <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
         <ContentPacks Include="test-pack/TilePropertyMod" Version="$(Version)" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 </Project>

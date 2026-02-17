@@ -88,6 +88,7 @@ public class Parsers
     public static bool TryParseIncludingKey(string property, out CloseupInteractionText parsedProperty)
     {
         parsedProperty = new CloseupInteractionText();
+        logger.Log($"Parsing text property: {property}", LogLevel.Info);
 
         string[] splitProperty = property.Split(" ");
 

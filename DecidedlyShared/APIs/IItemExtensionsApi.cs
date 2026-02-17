@@ -1,8 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using StardewValley;
-using StardewValley.TerrainFeatures;
-
 namespace DecidedlyShared.APIs;
 
 public interface IItemExtensionsApi
