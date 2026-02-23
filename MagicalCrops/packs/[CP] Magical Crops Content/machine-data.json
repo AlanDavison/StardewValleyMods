@@ -1,0 +1,140 @@
+{
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/MagicalCrops/MagicalSeedMaker",
+            "FromFile": "assets/magical-seed-maker.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/BigCraftables",
+            "Entries": {
+                "DH_MC_MagicalSeedMaker_T1": {
+                    "Name": "Magical Seed Maker",
+                    "DisplayName": "[LocalizedText Strings\\BigCraftables:DH_MagicalSeedMaker_Name]",
+                    "Description": "[LocalizedText Strings\\BigCraftables:DH_MagicalSeedMaker_Description]",
+                    "Price": 0,
+                    "Fragility": 0,
+                    "CanBePlacedOutdoors": true,
+                    "CanBePlacedIndoors": true,
+                    "IsLamp": false,
+                    "Texture": "Mods/DecidedlyHuman/MagicalCrops/MagicalSeedMaker",
+                    "SpriteIndex": 0,
+                    "ContextTags": [],
+                    "CustomFields": null
+                }
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Machines",
+            "Entries": {
+                "(BC)DH_MC_MagicalSeedMaker_T1": {
+                    "HasInput": false,
+                    "HasOutput": false,
+                    "InteractMethod": null,
+                    "OutputRules": [
+                        {
+                            "Id": "MagicalSeed",
+                            "Triggers": [
+                                {
+                                    "Id": "ItemPlacedInMachine",
+                                    "Trigger": "ItemPlacedInMachine",
+                                    "RequiredItemId": null,
+                                    "RequiredTags": [
+                                        "category_building_resources"
+                                    ],
+                                    "RequiredCount": 5,
+                                    "Condition": null
+                                }
+                            ],
+                            "UseFirstValidOutput": false,
+                            "OutputItem": [
+                                {
+                                    "CustomData": null,
+                                    "OutputMethod": "MagicalCrops.ModEntry, MagicalCrops: GetMagicalSeed",
+                                    "CopyColor": false,
+                                    "CopyPrice": false,
+                                    "CopyQuality": false,
+                                    "PreserveType": null,
+                                    "PreserveId": null,
+                                    "IncrementMachineParentSheetIndex": 0,
+                                    "PriceModifiers": null,
+                                    "PriceModifierMode": "Stack",
+                                    "Condition": null,
+                                    "RandomItemId": null,
+                                    "MaxItems": null,
+                                    "MinStack": -1,
+                                    "MaxStack": -1,
+                                    "Quality": -1,
+                                    "ObjectInternalName": null,
+                                    "ObjectDisplayName": null,
+                                    "ObjectColor": null,
+                                    "ToolUpgradeLevel": -1,
+                                    "IsRecipe": false,
+                                    "StackModifiers": null,
+                                    "StackModifierMode": "Stack",
+                                    "QualityModifiers": null,
+                                    "QualityModifierMode": "Stack",
+                                    "ModData": null,
+                                    "PerItemCondition": null
+                                }
+                            ],
+                            "MinutesUntilReady": 10,
+                            "DaysUntilReady": -1,
+                            "InvalidCountMessage": null,
+                            "RecalculateOnCollect": false
+                        }
+                    ],
+                    "AdditionalConsumedItems": [
+                        {
+                            "ItemId": "(O)382",
+                            "RequiredCount": 1,
+                            "InvalidCountMessage": "[LocalizedText Strings\\StringsFromCSFiles:Object.cs.12772]"
+                        }
+                    ],
+                    "PreventTimePass": null,
+                    "ReadyTimeModifiers": null,
+                    "ReadyTimeModifierMode": "Stack",
+                    "InvalidItemMessage": null,
+                    "InvalidItemMessageCondition": null,
+                    "InvalidCountMessage": null,
+                    "LoadEffects": [
+                        {
+                            "Id": "Default",
+                            "Condition": null,
+                            "Sounds": [
+                                {
+                                    "Id": "furnace",
+                                    "Delay": 0
+                                }
+                            ],
+                            "Interval": 100,
+                            "Frames": null,
+                            "ShakeDuration": -1,
+                            "TemporarySprites": null
+                        }
+                    ],
+                    "WorkingEffects": null,
+                    "WorkingEffectChance": 0.33,
+                    "AllowLoadWhenFull": false,
+                    "WobbleWhileWorking": true,
+                    "LightWhileWorking": {
+                        "Radius": 1.5,
+                        "Color": "DarkCyan"
+                    },
+                    "ShowNextIndexWhileWorking": true,
+                    "ShowNextIndexWhenReady": false,
+                    "AllowFairyDust": true,
+                    "IsIncubator": false,
+                    "OnlyCompleteOvernight": false,
+                    "ClearContentsOvernightCondition": null,
+                    "StatsToIncrementWhenLoaded": null,
+                    "StatsToIncrementWhenHarvested": null,
+                    "ExperienceGainOnHarvest": null,
+                    "CustomFields": null
+                }
+            }
+        }
+    ]
+}
