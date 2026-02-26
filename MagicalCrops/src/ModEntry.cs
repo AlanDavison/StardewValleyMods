@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using DecidedlyShared.Logging;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.Machines;
 using StardewValley.Objects;
@@ -40,27 +40,34 @@ public class ModEntry : Mod
                 nameof(ModEntry.CropHarvest_Transpiler)));
     }
 
-    public static IEnumerable<CodeInstruction> CropHarvest_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original, ILGenerator generator)
+    public static IEnumerable<CodeInstruction> CropHarvest_Transpiler(IEnumerable<CodeInstruction> instructions,
+        MethodBase original, ILGenerator generator)
     {
+        List<CodeInstruction> instructionsList = instructions.ToList();
+
         try
         {
-            CodeMatcher matcher = new CodeMatcher(instructions, generator);
+            CodeMatcher matcher = new CodeMatcher(instructionsList, generator);
+
+            // foreach (var instruction in instructionsList)
+            // {
+            //     StaticLogger.Log($"Opcode: {instruction.opcode}, Operand: {instruction.operand}", LogLevel.Trace);
+            // }
 
             matcher.MatchEndForward(
-                // new CodeMatch(OpCodes.Newobj,
-                //     AccessTools.Constructor(typeof(ColoredObject),
-                //         new Type[] { typeof(string), typeof(int), typeof(Color) })),
-                // new CodeMatch(OpCodes.Dup),
-                // new CodeMatch(OpCodes.Ldloc_S),
+                new CodeMatch(OpCodes.Newobj,
+                    AccessTools.Constructor(typeof(ColoredObject),
+                        new Type[] { typeof(string), typeof(int), typeof(Color) })),
+                new CodeMatch(OpCodes.Dup),
+                new CodeMatch(OpCodes.Ldloc_S),
                 new CodeMatch(OpCodes.Callvirt, AccessTools.PropertySetter(typeof(Item), nameof(Item.Quality)))
-                // new CodeMatch(OpCodes.Nop)
             );
 
             if (!matcher.IsValid)
             {
                 StaticLogger.Error($"Transpiler match not found. Returning unmodified IL.");
 
-                return instructions;
+                return instructionsList;
             }
 
             matcher
@@ -76,7 +83,7 @@ public class ModEntry : Mod
             StaticLogger.Exception(e);
         }
 
-        return instructions;
+        return instructionsList;
     }
 
     public static Item GetMagicalCropItem(Item originalItem, Crop cropInstance)
@@ -86,7 +93,8 @@ public class ModEntry : Mod
 
         if (!cropInstance.modData.ContainsKey("DH.MagicalCrops.ProduceItemId"))
         {
-            StaticLogger.Log("This Crop instance didn't contain our item ID modData. Continuing with normal item.", LogLevel.Trace);
+            StaticLogger.Log("This Crop instance didn't contain our item ID modData. Continuing with normal item.",
+                LogLevel.Trace);
 
             return originalItem;
         }
