@@ -1,0 +1,26 @@
+name: Check build.
+
+on:
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    check_build:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout code.
+                uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
+
+            -   name: Checkout reference assemblies
+                run: |
+                    git clone --depth 1 https://github.com/StardewModders/mod-reference-assemblies.git "$HOME/StardewValley"
+
+            -   name: Build and zip project.
+                run: |
+                    dotnet build \
+                    -p:GamePath="$HOME/StardewValley" \
+                    -p:ModZipPath="$HOME/StardewValley/ModZips" \
+                    --configuration Release
