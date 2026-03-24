@@ -6,7 +6,7 @@
         <Description>Remembers the zoom level you set in each map, and switches to that zoom level when you enter it.</Description>
         <MinimumApiVersion>4.0.0</MinimumApiVersion>
         <UpdateKeys>Nexus:22227</UpdateKeys>
-        <Version>1.0.3</Version>
+        <Version>1.0.4</Version>
     </PropertyGroup>
 
     <PropertyGroup>

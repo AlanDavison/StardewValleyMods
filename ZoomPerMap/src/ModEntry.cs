@@ -93,7 +93,7 @@ public class ModEntry : Mod
     {
         if (Game1.eventUp)
         {
-            Game1.options.desiredBaseZoomLevel = 1f;
+            Game1.options.desiredBaseZoomLevel = StaticConfig.eventZoomLevel;
             return;
         }
 
