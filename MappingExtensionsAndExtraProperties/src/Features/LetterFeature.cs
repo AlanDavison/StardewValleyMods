@@ -1,16 +1,10 @@
 using System;
-using System.Diagnostics;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
-using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using MappingExtensionsAndExtraProperties.Utils;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using StardewValley;
-using xTile.Dimensions;
 using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Features;

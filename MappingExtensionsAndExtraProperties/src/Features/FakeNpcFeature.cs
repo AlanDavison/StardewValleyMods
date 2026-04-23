@@ -10,7 +10,6 @@ using MappingExtensionsAndExtraProperties.Utils;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using xTile.Dimensions;
 using xTile.ObjectModel;
 using xTile.Tiles;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using DecidedlyShared.Logging;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;

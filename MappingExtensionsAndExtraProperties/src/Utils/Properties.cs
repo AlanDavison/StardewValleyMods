@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using MappingExtensionsAndExtraProperties.Models.CloseupInteractions;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using StardewValley;
 using xTile.ObjectModel;
 

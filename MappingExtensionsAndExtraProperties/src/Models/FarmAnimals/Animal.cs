@@ -1,5 +1,4 @@
 using System.Text;
-using Microsoft.Xna.Framework;
 
 namespace MappingExtensionsAndExtraProperties.Models.FarmAnimals;
 
