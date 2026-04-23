@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DecidedlyShared.Logging;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
-using StardewValley.Extensions;
+using StardewModdingAPI;
 
 namespace MappingExtensionsAndExtraProperties.Models.CloseupInteractions;
 
@@ -27,7 +25,7 @@ public record InteractionReelModel(
 
             if (!int.TryParse(key[Index.FromEnd(1)].ToString(), out int propertyNumber))
             {
-                logger.Log($"Couldn't get property number from property {prop}. Skipping.");
+                logger.Log($"Couldn't get property number from property {prop}. Skipping.", LogLevel.Trace);
                 continue;
             }
 
@@ -45,7 +43,7 @@ public record InteractionReelModel(
 
             if (!int.TryParse(key[Index.FromEnd(1)].ToString(), out int propertyNumber))
             {
-                logger.Log($"Couldn't get property number from property {prop}. Skipping.");
+                logger.Log($"Couldn't get property number from property {prop}. Skipping.", LogLevel.Trace);
                 continue;
             }
 

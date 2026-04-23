@@ -202,8 +202,6 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
     {
-        this.logger.Log("MEEP 2.4.7-beta.5 loading...", LogLevel.Info);
-
         if (this.Helper.ModRegistry.IsLoaded("DLX.QuickSave"))
         {
             // Grab the Save Anywhere API so we can safely destroy our NPCs before it saves.
@@ -215,7 +213,7 @@ public class ModEntry : Mod
             }
             catch (Exception e)
             {
-                this.logger.Log($"Quick Save was loaded, but we couldn't get its API for some reason. Exception follows:");
+                this.logger.Warn($"Quick Save was loaded, but we couldn't get its API for some reason. Exception follows:");
                 this.logger.Exception(e);
             }
         }
@@ -225,7 +223,7 @@ public class ModEntry : Mod
 
     private void AfterQuickSaveLoad(object? sender, ILoadedEventArgs e)
     {
-        this.logger.Log($"Quick Save fired its LoadedEvent. Processing our spawn map.", LogLevel.Info);
+        this.logger.Log($"Quick Save fired its LoadedEvent. Processing our spawn map.", LogLevel.Trace);
 
         FeatureManager.OnLocationChange(Game1.currentLocation, Game1.currentLocation, Game1.player);
         FeatureManager.OnDayStart();
@@ -233,7 +231,7 @@ public class ModEntry : Mod
 
     private void BeforeQuickSaveSave(object? sender, ISavingEventArgs e)
     {
-        this.logger.Log($"Quick Save fired its SavingEvent. Treating this as an early day end.", LogLevel.Info);
+        this.logger.Log($"Quick Save fired its SavingEvent. Treating this as an early day end.", LogLevel.Trace);
 
         FeatureManager.EarlyOnDayEnding();
     }

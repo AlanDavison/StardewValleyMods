@@ -4,8 +4,8 @@ using DecidedlyShared.Ui;
 using DecidedlyShared.Utilities;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
 using MappingExtensionsAndExtraProperties.Utils;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
 using xTile.ObjectModel;
 
@@ -93,7 +93,7 @@ public class CloseupInteraction
 
         if (closeupInteractionSound.HasValue)
         {
-            logger.Log($"Setting sound cue: {closeupInteractionSound.Value.CueName}");
+            logger.Log($"Setting sound cue: {closeupInteractionSound.Value.CueName}", LogLevel.Trace);
             menu.SetOpenSound(closeupInteractionSound.Value.CueName);
         }
 
