@@ -1,4 +1,9 @@
 # Smart Building release notes
+## 1.9.4
+#### Additions
+* Compatibility with Agromancy essences. Now when you plant seeds via Smart Building, they should retain their Agromancy essences.
+#### Fixes
+* Blocked placement of Carry Chests' carried chests to prevent item loss. A full fix is coming in the future.
 ## 1.9.3
 #### Additions
 * Added compatibility with Ultimate Fertilizer via HakuyaNiji's PR. Thanks!
