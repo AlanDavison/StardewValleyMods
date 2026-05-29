@@ -93,11 +93,19 @@ namespace SmartBuilding.Utilities
         public bool DoesObjectContainModData(SObject obj, string search)
         {
             if (obj != null && obj.modData != null)
+            {
                 foreach (SerializableDictionary<string, string>? modData in obj.modData)
-                foreach (string? key in modData.Keys)
-                foreach (string? value in modData.Values)
-                    if (key.Contains(search) || value.Contains(search))
-                        return true;
+                {
+                    foreach (string? key in modData.Keys)
+                    {
+                        foreach (string? value in modData.Values)
+                        {
+                            if (key.Contains(search) || value.Contains(search))
+                                return true;
+                        }
+                    }
+                }
+            }
 
             return false;
         }
