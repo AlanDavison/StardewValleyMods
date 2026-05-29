@@ -2,6 +2,7 @@
 ## 1.9.4
 #### Additions
 * Compatibility with Agromancy essences. Now when you plant seeds via Smart Building, they should retain their Agromancy essences.
+* French translation courtesy of CaranudLapin.
 #### Fixes
 * Blocked placement of Carry Chests' carried chests to prevent item loss. A full fix is coming in the future.
 ## 1.9.3
