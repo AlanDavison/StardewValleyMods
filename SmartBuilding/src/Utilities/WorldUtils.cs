@@ -208,7 +208,7 @@ namespace SmartBuilding.Utilities
                                     successfullyPlaced = itemToPlace.placementAction(here, (int)targetTile.X * 64,
                                         (int)targetTile.Y * 64, Game1.player);
                                 else
-                                    successfullyPlaced = hd.plant(itemToPlace.ItemId, Game1.player, false);
+                                    successfullyPlaced = this.TryPlantSeed(hd, Game1.player, itemToPlace);
                             }
                         }
 
@@ -508,6 +508,29 @@ namespace SmartBuilding.Utilities
                 this.playerUtils.RefundItem(item.Value.Item, I18n.SmartBuilding_Error_Object_PlacementFailed(),
                     LogLevel.Error);
             }
+        }
+
+        private bool TryPlantSeed(HoeDirt hd, Farmer player, SObject itemToPlace)
+        {
+            bool success = hd.plant(itemToPlace.ItemId, player, false);
+            string agromancyId = "Spiderbuttons.Agromancy";
+
+            if (this.identificationUtils.DoesObjectContainModData(itemToPlace, agromancyId))
+            {
+                /*
+                    This is important, and actually needs a comment. We need to intercept the crop post-planting if
+                    it has Agromancy essences, because Agromancy cannot carry essences across correctly when a seed
+                    is planted in an automated way.
+
+                    By this point, the crop should be correctly in the HoeDirt, so we just need to copy the Agromancy
+                    modData from the planting seed to the crop.
+                */
+
+                if (itemToPlace.modData.ContainsKey(agromancyId))
+                    hd.crop.modData[agromancyId] = itemToPlace.modData[agromancyId];
+            }
+
+            return success;
         }
 
         /// <summary>
