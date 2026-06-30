@@ -5,7 +5,6 @@ using DecidedlyShared.Utilities;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StardewModdingAPI;
 using StardewValley;
 using xTile.Dimensions;

@@ -1,0 +1,29 @@
+<Project>
+
+    <!-- Assembly-related settings. -->
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <DebugType Condition="$(Configuration) != 'Release'">pdbonly</DebugType>
+        <LangVersion>12</LangVersion>
+    </PropertyGroup>
+
+    <!-- ModBuildConfig-related settings. -->
+    <PropertyGroup>
+        <ModZipPath Condition="'$(ModZipPath)' == ''">$(SolutionDir)Release\Zip</ModZipPath>
+        <EnableModZip Condition="'$(Configuration)' == 'Debug' ">False</EnableModZip>
+        <IgnoreModFilePatterns>\.aseprite$</IgnoreModFilePatterns>
+    </PropertyGroup>
+
+    <!-- ModManifestBuilder-related settings. -->
+    <PropertyGroup>
+        <Authors>DecidedlyHuman</Authors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0"/>
+        <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" Version="2.2.0"/>
+        <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.3.1"/>
+    </ItemGroup>
+
+</Project>

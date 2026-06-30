@@ -1,0 +1,244 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FarmAnimals/SpawnData",
+            "Entries": {
+                "DH.TilePropertyTestMod.WhiteChickenSubmarine": {
+                    "AnimalId": "White Chicken",
+                    "Age": 0,
+                    "LocationId": "Submarine",
+                    "DisplayName": "Animal One Name",
+                    "PetMessage": [
+                        "UwU",
+                        "I'm a baby chicken!"
+                    ],
+                    "HomeTileX": 13,
+                    "HomeTileY": 5,
+                    "Condition": ""
+                },
+                "DH.TilePropertyTestMod.WhiteChickenSubmarine": {
+                    "AnimalId": "White Chicken",
+                    "Age": 100,
+                    "LocationId": "Submarine",
+                    "DisplayName": "Animal One Name",
+                    "PetMessage": [
+                        "I'm a very old chicken, so you won't get an UwU from me!"
+                    ],
+                    "HomeTileX": 13,
+                    "HomeTileY": 5,
+                    "Condition": ""
+                },
+                "DH.TilePropertyTestMod.BrownCowJoshHouse": {
+                    "Id": "DH.TilePropertyTestMod.BrownCowJoshHouse",
+                    "AnimalId": "Brown Cow",
+                    "LocationId": "JoshHouse",
+                    "DisplayName": "Animal Two Name",
+                    "PetMessage": [
+                        "MUwU",
+                        "What? I'm a cow, what else would I say?",
+                        "Certainly not \"moo\"!"
+                    ],
+                    "HomeTileX": 9,
+                    "HomeTileY": 20,
+                    "Condition": ""
+                }
+            }
+        },
+        {
+            "Action": "EditMap",
+            "Target": "Maps/Custom_MEEP_Station",
+            "MapProperties": {
+                "MEEP_Background_Image": "Mods/DecidedlyHuman/SpaceBG",
+                "MEEP_Background_Tile_Size": "200x200",
+                "MEEP_Background_Tile_Variation": "0.75"
+            }
+        },
+        {
+            "Action": "EditMap",
+            "Target": "Maps/Custom_MEEP_Station",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 23,
+                        "Y": 21
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteraction_Image Mods/DecidedlyHuman/MaruRoobot",
+                        "MEEP_CloseupInteraction_Text": "It's Maru's robot! Did someone copy the design?",
+                        "MEEP_CloseupInteraction_Sound": "dog_bark"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 30,
+                        "Y": 21
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteractionReel",
+                        "MEEP_CloseupInteraction_Image_1": "Mods/DecidedlyHuman/PageOne",
+                        "MEEP_CloseupInteraction_Text_1": "Oh, wow. It's the first page!",
+                        "MEEP_CloseupInteraction_Image_2": "Mods/DecidedlyHuman/PageTwo",
+                        "MEEP_CloseupInteraction_Text_2": "Page two?! Do my eyes deceive me?",
+                        "MEEP_CloseupInteraction_Image_3": "Mods/DecidedlyHuman/PageThree",
+                        "MEEP_CloseupInteraction_Text_3": "I think this one's the third page.",
+                        "MEEP_CloseupInteraction_Image_4": "Mods/DecidedlyHuman/PageFour",
+                        "MEEP_CloseupInteraction_Text_4": "Holy moly, there are four pages? Wow. That's super impressive.",
+                        "MEEP_CloseupInteraction_Sound": "shwip"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 36,
+                        "Y": 18
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteraction_Image Mods/DecidedlyHuman/SNaES", // This is an intentional typo.
+                        "MEEP_CloseupInteraction_Text": "It's a SNES! I never had one as a kid...",
+                        "MEEP_CloseupInteraction_Sound": "cat"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 40,
+                        "Y": 22
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteraction_Image Mods/DecidedlyHuman/MaruRobot",
+                        "MEEP_CloseupInteraction_Text": "It's Maru's robot!\n\n\n\n\n\n\n\n\n\n\n\n\n\nDid someone copy the design?",
+                        "MEEP_CloseupInteraction_Sound": "dog_bark"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 40,
+                        "Y": 18
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteraction_Image Mods/DecidedlyHuman/TeapotLookingThing",
+                        "MEEP_CloseupInteraction_Text": "It's some kind of... teapot? Kettle? Crucible for conjuring forth pure chaos in liquid form?",
+                        "MEEP_CloseupInteraction_Sound": "crafting"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 36,
+                        "Y": 22
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteraction_Image Mods/DecidedlyHuman/TVAndThing",
+                        "MEEP_CloseupInteraction_Text": "A TV! Looks incredibly high-tech, and spectacularly drawn.",
+                        "MEEP_CloseupInteraction_Sound": "cowboy_gopher"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 13,
+                        "Y": 18
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_Letter Super Evil Joja Plans^^Ha, fooled you! No plans here.",
+                        "MEEP_Letter_Type": "Mods/DecidedlyHuman/JojaLetterBG",
+                        "MEEP_AddConversationTopic": "DH.MEEP.SeenEvilJojaLetter 7"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 13,
+                        "Y": 12
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_Letter Pretend this is a very, very long letter with multiple evil Joja-related plans in it.",
+                        "MEEP_Letter_Type": "2"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 19,
+                        "Y": 12
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteractionReel",
+                        "MEEP_CloseupInteraction_Image_1": "Mods/DecidedlyHuman/PageOne",
+                        "MEEP_CloseupInteraction_Text_1": "Oh, wow. It's the first page!",
+                        "MEEP_CloseupInteraction_Image_2": "Mods/DecidedlyHuman/PageTwo",
+                        "MEEP_CloseupInteraction_Text_2": "Page two?! Do my eyes deceive me?",
+                        "MEEP_CloseupInteraction_Image_3": "Mods/DecidedlyHuman/PageThree",
+                        "MEEP_CloseupInteraction_Text_3": "I think this one's the third page.",
+                        "MEEP_CloseupInteraction_Image_4": "Mods/DecidedlyHuman/PageFour",
+                        "MEEP_CloseupInteraction_Text_4": "Holy moly, there are four pages? Wow. That's super impressive.",
+                        "MEEP_CloseupInteraction_Sound": "shwip"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 19,
+                        "Y": 13
+                    },
+                    "Layer": "Buildings",
+                    "SetProperties": {
+                        "Action": "MEEP_CloseupInteractionReel",
+                        "MEEP_CloseupInteraction_Image_1": "Mods/DecidedlyHuman/PageOne",
+                        "MEEP_CloseupInteraction_Text_1": "Oh, wow. It's the first page!",
+                        "MEEP_CloseupInteraction_Image_2": "Mods/DecidedlyHuman/PageTwo",
+                        "MEEP_CloseupInteraction_Text_2": "Page two?! Do my eyes deceive me?",
+                        "MEEP_CloseupInteraction_Image_3": "Mods/DecidedlyHuman/PageThree",
+                        "MEEP_CloseupInteraction_Text_3": "I think this one's the third page.",
+                        "MEEP_CloseupInteraction_Image_4": "Mods/DecidedlyHuman/PageFour",
+                        "MEEP_CloseupInteraction_Text_4": "Holy moly, there are four pages? Wow. That's super impressive.",
+                        "MEEP_CloseupInteraction_Sound": "shwip"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 24,
+                        "Y": 21
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_FakeNPC": "NotAbigail"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 31,
+                        "Y": 21
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_FakeNPC": "NegaNotAbigail"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 28,
+                        "Y": 23
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_FakeNPC": "WideBoi 32 32"
+                    }
+                },
+                {
+                    "Position": {
+                        "X": 45,
+                        "Y": 13
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_FakeNPC": "MassiveBoi 64 64"
+                    }
+                }
+            ]
+        }
+    ]
+}

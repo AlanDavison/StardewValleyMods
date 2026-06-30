@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
@@ -27,7 +28,7 @@ public class ModEntry : Mod
     // Debug/emergency command static mess
     public static bool AnimalRemovalMode = false;
 
-    private ISaveAnywhereApi saveAnywhereApi;
+    private IQuickSaveApi quickSaveApi;
     private ISpaceCoreApi spaceCoreApi;
     private EventCommands eventCommands;
 
@@ -46,8 +47,6 @@ public class ModEntry : Mod
         helper.ConsoleCommands.Add(
             "meep_emergency_remove_animals", "Enter MEEP's animal removal mode. PAY ATTENTION TO THE WARNINGS.",
             commands.MeepAnimalWipingMode);
-
-        this.LoadContentPacks();
 
         // This is where we kill all of our "fake" NPCs so they don't get serialised.
         helper.Events.GameLoop.DayEnding += this.OnDayEndingEarly;
@@ -68,6 +67,35 @@ public class ModEntry : Mod
 
         helper.Events.Player.Warped += this.PlayerOnWarped;
         helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+
+        this.AddDebugKeybinds();
+    }
+
+    [Conditional("DEBUG")]
+    private void AddDebugKeybinds()
+    {
+        this.Helper.Events.Input.ButtonPressed += this.OnDebugButtonPressed;
+    }
+
+    private void OnDebugButtonPressed(object? sender, ButtonPressedEventArgs e)
+    {
+        // Welcome to hot reload city. Population: me.
+
+        if (e.Button == SButton.OemSemicolon)
+        {
+            this.logger.Log($"Printing info of all animals in {Game1.currentLocation.Name}.", LogLevel.Info);
+
+            foreach (FarmAnimal animal in Game1.currentLocation.animals.Values)
+            {
+                this.logger.Log($"{animal.Name} X: {animal.Position.X}.", LogLevel.Info);
+                this.logger.Log($"{animal.Name} Y: {animal.Position.Y}.", LogLevel.Info);
+
+                foreach (string s in animal.modData.Values)
+                {
+                    this.logger.Log($"{animal.Name} modData: {s}", LogLevel.Info);
+                }
+            }
+        }
     }
 
     private void LoadContentPacks()
@@ -78,6 +106,7 @@ public class ModEntry : Mod
         bool setMailFlagUsed = false;
         bool farmAnimalSpawningUsed = false;
         bool addConversationTopicUsed = false;
+        bool invulnerableTreeUsed = false;
 
 
         foreach (var mod in this.Helper.ModRegistry.GetAll())
@@ -98,6 +127,8 @@ public class ModEntry : Mod
                     farmAnimalSpawningUsed = true;
                 if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.AddConversationTopic"))
                     addConversationTopicUsed = true;
+                if (mod.Manifest.ExtraFields.ContainsKey("DH.MEEP.InvulnerableTrees"))
+                    invulnerableTreeUsed = true;
             }
         }
 
@@ -135,7 +166,7 @@ public class ModEntry : Mod
         if (farmAnimalSpawningUsed)
         {
             FarmAnimalSpawnsFeature farmAnimals =
-                new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.logger, this.Helper);
+                new FarmAnimalSpawnsFeature(this.harmony, "DH.FarmAnimalSpawns", this.quickSaveApi, this.logger, this.Helper);
             FeatureManager.AddFeature(farmAnimals);
         }
 
@@ -147,6 +178,13 @@ public class ModEntry : Mod
             FeatureManager.AddFeature(conversationTopics);
         }
 
+        if (invulnerableTreeUsed)
+        {
+            InvulnerableTreeFeature invulnerableTrees =
+                new InvulnerableTreeFeature(this.harmony, "DH.InvulnerableTrees", this.logger);
+            FeatureManager.AddFeature(invulnerableTrees);
+        }
+
         if (FeatureManager.FeatureCount > 0)
         {
             CleanupFeature cleanup = new CleanupFeature("DH.Internal.CleanupFeature");
@@ -154,36 +192,46 @@ public class ModEntry : Mod
         }
 
         FeatureManager.EnableFeatures();
+        this.RegisterEventCommands();
+    }
+
+    private void RegisterEventCommands()
+    {
+        Event.RegisterCommand("addColouredSlime", EventCommands.AddColouredSlime);
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs args)
     {
-        if (this.Helper.ModRegistry.IsLoaded("Omegasis.SaveAnywhere"))
+        if (this.Helper.ModRegistry.IsLoaded("DLX.QuickSave"))
         {
             // Grab the Save Anywhere API so we can safely destroy our NPCs before it saves.
             try
             {
-                this.saveAnywhereApi = this.Helper.ModRegistry.GetApi<ISaveAnywhereApi>("Omegasis.SaveAnywhere");
-                this.saveAnywhereApi.BeforeSave += this.BeforeSaveAnywhereSave;
-                this.saveAnywhereApi.AfterLoad += this.AfterSaveAnywhereLoad;
+                this.quickSaveApi = this.Helper.ModRegistry.GetApi<IQuickSaveApi>("DLX.QuickSave");
+                this.quickSaveApi.SavingEvent += this.BeforeQuickSaveSave;
+                this.quickSaveApi.LoadedEvent += this.AfterQuickSaveLoad;
             }
             catch (Exception e)
             {
+                this.logger.Warn($"Quick Save was loaded, but we couldn't get its API for some reason. Exception follows:");
                 this.logger.Exception(e);
             }
         }
+
+        this.LoadContentPacks();
     }
 
-    private void AfterSaveAnywhereLoad(object? sender, EventArgs e)
+    private void AfterQuickSaveLoad(object? sender, ILoadedEventArgs e)
     {
-        this.logger.Log($"Save Anywhere fired its AfterLoad event. Processing our spawn map.", LogLevel.Info);
+        this.logger.Log($"Quick Save fired its LoadedEvent. Processing our spawn map.", LogLevel.Trace);
 
         FeatureManager.OnLocationChange(Game1.currentLocation, Game1.currentLocation, Game1.player);
+        FeatureManager.OnDayStart();
     }
 
-    private void BeforeSaveAnywhereSave(object? sender, EventArgs e)
+    private void BeforeQuickSaveSave(object? sender, ISavingEventArgs e)
     {
-        this.logger.Log($"Save Anywhere fired its BeforeSave event. Killing NPCs early.", LogLevel.Info);
+        this.logger.Log($"Quick Save fired its SavingEvent. Treating this as an early day end.", LogLevel.Trace);
 
         FeatureManager.EarlyOnDayEnding();
     }

@@ -13,8 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IDynamicGameAssetsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IGrowableBushes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\IItemExtensionsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IMoreFertilizersAPI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)APIs\ISaveAnywhereApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIs\IQuickSaveApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ISpaceCoreApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\ITapGiantCropsApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIs\IToolbarIconsApi.cs" />
@@ -27,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Translations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\GameLocationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BuffAttributeDataHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\World.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WorldTile.cs" />
@@ -44,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ui\ImageElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ui\VBoxElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\General.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Items.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Sound.cs" />
@@ -56,5 +59,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ResourceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Maps.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Placement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TriggerActionUtils.cs" />
   </ItemGroup>
 </Project>

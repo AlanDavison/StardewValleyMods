@@ -1,0 +1,88 @@
+{
+    "Changes": [
+        // NotAbigail FakeNPC Start
+        {
+            "Action": "Load",
+            "Target": "Portraits/NotAbigail",
+            "FromFile": "assets/NotAbigail/NotAbigailPortrait.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Characters/NotAbigail",
+            "FromFile": "assets/NotAbigail/NotAbigail.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FakeNPC/Dialogue/NotAbigail",
+            "Entries": {
+                "DialogueOne": "How are you today, @? Are you here to inspect all of our wondrous wares?",
+                "DialogueTwo": "They even contain the legally allowed amounts of everything!"
+            }
+        },        
+        // NotAbigail FakeNPC End
+
+        // NegaNotAbigail FakeNPC Start
+        {
+            "Action": "Load",
+            "Target": "Portraits/NegaNotAbigail",
+            "FromFile": "assets/NegaNotAbigail/NegaNotAbigailPortrait.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Characters/NegaNotAbigail",
+            "FromFile": "assets/NegaNotAbigail/NegaNotAbigail.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FakeNPC/Dialogue/NegaNotAbigail",
+            "Entries": {
+                "DialogueOne": "I recommend Joja products over all else, @! They're Jojarific!",
+                "DialogueTwo": "They even contain the legally allowed amounts of everything!"
+            }
+        },
+        // NegaNotAbigail FakeNPC End
+
+        // WideBoi FakeNPC Start
+        {
+            "Action": "Load",
+            "Target": "Portraits/WideBoi",
+            "FromFile": "assets/WideBoi/WideBoiPortrait.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Characters/WideBoi",
+            "FromFile": "assets/WideBoi/WideBoi.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FakeNPC/Dialogue/WideBoi",
+            "Entries": {
+                "DialogueOne": "Hello!",
+                "DialogueTwo": "How are you today, @? I hope you're as good as I am!",
+                "DH.MEEP.SeenEvilJojaLetter": "Did you... read that letter?$a"
+            }
+        },
+        // WideBoi FakeNPC End
+
+        // MassiveBoi FakeNPC Start
+        {
+            "Action": "Load",
+            "Target": "Portraits/MassiveBoi",
+            "FromFile": "assets/MassiveBoi/MassiveBoiPortrait.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Characters/MassiveBoi",
+            "FromFile": "assets/MassiveBoi/MassiveBoi.png"
+        },
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FakeNPC/Dialogue/MassiveBoi",
+            "Entries": {
+                "DialogueOne": "Hello!",
+                "DialogueTwo": "How are you today, @? I hope you're as good as I am!"
+            }
+        }        
+        // MassiveBoi FakeNPC End
+    ]
+}

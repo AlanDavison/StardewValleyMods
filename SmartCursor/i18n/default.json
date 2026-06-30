@@ -10,8 +10,6 @@
     "settings.ranges.tier-3-range": "Steel",
     "settings.ranges.tier-4-range": "Gold",
     "settings.ranges.tier-5-range": "Iridium",
-    "settings.ranges.tier-6-range": "Tier 6",
-    "settings.ranges.tier-7-range": "Tier 7",
     // Toggles
     "settings.toggles.title": "Optional Toggles",
     "settings.toggles.allow-targeting-baby-trees": "Allow targeting baby trees",

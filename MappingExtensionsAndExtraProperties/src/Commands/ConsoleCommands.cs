@@ -1,5 +1,6 @@
 using DecidedlyShared.Logging;
 using StardewModdingAPI;
+using StardewValley;
 
 namespace MappingExtensionsAndExtraProperties.Commands;
 
@@ -24,6 +25,12 @@ public class ConsoleCommands
                 LogLevel.Alert);
             this.logger.Log("READ: GONE FOREVER.", LogLevel.Alert);
             this.logger.Log("TO DISABLE THIS MODE, RE-RUN THE COMMAND.", LogLevel.Alert);
+
+            if (Context.IsWorldReady)
+            {
+                HUDMessage warning = new HUDMessage("MEEP ANIMAL REMOVAL MODE HAS BEEN ENABLED.", 3);
+                Game1.addHUDMessage(warning);
+            }
         }
     }
 }

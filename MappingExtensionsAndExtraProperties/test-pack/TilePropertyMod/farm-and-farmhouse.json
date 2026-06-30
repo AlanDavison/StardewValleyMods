@@ -1,0 +1,46 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "MEEP/FarmAnimals/SpawnData",
+            "Entries": {
+                "DH.TilePropertyTestMod.BrownCowFarmHouse-LinusPortrait": {
+                  "AnimalId": "Brown Cow",
+                  "LocationId": "FarmHouse",
+                  "DisplayName": "Animal Two Name",
+                  "PortraitTexture": "Portraits/Linus",
+                  "PetMessage": [
+                      "Sad Linus!$s#$b#",
+                      "Happy Linus!$h"
+                  ],
+                  "HomeTileX": 6,
+                  "HomeTileY": 6,
+                  "Condition": ""
+                },
+                "DH.TilePropertyTestMod.WhiteChickenFarmHouse": {
+                    "AnimalId": "White Chicken",
+                    "Age": 100,
+                    "LocationId": "FarmHouse",
+                    "DisplayName": "Animal One Name",
+                    "PetMessage": [
+                        "I'm a very old chicken, so you won't get an UwU from me!"
+                    ],
+                    "HomeTileX": 5,
+                    "HomeTileY": 7,
+                    "Condition": ""
+                },
+                "DH.TilePropertyTestMod.FookinOstrichFarmHouse": {
+                    "AnimalId": "Ostrich",
+                    "LocationId": "FarmHouse",
+                    "DisplayName": "FOOKIN' OSTRICH",
+                    "PetMessage": [
+                        "I'MMA FOOKIN' OSTRICH, MATE."
+                    ],
+                    "HomeTileX": 5,
+                    "HomeTileY": 5,
+                    "Condition": "WEATHER Here Snow Storm Rain GreenRain"
+                }
+            }
+        }
+    ]
+}

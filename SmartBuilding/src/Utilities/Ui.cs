@@ -33,7 +33,7 @@ namespace SmartBuilding.Utilities
                 case ButtonId.TerrainFeatureLayer:
                     return new Rectangle(16, 32, 16, 16);
                 case ButtonId.FurnitureLayer:
-                    return new Rectangle(32, 32, 16, 32);
+                    return new Rectangle(32, 32, 16, 16);
                 case ButtonId.ConfirmBuild:
                     return new Rectangle(16, 64, 16, 16);
                 case ButtonId.ClearBuild:

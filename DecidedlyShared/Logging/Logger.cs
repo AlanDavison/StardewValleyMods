@@ -48,8 +48,11 @@ namespace DecidedlyShared.Logging
             this.Log(logMessage, LogLevel.Info);
         }
 
-        public void Exception(Exception e)
+        public void Exception(Exception e, string? message = null)
         {
+            if (message is not null)
+                this.monitor.Log(message, LogLevel.Error);
+
             this.monitor.Log($"Exception: {e.Message}", LogLevel.Error);
             this.monitor.Log($"Stack trace: \n{e.StackTrace}", LogLevel.Error);
         }

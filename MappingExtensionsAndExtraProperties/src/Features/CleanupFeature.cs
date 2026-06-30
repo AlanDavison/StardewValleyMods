@@ -1,4 +1,3 @@
-using System;
 using DecidedlyShared.Ui;
 using HarmonyLib;
 using MappingExtensionsAndExtraProperties.Models.EventArgs;

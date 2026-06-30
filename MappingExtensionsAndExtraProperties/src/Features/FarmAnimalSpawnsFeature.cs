@@ -1,22 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
+using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
+using MappingExtensionsAndExtraProperties.Functionality;
 using MappingExtensionsAndExtraProperties.Models.FarmAnimals;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using StardewValley.Mods;
-using xTile.Dimensions;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 
@@ -36,16 +33,20 @@ public class FarmAnimalSpawnsFeature : Feature
     private static Logger logger;
     private static Harmony harmony;
     private static IModHelper helper;
-    private static Dictionary<string, Animal> animalData;
+    private static Dictionary<string, Animal> animalData = new Dictionary<string, Animal>();
     private static Dictionary<FarmAnimal, Animal> spawnedAnimals = new Dictionary<FarmAnimal, Animal>();
+    private static IQuickSaveApi quickSaveApi;
+    private int animalsSpawned = 0;
+    private int animalsRemoved = 0;
 
-    public FarmAnimalSpawnsFeature(Harmony harmony, string id, Logger logger, IModHelper helper)
+    public FarmAnimalSpawnsFeature(Harmony harmony, string id, IQuickSaveApi quickSaveApi, Logger logger, IModHelper helper)
     {
         this.Enabled = false;
         this.FeatureId = id;
         FarmAnimalSpawnsFeature.logger = logger;
         FarmAnimalSpawnsFeature.helper = helper;
         FarmAnimalSpawnsFeature.harmony = harmony;
+        FarmAnimalSpawnsFeature.quickSaveApi = quickSaveApi;
     }
 
     public override void Enable()
@@ -66,6 +67,11 @@ public class FarmAnimalSpawnsFeature : Feature
                 AccessTools.Method(typeof(GameLocation), nameof(GameLocation.getAllFarmAnimals)),
                 postfix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
                     nameof(FarmAnimalSpawnsFeature.GameLocationGetAllFarmAnimals_Postfix)));
+
+            FarmAnimalSpawnsFeature.harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(FarmAnimal), nameof(FarmAnimal.draw)),
+                prefix: new HarmonyMethod(typeof(FarmAnimalSpawnsFeature),
+                    nameof(FarmAnimalSpawnsFeature.FarmAnimalDraw_Prefix)));
         }
         catch (Exception e)
         {
@@ -73,6 +79,13 @@ public class FarmAnimalSpawnsFeature : Feature
         }
 
         this.Enabled = true;
+
+        if (Context.IsMainPlayer)
+        {
+            // This is necessary in order to have animals spawn on the first day, since we otherwise
+            // add this on day end.
+            Game1.addMorningFluffFunction(this.DayStartAction);
+        }
     }
 
     public override void Disable()
@@ -82,7 +95,6 @@ public class FarmAnimalSpawnsFeature : Feature
 
     public override void RegisterCallbacks()
     {
-        FeatureManager.OnDayStartCallback += this.OnDayStart;
         FeatureManager.EarlyDayEndingCallback += this.OnEarlyDayEnding;
         FeatureManager.OnDisplayRenderedCallback += this.OnDisplayRenderedCallback;
     }
@@ -108,84 +120,221 @@ public class FarmAnimalSpawnsFeature : Feature
 
     private void OnEarlyDayEnding(object? sender, EventArgs e)
     {
-        foreach (var animal in spawnedAnimals)
+        if (!Context.IsMainPlayer)
+            return;
+
+        Utility.ForEachLocation(location =>
         {
-            logger.Log($"Removing {animal.Key.displayName} of id {animal.Key.type} in {animal.Key.currentLocation.Name}.", LogLevel.Trace);
-            animal.Key.currentLocation.animals.Remove(animal.Key.myID.Value);
+            if (location.Animals is null)
+                return true;
+
+            List<FarmAnimal> animalsToRemove = new List<FarmAnimal>();
+
+            foreach (FarmAnimal animal in location.Animals.Values)
+            {
+                if (animal.modData is null)
+                    continue;
+
+                if (animal.modData.ContainsKey("MEEP_Farm_Animal_ID"))
+                    animalsToRemove.Add(animal);
+            }
+
+            animalsToRemove.ForEach(this.RemoveFarmAnimal);
+
+            return true;
+        });
+
+        if (this.animalsRemoved != this.animalsSpawned)
+            logger.Log("MEEP didn't remove as many animals as were spawned. There will likely be a warning about duplicates after this. Please upload this log to https://smapi.io and report this if you notice any problems.", LogLevel.Trace);
+
+        this.animalsRemoved = 0;
+
+        // This is a workaround for a vanilla bug.
+        Game1.addMorningFluffFunction(this.DayStartAction);
+    }
+
+    private void RemoveFarmAnimal(FarmAnimal animal)
+    {
+        if (animal.currentLocation is null)
+        {
+            logger.Error($"FarmAnimal {animal.name}'s location was null. Cannot remove it. Animal MEEP ID: {animal.modData["MEEP_Farm_Animal_ID"]}.");
+
+            return;
+        }
+
+        GameLocation location = animal.currentLocation;
+
+        try
+        {
+            if (animal.myID is null)
+            {
+                logger.Error($"Animal {animal.Name}'s myID NetField was somehow null. This should never happen. Cannot safely remove them.");
+
+                return;
+            }
+
+            location.Animals.Remove(animal.myID.Value);
+            this.animalsRemoved++;
+
+            if (animal.currentLocation is not null)
+                logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" in \"{animal.currentLocation.Name}\".", LogLevel.Trace);
+            else
+                logger.Log($"Removing {animal.displayName} of type {animal.type} with MEEP ID \"{animal.modData["MEEP_Farm_Animal_ID"]}\" . Its current location was null for some reason.", LogLevel.Trace);
+        }
+        catch (Exception e)
+        {
+            logger.Log($"Ran into a problem removing animal {animal.Name}", LogLevel.Warn);
         }
     }
 
-    private void OnDayStart(object? sender, EventArgs e)
+    private void DayStartAction()
     {
         if (!Context.IsWorldReady || !Context.IsMainPlayer || !this.Enabled)
             return;
 
+        if (FarmAnimalSpawnsFeature.quickSaveApi is not null)
+        {
+            if (FarmAnimalSpawnsFeature.quickSaveApi.IsLoading)
+            {
+                logger.Log("Quick Save indicated it was loading. Skipping this DayStart.", LogLevel.Trace);
+
+                return;
+            }
+
+            logger.Log("Quick Save did not indicate it was loading. Proceeding with this DayStart as normal.", LogLevel.Trace);
+        }
+
+        this.animalsSpawned = 0;
+        Multiplayer multiplayer = Game1.Multiplayer;
+        spawnedAnimals.Clear();
+
         // We technically only need to run this once, but this will be a super fast operation because it's cached.
         animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
 
-        spawnedAnimals.Clear();
-
-        // We need access to Game1.multiplayer. This is critical.
-        Multiplayer multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
-
         if (multiplayer is null)
         {
-            // This is a catastrophic failure.
-            logger.Log("Reflecting to get Game1.Multiplayer failed. As a result, we can't spawn any animals. This should never happen.", LogLevel.Error);
+            logger.Log("Game1.Multiplayer was null. As a result, we can't spawn any animals. This should never happen.", LogLevel.Error);
 
             return;
         }
 
-        foreach (Animal animal in animalData.Values)
+        foreach (KeyValuePair<string, Animal> animal in animalData)
         {
             try
             {
-                if (!GameStateQuery.CheckConditions(animal.Condition))
+                GameLocation targetLocation = Game1.getLocationFromName(animal.Value.LocationId);
+
+                if (!GameStateQuery.CheckConditions(animal.Value.Condition, location: targetLocation))
                 {
-                    logger.Log($"Condition to spawn {animal.DisplayName} was false. Skipping!", LogLevel.Trace);
+                    logger.Log($"Condition to spawn {animal.Value.DisplayName} was false. Skipping!", LogLevel.Trace);
 
                     continue;
                 }
 
-                GameLocation targetLocation = Game1.getLocationFromName(animal.LocationId);
-
                 if (targetLocation is null)
                 {
-                    logger.Log($"Couldn't parse location name \"{animal.LocationId}\". Animal not spawned.",
+                    logger.Log($"Couldn't parse location name \"{animal.Value.LocationId}\". Animal not spawned.",
                         LogLevel.Error);
                     continue;
                 }
 
                 // Sanity check time.
-                if (animal.SkinId is null)
-                    animal.SkinId = "";
+                if (animal.Value.SkinId is null)
+                    animal.Value.SkinId = "";
 
-                FarmAnimal babbyAnimal = new FarmAnimal(animal.AnimalId, multiplayer.getNewID(), -1L)
+                if (string.IsNullOrWhiteSpace(animal.Key))
                 {
-                    skinID = { animal.SkinId },
-                    age = { animal.Age }
+                    logger.Error($"The animal's key in the spawn data dictionary was blank. Not spawning as a precaution. Please report this to the author of the pack that adds this animal and me (DecidedlyHuman).");
+                    logger.Log($"Use the following information to try to track down the pack that adds the animal:", LogLevel.Info);
+                    logger.Log($"Name: {animal.Value.DisplayName}", LogLevel.Info);
+                    logger.Log($"Animal ID: {animal.Value.AnimalId}", LogLevel.Info);
+                    logger.Log($"Location ID: {animal.Value.LocationId}", LogLevel.Info);
+
+                    continue;
+                }
+
+                FarmAnimal babbyAnimal = new FarmAnimal(animal.Value.AnimalId, multiplayer.getNewID(), -1L)
+                {
+                    skinID = { animal.Value.SkinId },
+                    age = { animal.Value.Age }
                 };
 
                 babbyAnimal.modData.Add("MEEP_Farm_Animal", "true");
-                babbyAnimal.Position =
-                    new Vector2(animal.HomeTileX * Game1.tileSize, animal.HomeTileY * Game1.tileSize);
-                babbyAnimal.Name = animal.DisplayName is null ? "No Name Boi" : animal.DisplayName;
+                babbyAnimal.modData.Add("MEEP_Farm_Animal_ID", animal.Key);
+                babbyAnimal.modData.Add("MEEP_Farm_Animal_Name", animal.Value.DisplayName);
 
-                // We got a location, so we're good to check our GameStateQuery condition.
+                if (animal.Value.PortraitTexture is not null)
+                    babbyAnimal.modData.Add("MEEP_Farm_Animal_Portrait", animal.Value.PortraitTexture);
+
+                babbyAnimal.Position =
+                    new Vector2(animal.Value.HomeTileX * Game1.tileSize, animal.Value.HomeTileY * Game1.tileSize);
+                babbyAnimal.Name = animal.Value.DisplayName is null ? "No Name Boi" : animal.Value.DisplayName;
+
+                List<FarmAnimal> glitchedAnimals = new List<FarmAnimal>();
+                foreach (FarmAnimal existingAnimal in targetLocation.Animals.Values)
+                {
+                    if (existingAnimal.modData is null)
+                        continue;
+
+                    bool hasFarmAnimalValue = existingAnimal.modData.TryGetValue("MEEP_Farm_Animal", out string isMeepAnimal);
+                    bool hasFarmAnimalId = existingAnimal.modData.TryGetValue("MEEP_Farm_Animal_ID", out string id);
+
+                    if (hasFarmAnimalId || hasFarmAnimalValue)
+                    {
+                        if (id == animal.Key)
+                        {
+                            logger.Log(
+                                $"Animal {babbyAnimal.Name} already exists with MEEP id {id} in {targetLocation.Name}. This means removal failed to happen for some reason. Attempting to fix it automatically.", LogLevel.Trace);
+                            glitchedAnimals.Add(existingAnimal);
+                        }
+                        else if (string.IsNullOrWhiteSpace(id))
+                        {
+                            logger.Error($"The animal has MEEP's animal key ID, but it's blank. Please report this to the author of the pack that adds this animal and me (DecidedlyHuman).");
+                            logger.Log($"Use the following information to try to track down the pack that adds the animal:");
+                            logger.Log($"Name: {animal.Value.DisplayName}");
+                            logger.Log($"Animal ID: {animal.Value.AnimalId}");
+                            logger.Log($"Location ID: {animal.Value.LocationId}");
+                        }
+                    }
+                }
+
+                foreach (FarmAnimal glitchedAnimal in glitchedAnimals)
+                {
+                    if (glitchedAnimal.currentLocation is null)
+                    {
+                        bool gotMeepId = glitchedAnimal.modData.TryGetValue("MEEP_Farm_Animal_ID", out string meepId);
+
+                        if (gotMeepId)
+                            logger.Error($"Couldn't remove glitched animal {glitchedAnimal.Name} with MEEP ID {meepId} because its current location was null. Please report this to DecidedlyHuman for advice on how to manually fix the issue.");
+                        else
+                            logger.Error($"Couldn't remove glitched animal {glitchedAnimal.Name} because its current location was null. Please report this to DecidedlyHuman for advice on how to manually fix the issue.");
+
+                        return;
+                    }
+
+                    glitchedAnimal.currentLocation.Animals.Remove(glitchedAnimal.myID.Value);
+                    logger.Log($"Safely removed animal {glitchedAnimal.Name} from {glitchedAnimal.currentLocation.Name}.", LogLevel.Trace);
+                }
 
                 targetLocation.animals.Add(babbyAnimal.myID.Value, babbyAnimal);
+                this.animalsSpawned++;
                 babbyAnimal.update(Game1.currentGameTime, targetLocation);
                 babbyAnimal.ReloadTextureIfNeeded();
                 babbyAnimal.allowReproduction.Value = false;
-                spawnedAnimals.Add(babbyAnimal, animal);
+                babbyAnimal.wasPet.Value = true;
+                spawnedAnimals.Add(babbyAnimal, animal.Value);
 
-                logger.Log($"Animal {animal.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Info);
+                logger.Log($"Animal {animal.Value.AnimalId} spawned in {targetLocation.Name}.", LogLevel.Trace);
             }
             catch (Exception ex)
             {
-                logger.Log($"Caught an exception spawning {animal.AnimalId} spawned in {animal.LocationId}. Skipping!");
+                logger.Log($"Caught an exception spawning {animal.Value.AnimalId} spawned in {animal.Value.LocationId}. Skipping!", LogLevel.Error);
+                logger.Exception(ex);
             }
         }
+
+        logger.Log($"Spawned {this.animalsSpawned} animals. This is normal, and will not cause or result in lag.", LogLevel.Trace);
+        logger.Log("Done with this DayStart event.", LogLevel.Trace);
     }
 
     public override bool ShouldChangeCursor(GameLocation location, int tileX, int tileY, out int cursorId)
@@ -194,19 +343,64 @@ public class FarmAnimalSpawnsFeature : Feature
         return false;
     }
 
+    public static bool FarmAnimalDraw_Prefix(FarmAnimal __instance, SpriteBatch b)
+    {
+        try
+        {
+            if (Game1.CurrentEvent is not null)
+            {
+                if (__instance.modData.ContainsKey("MEEP_Farm_Animal"))
+                {
+                    return false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Warn("Caught exception in FarmAnimal.draw() prefix:");
+            logger.Exception(e);
+
+            return true;
+        }
+
+        return true;
+    }
+
     public static bool FarmAnimalPetPrefix(FarmAnimal __instance, Farmer who, bool is_auto_pet)
     {
         if (!enabled)
+            return true;
+
+        if (is_auto_pet)
+            return true;
+
+        if (who is null)
             return true;
 
         try
         {
             if (ModEntry.AnimalRemovalMode)
             {
-                if (__instance.currentLocation.Animals.ContainsKey(__instance.myID.Value))
-                {
-                    __instance.currentLocation.Animals.Remove(__instance.myID.Value);
-                }
+                // I'm going absolutely bonkers with safety checks here.
+                if (__instance.currentLocation is null || __instance.currentLocation.Animals is null)
+                    return true;
+
+                if (!__instance.currentLocation.Animals.TryGetValue(__instance.myID.Value, out FarmAnimal farmAnimal))
+                    return true;
+
+                if (farmAnimal.currentLocation is null)
+                    return true;
+
+                // ReSharper disable once PossibleUnintendedReferenceComparison
+                if (farmAnimal.currentLocation != Game1.player.currentLocation)
+                    return true;
+
+                __instance.currentLocation.Animals.Remove(__instance.myID.Value);
+
+                string removalMessage =
+                    $"REMOVED FARM ANIMAL \"{__instance.myID.Value}\" in {__instance.currentLocation.Name} because we were in animal removal mode.";
+                logger.Log(removalMessage, LogLevel.Info);
+                Game1.addHUDMessage(new HUDMessage(removalMessage));
 
                 return false;
             }
@@ -218,27 +412,91 @@ public class FarmAnimalSpawnsFeature : Feature
 
         try
         {
-            // If we're dealing with one of our spawned animals, we display a nice message.
-            if (spawnedAnimals.ContainsKey(__instance))
+            if (who.currentLocation is null || __instance.currentLocation is null || __instance.currentLocation.Name is null)
+                return true;
+
+            if (who.currentLocation.Name != __instance.currentLocation.Name)
+                return true;
+
+            if (__instance.modData is null)
+                return true;
+
+            if (!__instance.modData.ContainsKey("MEEP_Farm_Animal"))
+                return true;
+
+            if (!__instance.modData.ContainsKey("MEEP_Farm_Animal_ID"))
             {
-                if (is_auto_pet)
-                    return false;
+                logger.Warn($"This animal's ({__instance.Name}) MEEP data didn't contain an ID, but indicated it was a MEEP animal. This should be impossible. Trace dump incoming:");
+                logger.Log($"{__instance.Name}'s modData dump:");
 
-                if (who.currentLocation.Name != __instance.currentLocation.Name)
-                    return false;
+                foreach (var dumpedData in __instance.modData)
+                {
+                    foreach (var dictData in dumpedData)
+                    {
+                        logger.Log($"\t{dictData.Key} : {dictData.Value}");
+                    }
+                }
 
-                Vector2 messageSize =
-                    Geometry.GetLargestString(spawnedAnimals[__instance].PetMessage, Game1.dialogueFont);
-                DialogueBox dialogue = new DialogueBox(spawnedAnimals[__instance].PetMessage.ToList());
-                Game1.activeClickableMenu = dialogue;
-
-                return false;
+                return true;
             }
 
-            return true;
+            // In case we're a multiplayer client, we load the animal spawn data.
+            if (!Context.IsMainPlayer)
+                animalData = helper.GameContent.Load<Dictionary<string, Animal>>("MEEP/FarmAnimals/SpawnData");
+
+            KeyValuePair<string, Animal> data = animalData.First(pair =>
+                pair.Key == __instance.modData?["MEEP_Farm_Animal_ID"]);
+
+            if (data.Value.PetMessage is null)
+                return false;
+
+            if ((bool)__instance.modData?.ContainsKey("MEEP_Farm_Animal_Portrait"))
+            {
+                if (data.Value is null)
+                {
+                    logger.Error("That animal was somehow not found in the spawn data.");
+
+                    // It's important that we return false here, because we don't want the default
+                    // animal interaction UI to appear regardless of this failure.
+                    return false;
+                }
+
+                try
+                {
+                    Vector2 messageSize =
+                        Geometry.GetLargestString(data.Value.PetMessage, Game1.dialogueFont);
+                    NPC npc = new NPC();
+
+                    npc.Portrait =
+                        Game1.content.Load<Texture2D>(__instance.modData?["MEEP_Farm_Animal_Portrait"]);
+
+                    npc.Name = data.Value.DisplayName;
+                    npc.displayName = data.Value.DisplayName;
+
+                    AnimalDialogueBox dialogueBoxWithPortrait = new AnimalDialogueBox(
+                        new Dialogue(npc, "", string.Join(" ", data.Value.PetMessage.ToList())),
+                        npc);
+
+                    Game1.activeClickableMenu = dialogueBoxWithPortrait;
+                }
+                catch (Exception e)
+                {
+                    logger.Warn(
+                        $"Portrait key for farm animal {data.Value.DisplayName} was present, but invalid.");
+                }
+            }
+            else
+            {
+                DialogueBox dialogue = new DialogueBox(data.Value.PetMessage.ToList());
+                Game1.activeClickableMenu = dialogue;
+            }
+
+            return false;
+
         }
         catch (Exception e)
         {
+            logger.Error("Caught exception handling pet interaction for farm animal with MEEP's modData.");
             logger.Exception(e);
         }
 

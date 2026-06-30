@@ -1,6 +1,10 @@
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+// ReSharper disable RedundantNullableDirective
+// ReSharper disable InconsistentNaming
+// ReSharper disable UseSymbolAlias
+// ReSharper disable RedundantNameQualifier
 
 namespace DecidedlyShared.APIs;
 

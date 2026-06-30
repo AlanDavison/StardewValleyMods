@@ -1,4 +1,31 @@
 # MEEP Release Notes
+* 2.5.1
+  * Add SpaceCore as an optional depenency.
+* 2.5.0
+  * Fix: A possible error when interacting with a MEEP farm animal that has no dialogue.
+  * Fix: Fixed some long-standing issues with MEEP farm animals duplication.
+  * Add: Closeup interactions can now be added to items via a trigger action!
+  * Add: Save Anywhere compatibility.
+* 2.4.6
+  * Fix: Farm animals should no longer duplicate for a small number of users. The cause is still unknown, but it should now be impossible.
+  * Fix: Huge oversight in MEEP animal removal command that, if left enabled when auto-petting happened, would remove any auto-pet farm animal while the command is enabled.
+  * Change: Massively overhaul farm animal spawning and removal. Improved logging for it quite a bit.
+  * Change: Reduce a lot of user-visible logging. Most things will be logged to the log file only now.
+* 2.4.5
+  * Finally fully fix null reference oversight in farm animal spawns feature.
+* 2.4.4
+  * Fix null reference oversight in farm animal spawns feature.
+* 2.4.3
+  * Fix a mistake preventing auto petters from working.
+* 2.4.2
+  * Fix multiplayer farm animal dialogue issue.
+* 2.4.0
+  * Now you can make your custom wild or fruit trees invulnerable, meaning the player can't chop them down or blow them up.
+  * Added portrait support to MEEP-spawned farm animals. This also works with portrait commands to display the happy, sad, etc. portraits.
+  * Added an event command, allowing you to spawn slimes of specific colours during your events.
+* 2.3.7
+  * Fixed MEEP farm animals appearing in events.
+  * Potentially fixed Lazy Mod spam-petting MEEP farm animals.
 * 2.3.6
   * Fixed the animal-removal command. Oops!
 * 2.3.5

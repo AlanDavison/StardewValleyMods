@@ -1,0 +1,69 @@
+{
+    "Changes": [
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/1080pImage",
+            "FromFile": "assets/1080pTexture.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/PierreCounterThing",
+            "FromFile": "assets/counter-thing.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/SNES",
+            "FromFile": "assets/game-console.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/MaruRobot",
+            "FromFile": "assets/maru-robot.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/TVAndThing",
+            "FromFile": "assets/tv-and-thing.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/TeapotLookingThing",
+            "FromFile": "assets/teapot-colour-kettle-thing.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/PageOne",
+            "FromFile": "assets/page-1.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/PageTwo",
+            "FromFile": "assets/page-2.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/PageThree",
+            "FromFile": "assets/page-3.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/PageFour",
+            "FromFile": "assets/page-4.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/JojaLetterBG",
+            "FromFile": "assets/letter-bg.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/SpaceBG",
+            "FromFile": "assets/meep-space-bg.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Mods/DecidedlyHuman/CheckeredBG",
+            "FromFile": "assets/meep-checkered-background.png"
+        }
+    ]
+}

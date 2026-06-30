@@ -1,0 +1,22 @@
+{
+    "Changes": [
+        {
+            "Action": "EditMap",
+            "Target": "Maps/BusStop",
+            "Update": "OnTimeChange",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 32,
+                        "Y": 15
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_Letter": "Dear Farmer @,^^I'd like to apologize for joking about your Grandpa's old cottage when we first met. It's really a nice little house!^^However, you might need some more space someday. That's where I can help. If you bring me some raw materials and pay a fee, I can expand your house.^(Continued on next page)^^The first expansion I offer includes a kitchen. With a kitchen, you'll be able to cook any recipes you've learned!^^Anyway, I hope you're starting to feel at home in Stardew Valley!^^    Your local carpenter,^        Robin[#]Robin's Services",
+                        "MEEP_Letter_Type": 2
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,14 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Build\Latest.targets" />
-    <Import Project="..\Build\Common.csproj" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="..\DecidedlyShared\DecidedlyShared.projitems" Label="Shared" />
 
     <PropertyGroup>
         <Name>Mapping Extensions and Extra Properties (MEEP)</Name>
         <Description>Extra map features and tile/map properties to spice up your custom maps.</Description>
-        <MinimumApiVersion>3.18.0</MinimumApiVersion>
+        <MinimumApiVersion>4.5.0</MinimumApiVersion>
         <UpdateKeys>Nexus:14493</UpdateKeys>
-        <Version>2.3.6</Version>
+        <Version>2.5.3</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -16,6 +14,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <None Update="release-notes.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <SMAPIDependency Include="spacechase0.SpaceCore" Version="1.28.0" Required="false"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' ">
+        <ContentPacks Include="test-pack/TilePropertyMod" Version="$(Version)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 </Project>

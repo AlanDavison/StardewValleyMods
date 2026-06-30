@@ -1,4 +1,30 @@
 # Smart Building release notes
+## 1.9.4
+#### Additions
+* Compatibility with Agromancy essences. Now when you plant seeds via Smart Building, they should retain their Agromancy essences.
+* French translation courtesy of CaranudLapin.
+#### Fixes
+* Blocked placement of Carry Chests' carried chests to prevent item loss. A full fix is coming in the future.
+## 1.9.3
+#### Additions
+* Added compatibility with Ultimate Fertilizer via HakuyaNiji's PR. Thanks!
+## 1.9.2
+#### Fixes
+* Fix blue grass starters placing normal grass instead.
+## 1.9.0
+#### Fixes
+* 1.6.9 support!
+* Fix blue grass starters not being placeable as a regular grass starter.
+* Fixed fence torch placement logic. Previously, Smart Building would let you put a torch on a fence that already has a torch in that spot, wasting the torch.
+## 1.8.11
+#### Fixes
+* Fixed an issue where picking up big chests would give a regular chest.
+## 1.8.10
+####
+* Finally fixed an issue with picking up furniture either giving you zero of the item, or multiple.
+## 1.8.9
+#### Fixes
+* Fixed placement of some modded seeds/trees. Everything here should be 100% fine now!
 ## 1.8.8
 #### Fixes
 * Potentially fixed an issue with modded crops.

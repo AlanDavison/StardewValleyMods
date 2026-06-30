@@ -159,7 +159,7 @@ namespace SmartBuilding.Utilities
                 }
                 else if (itemInfo.ItemType == ItemType.GrassStarter)
                 {
-                    var grassStarter = new Grass(1, 4);
+                    var grassStarter = new Grass(itemInfo.Item.QualifiedItemId.Equals("(O)BlueGrassStarter") ? 7 : 1, 4);
 
                     // At this point, we *need* there to be no TerrainFeature present.
                     if (!here.terrainFeatures.ContainsKey(targetTile))
@@ -208,7 +208,7 @@ namespace SmartBuilding.Utilities
                                     successfullyPlaced = itemToPlace.placementAction(here, (int)targetTile.X * 64,
                                         (int)targetTile.Y * 64, Game1.player);
                                 else
-                                    successfullyPlaced = hd.plant(itemToPlace.ItemId, Game1.player, false);
+                                    successfullyPlaced = this.TryPlantSeed(hd, Game1.player, itemToPlace);
                             }
                         }
 
@@ -240,8 +240,8 @@ namespace SmartBuilding.Utilities
                             // If it is, we want to grab the HoeDirt, check if it's already got a fertiliser, and fertilise if not.
                             var hd = (HoeDirt)here.terrainFeatures[targetTile];
 
-                            // 0 here means no fertilizer. This is a known change in 1.6.
-                            if (!hd.HasFertilizer())
+                            // Quick and simple campability patch with Ultimate Fertilizer
+                            if (!hd.HasFertilizer() || !hd.fertilizer.Value.Contains(itemToPlace.ItemId))
                             {
                                 // Next, we want to check if there's already a crop here.
                                 if (hd.crop != null)
@@ -262,7 +262,7 @@ namespace SmartBuilding.Utilities
                                     I18n.SmartBuilding_Error_Fertiliser_AlreadyFertilised(), LogLevel.Warn);
 
                             // Now, we want to run the final check to see if the fertilization was successful.
-                            if (!hd.HasFertilizer())
+                            if (!hd.HasFertilizer() || !hd.fertilizer.Value.Contains(itemToPlace.ItemId))
                                 // If there's still no fertilizer here, we need to refund the item.
                                 this.playerUtils.RefundItem(itemToPlace,
                                     I18n.SmartBuilding_Error_Fertiliser_IneligibleForFertilisation(), LogLevel.Warn);
@@ -510,6 +510,29 @@ namespace SmartBuilding.Utilities
             }
         }
 
+        private bool TryPlantSeed(HoeDirt hd, Farmer player, SObject itemToPlace)
+        {
+            bool success = hd.plant(itemToPlace.ItemId, player, false);
+            string agromancyId = "Spiderbuttons.Agromancy";
+
+            if (this.identificationUtils.DoesObjectContainModData(itemToPlace, agromancyId))
+            {
+                /*
+                    This is important, and actually needs a comment. We need to intercept the crop post-planting if
+                    it has Agromancy essences, because Agromancy cannot carry essences across correctly when a seed
+                    is planted in an automated way.
+
+                    By this point, the crop should be correctly in the HoeDirt, so we just need to copy the Agromancy
+                    modData from the planting seed to the crop.
+                */
+
+                if (itemToPlace.modData.ContainsKey(agromancyId))
+                    hd.crop.modData[agromancyId] = itemToPlace.modData[agromancyId];
+            }
+
+            return success;
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="tile">
@@ -567,7 +590,7 @@ namespace SmartBuilding.Utilities
                                     LogLevel.Trace, true);
                         }
                     }
-                    else if (o is Chest)
+                    else if (o is Chest chestInWorld)
                     {
                         // We're double checking at this point for safety. I want to be extra careful with chests.
                         if (here.objects.ContainsKey(tile))
@@ -576,10 +599,10 @@ namespace SmartBuilding.Utilities
                             if (this.config.CanDestroyChests)
                             {
                                 // This is fairly fragile, but it's fine with vanilla chests, at least.
-                                var chest = new Chest(true, tile);
+                                Object chest = ItemRegistry.Create<Object>($"(BC){chestInWorld.ItemId}");
 
-                                (o as Chest).destroyAndDropContents(tile * 64);
-                                Game1.player.addItemByMenuIfNecessary(chest.getOne());
+                                chestInWorld.destroyAndDropContents(tile * 64);
+                                Game1.player.addItemByMenuIfNecessary(chest);
                                 here.objects.Remove(tile);
                             }
                             else
@@ -597,7 +620,7 @@ namespace SmartBuilding.Utilities
                         {
                             // There's an item there, so we can relatively safely assume it's a torch.
                             // We remove its light source from the location, and refund the torch.
-                            here.removeLightSource(o.heldObject.Value.lightSource.Identifier);
+                            here.removeLightSource(o.heldObject.Value.lightSource.Id);
 
                             this.playerUtils.RefundItem(o.heldObject.Value, "No error. Do not log.");
                         }
@@ -740,13 +763,16 @@ namespace SmartBuilding.Utilities
 
                 if (furnitureToGrab != null)
                 {
+                    // This is apparently a thing that needs to be done now.
+                    furnitureToGrab.Stack = 1;
+
                     // If it's a StorageFurniture, and the setting to allow working with it is false, do nothing.
                     if (furnitureToGrab is StorageFurniture && !this.config.EnablePlacingStorageFurniture)
                         return;
 
                     // Otherwise, we can continue.
                     this.logger.Log($"{I18n.SmartBuilding_Message_TryingToGrab()} {furnitureToGrab.Name}");
-                    Game1.player.addItemToInventory(furnitureToGrab);
+                    Game1.player.addItemByMenuIfNecessary(furnitureToGrab);
                     here.furniture.Remove(furnitureToGrab);
                 }
             }

@@ -1,5 +1,9 @@
 ﻿# Carry Your Pet release notes
 
+## 1.3.1
+#### Fixes
+* Rebuilt for Stardew Valley 1.6.9.
+
 ## 1.3.0
 #### Fixed
 * Full 1.6 update.

@@ -1,0 +1,270 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Crops",
+            "Fields": {
+                // SPRING
+                "476": { // Garlic
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 CombatLevel 0.01"
+                    }
+                },
+                "472": { // Parsnip
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "ForagingLevel 0.01 FarmingLevel 0.01"
+                    }
+                },
+                "745": { // Strawberry
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.02 Luck 0.01 Speed 0.01"
+                    }
+                },
+                "475": { // Potat.
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.01 Immunity 0.02 Stamina 0.01"
+                    }
+                },
+                "473": { // Green bean
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.01 ForagingLevel 0.01 Immunity 0.01"
+                    }
+                },
+                "433": { // Coffee
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 Attack 0.01"
+                    }
+                },
+                "474": { // Cauliflower
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.03 Defense 0.02"
+                    }
+                },
+                "429": { // Jazz
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 LuckLevel 0.01"
+                    }
+                },
+                "427": { // Tulip
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.01 ForagingLevel 0.01"
+                    }
+                },
+                "477": { // Kale
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.01 FishingLevel 0.01 MaxStamina 2"
+                    }
+                },
+                "273": { // Rice shoots
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "ForagingLevel 0.01 Speed 0.01"
+                    }
+                },
+                "478": { // Rhubarb
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MagneticRadius 0.01 MiningLevel 0.01"
+                    }
+                },
+                "CarrotSeeds": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.02 ForagingLevel 0.01"
+                    }
+                },
+                // SUMMER
+                "481": { // Blueberry
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.02 Speed 0.01 Attack 0.01"
+                    }
+                },
+                "487": { // Corn
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 Attack 0.01"
+                    }
+                },
+                "302": { // Hops
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.01 Defense 0.02"
+                    }
+                },
+                "482": { // Hot pepper
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 Attack 0.02 Defense 0.01"
+                    }
+                },
+                "479": { // Melon (pink)
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.02 ForagingLevel 0.02"
+                    }
+                },
+                "453": { // Poppy
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 CombatLevel 0.01"
+                    }
+                },
+                "484": { // Radish
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.02 Defense 0.02"
+                    }
+                },
+                "485": { // Red cabbage
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MagneticRadius 0.02 MiningLevel 0.02"
+                    }
+                },
+                "486": { // Starfruit
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MiningLevel 0.05 MagneticRadius 0.06 CombatLevel 0.08"
+                    }
+                },
+                "455": { // Spangle
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.01 ForagingLevel 0.02"
+                    }
+                },
+                "SummerSquashSeeds": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.02 ForagingLevel 0.01"
+                    }
+                },
+                "431": { // Sunflower
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 MaxStamina 1"
+                    }
+                },
+                "480": { // Tomato
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "FarmingLevel 0.02 ForagingLevel 0.01"
+                    }
+                },
+                "483": { // Wheat
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.01 FarmingLevel 0.02"
+                    }
+                },
+
+                // AUTUMN
+                "299": { // Amaranth
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.01 Defense 0.02"
+                    }
+                },
+                "489": { // Artichoke
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.01 Speed 0.01"
+                    }
+                },
+                "494": { // Beet
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.01 FarmingLevel 0.02"
+                    }
+                },
+                "491": { // Bok choy
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "ForagingLevel 0.02 FarmingLevel 0.02"
+                    }
+                },
+                "BroccoliSeeds": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Immunity 0.02 Speed 0.01"
+                    }
+                },
+                "493": { // Cranberry
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "CombatLevel 0.02 Attack 0.03"
+                    }
+                },
+                "488": { // Eggplant
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.02 ForagingLevel 0.01"
+                    }
+                },
+                "425": { // Fairy seeds
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 Attack 0.01"
+                    }
+                },
+                "301": { // Grape
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MaxStamina 1 Speed 0.01"
+                    }
+                },
+                "490": { // Pumpkin
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.02 Immunity 0.02 MagneticRadius 0.03"
+                    }
+                },
+                "492": { // Yam
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "MiningLevel 0.02 MagneticRadius 0.02 Attack 0.1"
+                    }
+                },
+
+                // WINTER
+                "PowdermelonSeeds": {
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.0 Defense 0.03 Attack 0.03 MiningLevel 0.06"
+                    }
+                },
+
+                // SPECIAL
+                "499": { // Ancient seed (Ancient fruit)
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "AttackMultiplier 0.05 Defense 0.06 WeaponSpeedMultiplier 0.05"
+                    }
+                },
+                "802": { // Cactus
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 ForagingLevel 0.02"
+                    }
+                },
+                "885": { // Fiber
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Defense 0.02 MagneticRadius 0.01"
+                    }
+                },
+                "833": { // Pineapple
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Speed 0.01 ForagingLevel 0.02 Immunity 0.02"
+                    }
+                },
+                "831": { // Taro
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "Attack 0.01 CombatLevel 0.01 MaxStamina 1"
+                    }
+                },
+                "347": { // Rare seed/sweet gem berry
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "CombatLevel 0.05 FarmingLevel 0.05 FishingLevel 0.05 MiningLevel 0.05 LuckLevel 0.05 ForagingLevel 0.05"
+                    }
+                },
+                "890": { // Qi bean
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": "CombatLevel 0.05 FarmingLevel 0.05 FishingLevel 0.05 MiningLevel 0.05 LuckLevel 0.05 ForagingLevel 0.05 LuckLevel 0.05"
+                    }
+                },
+
+                // Unused (for now)
+                "495": { // Spring seeds
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": ""
+                    }
+                },
+                "496": { // Summer seeds
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": ""
+                    }
+                },
+                "497": { // Fall seeds
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": ""
+                    }
+                },
+                "498": { // Winter seeds
+                    "CustomFields": {
+                        "DH.BuffCrops.BuffContribution": ""
+                    }
+                }
+            }
+        }
+    ]
+}

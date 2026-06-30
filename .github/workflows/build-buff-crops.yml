@@ -1,0 +1,17 @@
+name: Build Buff Crops
+
+on:
+    workflow_dispatch:
+
+run-name: Build Buff Crops.
+permissions:
+    contents: write
+    id-token: write
+    attestations: write
+
+jobs:
+    build:
+        uses: ./.github/workflows/build-mod.yml
+        with:
+            project_name: "BuffCrops"
+            create_draft_release: true

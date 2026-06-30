@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
+// ReSharper disable InconsistentNaming
+// ReSharper disable InvalidXmlDocComment
 
 namespace DecidedlyShared.APIs
 {

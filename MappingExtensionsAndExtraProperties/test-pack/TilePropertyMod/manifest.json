@@ -1,0 +1,19 @@
+{
+    "Name": "MEEP Tile Property Test Mod",
+    "Author": "DecidedlyHuman",
+    "Version": "2.5.3-beta.3",
+    "Description": "Tile properties for testing.",
+    "UniqueID": "meep.test",
+    "UpdateKeys": [],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    },
+    "DH.MEEP": "2.0.0",
+    "DH.MEEP.CloseupInteractions": "",
+    "DH.MEEP.FakeNPCs": "",
+    "DH.MEEP.VanillaLetters": "",
+    "DH.MEEP.SetMailFlag": "",
+    "DH.MEEP.FarmAnimalSpawns": "",
+    "DH.MEEP.AddConversationTopic": "",
+    "DH.MEEP.InvulnerableTrees": ""
+}

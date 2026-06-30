@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using DecidedlyShared.APIs;
 using DecidedlyShared.Logging;
@@ -92,11 +93,19 @@ namespace SmartBuilding.Utilities
         public bool DoesObjectContainModData(SObject obj, string search)
         {
             if (obj != null && obj.modData != null)
+            {
                 foreach (SerializableDictionary<string, string>? modData in obj.modData)
-                foreach (string? key in modData.Keys)
-                foreach (string? value in modData.Values)
-                    if (key.Contains(search) || value.Contains(search))
-                        return true;
+                {
+                    foreach (string? key in modData.Keys)
+                    {
+                        foreach (string? value in modData.Values)
+                        {
+                            if (key.Contains(search) || value.Contains(search))
+                                return true;
+                        }
+                    }
+                }
+            }
 
             return false;
         }
@@ -162,24 +171,39 @@ namespace SmartBuilding.Utilities
             if (itemName.Contains("Floor") || (itemName.Contains("Path") && item.Category == -24))
                 return ItemType.Floor;
             if (item is Chest)
+            {
+                try
+                {
+                    if ((item as Chest).GlobalInventoryId.Contains("CarryChest"))
+                    {
+                        this.logger.Log(I18n.SmartBuilding_Warning_Chest_AttemptedCarryChestPlacement(), LogLevel.Warn, true);
+
+                        return ItemType.NotPlaceable;
+                    }
+                }
+                catch (InvalidCastException ice)
+                {
+                    this.logger.Error("Caught an exception casting what should be a chest to a chest.");
+                    this.logger.Exception(ice);
+
+                    return ItemType.NotPlaceable;
+                }
+
                 return ItemType.Chest;
+            }
             if (itemName.Contains("Fence"))
                 return ItemType.Fence;
             if (itemName.Equals("Gate") || item.ParentSheetIndex.Equals(325))
                 return ItemType.Fence;
-            if (itemName.Equals("Grass Starter"))
+            if (itemName.Equals("Grass Starter") || itemName.Equals("Blue Grass Starter"))
                 return ItemType.GrassStarter;
             if (itemName.Equals("Crab Pot"))
                 return ItemType.CrabPot;
-            if (item.Type == "Crafting" && item.Category == -74)
+            else if (item.Category == -74 && item.isSapling())
             {
                 return ItemType.Sapling;
             }
-            else if (item.Type == "Basic" && item.Category == -74)
-            {
-                return ItemType.Sapling;
-            }
-            else if (item.Type.Equals("Seeds") || item.Type.Equals("Seed") || item.Category.Equals(-74))
+            else if (item.Category.Equals(-74) && item.HasContextTag("category_seeds"))
             {
                 return ItemType.Seed;
             }
@@ -262,7 +286,7 @@ namespace SmartBuilding.Utilities
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string? GetFlooringNameFromId(string id)
+        public string GetFlooringNameFromId(string id)
         {
             switch (id)
             {
@@ -293,7 +317,7 @@ namespace SmartBuilding.Utilities
                 case "7":
                     return "Crystal Path"; // Correct.
                 default:
-                    return null;
+                    return string.Empty;
             }
         }
 

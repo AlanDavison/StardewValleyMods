@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 
@@ -19,12 +18,14 @@ namespace SmartCursor
     public class ModEntry : Mod
     {
         private List<BreakableEntity> breakableResources;
+        private IItemExtensionsApi? itemExtensionsApi;
         private SmartCursorConfig config;
         private Logger logger;
         private Vector2? targetedObject;
         private readonly int baseRange = 3;
         private byte cooldownThreshold = 30;
         private bool isHoldKeyDown;
+        private int highestTierRange;
 
         private Dictionary<int, int> toolRanges = new Dictionary<int, int>();
 
@@ -74,6 +75,25 @@ namespace SmartCursor
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             this.RegisterWithGmcm();
+            this.GetApiIntegrations();
+        }
+
+        private void GetApiIntegrations()
+        {
+            if (!this.Helper.ModRegistry.IsLoaded("mistyspring.ItemExtensions"))
+                return;
+
+            if (this.Helper.ModRegistry.Get("mistyspring.ItemExtensions")!.Manifest.Version.IsOlderThan(
+                    new SemanticVersion(1, 14, 1)))
+            {
+                this.logger.Warn("Your version of Item Extensions is out of date. Please update it if you can to enable support.");
+                return;
+            }
+
+            this.itemExtensionsApi = this.Helper.ModRegistry.GetApi<IItemExtensionsApi>("mistyspring.ItemExtensions");
+
+            if (this.itemExtensionsApi is null)
+                this.logger.Warn("Error getting Item Extensions' API. There may have been a change since the current version of Smart Cursor.");
         }
 
         private void RegisterWithGmcm()
@@ -163,30 +183,6 @@ namespace SmartCursor
                         this.config.TierFiveRange = i;
                     },
                     name: () => I18n.Settings_Ranges_Tier5Range(),
-                    min: 1,
-                    max: 20);
-
-                configMenuApi.AddNumberOption(
-                    mod: this.ModManifest,
-                    getValue: () => this.config.TierSixRange,
-                    setValue: i =>
-                    {
-                        this.toolRanges[5] = i;
-                        this.config.TierSixRange = i;
-                    },
-                    name: () => I18n.Settings_Ranges_Tier6Range(),
-                    min: 1,
-                    max: 20);
-
-                configMenuApi.AddNumberOption(
-                    mod: this.ModManifest,
-                    getValue: () => this.config.TierSevenRange,
-                    setValue: i =>
-                    {
-                        this.toolRanges[6] = i;
-                        this.config.TierSevenRange = i;
-                    },
-                    name: () => I18n.Settings_Ranges_Tier7Range(),
                     min: 1,
                     max: 20);
 
@@ -347,8 +343,15 @@ namespace SmartCursor
                     break;
             }
 
+            int largestRange = this.toolRanges[this.toolRanges.Count - 1];
+
+            if (player.CurrentTool.UpgradeLevel > this.toolRanges.Count)
+            {
+                largestRange += player.CurrentTool.UpgradeLevel - largestRange;
+            }
+
             return this.GetTileToTarget(playerTile, breakableType, this.breakableResources,
-                this.toolRanges[player.CurrentTool.UpgradeLevel] + 1f);
+                largestRange + 1f);
         }
 
         /// <summary>
@@ -514,8 +517,12 @@ namespace SmartCursor
         /// <param name="e"></param>
         private void InputOnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            // Guard against fishing rod usage.
-            if (Game1.player.CurrentTool is FishingRod)
+            if (Game1.player.CurrentTool is null)
+                return;
+
+            if (Game1.player.CurrentTool is not Pickaxe &&
+                Game1.player.CurrentTool is not Axe &&
+                Game1.player.CurrentTool is not Hoe)
                 return;
 
             if (e.Button == this.config.SmartCursorHold)
@@ -568,28 +575,28 @@ namespace SmartCursor
             // First, we loop through the location's objects and add them to our breakable resources list.
             foreach (KeyValuePair<Vector2, SObject> pair in location.Objects.Pairs)
             {
-                if (pair.Value.Type.Equals("Litter"))
-                    this.breakableResources.Add(new BreakableEntity(pair.Value, this.config));
+                if (pair.Value.Type.Equals("Litter") || (pair.Value.Type.Equals("asdf") && pair.Value.Name.Equals("Artifact Spot")))
+                    this.breakableResources.Add(new BreakableEntity(pair.Value, this.config, this.itemExtensionsApi));
             }
 
             // Then the same with terrain features.
             foreach (var feature in location.terrainFeatures.Values)
             {
                 if (feature is Tree tree)
-                    this.breakableResources.Add(new BreakableEntity(tree, this.config));
+                    this.breakableResources.Add(new BreakableEntity(tree, this.config, this.itemExtensionsApi));
             }
 
             // Then with large terrain features.
             foreach (var feature in location.largeTerrainFeatures)
             {
-                this.breakableResources.Add(new BreakableEntity(feature, this.config));
+                this.breakableResources.Add(new BreakableEntity(feature, this.config, this.itemExtensionsApi));
             }
 
 
             // And finally, resource clumps.
             foreach (var clump in location.resourceClumps)
             {
-                this.breakableResources.Add(new BreakableEntity(clump, this.config));
+                this.breakableResources.Add(new BreakableEntity(clump, this.config, this.itemExtensionsApi));
                 // this.logger.Log($"Clump parentSheetIndex: {clump.parentSheetIndex}");
             }
 

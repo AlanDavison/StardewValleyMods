@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using MappingExtensionsAndExtraProperties.Models.EventArgs;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI.Events;
 using StardewValley;
 

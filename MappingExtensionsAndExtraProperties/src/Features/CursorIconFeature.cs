@@ -2,10 +2,7 @@ using System;
 using DecidedlyShared.Logging;
 using DecidedlyShared.Utilities;
 using HarmonyLib;
-using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using Microsoft.Xna.Framework;
 using StardewValley;
-using xTile.ObjectModel;
 
 namespace MappingExtensionsAndExtraProperties.Features;
 

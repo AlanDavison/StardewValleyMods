@@ -1,0 +1,29 @@
+{
+    "Changes": [
+        {
+            // Demonstration of a multiple image reel (option one).
+            "Action": "EditMap",
+            "Target": "Maps/Town",
+            "Update": "OnTimeChange",
+            "MapTiles": [
+                {
+                    "Position": {
+                        "X": 24,
+                        "Y": 53
+                    },
+                    "Layer": "Back",
+                    "SetProperties": {
+                        "MEEP_CloseupInteraction_Image_1": "LooseSprites/Cursors 540 305 42 28",
+                        "MEEP_CloseupInteraction_Text_1": "The spirits tell me you're learning how to use a new mod...",
+                        "MEEP_CloseupInteraction_Image_2": "LooseSprites/Cursors 644 361 42 28",
+                        "MEEP_CloseupInteraction_Text_2": "FOOD!",
+                        "MEEP_CloseupInteraction_Image_3": "LooseSprites/Cursors 112 656 16 64",
+                        "MEEP_CloseupInteraction_Image_4": "LooseSprites/Cursors 160 660 32 60",
+                        "MEEP_CloseupInteraction_Text_4": "Weird, pink tentacle spiral thing?",
+                        "MEEP_CloseupInteraction_Sound": "cacklingWitch"
+                    }
+                }
+            ]
+        }
+    ]
+}

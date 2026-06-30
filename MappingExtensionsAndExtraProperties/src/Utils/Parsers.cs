@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using DecidedlyShared.Logging;
 using MappingExtensionsAndExtraProperties.Models.TileProperties;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Objects;
 
 namespace MappingExtensionsAndExtraProperties.Utils;
 
@@ -88,11 +84,16 @@ public class Parsers
     public static bool TryParseIncludingKey(string property, out CloseupInteractionText parsedProperty)
     {
         parsedProperty = new CloseupInteractionText();
+        logger.Log($"Parsing text property: {property}", LogLevel.Trace);
 
         string[] splitProperty = property.Split(" ");
 
         if (splitProperty.Length < 2)
+        {
+            logger.Log("Property did not have the correct number of arguments.", LogLevel.Trace);
+
             return false;
+        }
 
         StringBuilder args = new StringBuilder();
         // We know we're dealing with the minimum required parameters now, so we rejoin them to pass into the parser.

@@ -32,8 +32,6 @@ namespace SmartCursor
             ranges[2] = this.TierThreeRange;
             ranges[3] = this.TierFourRange;
             ranges[4] = this.TierFiveRange;
-            ranges[5] = this.TierSixRange;
-            ranges[6] = this.TierSevenRange;
         }
     }
 }

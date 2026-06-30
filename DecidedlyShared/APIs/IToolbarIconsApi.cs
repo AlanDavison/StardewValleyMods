@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+// ReSharper disable InvalidXmlDocComment
 
 namespace DecidedlyShared.APIs
 {

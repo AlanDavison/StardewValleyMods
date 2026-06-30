@@ -1,5 +1,9 @@
 ﻿# Better Crystalariums Changelog
 
+## 1.1.1
+#### Fixes
+* Updated for Stardew Valley 1.6.9.
+
 ## 1.1.0
 #### Changes
 * Full 1.6 update.
