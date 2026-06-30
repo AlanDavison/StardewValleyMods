@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI.Utilities;
+﻿using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 
 namespace SmartBuilding
 {
@@ -46,6 +47,7 @@ namespace SmartBuilding
         public KeybindList HoldToMoveMenu = KeybindList.Parse("MouseMiddle");
         public KeybindList IdentifyItem = KeybindList.Parse("LeftControl+LeftShift+J");
         public KeybindList IdentifyProducer = KeybindList.Parse("LeftControl+LeftShift+K");
+        public SButton PressButton = SButton.ControllerX;
 
         public KeybindList InsertTool = KeybindList.Parse("");
         // public KeybindList HoldToDrawRectangle = KeybindList.Parse("LeftAlt");
